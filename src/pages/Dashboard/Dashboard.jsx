@@ -11,7 +11,7 @@ export default function Dashboard() {
         <img src={img} alt="Logo" />
         <p>{name}</p>
       </div>
-      <Divider style={{ margin: 12 }} />
+      <Divider style={{ margin: 12, backgroundColor: '#333333' }} />
       <div className={Style.dashboardUser}>
         <Avatar src={img} size={45} style={{ marginLeft: 10 }} />
         <div className={Style.dashboardUserName}>
@@ -23,12 +23,12 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <Divider style={{ margin: 12 }} />
+      <Divider style={{ margin: 12, backgroundColor: '#333333' }} />
       <div className={Style.dashboardMenu}>
         <MenuDashboard />
       </div>
       <div className={Style.dashboardFooter}>
-        <Divider />
+        <Divider style={{ backgroundColor: '#333333' }} />
         <BtnLogOut />
         <p>© 2025 Centro de Reflexoterapia </p>
       </div>
