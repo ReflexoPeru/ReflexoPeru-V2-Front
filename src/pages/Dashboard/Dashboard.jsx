@@ -8,12 +8,17 @@ export default function Dashboard() {
   return (
     <div className={Style.dashboardContainer}>
       <div className={Style.dashboardHeader}>
-        <img src={img} alt="Logo" />
+        <img alt="Logo de reflexo" src={img} />
         <p>{name}</p>
       </div>
       <Divider style={{ margin: 12, backgroundColor: '#333333' }} />
       <div className={Style.dashboardUser}>
-        <Avatar src={img} size={45} style={{ marginLeft: 10 }} />
+        <Avatar
+          alt="Logo de avatar"
+          src={img}
+          size={45}
+          style={{ marginLeft: 10 }}
+        />
         <div className={Style.dashboardUserName}>
           <div>
             <h1>Luis Jeremy Villodas Almiron</h1>

@@ -8,8 +8,10 @@ import {
 } from '@phosphor-icons/react';
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 export default function MenuDashboard() {
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,8 +26,12 @@ export default function MenuDashboard() {
   const items = [
     {
       key: '1',
-      label: 'Inicio',
-      icon: <House />,
+      label: <Link to="/"> Inicio </Link>,
+      icon: (
+        <div>
+          <House />
+        </div>
+      ),
     },
     {
       key: '2',
@@ -34,7 +40,7 @@ export default function MenuDashboard() {
       children: [
         {
           key: '3',
-          label: 'Pacientes',
+          label: <Link to="/pacientes"> Pacientes</Link>,
         },
         {
           key: '4',
@@ -143,6 +149,9 @@ export default function MenuDashboard() {
               backgroundColor: '#1E1E1E',
             },
           },
+          token: {
+            colorBgBase: '#1E1E1E+',
+          },
         }}
       >
         <Menu
@@ -151,7 +160,6 @@ export default function MenuDashboard() {
           style={{
             borderInlineEnd: 'none',
             backgroundColor: '#1E1E1E',
-            width: '100px',
           }}
           defaultSelectedKeys={['1']}
           openKeys={stateOpenKeys}
