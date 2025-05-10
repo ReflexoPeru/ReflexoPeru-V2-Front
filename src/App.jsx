@@ -1,8 +1,13 @@
+// src/App.jsx
+import React from 'react';
+import '../src/App.css';
+import NewPatient from './pages/NewPatient';
+
 function App() {
   return (
-    <>
-      <h1>Hello World</h1>
-    </>
+    <div className="app">
+      <NewPatient />
+    </div>
   );
 }
 
