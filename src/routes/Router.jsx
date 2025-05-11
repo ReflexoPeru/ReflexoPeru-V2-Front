@@ -1,15 +1,19 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Vista from '../pages/vista';
+import Login from '../features/auth/ui/login';
+import View from '../pages/View';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Vista />,
-  },
-  {
-    path: '/dashboard',
-    element: <Dashboard />,
+    element: <Login />,
+    children: [
+      {
+        path: '/Inicio',
+        element: <View />,
+      },
+    ],
   },
 ]);
 

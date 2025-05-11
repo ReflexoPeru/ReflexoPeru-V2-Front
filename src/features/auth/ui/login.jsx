@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, ConfigProvider } from 'antd';
 import styles from './Login.module.css';
-import logo from '../../assets/Img/MiniLogoReflexo.webp';
+import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../../hooks/loginpacticles'; // Import the function
+import { initializeParticles } from '../hook/loginpacticles'; // Import the function
 
 function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
