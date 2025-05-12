@@ -1,0 +1,11 @@
+.Container{
+    display: flex;
+
+}
+.Content{
+    width: 83%;
+    height: 100vh;
+}
+.SideBar{
+    width: 17%;
+}
