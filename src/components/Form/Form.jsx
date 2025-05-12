@@ -1,9 +1,10 @@
-import { CheckCircleFilled } from '@ant-design/icons';
+// components/Form/Form.jsx
 import { Button, Col, ConfigProvider, Form, Row } from 'antd';
 import { useState } from 'react';
 import InputField from '../Input/Input';
+import styles from './Form.module.css';
 
-const FormGenerator = ({ fields = [] }) => {
+const FormGenerator = ({ fields = [], mode = 'create' }) => {
   const [form] = Form.useForm();
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
 
@@ -16,63 +17,62 @@ const FormGenerator = ({ fields = [] }) => {
     form.validateFields(['phone']);
   };
 
-  const renderPhoneField = (field, index) => (
-    <Col span={field.span || 8} key={index}>
-      <Form.Item
-        name={field.name}
-        label={<span style={{ color: 'white' }}>{field.label}</span>}
-        style={{ margin: '25px 25px 10px' }}
-        rules={isPhoneRequired ? [{ required: true, message: `Por favor complete el campo ${field.label}` }] : []}
-      >
-        <div style={{ display: 'flex', marginRight: '-30px', alignItems: 'center' }}>
-          <InputField type={field.type} label={field.label} options={field.options || []} style={{ width: '100%' }} />
-          <CheckCircleFilled
-            onClick={togglePhoneRequired}
-            title={isPhoneRequired ? 'Teléfono obligatorio (clic para hacerlo opcional)' : 'Teléfono opcional (clic para hacerlo obligatorio)'}
-            style={{ fontSize: 20, color: isPhoneRequired ? '#FFF' : '#aaa', cursor: 'pointer', marginLeft: 8 }}
-          />
-        </div>
-      </Form.Item>
-    </Col>
-  );
-
-  const renderDefaultField = (field, index) => (
-    <Col span={field.span || 8} key={index}>
-      <Form.Item
-        name={field.name}
-        label={<span style={{ color: 'white' }}>{field.label}</span>}
-        style={{ margin: '25px 25px 10px' }}
-        rules={field.required ? [{ required: true, message: `Por favor complete el campo ${field.label}` }] : []}
-      >
-        <InputField type={field.type} label={field.label} options={field.options || []} />
-      </Form.Item>
-    </Col>
-  );
-
   const renderField = (field, index) => {
-    if (field.name === 'phone') return renderPhoneField(field, index);
-    return renderDefaultField(field, index);
+    const isPhoneField = field.name === 'phone';
+    return (
+      <Col span={field.span || 8} key={index}>
+        <Form.Item
+          name={field.name}
+          label={<span className={styles.label}>{field.label}</span>}
+          className={styles.formItem}
+          rules={
+            isPhoneField
+              ? isPhoneRequired
+                ? [{ required: true, message: `Por favor complete el campo ${field.label}` }]
+                : []
+              : field.required
+              ? [{ required: true, message: `Por favor complete el campo ${field.label}` }]
+              : []
+          }
+        >
+          <InputField
+            type={field.type}
+            label={field.label}
+            options={field.options || []}
+            isPhoneField={isPhoneField}
+            isPhoneRequired={isPhoneRequired}
+            togglePhoneRequired={togglePhoneRequired}
+          />
+        </Form.Item>
+      </Col>
+    );
   };
 
   return (
     <ConfigProvider
       theme={{
-        token: {colorPrimary: '#FFFFFFFF', colorBgContainer: '#444444', colorText: '#FFFFFFFF', colorBorder: '#444', controlOutline: 'none', fontFamily: 'sans-serif',}}}
+        token: {
+          colorPrimary: '#FFFFFFFF',
+          colorBgContainer: '#444444',
+          colorText: '#FFFFFFFF',
+          colorBorder: '#444',
+          controlOutline: 'none',
+          fontFamily: 'sans-serif',
+        },
+      }}
     >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        style={{ backgroundColor: '#1e1e1e', padding: 24, borderRadius: 12, color: 'white' }}
+        className={styles.formContainer}
       >
         <Row gutter={[25, 0]}>
           {fields.map((field, index) => {
             if (field.type === 'title') {
               return (
                 <Col span={24} key={index}>
-                  <h2 style={{ color: 'white', marginTop: index !== 0 ? 24 : 0, fontSize: '28px', fontWeight: 'bold' }}>
-                    {field.label}
-                  </h2>
+                  <h2 className={styles.title}>{field.label}</h2>
                 </Col>
               );
             }
@@ -93,13 +93,13 @@ const FormGenerator = ({ fields = [] }) => {
           })}
         </Row>
 
-        <Form.Item style={{ marginTop: 20, marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button htmlType="button" style={{ marginRight: 10, backgroundColor: '#1677ff', color: 'white', border: 'none' }}>
+        <Form.Item className={styles.buttonGroup}>
+          <div className={styles.buttonWrapper}>
+            <Button htmlType="button" className={styles.buttonCancel}>
               Cancelar
             </Button>
-            <Button htmlType="submit" style={{ backgroundColor: '#00b96b', color: 'white', border: 'none' }}>
-              Registrar
+            <Button htmlType="submit" className={styles.buttonSubmit}>
+              {mode === 'edit' ? 'Actualizar' : 'Registrar'}
             </Button>
           </div>
         </Form.Item>
