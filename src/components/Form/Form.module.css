@@ -1,0 +1,45 @@
+/* components/Form/FormGenerator.module.css */
+.formContainer {
+  padding: 24px;
+  border-radius: 12px;
+  color: white;
+  background-color: #1e1e1e;
+}
+
+.title {
+  margin-top: 24px;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+}
+
+.label {
+  color: white;
+}
+
+.formItem {
+  margin: 25px 25px 10px;
+}
+
+.buttonGroup {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buttonCancel {
+  margin-right: 10px;
+  border: none;
+  color: white;
+  background-color: #1677ff;
+}
+
+.buttonSubmit {
+  border: none;
+  color: white;
+  background-color: #00b96b;
+}
