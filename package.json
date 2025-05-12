@@ -11,6 +11,9 @@
     "stylelint": "npx stylelint \"**/*.{css,scss,sass}\" --fix"
   },
   "dependencies": {
+    "antd": "^5.25.1",
+    "dayjs": "^1.11.13",
+    "phosphor-react": "^1.4.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "reflexoperurefactor": "file:"
