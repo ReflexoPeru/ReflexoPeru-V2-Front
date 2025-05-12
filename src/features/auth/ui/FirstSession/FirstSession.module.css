@@ -36,8 +36,7 @@ canvas {
 
 .loginForm {
   width: 80vw;
-  max-width: 500px; /* Establece un ancho máximo para evitar que se haga demasiado grande */
-  height: auto;
+  max-width: 500px;
   padding: 5%;
   border-radius: 15px;
 
@@ -48,8 +47,8 @@ canvas {
 }
 
 .loginForm h2 {
-  width: 80%;
-  margin: 0 auto 5% auto;
+  width: 100%;
+  margin-bottom: 5%;
   color: #797979;
 }
 
@@ -57,7 +56,9 @@ canvas {
   display: flex;
   gap: 2vw;
   align-items: center;
+  justify-content: center;
 
+  margin-top: 2%;
   padding: 2.5%;
   border-radius: 5px;
 
@@ -69,14 +70,18 @@ canvas {
 }
 
 .inputContainer input {
-  width: 80%;
+  width: 60%;
   border: none;
+
   color: #ababab;
+  text-align: center;
+
   background: transparent;
 }
 
 .inputContainer input::placeholder {
   color: #4a4949;
+  text-align: center;
 }
 
 .inputContainer svg {
