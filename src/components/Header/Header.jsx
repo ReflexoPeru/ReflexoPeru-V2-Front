@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Layout, Typography } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-import { CaretLeft, ArrowLeft } from 'phosphor-react';
+import { CaretLeft, ArrowLeft } from '@phosphor-icons/react';
 import styles from './Header.module.css';
 
 dayjs.locale('es');
