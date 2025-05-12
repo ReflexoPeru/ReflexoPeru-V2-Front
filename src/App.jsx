@@ -1,13 +1,11 @@
-// src/App.jsx
-import React from 'react';
-import '../src/App.css';
-import NewPatient from './pages/NewPatient';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Router from './routes/Router';
 
 function App() {
   return (
-    <div className="app">
-      <NewPatient />
-    </div>
+    <>
+      <Router />
+    </>
   );
 }
 
