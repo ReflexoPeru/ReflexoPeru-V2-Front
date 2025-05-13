@@ -49,12 +49,12 @@ export default function Citas() {
     const appointmentsData = Appointments[0].items;
 
     return (
-        <div className={estilo.container}>
+        <>
             <ModeloTable 
                 columns={columns} 
                 data={appointmentsData}
             />
-        </div>
+        </>
         
     );
 }

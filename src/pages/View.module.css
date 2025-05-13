@@ -1,5 +1,6 @@
 .Container{
     display: flex;
+    height: 100%;
 
 }
 .Content{
@@ -8,4 +9,11 @@
 }
 .SideBar{
     width: 17%;
+}
+.Header {
+    height: 6%;
+}
+.Outlet{
+    height: 94%;
+    background-color: #121212;
 }

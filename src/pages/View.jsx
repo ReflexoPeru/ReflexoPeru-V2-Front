@@ -10,10 +10,10 @@ export default function View() {
         <Dashboard />
       </div>
       <div className={Style.Content}>
-        <div>
+        <div className={Style.Header}>
           <CustomLayout />
         </div>
-        <div>
+        <div className={Style.Outlet}>
           <Outlet />
         </div>
       </div>
