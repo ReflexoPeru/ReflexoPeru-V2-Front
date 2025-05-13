@@ -34,7 +34,7 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                 <div
                     style={{
                         background: '#272727',
-                        padding: '5px',
+                        //padding: '5px',
                         borderRadius: '10px',
                         display: 'inline-block',
                     }}

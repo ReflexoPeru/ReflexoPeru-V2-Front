@@ -3,6 +3,9 @@ import Dashboard from '../pages/Dashboard/Dashboard';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
+import Paciente from '../features/patients/ui/paciente';
+import Terapeuta from '../features/staff/ui/terapeuta';
+import Citas from '../features/appointments/ui/citas';
 
 const router = createBrowserRouter([
   {
@@ -15,11 +18,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'pacientes',
-        element: <Prueba />,
+        element: <Paciente />,
       },
       {
         path: 'citas',
-        element: <Prueba />,
+        element: <Citas />,
       },
       {
         path: 'reportes',
@@ -35,7 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'terapeutas',
-        element: <Prueba />,
+        element: <Terapeuta />,
       },
       {
         path: 'configSistema',

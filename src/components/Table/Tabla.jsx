@@ -3,7 +3,7 @@ import { Table, Button, Space, ConfigProvider } from 'antd';
 import estilos from './Tabla.module.css';
 import ModeloPagination from './Pagination/Pagination.jsx';
 
-const ModeloTable = ({ columns, data }) => {
+const ModeloTable = ({ columns, data, customActions }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(100);
     const [tableHeight, setTableHeight] = useState(0);
@@ -45,7 +45,7 @@ const ModeloTable = ({ columns, data }) => {
             ...col,
             align: NombreColumn ? 'left' : 'center',
             title: <div style={{ textAlign: 'center' }}>{col.title}</div>,
-            width: '65px',
+            //width: '65px',
             onCell: () => ({
                 style: {
                     textAlign: NombreColumn ? 'left' : 'center',
@@ -65,25 +65,6 @@ const ModeloTable = ({ columns, data }) => {
             }),
         };
 
-        if (NombreColumn) {
-            return {...baseColumn, width: 135 };
-        }
-
-        if (FechaCitaColumn) {
-            return {...baseColumn, width: 100};
-        }
-
-        if (SalaColumn){
-            return {...baseColumn, width: 57}
-        }
-
-        if (TicketColumn){
-            return {...baseColumn, width: 67}
-        }
-
-        if (MetodoColumn){
-            return {...baseColumn, width: 80}
-        }
         return baseColumn;
     });
 
@@ -91,21 +72,29 @@ const ModeloTable = ({ columns, data }) => {
         title: <div style={{ textAlign: 'center'}}>Acciones</div>,
         key: 'acciones',
         width: '400px',
-        render: () => (
-            <Space size="small">
-                <Button style={{ backgroundColor: '#555555'}}>Editar</Button>
-                <Button style={{ backgroundColor: '#0066FF'}}>Imprimir</Button>
-                <Button style={{ backgroundColor: '#69276F'}}>Boleta</Button>
-                <Button style={{ backgroundColor: '#00AA55'}}>Historia</Button>
-                <Button style={{ backgroundColor: '#FF3333'}}>Eliminar</Button>
-            </Space>
-        ),
+        fixed: 'right',
+        render: (record) => {
+            if (customActions) {
+                return customActions(record);
+            }
+
+            return (
+                <Space size="small">
+                    <Button style={{ backgroundColor: '#555555'}}>Editar</Button>
+                    <Button style={{ backgroundColor: '#0066FF'}}>Imprimir</Button>
+                    <Button style={{ backgroundColor: '#69276F'}}>Boleta</Button>
+                    <Button style={{ backgroundColor: '#00AA55'}}>Historia</Button>
+                    <Button style={{ backgroundColor: '#FF3333'}}>Eliminar</Button>
+                </Space>
+            );
+        },
         onCell: () => ({
             style: {
                 background: 'inherit',
                 border: 'none',
                 borderBottom: 'none',
                 borderLeft: '1px solid #444',
+                textAlign: 'center',
             },
         }),
         onHeaderCell: () => ({
@@ -163,7 +152,7 @@ const ModeloTable = ({ columns, data }) => {
                     overflow: 'hidden'
                 }}
             >
-                <div style={{ flex: 1, overflow: 'hidden' }}>
+                <div style={{overflow: 'hidden' }}>
                     <Table
                         columns={[...columnaArreglada, actionColumn]}
                         dataSource={paginationData}
