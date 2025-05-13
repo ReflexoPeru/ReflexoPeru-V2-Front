@@ -148,9 +148,8 @@ const ModeloTable = ({ columns, data, customActions }) => {
       <div
         ref={containerRef}
         style={{
-          width: '100%',
-          maxWidth: '1060px',
-          height: 'calc(100vh - 100px)',
+          maxWidth: 'calc(100% - 200px)',
+          height: 'calc(100% - 100px)',
           margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
