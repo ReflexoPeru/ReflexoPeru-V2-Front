@@ -4,13 +4,14 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import { CaretLeft, ArrowLeft } from '@phosphor-icons/react';
 import styles from './Header.module.css';
-
+import { useNavigate } from 'react-router';
 dayjs.locale('es');
 
 const { Header } = Layout;
 const { Text } = Typography;
 
-const CustomHeader = ({ title }) => {
+const CustomHeader = ({ title, isBack = true }) => {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(dayjs().format('HH:mm:ss'));
   const [currentDate, setCurrentDate] = useState(
     dayjs().format('dddd, D [de] MMMM [del] YYYY'),
@@ -24,13 +25,18 @@ const CustomHeader = ({ title }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const back = () => {
+    navigate(-1);
+  };
   return (
     <Header className={styles.header}>
       <div className={styles.headerContent}>
         <div className={styles.headerLeft}>
-          <button className={styles.backButton}>
-            <ArrowLeft size={20} weight="bold" />
-          </button>
+          {isBack && (
+            <button className={styles.backButton} onClick={back}>
+              <ArrowLeft size={20} weight="bold" />
+            </button>
+          )}
           <Text className={styles.headerTitle}>{title || ''}</Text>
         </div>
         <div className={styles.headerRight}>
