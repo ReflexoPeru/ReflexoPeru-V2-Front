@@ -11,14 +11,15 @@ export default function Dashboard() {
         <img alt="Logo de reflexo" src={img} />
         <p>{name}</p>
       </div>
-      <Divider style={{ margin: 12, backgroundColor: '#333333' }} />
+      <Divider
+        style={{
+          marginBottom: '15px',
+          marginTop: '15px',
+          backgroundColor: '#333333',
+        }}
+      />
       <div className={Style.dashboardUser}>
-        <Avatar
-          alt="Logo de avatar"
-          src={img}
-          size={45}
-          style={{ marginLeft: 10 }}
-        />
+        <Avatar alt="Logo de avatar" src={img} size={45} />
         <div className={Style.dashboardUserName}>
           <div>
             <h1>Luis Jeremy Villodas Almiron</h1>
@@ -28,7 +29,13 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <Divider style={{ margin: 12, backgroundColor: '#333333' }} />
+      <Divider
+        style={{
+          marginBottom: '5px',
+          marginTop: '15px',
+          backgroundColor: '#333333',
+        }}
+      />
       <div className={Style.dashboardMenu}>
         <MenuDashboard />
       </div>

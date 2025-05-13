@@ -9,6 +9,7 @@ import {
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import Style from './Menu.module.css';
 export default function MenuDashboard() {
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function MenuDashboard() {
       key: '1',
       label: <Link to="/"> Inicio </Link>,
       icon: (
-        <div>
+        <div className={Style.icon}>
           <House />
         </div>
       ),
@@ -36,51 +37,85 @@ export default function MenuDashboard() {
     {
       key: '2',
       label: 'Pacientes',
-      icon: <Person />,
+      icon: (
+        <div className={Style.icon}>
+          <Person />
+        </div>
+      ),
       children: [
         {
           key: '3',
-          label: <Link to="/pacientes"> Pacientes</Link>,
-        },
-        {
-          key: '4',
-          label: 'Diagnosticos',
+          label: <Link to="pacientes"> Pacientes</Link>,
         },
         {
           key: '5',
-          label: 'Citas',
+          label: <Link to="citas"> Citas</Link>,
         },
         {
           key: '6',
-          label: 'Citas completadas',
+          label: <Link to="citasCompletas"> Citas completas</Link>,
         },
       ],
     },
     {
       key: '7',
-      label: 'Personal',
-      icon: <AddressBook />,
+      label: 'Terapeutas',
+      icon: (
+        <div className={Style.icon}>
+          <AddressBook />
+        </div>
+      ),
       children: [
         {
           key: '8',
-          label: 'Terapeutas',
+          label: <Link to="terapeutas"> Terapeutas</Link>,
         },
       ],
     },
     {
       key: '9',
-      label: 'Reportes',
-      icon: <FileDoc />,
+      label: <Link to="reportes"> Reportes </Link>,
+      icon: (
+        <div className={Style.icon}>
+          <FileDoc />
+        </div>
+      ),
     },
     {
       key: '10',
-      label: 'Estadisticas',
-      icon: <ChartBar />,
+      label: <Link to="estadisticas"> Estadisticas </Link>,
+      icon: (
+        <div className={Style.icon}>
+          <ChartBar />
+        </div>
+      ),
     },
     {
       key: '11',
       label: 'Configuraciones',
-      icon: <Nut />,
+      icon: (
+        <div className={Style.icon}>
+          <Nut />
+        </div>
+      ),
+      children: [
+        {
+          key: '12',
+          label: <Link to="configSistema">Sistema</Link>,
+        },
+        {
+          key: '13',
+          label: <Link to="configPagos">Pagos</Link>,
+        },
+        {
+          key: '14',
+          label: <Link to="configUser">Usuarios</Link>,
+        },
+        {
+          key: '15',
+          label: <Link to="configPerfil">Perfil</Link>,
+        },
+      ],
     },
   ];
 
@@ -135,13 +170,14 @@ export default function MenuDashboard() {
           components: {
             Menu: {
               itemMarginInline: 0,
+              iconSize: 18,
               itemColor: '#ffffff',
               itemHoverColor: '#ffffff',
               itemHoverBg: '#19803885',
               itemSelectedColor: '#ffffff',
               itemSelectedBg: '#1CB54A',
               itemActiveBg: '#1CB54A',
-              subMenuItemSelectedColor: '#19803885',
+              subMenuItemSelectedColor: '#8ad366',
               itemSelectedColor: '#ffffff',
             },
             menuItem: {
