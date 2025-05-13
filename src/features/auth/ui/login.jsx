@@ -1,26 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, ConfigProvider } from 'antd';
+import { Form, Input, Button, ConfigProvider, message } from 'antd';
 import styles from './Login.module.css';
 import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../hook/loginpacticles'; // Import the function
-import { Navigate } from 'react-router';
+import { initializeParticles } from '../hook/loginpacticles';
+import { useNavigate } from 'react-router';
+import { users } from '../../../mock/Loginuser';
 
 function Login() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const onForgotPassword = () => {
-    Navigate('/contraseñaolvidada');
+    navigate('/contraseñaolvidada');
   };
 
   useEffect(() => {
-    const cleanup = initializeParticles(); // Use the function
+    const cleanup = initializeParticles();
 
     return cleanup;
   }, []);
 
   const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+    const { username, password } = values;
+
+    // Validar las credenciales
+    const user = users.find(
+      (user) => user.username === username && user.password === password,
+    );
+
+    if (user) {
+      navigate('/Inicio');
+    } else {
+    }
   };
 
   const togglePasswordVisibility = () => {
