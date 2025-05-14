@@ -1,42 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, ConfigProvider, message } from 'antd';
-import styles from './Login.module.css';
-import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
+import { Form, Input, Button, ConfigProvider } from 'antd';
+import styles from './ChangesPassword.module.css';
+import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../hook/loginpacticles';
-import { useNavigate } from 'react-router';
-import { users } from '../../../mock/Loginuser';
+import { initializeParticles } from '../../hook/loginpacticles'; // Import the function
 
-function Login() {
+function ChangesPassword() {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate();
-
-  const onForgotPassword = () => {
-    navigate('/contraseñaolvidada');
-  };
+  const [passwordVisible2, setPasswordVisible2] = useState(false);
 
   useEffect(() => {
-    const cleanup = initializeParticles();
+    const cleanup = initializeParticles(); // Use the function
 
     return cleanup;
   }, []);
 
   const onFinish = (values) => {
-    const { username, password } = values;
-
-    // Validar las credenciales
-    const user = users.find(
-      (user) => user.username === username && user.password === password,
-    );
-
-    if (user) {
-      navigate('/Inicio');
-    } else {
-    }
+    console.log('Received values of form: ', values);
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const togglePasswordVisibility2 = () => {
+    setPasswordVisible2(!passwordVisible2);
   };
 
   return (
@@ -58,24 +46,17 @@ function Login() {
         <div className={styles.loginContainer}>
           <div className={styles.loginForm}>
             <img src={logo} className={styles.logo} alt="Logo de la empresa" />
-            <h2>Bienvenido al Sistema del Centro de Reflexoterapia</h2>
+            <h2>
+              Por motivos de seguridad necesitamos que cambies tu contraseña
+            </h2>
             <Form
+              className={styles.form}
               name="normal_login"
               initialValues={{ remember: true }}
               onFinish={onFinish}
             >
               <Form.Item
-                name="username"
-                rules={[
-                  { required: true, message: 'Por favor ingresa tu usuario!' },
-                ]}
-              >
-                <div className={styles.inputContainer}>
-                  <User size={24} weight="bold" />
-                  <Input placeholder="Usuario" />
-                </div>
-              </Form.Item>
-              <Form.Item
+                className={styles.divContainerone}
                 name="password"
                 rules={[
                   {
@@ -105,16 +86,44 @@ function Login() {
                 </div>
               </Form.Item>
 
-              <a className="login-form-forgot" onClick={onForgotPassword}>
-                Olvide mi Contraseña
-              </a>
+              <Form.Item
+                className={styles.divContainertwo}
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Por favor ingresa tu contraseña!',
+                  },
+                ]}
+              >
+                <div className={styles.inputContainer}>
+                  {passwordVisible2 ? (
+                    <EyeSlash
+                      size={24}
+                      weight="bold"
+                      onClick={togglePasswordVisibility2}
+                    />
+                  ) : (
+                    <Eye
+                      size={24}
+                      weight="bold"
+                      onClick={togglePasswordVisibility2}
+                    />
+                  )}
+                  <Input
+                    type={passwordVisible2 ? 'text' : 'password'}
+                    placeholder="Contraseña"
+                  />
+                </div>
+              </Form.Item>
+
               <Form.Item className={styles.buttoncontainer}>
                 <Button
                   type="primary"
                   htmlType="submit"
                   className="login-form-button"
                 >
-                  Entrar
+                  Verificar
                 </Button>
               </Form.Item>
             </Form>
@@ -128,4 +137,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default ChangesPassword;
