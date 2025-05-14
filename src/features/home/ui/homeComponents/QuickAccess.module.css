@@ -1,0 +1,46 @@
+.container {
+    flex: 1;
+    padding: 25px;
+    border-radius: 20px;
+    background-color: #1E1E1E;
+}
+
+.title {
+    margin-bottom: 30px;
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.card {
+    cursor: pointer;
+
+    display: flex;
+    align-items: center; 
+
+    padding: 18px 20px;
+    border-radius: 12px;
+
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+
+    background-color: #333333;
+
+    transition: background-color 0.3s ease;
+}
+
+.card:hover {
+    background-color: #2a2a2a;
+}
+
+.icon {
+    margin-right: 12px;
+    color: #00c36a;
+}
