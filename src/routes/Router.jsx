@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import Dashboard from '../pages/Dashboard/Dashboard';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
@@ -19,10 +18,26 @@ const router = createBrowserRouter([
       {
         path: 'pacientes',
         element: <Paciente />,
+        children: [
+          {
+            path: 'registrar',
+            element: <Prueba />,
+          },
+          {
+            path: 'editar/:id',
+            element: <Prueba />,
+          },
+        ],
       },
       {
         path: 'citas',
-        element: <Citas />,
+        element: <Prueba />,
+        children: [
+          {
+            path: 'registrar',
+            element: <Prueba />,
+          },
+        ],
       },
       {
         path: 'reportes',
@@ -39,6 +54,16 @@ const router = createBrowserRouter([
       {
         path: 'terapeutas',
         element: <Terapeuta />,
+        children: [
+          {
+            path: 'registrar',
+            element: <Prueba />,
+          },
+          {
+            path: 'editar/:id',
+            element: <Prueba />,
+          },
+        ],
       },
       {
         path: 'configSistema',

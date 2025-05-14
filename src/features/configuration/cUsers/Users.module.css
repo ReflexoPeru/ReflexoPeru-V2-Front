@@ -1,0 +1,139 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #121212;
+}
+
+.header {
+  height: 60px;
+  background-color: #e9e7e7;
+}
+
+.content {
+  overflow: hidden;
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #ffffff;
+}
+
+.mainContent {
+  overflow: hidden;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  padding: 50px;
+}
+
+.section {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+
+  width: 64%;
+  min-height: 70vh;
+  max-height: 75vh;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 8px;
+
+  background-color: #1E1E1E;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.title {
+  margin: 20px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.tableContainer {
+  width: 100%;
+}
+
+.button {
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+
+  font-size: 14px;
+  white-space: nowrap;
+
+  transition: all 0.3s;
+}
+
+.button:hover {
+  opacity: 0.9;
+}
+
+.add {
+  color: white;
+  background-color: #1CB54A;
+}
+
+.edit {
+  color: white;
+  background-color: #0066FF;
+}
+
+.delete {
+  color: white;
+  background-color: #FF3333;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.statusEnabled {
+  display: inline-block;
+
+  padding: 0px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+
+  background-color: #14F58C3B;
+}
+
+.statusDisabled {
+  display: inline-block;
+
+  padding: 0px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+
+  background-color: #790d0d91;
+}

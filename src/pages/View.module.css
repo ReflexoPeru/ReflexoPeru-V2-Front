@@ -4,7 +4,7 @@
     
 }
 .Content{
-    width: 83%;
+    width: 85%;
     height: 100vh;
 }
 .SideBar{
@@ -21,4 +21,5 @@
     height: 94%;
 
     background-color: #121212;
+    width: 15%;
 }
