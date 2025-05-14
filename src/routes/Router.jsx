@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
+import Paciente from '../features/patients/ui/patients';
+import Terapeuta from '../features/staff/ui/staff';
+import Citas from '../features/appointments/ui/appointments';
 
 const router = createBrowserRouter([
   {
@@ -14,7 +17,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'pacientes',
-        element: <Prueba />,
+        element: <Paciente />,
         children: [
           {
             path: 'registrar',
@@ -50,7 +53,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'terapeutas',
-        element: <Prueba />,
+        element: <Terapeuta />,
         children: [
           {
             path: 'registrar',

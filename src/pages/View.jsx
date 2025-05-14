@@ -43,13 +43,13 @@ export default function View() {
         <Dashboard />
       </div>
       <div className={Style.Content}>
-        <div>
+        <div className={Style.Header}>
           <CustomLayout
             title={title}
             isBack={title !== 'Inicio' ? true : false}
           />
         </div>
-        <div>
+        <div className={Style.Outlet}>
           <Outlet />
         </div>
       </div>

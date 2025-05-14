@@ -34,7 +34,7 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                 <div
                     style={{
                         background: '#272727',
-                        padding: '5px',
+                        //padding: '5px',
                         borderRadius: '10px',
                         display: 'inline-block',
                     }}
@@ -47,7 +47,7 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                         onChange={handleChange}
                     />
                 </div>
-                <div style={{ color: '#272727', marginTop: '5px' }}>
+                <div style={{ color: '#555555', marginTop: '10px' }}>
                     100 / página
                 </div>
             </div>
