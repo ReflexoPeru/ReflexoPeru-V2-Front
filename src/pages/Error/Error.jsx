@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import styles from './Error404.module.css';
 import imgerror from '../../assets/Img/imgError.png';
+import { initializeParticles } from '../../features/auth/hook/loginpacticles';
 
 const Error = () => {
+  // Inicializa las partículas cuando el componente se monta
+  useEffect(() => {
+    const cleanup = initializeParticles();
+
+    // Limpia las partículas cuando el componente se desmonta
+    return cleanup;
+  }, []);
+
   return (
     <div className={styles.errorBg}>
+      {/* Contenedor para las partículas */}
+      <div id="particles-js" className={styles.particlesJs}></div>
+
       <div className={styles.errorContent}>
         <img
           src={imgerror}
