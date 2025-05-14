@@ -42,7 +42,6 @@ export default function Paciente() {
     console.log('Búsqueda:', value);
     // Aquí puedes implementar la lógica de filtrado
   };
-  
 
   // Botones personalizados
   const customActionButtons = (record) => (
@@ -55,27 +54,25 @@ export default function Paciente() {
   );
 
   return (
-    <> 
+    <div style={{height: '100%', paddingTop: '50px'}}> 
       <div
         style={{
           display: 'flex',           
-          justifyContent: 'space-between', 
           alignItems: 'center',      
           gap: '16px',               
           maxWidth: 'calc(100% - 200px)',
           margin: '0 auto',
-          marginBottom: '16px',
         }}
       >
         <CustomButton 
-        text="Registrar Paciente" 
+        text="Crear Paciente" 
         onClick={handleButton} 
         />
 
         <CustomSearch 
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
-          width="800px"
+          width="100%"
         />
       </div>
 
@@ -84,6 +81,6 @@ export default function Paciente() {
         data={patientData}
         customActions={customActionButtons}
       />
-  </>
+  </div>
   );
 }

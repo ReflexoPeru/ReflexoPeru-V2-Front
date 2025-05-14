@@ -6,17 +6,17 @@ const CustomButton = ({text, onClick}) => {
         <ConfigProvider
             theme={{
                 components: {
-                Button: {
-                    colorPrimary: '#00AA55',
-                    algorithm: true, 
-                    },
+                    Button: {
+                        colorPrimary: '#00AA55',
+                        algorithm: true,
+                        },
                 },
             }}
         >
             <Button 
                 type="primary"
                 onClick={onClick}
-                style={{ width: '160px', size:'large'}}
+                size="large"
             >
                 {text}
             </Button>

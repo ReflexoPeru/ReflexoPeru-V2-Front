@@ -1,12 +1,9 @@
 import React from "react";
 import { Input, ConfigProvider } from "antd";
 
-const { Search } = Input;
-
 const CustomSearch = ({
     placeholder = "Buscar...",  
-    onSearch,                 
-    allowClear = true,        
+    onSearch,                      
     size = "large",
     width = "400px",          
     style = {},               
@@ -28,14 +25,12 @@ const CustomSearch = ({
                 borderRadius: 4,                
                 hoverBorderColor: "#555555",    
                 activeBorderColor: "#00AA55",  
-                colorIcon: "#AAAAAA", 
             },
             },
         }}
         >
         <Input
             placeholder={placeholder}
-            allowClear={allowClear}
             size={size}
             onPressEnter={handlePressEnter}
             style={{ 
