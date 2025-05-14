@@ -1,12 +1,12 @@
 import React from 'react';
-import estilo from './terapeuta.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
+import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import Staff from '../../../mock/Staff';
+import ModeloTable from '../../../components/Table/Tabla';
+import patients from '../../../mock/Patients';
 import { Space, Button } from 'antd';
 
-export default function Terapeuta() {
+export default function Paciente() {
   const columns = [
     {
       title: 'Documento',
@@ -31,7 +31,7 @@ export default function Terapeuta() {
     },
   ];
 
-  const staffData = Staff[0].items;
+  const patientData = patients[0].items;
 
   const handleButton= () => {
     console.log('🩺 Registrar nuevo paciente');
@@ -48,6 +48,7 @@ export default function Terapeuta() {
     <Space size="small">
       <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>Editar</Button>
       <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>Más Info</Button>
+      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>Historia</Button>
       <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>Eliminar</Button>
     </Space>
   );
@@ -64,7 +65,7 @@ export default function Terapeuta() {
         }}
       >
         <CustomButton 
-        text="Crear Terapeuta" 
+        text="Crear Paciente" 
         onClick={handleButton} 
         />
 
@@ -73,12 +74,11 @@ export default function Terapeuta() {
           onSearch={handleSearch}
           width="100%"
         />
-
       </div>
 
       <ModeloTable
         columns={columns}
-        data={staffData}
+        data={patientData}
         customActions={customActionButtons}
       />
   </div>

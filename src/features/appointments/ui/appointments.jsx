@@ -1,5 +1,5 @@
 import React from 'react';
-import estilo from './citas.module.css';
+import estilo from './appointments.module.css';
 import ModeloTable from '../../../components/Table/Tabla';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch'; 

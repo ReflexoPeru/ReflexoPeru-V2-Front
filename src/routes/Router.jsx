@@ -3,9 +3,9 @@ import Dashboard from '../pages/Dashboard/Dashboard';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
-import Paciente from '../features/patients/ui/paciente';
-import Terapeuta from '../features/staff/ui/terapeuta';
-import Citas from '../features/appointments/ui/citas';
+import Paciente from '../features/patients/ui/patients';
+import Terapeuta from '../features/staff/ui/staff';
+import Citas from '../features/appointments/ui/appointments';
 
 const router = createBrowserRouter([
   {
