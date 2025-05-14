@@ -3,10 +3,10 @@ import estilo from './staff.module.css';
 import ModeloTable from '../../../components/Table/Tabla';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import Staff from '../../../mock/Staff';
+import StaffMock from '../../../mock/Staff';
 import { Space, Button } from 'antd';
 
-export default function Terapeuta() {
+export default function Staff() {
   const columns = [
     {
       title: 'Documento',
@@ -31,9 +31,9 @@ export default function Terapeuta() {
     },
   ];
 
-  const staffData = Staff[0].items;
+  const staffData = StaffMock[0].items;
 
-  const handleButton= () => {
+  const handleButton = () => {
     console.log('🩺 Registrar nuevo paciente');
     // Aquí puedes abrir un modal o redirigir a un formulario
   };
@@ -46,34 +46,36 @@ export default function Terapeuta() {
   // Botones personalizados
   const customActionButtons = (record) => (
     <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>Editar</Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>Más Info</Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>Eliminar</Button>
+      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
+        Editar
+      </Button>
+      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
+        Más Info
+      </Button>
+      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
+        Eliminar
+      </Button>
     </Space>
   );
 
   return (
-    <div style={{height: '100%', paddingTop: '50px'}}> 
+    <div style={{ height: '100%', paddingTop: '50px' }}>
       <div
         style={{
-          display: 'flex',           
-          alignItems: 'center',      
-          gap: '16px',               
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
           maxWidth: 'calc(100% - 200px)',
           margin: '0 auto',
         }}
       >
-        <CustomButton 
-        text="Crear Terapeuta" 
-        onClick={handleButton} 
-        />
+        <CustomButton text="Crear Terapeuta" onClick={handleButton} />
 
-        <CustomSearch 
+        <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
           width="100%"
         />
-
       </div>
 
       <ModeloTable
@@ -81,6 +83,6 @@ export default function Terapeuta() {
         data={staffData}
         customActions={customActionButtons}
       />
-  </div>
+    </div>
   );
 }

@@ -5,6 +5,9 @@ import Prueba from '../pages/prueba';
 import Paciente from '../features/patients/ui/patients';
 import Terapeuta from '../features/staff/ui/staff';
 import Citas from '../features/appointments/ui/appointments';
+import Patients from '../features/patients/ui/patients';
+import Appointments from '../features/appointments/ui/appointments';
+import Staff from '../features/staff/ui/staff';
 
 const router = createBrowserRouter([
   {
@@ -17,7 +20,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'pacientes',
-        element: <Paciente />,
+        element: <Patients />,
         children: [
           {
             path: 'registrar',
@@ -31,7 +34,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'citas',
-        element: <Prueba />,
+        element: <Appointments />,
         children: [
           {
             path: 'registrar',
@@ -53,7 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'terapeutas',
-        element: <Terapeuta />,
+        element: <Staff />,
         children: [
           {
             path: 'registrar',

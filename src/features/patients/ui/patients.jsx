@@ -3,10 +3,10 @@ import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import patients from '../../../mock/Patients';
+import patientsMock from '../../../mock/Patients';
 import { Space, Button } from 'antd';
 
-export default function Paciente() {
+export default function Patients() {
   const columns = [
     {
       title: 'Documento',
@@ -31,9 +31,9 @@ export default function Paciente() {
     },
   ];
 
-  const patientData = patients[0].items;
+  const patientData = patientsMock[0].items;
 
-  const handleButton= () => {
+  const handleButton = () => {
     console.log('🩺 Registrar nuevo paciente');
     // Aquí puedes abrir un modal o redirigir a un formulario
   };
@@ -46,30 +46,35 @@ export default function Paciente() {
   // Botones personalizados
   const customActionButtons = (record) => (
     <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>Editar</Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>Más Info</Button>
-      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>Historia</Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>Eliminar</Button>
+      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
+        Editar
+      </Button>
+      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
+        Más Info
+      </Button>
+      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>
+        Historia
+      </Button>
+      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
+        Eliminar
+      </Button>
     </Space>
   );
 
   return (
-    <div style={{height: '100%', paddingTop: '50px'}}> 
+    <div style={{ height: '100%', paddingTop: '50px' }}>
       <div
         style={{
-          display: 'flex',           
-          alignItems: 'center',      
-          gap: '16px',               
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
           maxWidth: 'calc(100% - 200px)',
           margin: '0 auto',
         }}
       >
-        <CustomButton 
-        text="Crear Paciente" 
-        onClick={handleButton} 
-        />
+        <CustomButton text="Crear Paciente" onClick={handleButton} />
 
-        <CustomSearch 
+        <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
           width="100%"
@@ -81,6 +86,6 @@ export default function Paciente() {
         data={patientData}
         customActions={customActionButtons}
       />
-  </div>
+    </div>
   );
 }
