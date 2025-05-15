@@ -29,22 +29,20 @@ const CustomHeader = ({ title, isBack = true }) => {
     navigate(-1);
   };
   return (
-    <Header className={styles.header}>
-      <div className={styles.headerContent}>
-        <div className={styles.headerLeft}>
-          {isBack && (
-            <button className={styles.backButton} onClick={back}>
-              <ArrowLeft size={20} weight="bold" />
-            </button>
-          )}
-          <Text className={styles.headerTitle}>{title || ''}</Text>
-        </div>
-        <div className={styles.headerRight}>
-          <Text className={styles.headerTime}>{currentTime}</Text>
-          <Text className={styles.headerDate}>{currentDate}</Text>
-        </div>
+    <div className={styles.headerContent}>
+      <div className={styles.headerLeft}>
+        {isBack && (
+          <button className={styles.backButton} onClick={back}>
+            <ArrowLeft size={20} weight="bold" />
+          </button>
+        )}
+        <Text className={styles.headerTitle}>{title || ''}</Text>
       </div>
-    </Header>
+      <div className={styles.headerRight}>
+        <Text className={styles.headerTime}>{currentTime}</Text>
+        <Text className={styles.headerDate}>{currentDate}</Text>
+      </div>
+    </div>
   );
 };
 
