@@ -8,6 +8,7 @@ import Citas from '../features/appointments/ui/appointments';
 import Patients from '../features/patients/ui/patients';
 import Appointments from '../features/appointments/ui/appointments';
 import Staff from '../features/staff/ui/staff';
+import Home from '../features/home/ui/home';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
     path: '/Inicio',
     element: <View />,
     children: [
+      {
+        index: true,
+        element: <Home />,
+      },
       {
         path: 'pacientes',
         element: <Patients />,

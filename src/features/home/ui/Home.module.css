@@ -1,0 +1,13 @@
+.container {
+  color: white;
+  
+}
+
+.sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  justify-content: space-between;
+
+  margin-top: 25px;
+}
