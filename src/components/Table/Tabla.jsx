@@ -148,13 +148,11 @@ const ModeloTable = ({ columns, data, customActions }) => {
       <div
         ref={containerRef}
         style={{
-          maxWidth: 'calc(100% - 200px)',
-          height: 'calc(100% - 100px)',
-          margin: '0 auto',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
           justifyContent: 'center',
+          marginTop: '15px',
         }}
       >
         <div style={{ overflow: 'hidden' }}>

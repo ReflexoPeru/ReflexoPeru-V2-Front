@@ -67,13 +67,18 @@ export default function Appointments() {
   };
 
   return (
-    <div style={{ height: '100%', paddingTop: '50px' }}>
+    <div
+      style={{
+        height: '100%',
+        paddingTop: '50px',
+        maxWidth: 'calc(100% - 200px)',
+      }}
+    >
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '16px',
-          maxWidth: 'calc(100% - 200px)',
           margin: '0 auto',
         }}
       >
