@@ -37,6 +37,14 @@ function ChangesPassword() {
             activeBorderColor: 'transparent',
             activeBg: 'transparent',
             addonBg: 'transparent',
+
+            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
+          },
+          Button: {
+            colorPrimary: '#1b7b46',
+            colorPrimaryHover: '#16623a',
+            colorPrimaryActive: '#144e30',
+            colorTextLightSolid: '#fff',
           },
         },
       }}

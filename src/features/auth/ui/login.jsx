@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, ConfigProvider, message } from 'antd';
 import styles from './Login.module.css';
 import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
-import { User, Eye, EyeSlash } from '@phosphor-icons/react';
+import { User, Eye, EyeSlash, Envelope } from '@phosphor-icons/react';
 import { initializeParticles } from '../hook/loginpacticles';
 import { useNavigate } from 'react-router';
 import { users } from '../../../mock/Loginuser';
@@ -72,14 +72,14 @@ function Login() {
               onFinish={onFinish}
             >
               <Form.Item
-                name="username"
+                name="email"
                 rules={[
-                  { required: true, message: 'Por favor ingresa tu usuario!' },
+                  { required: true, message: 'Por favor ingresa tu correo!' },
                 ]}
               >
                 <div className={styles.inputContainer}>
-                  <User size={24} weight="bold" />
-                  <Input placeholder="Usuario" />
+                  <Envelope size={24} weight="bold" />
+                  <Input placeholder="Correo" type="email" />
                 </div>
               </Form.Item>
               <Form.Item
