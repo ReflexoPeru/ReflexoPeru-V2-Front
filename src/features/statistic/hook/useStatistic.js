@@ -1,3 +1,4 @@
+// useStatistic.js
 import { useState, useEffect } from 'react';
 import { fetchStatisticData } from '../services/statisticService';
 
@@ -11,6 +12,7 @@ export const useStatistic = () => {
   const [therapistPerformance, setTherapistPerformance] = useState([]);
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [monthlySessions, setMonthlySessions] = useState([]);
+  const [patientTypes, setPatientTypes] = useState([]);
 
   const loadData = async () => {
     const data = await fetchStatisticData(size);
@@ -22,6 +24,7 @@ export const useStatistic = () => {
     setTherapistPerformance(data.therapistPerformance);
     setPaymentTypes(data.paymentTypes);
     setMonthlySessions(data.monthlySessions);
+    setPatientTypes(data.patientTypes);
   };
 
   useEffect(() => {
@@ -39,5 +42,6 @@ export const useStatistic = () => {
     therapistPerformance,
     paymentTypes,
     monthlySessions,
+    patientTypes,
   };
 };

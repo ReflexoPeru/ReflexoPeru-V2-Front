@@ -1,3 +1,4 @@
+// statisticService.js
 import axios from 'axios';
 import { mockData } from '../../../mock/mockData';
 

@@ -6,6 +6,7 @@
   padding: 2%;
 
   color: #f1f1f1;
+  text-align: center;
 
   background-color: #121212;
 }
@@ -17,15 +18,25 @@
   align-items: flex-start;
 }
 
-.contgraph {
+.contgraph  {
   flex: 1;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
 
   margin-bottom: 2%;
   padding: 2%;
   border-radius: 10px;
 
   background-color: #1a1a1a;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 10px #00000066;
+}
+
+.contgraph  h3{
+  margin: 0;
+  padding: 3%;
+  padding-top: 0%;
+  text-align: center;
 }
 
 .contgraphbig {
@@ -36,13 +47,14 @@
 .contgraphbig h3 {
   margin: 0;
   padding: 2%;
+  padding-top: 0%;
   text-align: center;
 }
 
 .graph {
   display: flex;
-  margin: 0;
-  padding: 3%;
+  justify-self: center;
+  margin: 0; 
 }
 
 .table {

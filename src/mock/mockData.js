@@ -1,102 +1,53 @@
+// mockData.js
 export const mockData = {
   large: {
-    chartthreeSeries: [{ name: 'Datos', data: [12, 18, 9, 24, 15, 30, 22] }],
-    chartSeries: [{ name: 'Datos', data: [12, 18, 9, 24, 15, 30, 22] }],
-    categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-    pieSeries: [44, 55, 13],
+    chartSeries: [
+      {
+        name: 'Sesiones',
+        data: [20, 25, 22, 24, 28],
+      },
+    ],
+    categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY'],
+    pieSeries: [10, 15, 5],
     pieOptions: {
-      labels: ['Ingresos', 'Gastos', 'Balance'],
-      legend: { position: 'bottom' },
-      tooltip: { theme: 'dark' },
-      chart: { foreColor: '#ccc' },
+      labels: ['Efectivo', 'Yape', 'Cupon'],
     },
     chartOptions: {
-      chart: { toolbar: { show: false }, foreColor: '#ccc' },
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth' },
-      xaxis: { categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] },
-      colors: ['#00E396'],
+      xaxis: {
+        categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY'],
+      },
     },
     therapistPerformance: [
-      { name: 'Teresa Mendoza', data: [32] },
-      { name: 'Carlos Ramirez', data: [28] },
-      { name: 'Ana Garcia', data: [25] },
-      { name: 'Mario Flores', data: [22] },
-      { name: 'Laura Vega', data: [20] },
-      { name: 'Pedro Cruz', data: [18] },
+      {
+        id: 1,
+        name: 'Teresa Lopez',
+        data: [15],
+      },
+      {
+        id: 2,
+        name: 'Carlos Mendoza',
+        data: [12],
+      },
+      {
+        id: 3,
+        name: 'Ana Ramirez',
+        data: [18],
+      },
     ],
-    paymentTypes: [
-      { name: 'Reflexología Podal', data: [40] },
-      { name: 'Drenaje Linfático', data: [20] },
-      { name: 'Masaje Terapéutico', data: [25] },
-      { name: 'Otros', data: [15] },
-    ],
-    monthlySessions: [{ name: 'Sesiones', data: [10, 41, 35, 51, 49] }],
-  },
-  default: {
-    chartSeries: [{ name: 'Datos', data: [150, 200, 170, 220] }],
-    categories: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-    pieSeries: [44, 55, 13],
-    pieOptions: {
-      labels: ['Ingresos', 'Gastos', 'Balance'],
-      legend: { position: 'bottom' },
-      tooltip: { theme: 'dark' },
-      chart: { foreColor: '#ccc' },
+    paymentTypes: {
+      efectivo: 10,
+      yape: 15,
+      cupon: 5,
     },
-    chartOptions: {
-      chart: { toolbar: { show: false }, foreColor: '#ccc' },
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth' },
-      xaxis: { categories: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'] },
-      colors: ['#00E396'],
+    monthlySessions: [
+      {
+        name: 'Ingresos',
+        data: [1200, 1500, 1300, 1400, 1600],
+      },
+    ],
+    patientTypes: {
+      cc: 12,
+      c: 2,
     },
-    therapistPerformance: [
-      { name: 'Teresa Mendoza', data: [32] },
-      { name: 'Carlos Ramirez', data: [28] },
-      { name: 'Ana Garcia', data: [25] },
-      { name: 'Mario Flores', data: [22] },
-      { name: 'Laura Vega', data: [20] },
-      { name: 'Pedro Cruz', data: [18] },
-    ],
-    paymentTypes: [
-      { name: 'Reflexología Podal', data: [40] },
-      { name: 'Drenaje Linfático', data: [20] },
-      { name: 'Masaje Terapéutico', data: [25] },
-      { name: 'Otros', data: [15] },
-    ],
-    monthlySessions: [{ name: 'Sesiones', data: [150, 200, 170, 220] }],
-  },
-  small: {
-    chartSeries: [{ name: 'Datos', data: [10, 41, 35, 51, 49] }],
-    categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May'],
-    pieSeries: [44, 55, 13],
-    pieOptions: {
-      labels: ['Ingresos', 'Gastos', 'Balance'],
-      legend: { position: 'bottom' },
-      tooltip: { theme: 'dark' },
-      chart: { foreColor: '#ccc' },
-    },
-    chartOptions: {
-      chart: { toolbar: { show: false }, foreColor: '#ccc' },
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth' },
-      xaxis: { categories: ['Ene', 'Feb', 'Mar', 'Abr', 'May'] },
-      colors: ['#00E396'],
-    },
-    therapistPerformance: [
-      { name: 'Teresa Mendoza', data: [32] },
-      { name: 'Carlos Ramirez', data: [28] },
-      { name: 'Ana Garcia', data: [25] },
-      { name: 'Mario Flores', data: [22] },
-      { name: 'Laura Vega', data: [20] },
-      { name: 'Pedro Cruz', data: [18] },
-    ],
-    paymentTypes: [
-      { name: 'Reflexología Podal', data: [40] },
-      { name: 'Drenaje Linfático', data: [20] },
-      { name: 'Masaje Terapéutico', data: [25] },
-      { name: 'Otros', data: [15] },
-    ],
-    monthlySessions: [{ name: 'Sesiones', data: [10, 41, 35, 51, 49] }],
   },
 };

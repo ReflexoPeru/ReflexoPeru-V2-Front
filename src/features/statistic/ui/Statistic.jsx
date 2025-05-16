@@ -1,3 +1,4 @@
+// Dashboard.js
 import React from 'react';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
@@ -13,12 +14,14 @@ export default function Dashboard() {
     therapistPerformance,
     paymentTypes,
     monthlySessions,
+    patientTypes,
   } = useStatistic();
 
   // Options for the pie chart
   const pieChartOptions = {
     chart: {
       type: 'pie',
+      foreColor: '#ccc',
     },
     labels: pieOptions.labels,
     legend: {
@@ -27,8 +30,22 @@ export default function Dashboard() {
     tooltip: {
       theme: 'dark',
     },
-    chart: {
-      foreColor: '#ccc',
+    plotOptions: {
+      pie: {
+        expandOnClick: false, // Opcional: desactiva la expansión al hacer clic
+        donut: {
+          labels: {
+            show: false, // Opcional: oculta las etiquetas dentro del gráfico
+          },
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false, // Desactiva las etiquetas de datos para evitar solapamientos
+    },
+
+    stroke: {
+      show: false, // Elimina el borde entre las particiones
     },
   };
 
@@ -57,12 +74,22 @@ export default function Dashboard() {
       categories: categories,
     },
     yaxis: {
-      title: {
-        text: 'Sesiones',
+      labels: {},
+
+      axisTicks: {
+        show: false, // Oculta las marcas del eje X
+      },
+    },
+    xaxis: {
+      labels: {
+        show: true, // Muestra las etiquetas del eje X
       },
     },
     fill: {
       opacity: 1,
+    },
+    grid: {
+      show: false, // Oculta la cuadrícula
     },
     tooltip: {
       y: {
@@ -104,6 +131,29 @@ export default function Dashboard() {
     },
     xaxis: {
       categories: ['Yape', 'Efectivo', 'Cupon'],
+      labels: {
+        show: false, // Oculta las etiquetas del eje X
+      },
+      axisBorder: {
+        show: false, // Oculta el borde del eje X
+      },
+      axisTicks: {
+        show: false, // Oculta las marcas del eje X
+      },
+    },
+    yaxis: {
+      labels: {
+        show: false, // Oculta las etiquetas del eje Y
+      },
+      axisBorder: {
+        show: false, // Oculta el borde del eje Y
+      },
+      axisTicks: {
+        show: false, // Oculta las marcas del eje Y
+      },
+    },
+    grid: {
+      show: false, // Oculta la cuadrícula
     },
     fill: {
       opacity: 1,
@@ -120,7 +170,7 @@ export default function Dashboard() {
       curve: 'smooth',
     },
     xaxis: {
-      categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO'],
+      categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY'],
     },
     yaxis: {
       labels: {
@@ -128,6 +178,9 @@ export default function Dashboard() {
           return 'S/' + val;
         },
       },
+    },
+    grid: {
+      show: false, // Oculta la cuadrícula
     },
     tooltip: {
       y: {
@@ -143,12 +196,12 @@ export default function Dashboard() {
       <div className={Style.dynamicContent}>
         <div className={Style.groupone}>
           <div className={Style.contgraph}>
-            <h3>Ingresos Mensuales</h3>
+            <h3>Tipos de Pacientes</h3>
             <div className={Style.graph}>
               <Chart
                 options={pieChartOptions}
-                series={monthlySessions}
-                type="line"
+                series={pieSeries}
+                type="pie"
                 height="100%"
               />
             </div>
@@ -224,7 +277,7 @@ export default function Dashboard() {
               <div className={Style.graph}>
                 <Chart
                   options={barChartHorizontalOptions}
-                  series={chartSeries}
+                  series={[{ data: Object.values(paymentTypes) }]}
                   type="bar"
                   height="100%"
                 />
