@@ -66,22 +66,22 @@ canvas {
   padding: 2.5%;
   border-radius: 5px;
 
-  background-color: #252525;
-}
-
-.inputContainer:hover {
-  background-color: #686668;
+  & .ant-input-outlined.ant-input-status-error{
+    border-color: #666666;
+  }
 }
 
 .inputContainer input {
   flex: 1;
 
+  height: clamp(2.70rem, 2.5vw, 1.50rem) ;
   border: none;
 
-  color: #ababab;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: #fffdfd;
   text-align: center;
 
-  background: transparent;
+  background: #666666;
 }
 
 .inputContainer input::placeholder {

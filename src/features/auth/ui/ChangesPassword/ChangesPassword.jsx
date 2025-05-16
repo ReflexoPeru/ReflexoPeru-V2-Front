@@ -3,11 +3,14 @@ import { Form, Input, Button, ConfigProvider } from 'antd';
 import styles from './ChangesPassword.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../../hook/loginpacticles'; // Import the function
+import { initializeParticles } from '../../../../hooks/loginpacticles'; // Import the function
+import { useAuth } from '../../hook/authHook';
 
 function ChangesPassword() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible2, setPasswordVisible2] = useState(false);
+
+  const { changePassword } = useAuth();
 
   useEffect(() => {
     const cleanup = initializeParticles(); // Use the function
@@ -15,8 +18,12 @@ function ChangesPassword() {
     return cleanup;
   }, []);
 
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+  const onSubmit = (values) => {
+    const body = {
+      password: values.password,
+      password_confirmation: values.password,
+    };
+    changePassword(body);
   };
 
   const togglePasswordVisibility = () => {
@@ -61,7 +68,7 @@ function ChangesPassword() {
               className={styles.form}
               name="normal_login"
               initialValues={{ remember: true }}
-              onFinish={onFinish}
+              onFinish={onSubmit}
             >
               <Form.Item
                 className={styles.divContainerone}
@@ -96,12 +103,24 @@ function ChangesPassword() {
 
               <Form.Item
                 className={styles.divContainertwo}
-                name="password"
+                name="password2"
                 rules={[
                   {
                     required: true,
                     message: 'Por favor ingresa tu contraseña!',
                   },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(
+                          'Las contraseñas no coinciden, por favor verifica tu contraseña',
+                        ),
+                      );
+                    },
+                  }),
                 ]}
               >
                 <div className={styles.inputContainer}>
@@ -120,7 +139,7 @@ function ChangesPassword() {
                   )}
                   <Input
                     type={passwordVisible2 ? 'text' : 'password'}
-                    placeholder="Contraseña"
+                    placeholder="Repite tu contraseña"
                   />
                 </div>
               </Form.Item>
