@@ -1,0 +1,95 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 100vh;
+  padding: 2%;
+
+  color: #f1f1f1;
+
+  background-color: #121212;
+}
+
+.dynamicContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2%;
+  align-items: flex-start;
+}
+
+.contgraph {
+  flex: 1;
+
+  margin-bottom: 2%;
+  padding: 2%;
+  border-radius: 10px;
+
+  background-color: #1a1a1a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.contgraphbig {
+  width: 100%;
+  height: 100%;
+}
+
+.contgraphbig h3 {
+  margin: 0;
+  padding: 2%;
+  text-align: center;
+}
+
+.graph {
+  display: flex;
+  margin: 0;
+  padding: 3%;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table th, .table td {
+  padding: 3%;
+  padding-left: 15vh;
+  color: #f1f1f1;
+}
+
+.table th {
+  text-align: left;
+  background-color: #3A3A3A;
+}
+
+.table tr {
+  border-bottom: 1px solid #393939;
+}
+
+.table tr:hover {
+  background-color: #393939;
+}
+
+.groupone {
+  display: flex;
+  gap: 2%;
+  width: 100%;
+}
+
+.grouptwo {
+  display: flex;
+  gap: 2%;
+  width: 100%;
+}
+
+.groupthree {
+  display: flex;
+  flex-direction: column;
+  gap: 2%;
+  width: 100%;
+}
+
+.metrics {
+  display: flex;
+  gap: 2%;
+  width: 100%;
+}
