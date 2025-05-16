@@ -4,10 +4,10 @@ import CustomHeader from './Header';
 
 const { Sider, Content } = Layout;
 
-const CustomLayout = () => {
+const CustomLayout = ({ title , isBack }) => {
   return (
     <>
-      <CustomHeader title="Crear Paciente" />
+      <CustomHeader title={title} isBack={isBack}/>
     </>
   );
 };

@@ -8,8 +8,8 @@ export const initializeParticles = () => {
   script.onload = () => {
     window.particlesJS('particles-js', {
       particles: {
-        number: { value: 10, density: { enable: true, value_area: 800 } },
-        color: { value: '#8fd1a3' },
+        number: { value: 5, density: { enable: true, value_area: 800 } },
+        color: { value: '#20362e' },
         shape: {
           type: 'circle',
           stroke: { width: 0, color: '#8aa967' },
@@ -26,7 +26,7 @@ export const initializeParticles = () => {
           random: true,
           anim: {
             enable: false,
-            speed: 94.66019417475735,
+            speed: 75.66019417475735,
             size_min: 39.64401294498385,
             sync: false,
           },
@@ -40,7 +40,7 @@ export const initializeParticles = () => {
         },
         move: {
           enable: true,
-          speed: 12.690254677548571,
+          speed: 5.690254677548571,
           direction: 'top',
           random: false,
           straight: false,

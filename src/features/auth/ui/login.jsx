@@ -2,37 +2,48 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, ConfigProvider, message } from 'antd';
 import styles from './Login.module.css';
 import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
-import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../hook/loginpacticles';
+import { Eye, EyeSlash, Envelope } from '@phosphor-icons/react';
+import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useNavigate } from 'react-router';
-import { users } from '../../../mock/Loginuser';
+import { useToast } from '../../../services/toastify/ToastContext';
+import { useAuth } from '../hook/authHook';
 
 function Login() {
+  //Estados de login
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, loading, error } = useAuth();
+
+  // Definir el estado para la visibilidad de la contraseña
   const [passwordVisible, setPasswordVisible] = useState(false);
+
+  //Toastify
+  const { showToast } = useToast();
+
+  //Navegacion
   const navigate = useNavigate();
 
+  //////////Funciones simples///////////////////
+
+  //Redirecciona a la pagina de olvido de contraseña
   const onForgotPassword = () => {
     navigate('/contraseñaolvidada');
   };
 
+  //Efecto de particulas
   useEffect(() => {
     const cleanup = initializeParticles();
 
     return cleanup;
   }, []);
 
-  const onFinish = (values) => {
-    const { username, password } = values;
+  //////////////////////////////////////////////
 
-    // Validar las credenciales
-    const user = users.find(
-      (user) => user.username === username && user.password === password,
-    );
+  //////////////Formulario///////////////////
 
-    if (user) {
-      navigate('/Inicio');
-    } else {
-    }
+  const onSubmit = () => {
+    const crendentials = { email, password };
+    login(crendentials);
   };
 
   const togglePasswordVisibility = () => {
@@ -49,6 +60,13 @@ function Login() {
             activeBorderColor: 'transparent',
             activeBg: 'transparent',
             addonBg: 'transparent',
+            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
+          },
+          Button: {
+            colorPrimary: '#1b7b46',
+            colorPrimaryHover: '#16623a',
+            colorPrimaryActive: '#144e30',
+            colorTextLightSolid: '#fff',
           },
         },
       }}
@@ -62,17 +80,21 @@ function Login() {
             <Form
               name="normal_login"
               initialValues={{ remember: true }}
-              onFinish={onFinish}
+              onFinish={onSubmit}
             >
               <Form.Item
-                name="username"
+                name="email"
                 rules={[
-                  { required: true, message: 'Por favor ingresa tu usuario!' },
+                  { required: true, message: 'Por favor ingresa tu correo!' },
                 ]}
               >
                 <div className={styles.inputContainer}>
-                  <User size={24} weight="bold" />
-                  <Input placeholder="Usuario" />
+                  <Envelope size={24} weight="bold" />
+                  <Input
+                    placeholder="Correo"
+                    type="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
               </Form.Item>
               <Form.Item
@@ -101,11 +123,12 @@ function Login() {
                   <Input
                     type={passwordVisible ? 'text' : 'password'}
                     placeholder="Contraseña"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
               </Form.Item>
 
-              <a className="login-form-forgot" onClick={onForgotPassword}>
+              <a className={styles.forgot} onClick={onForgotPassword}>
                 Olvide mi Contraseña
               </a>
               <Form.Item className={styles.buttoncontainer}>
@@ -113,6 +136,7 @@ function Login() {
                   type="primary"
                   htmlType="submit"
                   className="login-form-button"
+                  style={{ hoverBg: '#1a3928' }}
                 >
                   Entrar
                 </Button>

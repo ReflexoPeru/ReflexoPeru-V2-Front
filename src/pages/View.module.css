@@ -1,11 +1,39 @@
-.Container{
-    display: flex;
+.Container {
+  display: flex;
+  height: 100vh; /* Ocupa toda la altura */
+}
 
+.SideBar {
+  width: 17%;
+  height: 100vh;
+  background-color: #1e1e1e; /* opcional: darle fondo */
 }
-.Content{
-    width: 83%;
-    height: 100vh;
+
+.Content {
+  display: flex;
+  flex-direction: column;
+  width: 83%;
+  height: 100vh;
 }
-.SideBar{
-    width: 17%;
+
+.Header {
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+
+  height: 70px; /* Altura fija del Header */
+  padding: 0 20px;
+
+  background-color: #1f1f1f; /* Color de fondo */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra opcional */
+}
+
+.Outlet {
+  display: flex;
+  flex: 1; /* Ocupa el espacio restante debajo del Header */
+  align-items: center;
+  justify-content: center;
+
+  background-color: #121212;
 }

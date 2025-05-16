@@ -3,10 +3,14 @@ import { Form, Input, Button, ConfigProvider } from 'antd';
 import styles from './FirstSession.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../../hook/loginpacticles'; // Import the function
+import { initializeParticles } from '../../../../hooks/loginpacticles'; // Import the function
+import { useAuth } from '../../hook/authHook';
 
 function FirstSession() {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [code, setCode] = useState('');
+
+  const { validateCode } = useAuth();
 
   useEffect(() => {
     const cleanup = initializeParticles(); // Use the function
@@ -14,8 +18,11 @@ function FirstSession() {
     return cleanup;
   }, []);
 
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+  const onSubmit = () => {
+    const codeVerification = {
+      code: code,
+    };
+    validateCode(codeVerification);
   };
 
   const togglePasswordVisibility = () => {
@@ -27,11 +34,21 @@ function FirstSession() {
       theme={{
         components: {
           Input: {
-            hoverBg: 'transparent',
+            hoverBg: '#414141',
+            colorErrorBg: '#666666',
+            colorErrorText: '#fff',
+            colorErrorBgHover: '#414141',
             hoverBorderColor: 'transparent',
             activeBorderColor: 'transparent',
-            activeBg: 'transparent',
+            activeBg: '#666666',
             addonBg: 'transparent',
+            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
+          },
+          Button: {
+            colorPrimary: '#1b7b46',
+            colorPrimaryHover: '#16623a',
+            colorPrimaryActive: '#144e30',
+            colorTextLightSolid: '#fff',
           },
         },
       }}
@@ -48,16 +65,21 @@ function FirstSession() {
             <Form
               name="normal_login"
               initialValues={{ remember: true }}
-              onFinish={onFinish}
+              onFinish={onSubmit}
             >
               <Form.Item
-                name="username"
+                name="code"
                 rules={[
                   { required: true, message: 'Por favor ingresa el codigo' },
                 ]}
               >
                 <div className={styles.inputContainer}>
-                  <Input placeholder="######" />
+                  <Input.OTP
+                    variant="filled"
+                    placeholder="######"
+                    className={styles.input}
+                    onChange={(text) => setCode(text)}
+                  />
                 </div>
               </Form.Item>
 

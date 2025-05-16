@@ -1,15 +1,38 @@
-import React, { useState } from 'react';
-import styles from './Toastify.module.css';
-import Toast from './Toast';
-import ToastButton from './ToastButton';
-
-const defaultConfig = {
+export const defaultConfig = {
   // Alertas básicas del sistema
   exito: {
     type: 'success',
     icon: 'fa-solid fa-circle-check',
     title: 'Éxito',
     message: 'Operación completada con éxito',
+    duration: 5000,
+  },
+  contraseñaCambiada: {
+    type: 'success',
+    icon: 'fa-solid fa-circle-check',
+    title: 'Éxito',
+    message: 'Contrasena cambiada con éxito',
+    duration: 5000,
+  },
+  contraseñaIncorrecta: {
+    type: 'error',
+    icon: 'fa-solid fa-key',
+    title: 'Contraseña Invalida',
+    message: 'La contraseña ingresada debe tener 8 digitos',
+    duration: 5000,
+  },
+  codigoVerificado: {
+    type: 'success',
+    icon: 'fa-solid fa-circle-check',
+    title: 'Codigo Verificado',
+    message: 'El código ha sido verificado',
+    duration: 5000,
+  },
+  codigoIncorrecto: {
+    type: 'error',
+    icon: 'fa-solid fa-key',
+    title: 'Codigo Incorrecto',
+    message: 'El código ingresado es incorrecto',
     duration: 5000,
   },
   error: {
@@ -657,51 +680,3 @@ const defaultConfig = {
     duration: 5000,
   },
 };
-
-const Toastify = ({ config = defaultConfig }) => {
-  const [notifications, setNotifications] = useState([]);
-
-  const createToast = (type) => {
-    const toastConfig = config[type];
-    if (!toastConfig) return;
-
-    const id = Date.now();
-    const newToast = { id, ...toastConfig };
-
-    setNotifications((prev) => [...prev, newToast]);
-  };
-
-  const removeToast = (id) => {
-    setNotifications((prev) => prev.filter((toast) => toast.id !== id));
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.notifications}>
-        {notifications.map(({ id, type, icon, title, message, duration }) => (
-          <Toast
-            key={id}
-            id={id}
-            type={type}
-            icon={icon}
-            title={title}
-            message={message}
-            duration={duration}
-            onClose={removeToast}
-          />
-        ))}
-      </div>
-      <div className={styles.buttons}>
-        {Object.entries(config).map(([type, config]) => (
-          <ToastButton
-            key={type}
-            type={type}
-            onClick={() => createToast(type)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Toastify;
