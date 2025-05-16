@@ -9,6 +9,7 @@ import Patients from '../features/patients/ui/patients';
 import Appointments from '../features/appointments/ui/appointments';
 import Staff from '../features/staff/ui/staff';
 import Home from '../features/home/ui/home';
+import ReportGenerator from '../features/reports/ui/reports';
 
 const router = createBrowserRouter([
   {
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'reportes',
-        element: <Prueba />,
+        element: <ReportGenerator />,
       },
       {
         path: 'citasCompletas',
