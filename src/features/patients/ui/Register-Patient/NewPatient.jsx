@@ -1,4 +1,4 @@
-import FormGenerator from '../../components/Form/Form';
+import FormGenerator from '../../../../components/Form/Form';
 
 const fields = [
   { type: 'title', label: 'Nuevo paciente' },

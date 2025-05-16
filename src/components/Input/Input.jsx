@@ -1,10 +1,11 @@
 import { CheckCircleFilled } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Select, TimePicker } from 'antd';
-import styles from '../Input/Input.module.css'; // Asegúrate de que esta ruta sea correcta
+import { useEffect } from 'react';
+import styles from '../Input/Input.module.css';
 
 const { Option } = Select;
 
-// Componente InputField principal (original)
+// Componente principal
 const InputField = ({
   type,
   label,
@@ -41,23 +42,7 @@ const InputField = ({
       inputComponent = <DatePicker {...inputProps} />;
       break;
 
-    case 'textarea':
-      inputComponent = <Input.TextArea rows={4} {...inputProps} />;
-      break;
-
-    case 'number':
-      inputComponent = <Input type="number" {...inputProps} />;
-      break;
-
-    case 'email':
-      inputComponent = <Input type="email" {...inputProps} />;
-      break;
-
-    case 'password':
-      inputComponent = <Input.Password {...inputProps} />;
-      break;
-
-    case 'cita': // Nuevo caso para componentes específicos de citas
+    case 'cita':
       return <CitaComponents {...rest} />;
 
     default:
@@ -86,27 +71,31 @@ const InputField = ({
   return inputComponent;
 };
 
-// Componentes específicos de citas (de ipt.jsx)
-const CitaComponents = ({ componentType, ...props }) => {
+// Componentes específicos de citas
+const CitaComponents = ({ componentType, form, ...props }) => {
   switch (componentType) {
     case 'dateField':
-      return <DateField {...props} />;
+      return <DateField form={form} />;
     case 'patientField':
-      return <PatientField {...props} />;
+      return <PatientField form={form} {...props} />;
     case 'paymentOptions':
-      return <PaymentOptionsField {...props} />;
+      return <PaymentOptionsField form={form} {...props} />;
     case 'paymentMethod':
-      return <PaymentMethodField {...props} />;
+      return <PaymentMethodField form={form} {...props} />;
     case 'amountField':
-      return <AmountField {...props} />;
+      return <AmountField form={form} {...props} />;
     case 'timeField':
-      return <TimeField {...props} />;
+      return <TimeField form={form} />;
+    case 'hourCheckbox':
+      return <HourCheckbox {...props} />;
+    case 'paymentCheckbox':
+      return <PaymentCheckbox {...props} />;
     default:
       return null;
   }
 };
 
-// Definición de los componentes de citas (copiados de ipt.jsx)
+// Componentes individuales
 const DateField = ({ form }) => (
   <Form.Item
     label="Fecha de cita"
@@ -114,56 +103,72 @@ const DateField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <DatePicker className={styles.datePicker} />
+    <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
   </Form.Item>
 );
 
-const PatientField = ({ form, patientType, onPatientTypeChange }) => (
+const PatientField = ({ form, patientType, onPatientTypeChange, patientTypeOptions }) => (
   <div className={styles.patientRow}>
-    <div className={styles.patientInputContainer}>
-      <Form.Item
-        label="Paciente"
-        name="paciente"
-        rules={[{ required: true, message: 'Este campo es requerido' }]}
-        className={styles.patientInput}
-      >
-        <Input />
-      </Form.Item>
-    </div>
+    <div className={styles.patientContainer}>
+      {/* Input de paciente */}
+      <div className={styles.patientInputContainer}>
+        <Form.Item
+          label="Paciente"
+          name="paciente"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+          className={styles.formItem}
+          style={{ marginBottom: 0 }}
+        >
+          <Input className={styles.inputStyle} />
+        </Form.Item>
+      </div>
 
-    {patientType && (
+      {/* Botón Crear/Elegir */}
       <div className={styles.patientButtonContainer}>
-        <Button type="primary" className={styles.patientButton}>
+        <Button 
+          type="primary" 
+          className={styles.patientButton}
+        >
           {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
         </Button>
       </div>
-    )}
 
-    <div className={styles.checkboxColumn}>
-      {patientTypeOptions.map(option => (
-        <Checkbox
-          key={option.value}
-          checked={patientType === option.value}
-          onChange={() => onPatientTypeChange(option.value)}
-          className={styles.checkbox}
-        >
-          {option.label}
-        </Checkbox>
-      ))}
+      {/* Checkboxes en columna */}
+      <div className={styles.checkboxColumn}>
+        {patientTypeOptions.map(option => (
+          <Checkbox
+            key={option.value}
+            checked={patientType === option.value}
+            onChange={() => onPatientTypeChange(option.value)}
+            className={`${styles.checkbox} ${styles.checkboxItem}`}
+          >
+            {option.label}
+          </Checkbox>
+        ))}
+      </div>
     </div>
   </div>
 );
-
-const PaymentOptionsField = ({ isPaymentRequired, paymentOptions, onPaymentOptionChange }) => (
+// En el PaymentOptionsField
+const PaymentOptionsField = ({ form, isPaymentRequired, paymentOptions, onPaymentOptionChange }) => (
   <Form.Item
     label="Opciones de pago"
     name="opcionesPago"
     rules={[{ required: isPaymentRequired, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <Select onChange={onPaymentOptionChange} placeholder="Seleccione una opción">
+    <Select 
+      onChange={onPaymentOptionChange} 
+      placeholder="Seleccione una opción"
+      style={{ width: '100%' }}
+      dropdownClassName={styles.selectDropdown} // Añade esta clase
+    >
       {paymentOptions.map(option => (
-        <Option key={option.value} value={option.value}>
+        <Option 
+          key={option.value} 
+          value={option.value}
+          className={styles.selectOption} // Añade esta clase
+        >
           {option.label}
         </Option>
       ))}
@@ -171,14 +176,14 @@ const PaymentOptionsField = ({ isPaymentRequired, paymentOptions, onPaymentOptio
   </Form.Item>
 );
 
-const PaymentMethodField = ({ isPaymentRequired, paymentMethods }) => (
+const PaymentMethodField = ({ form, isPaymentRequired, paymentMethods }) => (
   <Form.Item
     label="Método de pago"
     name="metodoPago"
     rules={[{ required: isPaymentRequired, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <Select placeholder="Seleccione un método">
+    <Select placeholder="Seleccione un método" style={{ width: '100%' }}>
       {paymentMethods.map(method => (
         <Option key={method.value} value={method.value}>
           {method.label}
@@ -188,58 +193,78 @@ const PaymentMethodField = ({ isPaymentRequired, paymentMethods }) => (
   </Form.Item>
 );
 
-const AmountField = ({ isPaymentRequired, customAmount }) => (
-  <Form.Item
-    label="Monto a pagar"
-    name="montoPago"
-    rules={[{ required: isPaymentRequired, message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <InputNumber 
-      className={styles.inputNumber} 
-      disabled={!customAmount}
-      formatter={value => `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-      parser={value => value.replace(/S\/\s?|(,*)/g, '')}
-    />
-  </Form.Item>
-);
+const AmountField = ({ 
+  form, 
+  isPaymentRequired, 
+  customAmount, 
+  paymentOption, 
+  paymentOptions 
+}) => {
+  useEffect(() => {
+    if (!paymentOption) return;
+    
+    const selectedOption = paymentOptions?.find(opt => opt.value === paymentOption);
+    
+    // Modificación aquí: verificar explícitamente si amount es 0 o no es undefined
+    if (selectedOption && !customAmount && (selectedOption.amount === 0 || selectedOption.amount)) {
+      form.setFieldsValue({ montoPago: selectedOption.amount });
+    } else if (paymentOption === 'custom') {
+      form.setFieldsValue({ montoPago: undefined });
+    }
+  }, [paymentOption, customAmount, form, paymentOptions]);
 
-const TimeField = () => (
+  return (
+    <Form.Item
+      label="Monto a pagar"
+      name="montoPago"
+      rules={[{ 
+        required: isPaymentRequired, 
+        message: 'Este campo es requerido'
+      }]}
+      className={styles.formItem}
+    >
+      <InputNumber 
+        className={styles.inputNumber}
+        disabled={!customAmount}
+        min={0}
+        step={10}
+        formatter={value => `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        parser={value => value.replace(/S\/\s?|(,*)/g, '')}
+        style={{ width: '100%' }}
+      />
+    </Form.Item>
+  );
+};
+
+const TimeField = ({ form }) => (
   <Form.Item
     label="Hora de cita"
     name="horaCita"
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <TimePicker format="HH:mm" className={styles.timePicker} />
+    <TimePicker format="HH:mm" className={styles.datePicker} style={{ width: '100%' }} />
   </Form.Item>
 );
 
-// Opciones de tipo de paciente
-const patientTypeOptions = [
-  { label: 'Nuevo', value: 'nuevo' },
-  { label: 'Continuador', value: 'continuador' },
-];
+const HourCheckbox = ({ showHourField, onShowHourFieldChange }) => (
+  <Checkbox
+    checked={showHourField}
+    onChange={onShowHourFieldChange}
+    className={styles.checkbox}
+  >
+    Hora cita
+  </Checkbox>
+);
 
-// Opciones de pago
-const paymentOptions = [
-  { label: 'Consulta general', value: 'general' },
-  { label: 'Control', value: 'control' },
-  { label: 'Personalizado', value: 'custom' },
-];
+const PaymentCheckbox = ({ isPaymentRequired, onPaymentRequiredChange }) => (
+  <Checkbox
+    checked={!isPaymentRequired}
+    onChange={(e) => onPaymentRequiredChange(e)}
+    className={styles.checkbox}
+  >
+    Cita
+  </Checkbox>
+);
 
-// Métodos de pago
-const paymentMethods = [
-  { label: 'Efectivo', value: 'efectivo' },
-  { label: 'Tarjeta', value: 'tarjeta' },
-  { label: 'Yape', value: 'yape' },
-];
-
-
-// Exportaciones
 export default InputField;
-export {
-  AmountField, DateField,
-  PatientField, patientTypeOptions, PaymentMethodField, paymentMethods, paymentOptions, PaymentOptionsField, TimeField
-};
-

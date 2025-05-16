@@ -1,7 +1,5 @@
-// Form.jsx
 import {
   Button,
-  Checkbox,
   Col,
   ConfigProvider,
   Form,
@@ -17,13 +15,10 @@ const FormComponent = ({
   fields = [],
   mode = 'create',
   showHourField = false,
-  isPaymentRequired = false,
+  isPaymentRequired = true,
   patientType = '',
   paymentOption = '',
   customAmount = '',
-  patientTypeOptions = [],
-  paymentOptions = [],
-  paymentMethods = [],
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
@@ -53,6 +48,51 @@ const FormComponent = ({
   };
 
   const renderField = (field, index) => {
+    if (field.type === 'title') {
+      return (
+        <Col span={24} key={index}>
+          <h2 className={styles.title}>{field.label}</h2>
+        </Col>
+      );
+    }
+
+    if (field.type === 'customRow') {
+      return (
+        <Col span={24} key={index}>
+          <Row gutter={[25, 0]}>
+            {field.fields.map((subField, subIndex) =>
+              renderField(subField, `${index}-${subIndex}`)
+            )}
+          </Row>
+        </Col>
+      );
+    }
+
+    if (field.type === 'customComponent') {
+      if (field.show === 'showHourField' && !showHourField) return null;
+      
+      return (
+        <Col span={field.span || 24} key={index}>
+          <InputField 
+            type="cita" 
+            componentType={field.componentType} 
+            form={form}
+            {...field.props}
+            showHourField={showHourField}
+            isPaymentRequired={isPaymentRequired}
+            patientType={patientType}
+            paymentOption={paymentOption}  // Esta es importante
+            customAmount={customAmount}    // Esta también
+            paymentOptions={field.props?.paymentOptions} // Añade esta línea
+            onPatientTypeChange={onPatientTypeChange}
+            onPaymentOptionChange={onPaymentOptionChange}
+            onShowHourFieldChange={onShowHourFieldChange}
+            onPaymentRequiredChange={onPaymentRequiredChange}
+          />
+        </Col>
+      );
+    }
+
     const isPhoneField = field.name === 'phone';
     return (
       <Col span={field.span || 8} key={index}>
@@ -66,7 +106,7 @@ const FormComponent = ({
                 ? [{ required: true, message: `Por favor complete el campo ${field.label}` }]
                 : []
               : field.required
-              ? [{ required: true, message: `Por favor complete el campo ${field.label}` }]
+              ? [{ required: isPaymentRequired, message: `Por favor complete el campo ${field.label}` }]
               : []
           }
         >
@@ -97,106 +137,27 @@ const FormComponent = ({
       }}
     >
       <div className={styles.container}>
-        <h1 className={styles.title}>Nueva Cita</h1>
-
         <Form
           form={form}
           layout="vertical"
           onFinish={handleFinish}
           className={styles.formContainer}
         >
-          {fields.length > 0 ? (
-            <Row gutter={[20, 0]}>
-              {fields.map((field, index) => {
-                if (field.type === 'title') {
-                  return (
-                    <Col span={24} key={index}>
-                      <h2 className={styles.title}>{field.label}</h2>
-                    </Col>
-                  );
-                }
-
-                if (field.type === 'customRow') {
-                  return (
-                    <Col span={24} key={index}>
-                      <Row gutter={[25, 0]}>
-                        {field.fields.map((subField, subIndex) =>
-                          renderField(subField, `${index}-${subIndex}`)
-                        )}
-                      </Row>
-                    </Col>
-                  );
-                }
-
-                return renderField(field, index);
-              })}
-            </Row>
-          ) : (
-            <>
-              <InputField type="cita" componentType="dateField" form={form} />
-              <InputField
-                type="cita"
-                componentType="patientField"
-                form={form}
-                patientType={patientType}
-                onPatientTypeChange={onPatientTypeChange}
-                patientTypeOptions={patientTypeOptions}
-              />
-              <InputField
-                type="cita"
-                componentType="paymentOptions"
-                form={form}
-                isPaymentRequired={isPaymentRequired}
-                paymentOptions={paymentOptions}
-                onPaymentOptionChange={onPaymentOptionChange}
-              />
-              <InputField
-                type="cita"
-                componentType="paymentMethod"
-                form={form}
-                isPaymentRequired={isPaymentRequired}
-                paymentMethods={paymentMethods}
-              />
-              <InputField
-                type="cita"
-                componentType="amountField"
-                form={form}
-                isPaymentRequired={isPaymentRequired}
-                customAmount={customAmount}
-              />
-              {showHourField && (
-                <InputField type="cita" componentType="timeField" form={form} />
-              )}
-              <div className={styles.bottomCheckboxes}>
-                <Checkbox
-                  checked={showHourField}
-                  onChange={onShowHourFieldChange}
-                  className={styles.checkbox}
-                >
-                  Hora cita
-                </Checkbox>
-                <Checkbox
-                  checked={isPaymentRequired}
-                  onChange={onPaymentRequiredChange}
-                  className={styles.checkbox}
-                >
-                  Cita
-                </Checkbox>
-              </div>
-            </>
-          )}
+          <Row gutter={[20, 0]}>
+            {fields.map((field, index) => renderField(field, index))}
+          </Row>
 
           <Form.Item className={styles.buttonGroup}>
             <div className={styles.buttonWrapper}>
               <Button
                 htmlType="button"
-                className={fields.length > 0 ? styles.buttonCancel : styles.cancelButton}
+                className={styles.buttonCancel}
               >
                 Cancelar
               </Button>
               <Button
                 htmlType="submit"
-                className={fields.length > 0 ? styles.buttonSubmit : styles.submitButton}
+                className={styles.buttonSubmit}
                 loading={loading}
               >
                 {mode === 'edit' ? 'Actualizar' : 'Registrar'}
