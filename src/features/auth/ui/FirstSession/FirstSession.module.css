@@ -1,4 +1,5 @@
-/* ---- reset ---- */
+/* Copia idéntica del CSS de login */
+
 body {
   margin: 0;
   font: normal 100% Arial, Helvetica, sans-serif;
@@ -9,7 +10,6 @@ canvas {
   vertical-align: bottom;
 }
 
-/* ---- particles.js container ---- */
 .particlesJs {
   position: fixed;
   z-index: 0;
@@ -18,7 +18,6 @@ canvas {
   height: 100%;
 
   background-color: #242424;
-  background-image: url("");
   background-repeat: no-repeat;
   background-position: 50% 50%;
   background-size: cover;
@@ -88,16 +87,11 @@ canvas {
   color: #8fd1a3;
 }
 
-a {
-  color: #6B7280;
-}
-
 .loginForm button {
   cursor: pointer;
 
   width: 90%;
   margin-top: 5%;
-  margin-bottom: 0px;
   padding: 2.5%;
   border: none;
   border-radius: 5px;
@@ -130,4 +124,14 @@ a {
   font-size: 0.8rem;
   color: #6B7280;
   text-align: center;
+}
+
+.divContainerone {
+  width: 100%;
+  margin-bottom: 0.5%;
+}
+
+.divContainertwo {
+  width: 100%;
+  margin-bottom: 5%;
 }

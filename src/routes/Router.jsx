@@ -9,11 +9,25 @@ import Patients from '../features/patients/ui/patients';
 import Appointments from '../features/appointments/ui/appointments';
 import Staff from '../features/staff/ui/staff';
 import Home from '../features/home/ui/home';
+import FirstSession from '../features/auth/ui/FirstSession/FirstSession';
+import ChangesPassword from '../features/auth/ui/ChangesPassword/ChangesPassword';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Login />,
+  },
+  {
+    path: '/contraseñaolvidada',
+    element: <h1>Contraseña olvidada</h1>,
+  },
+  {
+    path: '/primerInicio',
+    element: <FirstSession />,
+  },
+  {
+    path: '/cambiarContraseña',
+    element: <ChangesPassword />,
   },
   {
     path: '/Inicio',
