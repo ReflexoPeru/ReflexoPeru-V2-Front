@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import styles from './Error404.module.css';
@@ -18,6 +19,16 @@ const Error = () => {
       {/* Contenedor para las partículas */}
       <div id="particles-js" className={styles.particlesJs}></div>
 
+=======
+import React from 'react';
+import { Button } from 'antd';
+import styles from './Error404.module.css';
+import imgerror from '../../assets/Img/imgError.png';
+
+const Error = () => {
+  return (
+    <div className={styles.errorBg}>
+>>>>>>> origin/create-the-error-view
       <div className={styles.errorContent}>
         <img
           src={imgerror}
