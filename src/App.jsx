@@ -1,10 +1,9 @@
-import Dashboard from './pages/Dashboard/Dashboard';
-import Router from './routes/Router';
+import NewPatient from './features/appointments/ui/Register-Appointment/NewAppointment';
 
 function App() {
   return (
     <>
-      <Router />
+      <NewPatient />
     </>
   );
 }

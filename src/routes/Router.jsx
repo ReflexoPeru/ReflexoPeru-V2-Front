@@ -1,5 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import Dashboard from '../pages/Dashboard/Dashboard';
+import { RouterProvider, createBrowserRouter } from 'react-router';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
