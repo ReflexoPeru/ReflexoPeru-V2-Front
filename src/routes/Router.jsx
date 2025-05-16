@@ -11,6 +11,7 @@ import Staff from '../features/staff/ui/staff';
 import Home from '../features/home/ui/home';
 import FirstSession from '../features/auth/ui/FirstSession/FirstSession';
 import ChangesPassword from '../features/auth/ui/ChangesPassword/ChangesPassword';
+import ReportGenerator from '../features/reports/ui/reports';
 
 const router = createBrowserRouter([
   {
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'reportes',
-        element: <Prueba />,
+        element: <ReportGenerator />,
       },
       {
         path: 'citasCompletas',
