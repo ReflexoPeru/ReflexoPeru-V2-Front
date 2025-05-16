@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import styles from './Error404.module.css';
-import imgerror from '../../assets/Img/imageError.png';
+import imgerror from '../../assets/Img/imgerror.png';
 import { initializeParticles } from '../../features/auth/hook/loginpacticles';
 
 const Error = () => {
@@ -21,16 +21,16 @@ const Error = () => {
           src={imgerror}
           alt="Error"
           className={styles.errorImage}
-          style={{ width: '320px', maxWidth: '100%' }}
+          style={{ width: '320px', maxWidth: '90%' }}
         />
-        <h1 className={styles.title}>Oops!</h1>
+        <h1 className={styles.title}>404</h1>
         <p className={styles.subtitle}>
-          Algo esta fallando.
+          No pudimos encontrar la página que buscas.
           <br />
-          Por favor, intenta de nuevo o contacta al soporte.
+          Quizá fue eliminada, movida o nunca existió.
         </p>
         <Button className={styles.homeButton} size="large">
-          Intentar de nuevo
+          Volver al inicio
         </Button>
       </div>
     </div>
