@@ -1,0 +1,25 @@
+.banner {
+    padding: 25px 30px;
+    border-radius: 20px;
+
+    text-align: left;
+    
+    background-color: #1E1E1E;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+.title {
+    display: flex;
+    gap: 10px;
+
+    margin-bottom: 10px;
+
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: #ccc;
+}

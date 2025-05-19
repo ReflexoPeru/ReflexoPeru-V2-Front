@@ -1,0 +1,62 @@
+.container {
+    flex: 1;
+
+    padding: 25px;
+    border-radius: 20px;
+
+    color: white;
+
+    background-color: #1E1E1E;
+}
+
+.title {
+    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.scrollArea {
+    scrollbar-width: none; 
+    
+    overflow-y: auto;
+
+    max-height: 200px;
+    padding-right: 5px;
+
+    -ms-overflow-style: none;  
+}
+
+.scrollArea::-webkit-scrollbar {
+    display: none; 
+}
+
+
+.appointment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 10px;
+
+    background-color: #2a2a2a;
+}
+
+.appointment:last-child {
+    margin-bottom: 0;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.details {
+    font-size: 14px;
+    color: #ccc;
+}
+
+.check {
+    color: #00c36a;
+}
