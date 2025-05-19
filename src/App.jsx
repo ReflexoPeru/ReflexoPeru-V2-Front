@@ -1,3 +1,4 @@
+import NewPatient from './features/appointments/ui/Register-Appointment/NewAppointment';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Router from './routes/Router';
 import { ToastProvider } from './services/toastify/ToastContext';
