@@ -5,8 +5,10 @@ import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import StaffMock from '../../../mock/Staff';
 import { Space, Button } from 'antd';
+import { useNavigate } from 'react-router';
 
 export default function Staff() {
+  const navigate = useNavigate();
   const columns = [
     {
       title: 'Documento',
@@ -34,8 +36,7 @@ export default function Staff() {
   const staffData = StaffMock[0].items;
 
   const handleButton = () => {
-    console.log('🩺 Registrar nuevo paciente');
-    // Aquí puedes abrir un modal o redirigir a un formulario
+    navigate('registrar');
   };
 
   const handleSearch = (value) => {

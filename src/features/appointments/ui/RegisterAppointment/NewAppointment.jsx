@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Form from '../../../../components/Form/Form';
-import styles from '../Register-Appointment/NewAppointment.module.css';
+import styles from '../RegisterAppointment/NewAppointment.module.css';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
@@ -15,7 +15,7 @@ const NewAppointment = () => {
     { label: 'Tarifa completa (S/50)', value: 'completa50', amount: 50 },
     { label: 'Media tarifa (S/30)', value: 'media', amount: 30 },
     { label: 'Cupón sin costo (S/0)', value: 'cupon', amount: 0 }, // Asegúrate que amount sea 0
-    { label: 'Tarifa Personalizada', value: 'custom' }
+    { label: 'Tarifa Personalizada', value: 'custom' },
   ];
 
   const handlePaymentOptionChange = (value) => {
@@ -27,30 +27,29 @@ const NewAppointment = () => {
     console.log('Valores del formulario:', values);
   };
 
-
   // Ahora definimos appointmentFields después de paymentOptions
   const appointmentFields = [
-    { 
+    {
       type: 'customRow',
       fields: [
-        { 
-          type: 'title', 
+        {
+          type: 'title',
           label: 'Nueva Cita',
-          span: 8
-        }
-      ]
+          span: 8,
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
           type: 'customComponent',
           componentType: 'dateField',
-          span: 13
-        }
-      ]
+          span: 13,
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
@@ -60,13 +59,13 @@ const NewAppointment = () => {
           props: {
             patientTypeOptions: [
               { label: 'Nuevo', value: 'nuevo' },
-              { label: 'Continuador', value: 'continuador' }
-            ]
-          }
-        }
-      ]
+              { label: 'Continuador', value: 'continuador' },
+            ],
+          },
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
@@ -74,12 +73,12 @@ const NewAppointment = () => {
           componentType: 'paymentOptions',
           span: 13,
           props: {
-            paymentOptions: paymentOptions // Usamos la constante ya definida
-          }
-        }
-      ]
+            paymentOptions: paymentOptions, // Usamos la constante ya definida
+          },
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
@@ -90,13 +89,13 @@ const NewAppointment = () => {
             paymentMethods: [
               { label: 'Efectivo', value: 'efectivo' },
               { label: 'Tarjeta', value: 'tarjeta' },
-              { label: 'Yape', value: 'yape' }
-            ]
-          }
-        }
-      ]
+              { label: 'Yape', value: 'yape' },
+            ],
+          },
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
@@ -104,21 +103,21 @@ const NewAppointment = () => {
           componentType: 'amountField',
           span: 13,
           props: {
-            paymentOptions: paymentOptions // Usamos la constante ya definida
-          }
-        }
-      ]
+            paymentOptions: paymentOptions, // Usamos la constante ya definida
+          },
+        },
+      ],
     },
-    { 
+    {
       type: 'customRow',
       fields: [
         {
           type: 'customComponent',
           componentType: 'timeField',
           span: 13,
-          show: 'showHourField'
-        }
-      ]
+          show: 'showHourField',
+        },
+      ],
     },
     {
       type: 'customRow',
@@ -126,9 +125,9 @@ const NewAppointment = () => {
         {
           type: 'customComponent',
           componentType: 'hourCheckbox',
-          span: 8
-        }
-      ]
+          span: 8,
+        },
+      ],
     },
     {
       type: 'customRow',
@@ -136,14 +135,14 @@ const NewAppointment = () => {
         {
           type: 'customComponent',
           componentType: 'paymentCheckbox',
-          span: 8
-        }
-      ]
-    }
+          span: 8,
+        },
+      ],
+    },
   ];
 
   return (
-  <div className={styles.container}>
+    <div className={styles.container}>
       <Form
         fields={appointmentFields}
         mode="create"
@@ -159,7 +158,7 @@ const NewAppointment = () => {
         onSubmit={handleSubmit}
       />
     </div>
-);
+  );
 };
 
 export default NewAppointment;

@@ -12,8 +12,16 @@ import Home from '../features/home/ui/home';
 import FirstSession from '../features/auth/ui/FirstSession/FirstSession';
 import ChangesPassword from '../features/auth/ui/ChangesPassword/ChangesPassword';
 import ReportGenerator from '../features/reports/ui/reports';
+import NewPatient from '../features/patients/ui/RegisterPatient/NewPatient';
+import NewAppointment from '../features/appointments/ui/RegisterAppointment/NewAppointment';
+import NewTherapist from '../features/staff/ui/RegisterTherapist/NewTherapist';
+import Error404 from '../pages/Error/Error404';
 
 const router = createBrowserRouter([
+  {
+    path: '*',
+    element: <Error404 />,
+  },
   {
     path: '/',
     element: <Login />,
@@ -43,24 +51,22 @@ const router = createBrowserRouter([
         element: <Patients />,
         children: [
           {
-            path: 'registrar',
-            element: <Prueba />,
-          },
-          {
             path: 'editar/:id',
             element: <Prueba />,
           },
         ],
       },
       {
+        path: 'pacientes/registrar',
+        element: <NewPatient />,
+      },
+      {
         path: 'citas',
         element: <Appointments />,
-        children: [
-          {
-            path: 'registrar',
-            element: <Prueba />,
-          },
-        ],
+      },
+      {
+        path: 'citas/registrar',
+        element: <NewAppointment />,
       },
       {
         path: 'reportes',
@@ -79,14 +85,14 @@ const router = createBrowserRouter([
         element: <Staff />,
         children: [
           {
-            path: 'registrar',
-            element: <Prueba />,
-          },
-          {
             path: 'editar/:id',
             element: <Prueba />,
           },
         ],
+      },
+      {
+        path: 'terapeutas/registrar',
+        element: <NewTherapist />,
       },
       {
         path: 'configSistema',
