@@ -1,5 +1,14 @@
 import { CheckCircleFilled } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Select, TimePicker } from 'antd';
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  TimePicker,
+} from 'antd';
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
 
@@ -107,35 +116,37 @@ const DateField = ({ form }) => (
   </Form.Item>
 );
 
-const PatientField = ({ form, patientType, onPatientTypeChange, patientTypeOptions }) => (
+const PatientField = ({
+  form,
+  patientType,
+  onPatientTypeChange,
+  patientTypeOptions,
+}) => (
   <div className={styles.patientRow}>
     <div className={styles.patientContainer}>
       {/* Input de paciente */}
       <div className={styles.patientInputContainer}>
         <Form.Item
           label="Paciente"
-          name="paciente"
+          name="pacienteId"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
           className={styles.formItem}
           style={{ marginBottom: 0 }}
         >
-          <Input className={styles.inputStyle} />
+          <Input className={styles.inputStyle} disabled />
         </Form.Item>
       </div>
 
       {/* Botón Crear/Elegir */}
       <div className={styles.patientButtonContainer}>
-        <Button 
-          type="primary" 
-          className={styles.patientButton}
-        >
+        <Button type="primary" className={styles.patientButton}>
           {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
         </Button>
       </div>
 
       {/* Checkboxes en columna */}
       <div className={styles.checkboxColumn}>
-        {patientTypeOptions.map(option => (
+        {patientTypeOptions.map((option) => (
           <Checkbox
             key={option.value}
             checked={patientType === option.value}
@@ -150,22 +161,29 @@ const PatientField = ({ form, patientType, onPatientTypeChange, patientTypeOptio
   </div>
 );
 // En el PaymentOptionsField
-const PaymentOptionsField = ({ form, isPaymentRequired, paymentOptions, onPaymentOptionChange }) => (
+const PaymentOptionsField = ({
+  form,
+  isPaymentRequired,
+  paymentOptions,
+  onPaymentOptionChange,
+}) => (
   <Form.Item
     label="Opciones de pago"
     name="opcionesPago"
-    rules={[{ required: isPaymentRequired, message: 'Este campo es requerido' }]}
+    rules={[
+      { required: isPaymentRequired, message: 'Este campo es requerido' },
+    ]}
     className={styles.formItem}
   >
-    <Select 
-      onChange={onPaymentOptionChange} 
+    <Select
+      onChange={onPaymentOptionChange}
       placeholder="Seleccione una opción"
       style={{ width: '100%' }}
       dropdownClassName={styles.selectDropdown} // Añade esta clase
     >
-      {paymentOptions.map(option => (
-        <Option 
-          key={option.value} 
+      {paymentOptions.map((option) => (
+        <Option
+          key={option.value}
           value={option.value}
           className={styles.selectOption} // Añade esta clase
         >
@@ -180,11 +198,13 @@ const PaymentMethodField = ({ form, isPaymentRequired, paymentMethods }) => (
   <Form.Item
     label="Método de pago"
     name="metodoPago"
-    rules={[{ required: isPaymentRequired, message: 'Este campo es requerido' }]}
+    rules={[
+      { required: isPaymentRequired, message: 'Este campo es requerido' },
+    ]}
     className={styles.formItem}
   >
     <Select placeholder="Seleccione un método" style={{ width: '100%' }}>
-      {paymentMethods.map(method => (
+      {paymentMethods.map((method) => (
         <Option key={method.value} value={method.value}>
           {method.label}
         </Option>
@@ -193,20 +213,26 @@ const PaymentMethodField = ({ form, isPaymentRequired, paymentMethods }) => (
   </Form.Item>
 );
 
-const AmountField = ({ 
-  form, 
-  isPaymentRequired, 
-  customAmount, 
-  paymentOption, 
-  paymentOptions 
+const AmountField = ({
+  form,
+  isPaymentRequired,
+  customAmount,
+  paymentOption,
+  paymentOptions,
 }) => {
   useEffect(() => {
     if (!paymentOption) return;
-    
-    const selectedOption = paymentOptions?.find(opt => opt.value === paymentOption);
-    
+
+    const selectedOption = paymentOptions?.find(
+      (opt) => opt.value === paymentOption,
+    );
+
     // Modificación aquí: verificar explícitamente si amount es 0 o no es undefined
-    if (selectedOption && !customAmount && (selectedOption.amount === 0 || selectedOption.amount)) {
+    if (
+      selectedOption &&
+      !customAmount &&
+      (selectedOption.amount === 0 || selectedOption.amount)
+    ) {
       form.setFieldsValue({ montoPago: selectedOption.amount });
     } else if (paymentOption === 'custom') {
       form.setFieldsValue({ montoPago: undefined });
@@ -217,19 +243,23 @@ const AmountField = ({
     <Form.Item
       label="Monto a pagar"
       name="montoPago"
-      rules={[{ 
-        required: isPaymentRequired, 
-        message: 'Este campo es requerido'
-      }]}
+      rules={[
+        {
+          required: isPaymentRequired,
+          message: 'Este campo es requerido',
+        },
+      ]}
       className={styles.formItem}
     >
-      <InputNumber 
+      <InputNumber
         className={styles.inputNumber}
         disabled={!customAmount}
         min={0}
         step={10}
-        formatter={value => `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-        parser={value => value.replace(/S\/\s?|(,*)/g, '')}
+        formatter={(value) =>
+          `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        }
+        parser={(value) => value.replace(/S\/\s?|(,*)/g, '')}
         style={{ width: '100%' }}
       />
     </Form.Item>
@@ -243,7 +273,11 @@ const TimeField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <TimePicker format="HH:mm" className={styles.datePicker} style={{ width: '100%' }} />
+    <TimePicker
+      format="HH:mm"
+      className={styles.datePicker}
+      style={{ width: '100%' }}
+    />
   </Form.Item>
 );
 

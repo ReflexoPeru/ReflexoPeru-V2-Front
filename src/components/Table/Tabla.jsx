@@ -6,7 +6,7 @@ import ModeloPagination from './Pagination/Pagination.jsx';
 const ModeloTable = ({ columns, data, customActions }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
-  const [tableHeight, setTableHeight] = useState(0);
+  const [tableHeight, setTableHeight] = useState('100%');
   const containerRef = useRef(null);
   const paginationRef = useRef(null);
 
@@ -157,6 +157,7 @@ const ModeloTable = ({ columns, data, customActions }) => {
       >
         <div style={{ overflow: 'hidden' }}>
           <Table
+            style={{ maxHeight: 'none' }}
             columns={[...columnaArreglada, actionColumn]}
             dataSource={paginationData}
             rowKey="id"

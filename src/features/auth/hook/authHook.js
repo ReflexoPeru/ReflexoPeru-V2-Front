@@ -28,8 +28,6 @@ export const useAuth = () => {
           localStorage.removeItem('user_id');
           navigate('/Inicio');
         }
-      } else if (data.status == '401') {
-        showToast('intentoFallido');
       }
     } catch {
       showToast('intentoFallido');

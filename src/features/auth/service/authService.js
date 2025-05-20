@@ -1,4 +1,4 @@
-import { get, post, put } from '../../../services/api/Axios/MethodsGeneral';
+import { post, put } from '../../../services/api/Axios/MethodsGeneral';
 
 export const login = async (data) => {
   const response = await post('login', data);
@@ -10,7 +10,7 @@ export const validateCode = async (code, id) => {
   return response;
 };
 
-export const changePassword = async (data, id) => {
+export const changePassword = async (data) => {
   const response = await put(`change_password`, data);
   console.log(response);
   return response;
