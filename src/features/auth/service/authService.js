@@ -1,4 +1,9 @@
-import { post, postID, put } from '../../../services/api/Axios/MethodsGeneral';
+import {
+  del,
+  post,
+  postID,
+  put,
+} from '../../../services/api/Axios/MethodsGeneral';
 
 export const login = async (data) => {
   const response = await post('login', data);
@@ -6,7 +11,7 @@ export const login = async (data) => {
 };
 
 export const validateCode = async (code, id) => {
-  const response = await postID(`verification`, id , code);
+  const response = await postID(`verification`, id, code);
   return response;
 };
 
@@ -16,5 +21,11 @@ export const changePassword = async (data) => {
   return response;
 };
 export const logOut = async () => {
-  //Funcion de logOut
+  const response = await del('logout');
+  return response;
+};
+
+export const sendVerifyCode = async (id) => {
+  const response = await postID('sendVerifyCode', id);
+  return response;
 };
