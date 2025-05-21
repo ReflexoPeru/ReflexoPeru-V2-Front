@@ -115,17 +115,25 @@
 
 .metrics {
   width: 100%;
+  padding: 20%;
+  border-radius: 5px;
+  background-color: #2A2A2A;
+}
+
+.bigmetrics {
+  width: 100%;
   padding: 10%;
   border-radius: 5px;
   background-color: #2A2A2A;
 }
 
 .number{
-  padding-top: 20%;
+  padding-top: 10%;
   font-size: 30px;
   font-weight: bold;
   color: #1DB954;
 }
+
 
 .tableContainer {
   overflow-y: auto; /* Permite el desplazamiento vertical */
@@ -134,4 +142,21 @@
   max-height: 400px; /* Ajusta esta altura según tus necesidades */
   border: 1px solid #393939; /* Opcional: añade un borde para mejor visualización */
   border-radius: 5px; /* Opcional: añade bordes redondeados */
+}
+
+.metricsContainer{
+  display: flex;
+  flex-direction: column;
+  gap: 2%;
+  width: 100%;
+}
+
+.metricsRow{
+  display: flex;
+  gap: 10%;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10%;
+  padding-top: 0%
 }

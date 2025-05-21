@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { DatePicker, ConfigProvider, theme } from 'antd';
+import dayjs from 'dayjs';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
 import { useStatistic } from '../hook/useStatistic';
 
 export default function Dashboard() {
+  const [dateRange, setDateRange] = useState([dayjs(), dayjs()]);
+
   const {
     chartSeries,
     categories,
@@ -14,15 +18,16 @@ export default function Dashboard() {
     paymentTypes,
     monthlySessions,
     patientTypes,
-  } = useStatistic();
-
-  console.log(pieSeries, pieOptions, chartOptions);
-
+    metricsSeries,
+  } = useStatistic(
+    dateRange[0].format('YYYY-MM-DD'),
+    dateRange[1].format('YYYY-MM-DD'),
+  );
+  console.log(metricsSeries);
   // Opciones para el gráfico de barras apiladas
   const stackedBarOptions = {
     chart: {
       type: 'bar',
-
       stacked: true,
       toolbar: {
         show: false,
@@ -63,7 +68,7 @@ export default function Dashboard() {
     },
     fill: {
       opacity: 1,
-      colors: ['#FF5733', '#33FF57'], // Colores para las partes de la barra
+      colors: ['#FF5733', '#33FF57'],
     },
     legend: {
       position: 'bottom',
@@ -242,7 +247,12 @@ export default function Dashboard() {
     <div className={Style.container}>
       <div className={Style.dynamicContent}>
         <div className={Style.groupone}>
-          <div>
+          <div
+            style={{
+              gap: '10px',
+              justifyContent: 'space-between',
+            }}
+          >
             <div className={Style.contgraph}>
               <h3>Tipos de Pacientes</h3>
               <div className={Style.graph}>
@@ -250,13 +260,27 @@ export default function Dashboard() {
                   options={stackedBarOptions}
                   series={pieSeries}
                   type="bar"
-                  height="60%"
+                  height="70%"
                   width="100%"
                 />
               </div>
             </div>
             <div className={Style.contgraph}>
-              <h3>RAGO DE FECHA</h3>
+              <h3>Rango de Fecha</h3>
+              <ConfigProvider
+                theme={{
+                  algorithm: theme.darkAlgorithm,
+                }}
+              >
+                <DatePicker.RangePicker
+                  value={dateRange}
+                  style={{ width: '100%', marginBottom: 16 }}
+                  onChange={(dates) => {
+                    setDateRange(dates);
+                  }}
+                  format="YYYY-MM-DD"
+                />
+              </ConfigProvider>
             </div>
           </div>
           <div className={Style.contgraph}>
@@ -326,13 +350,28 @@ export default function Dashboard() {
             <div className={Style.contgraph}>
               <h3>Métricas Principales</h3>
               <div className={Style.graph}>
-                <div className={Style.metrics}>
-                  <p>Total Pacientes:</p>
-                  <h1 className={Style.number}>124</h1>
-                </div>
-                <div className={Style.metrics}>
-                  <p>Sesiones del Mes:</p>
-                  <h1 className={Style.number}>87</h1>
+                <div className={Style.metricsContainer}>
+                  <div className={Style.metricsRow}>
+                    <div className={Style.metrics}>
+                      <p>Pacientes:</p>
+                      <h1 className={Style.number}>
+                        {metricsSeries[1]?.data[0] || 0}
+                      </h1>
+                    </div>
+                    <div className={Style.metrics}>
+                      <p>Sesiones:</p>
+                      <h1 className={Style.number}>
+                        {metricsSeries[2]?.data[0] || 0}
+                      </h1>
+                    </div>
+                  </div>
+
+                  <div className={Style.bigmetrics}>
+                    <p>Ingresos:</p>
+                    <h1 className={Style.number}>
+                      {metricsSeries[0]?.data[0] || 0}
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>

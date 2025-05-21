@@ -1,8 +1,7 @@
-// useStatistic.js
 import { useState, useEffect } from 'react';
 import { fetchStatisticData } from '../services/statisticService';
 
-export const useStatistic = () => {
+export const useStatistic = (startDate, endDate) => {
   const [chartSeries, setChartSeries] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pieSeries, setPieSeries] = useState([]);
@@ -12,12 +11,10 @@ export const useStatistic = () => {
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [monthlySessions, setMonthlySessions] = useState([]);
   const [patientTypes, setPatientTypes] = useState([]);
+  const [metricsSeries, setMetricsSeries] = useState([]);
 
   const loadData = async () => {
-    const start = '2024-01-01';
-    const end = '2024-12-01';
-
-    const data = await fetchStatisticData(start, end);
+    const data = await fetchStatisticData(startDate, endDate);
 
     // Map the API response data to state variables
     setTherapistPerformance(
@@ -48,7 +45,7 @@ export const useStatistic = () => {
     setPieSeries([
       {
         name: 'Nuevo',
-        data: [Number(data.data.tipos_pacientes.cc)],
+        data: [Number(data.data.tipos_pacientes.c)],
       },
       {
         name: 'Continuador',
@@ -59,11 +56,27 @@ export const useStatistic = () => {
     setPieOptions({
       labels: Object.keys(data.data.tipos_pacientes),
     });
+
+    setMetricsSeries([
+      {
+        name: 'Ingresos',
+        data: [Number(data.data.metricas.ttlganancias)],
+      },
+      {
+        name: 'Sesiones',
+        data: [Number(data.data.metricas.ttlpacientes)],
+      },
+
+      {
+        name: 'Pacientes',
+        data: [Number(data.data.metricas.ttlsesiones)],
+      },
+    ]);
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [startDate, endDate]);
 
   return {
     chartSeries,
@@ -75,5 +88,6 @@ export const useStatistic = () => {
     paymentTypes,
     monthlySessions,
     patientTypes,
+    metricsSeries,
   };
 };
