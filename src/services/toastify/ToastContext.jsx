@@ -10,18 +10,24 @@ export const useToast = () => useContext(ToastContext);
 export const ToastProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
-  const showToast = (type) => {
+  const showToast = (type, backendMessage) => {
     const config = toastConfig[type];
     if (!config) return;
 
     const id = Date.now();
-    setNotifications((prev) => [...prev, { id, ...config }]);
+
+    const toastData = {
+      ...config,
+      id,
+      message: backendMessage || config.message,
+    };
+
+    setNotifications((prev) => [...prev, toastData]);
 
     setTimeout(() => {
       setNotifications((prev) => prev.filter((t) => t.id !== id));
-    }, config.duration || 5000);
+    }, toastData.duration || 5000);
   };
-
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}

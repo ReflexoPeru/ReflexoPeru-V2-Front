@@ -6,8 +6,10 @@ import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import AppointmentsMock from '../../../mock/Appointments';
 import { Space, Button } from 'antd';
+import { useNavigate } from 'react-router';
 
 export default function Appointments() {
+  const navigate = useNavigate();
   const columns = [
     {
       title: 'Nro Ticket',
@@ -52,8 +54,7 @@ export default function Appointments() {
   const appointmentsData = AppointmentsMock[0].items;
 
   const handleButton = () => {
-    console.log('🩺 Registrar nuevo paciente');
-    // Aquí puedes abrir un modal o redirigir a un formulario
+    navigate('registrar');
   };
 
   const handleSearch = (value) => {

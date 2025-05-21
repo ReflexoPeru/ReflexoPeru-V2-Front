@@ -28,11 +28,10 @@ export const useAuth = () => {
           localStorage.removeItem('user_id');
           navigate('/Inicio');
         }
-      } else if (data.status == '401') {
-        showToast('intentoFallido');
       }
-    } catch {
-      showToast('intentoFallido');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
@@ -47,26 +46,27 @@ export const useAuth = () => {
         showToast('codigoVerificado');
         localStorage.setItem('token', data.data.token);
         navigate('/cambiarContraseña');
-      } else if (data.status == '401') {
+      } else {
         showToast('codigoIncorrecto');
       }
-    } catch {
-      showToast('codigoIncorrecto');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
   const changePassword = async (data) => {
     try {
       const response = await changePasswordService(data);
-      console.log(response);
       if (response.status == '200') {
         showToast('contraseñaCambiada');
         navigate('/Inicio');
-      } else if (data.status == '401') {
+      } else {
         showToast('intentoFallido');
       }
-    } catch {
-      showToast('contraseñaIncorrecta');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
