@@ -1,15 +1,13 @@
 // statisticService.js
-import axios from 'axios';
+import { get } from '../../../services/api/Axios/MethodsGeneral';
 import { mockData } from '../../../mock/mockData';
 
-export const fetchStatisticData = async (size) => {
+export const fetchStatisticData = async (start, end) => {
   try {
-    const response = await axios.get(
-      `https://api.example.com/statistics?size=${size}`,
-    );
+    const response = await get(`report/statistics?start=${start}&end=${end}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
-    return mockData[size];
+    return mockData;
   }
 };

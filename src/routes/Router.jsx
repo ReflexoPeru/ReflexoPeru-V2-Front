@@ -12,6 +12,7 @@ import Home from '../features/home/ui/home';
 import FirstSession from '../features/auth/ui/FirstSession/FirstSession';
 import ChangesPassword from '../features/auth/ui/ChangesPassword/ChangesPassword';
 import ReportGenerator from '../features/reports/ui/reports';
+import Dashboard from '../features/statistic/ui/Dashboard';
 
 const router = createBrowserRouter([
   {
@@ -72,7 +73,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'estadisticas',
-        element: <Prueba />,
+        element: <Dashboard />,
       },
       {
         path: 'terapeutas',

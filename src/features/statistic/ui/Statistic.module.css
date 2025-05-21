@@ -52,26 +52,39 @@
 }
 
 .graph {
-  display: flex;
+  display: flex; 
+  gap: 10px;
   justify-self: center;
-  margin: 0; 
+  margin: 0;
+}
+
+
+
+/* Oculta la barra de desplazamiento en Chrome, Safari y Opera */
+.tableContainer::-webkit-scrollbar {
+  display: none;
 }
 
 .table {
-  border-collapse: collapse;
-  width: 100%;
+  width: 103vh;
+  color: #fcfcfc;
+  text-align: left;
 }
 
-.table th, .table td {
-  padding: 3%;
-  padding-left: 15vh;
-  color: #f1f1f1;
-}
 
 .table th {
-  text-align: left;
-  background-color: #3A3A3A;
+  padding: 2vh;
+  color: #fcfcfc;
+  text-align: center;
 }
+
+.table td {
+  padding: 3%;
+  color: #fcfcfc;
+  text-align: center;
+}
+
+
 
 .table tr {
   border-bottom: 1px solid #393939;
@@ -101,7 +114,24 @@
 }
 
 .metrics {
-  display: flex;
-  gap: 2%;
   width: 100%;
+  padding: 10%;
+  border-radius: 5px;
+  background-color: #2A2A2A;
+}
+
+.number{
+  padding-top: 20%;
+  font-size: 30px;
+  font-weight: bold;
+  color: #1DB954;
+}
+
+.tableContainer {
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+
+  width: 100%;
+  max-height: 400px; /* Ajusta esta altura según tus necesidades */
+  border: 1px solid #393939; /* Opcional: añade un borde para mejor visualización */
+  border-radius: 5px; /* Opcional: añade bordes redondeados */
 }

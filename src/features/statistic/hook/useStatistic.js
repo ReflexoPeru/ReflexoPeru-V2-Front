@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { fetchStatisticData } from '../services/statisticService';
 
 export const useStatistic = () => {
-  const [size, setSize] = useState('large');
   const [chartSeries, setChartSeries] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pieSeries, setPieSeries] = useState([]);
@@ -15,21 +14,56 @@ export const useStatistic = () => {
   const [patientTypes, setPatientTypes] = useState([]);
 
   const loadData = async () => {
-    const data = await fetchStatisticData(size);
-    setChartSeries(data.chartSeries);
-    setCategories(data.categories);
-    setPieSeries(data.pieSeries);
-    setPieOptions(data.pieOptions);
-    setChartOptions(data.chartOptions);
-    setTherapistPerformance(data.therapistPerformance);
-    setPaymentTypes(data.paymentTypes);
-    setMonthlySessions(data.monthlySessions);
-    setPatientTypes(data.patientTypes);
+    const start = '2024-01-01';
+    const end = '2024-12-01';
+
+    const data = await fetchStatisticData(start, end);
+
+    // Map the API response data to state variables
+    setTherapistPerformance(
+      data.data.terapeutas.map((therapist) => ({
+        name: therapist.terapeuta,
+        data: [therapist.sesiones, therapist.ingresos, therapist.raiting],
+      })),
+    );
+
+    setPaymentTypes(Object.values(data.data.tipos_pago));
+
+    setMonthlySessions([
+      {
+        name: 'Ingresos',
+        data: Object.values(data.data.ingresos).map(Number),
+      },
+    ]);
+
+    setChartSeries([
+      {
+        name: 'Sesiones',
+        data: Object.values(data.data.sesiones).map(Number),
+      },
+    ]);
+
+    setCategories(Object.keys(data.data.sesiones));
+
+    setPieSeries([
+      {
+        name: 'Nuevo',
+        data: [Number(data.data.tipos_pacientes.cc)],
+      },
+      {
+        name: 'Continuador',
+        data: [Number(data.data.tipos_pacientes.cc)],
+      },
+    ]);
+
+    setPieOptions({
+      labels: Object.keys(data.data.tipos_pacientes),
+    });
   };
 
   useEffect(() => {
     loadData();
-  }, [size]);
+  }, []);
 
   return {
     chartSeries,
@@ -37,8 +71,6 @@ export const useStatistic = () => {
     pieSeries,
     pieOptions,
     chartOptions,
-    size,
-    setSize,
     therapistPerformance,
     paymentTypes,
     monthlySessions,
