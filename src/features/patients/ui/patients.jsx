@@ -3,28 +3,36 @@ import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import patientsMock from '../../../mock/Patients';
+//import patientsMock from '../../../mock/Patients';
 import { Space, Button } from 'antd';
 import { useNavigate } from 'react-router';
+import { usePatients } from '../hook/patientsHook';
 
 export default function Patients() {
   const navigate = useNavigate();
+
+  const {patients, loading, totalItems, currentPage, handlePageChange} = usePatients();
+
+  // Debug: Verifica los datos recibidos
+  console.log("Datos de pacientes:", patients);
+  console.log("Estado de carga:", loading);
+
   const columns = [
     {
       title: 'Documento',
-      dataIndex: 'nroDocument',
-      key: 'nroDocument',
+      dataIndex: 'document_number',
+      key: 'document_number',
       width: '110px',
     },
     {
       title: 'Apellido Parterno',
-      dataIndex: 'lastnamePaternal',
-      key: 'lastnamePaternal',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
     },
     {
       title: 'Apellido Materno',
-      dataIndex: 'lastnameMaternal',
-      key: 'lastnameMaternal',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
     },
     {
       title: 'Nombre',
@@ -33,7 +41,7 @@ export default function Patients() {
     },
   ];
 
-  const patientData = patientsMock[0].items;
+  //const patientData = patientsMock[0].items;
 
   const handleButton = () => {
     navigate('registrar');
@@ -89,8 +97,15 @@ export default function Patients() {
 
       <ModeloTable
         columns={columns}
-        data={patientData}
+        data={patients}
+        loading={loading}
         customActions={customActionButtons}
+        pagination={{
+          current: currentPage,
+          total: totalItems,
+          pageSize: 100,
+          onChange: handlePageChange,
+        }}
       />
     </div>
   );
