@@ -43,6 +43,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'appointment_date',
           type: 'customComponent',
           componentType: 'dateField',
           span: 13,
@@ -53,6 +54,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'patient_id',
           type: 'customComponent',
           componentType: 'patientField',
           span: 18,
@@ -82,6 +84,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'payment',
           type: 'customComponent',
           componentType: 'paymentMethod',
           span: 13,
@@ -112,6 +115,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'appointment_hour',
           type: 'customComponent',
           componentType: 'timeField',
           span: 13,

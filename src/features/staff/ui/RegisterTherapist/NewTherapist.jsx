@@ -47,6 +47,7 @@ const fields = [
       },
     ],
   },
+  { name: 'birthDate', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
   {
     type: 'customRow',
     fields: [
