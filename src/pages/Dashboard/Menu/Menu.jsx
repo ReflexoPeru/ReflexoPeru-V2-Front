@@ -27,7 +27,7 @@ export default function MenuDashboard() {
   const items = [
     {
       key: '1',
-      label: <Link to="/"> Inicio </Link>,
+      label: <Link to="/Inicio"> Inicio </Link>,
       icon: (
         <div className={Style.icon}>
           <House />

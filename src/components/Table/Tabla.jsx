@@ -157,6 +157,7 @@ const ModeloTable = ({ columns, data, customActions }) => {
       >
         <div style={{ overflow: 'hidden' }}>
           <Table
+            style={{ maxHeight: 'none' }}
             columns={[...columnaArreglada, actionColumn]}
             dataSource={paginationData}
             rowKey="id"

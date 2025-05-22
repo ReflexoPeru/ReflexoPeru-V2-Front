@@ -9,7 +9,6 @@ import { useAuth } from '../../hook/authHook';
 function ChangesPassword() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible2, setPasswordVisible2] = useState(false);
-
   const { changePassword } = useAuth();
 
   useEffect(() => {
