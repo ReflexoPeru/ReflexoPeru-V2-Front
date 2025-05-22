@@ -52,7 +52,18 @@ canvas {
 .loginForm h2 {
   margin-bottom: 15px;
   padding: 0px 25px;
+
   font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-weight: bold;
+  color: #797979;
+}
+
+.loginForm p {
+  margin-bottom: 15px;
+  padding: 0px 25px;
+
+  font-size: clamp(1rem, 2.5vw, 1.15rem);
+  font-weight: bold;
   color: #797979;
 }
 
@@ -93,17 +104,7 @@ canvas {
 }
 
 .loginForm button {
-  cursor: pointer;
-
-  width: 100%;
-  padding: 6.5%;
-  border: none;
-  border-radius: 15px;
-
-  font-size: clamp(1.10rem, 2.5vw, 1.3rem);
-  color: white;
-
-  background-color: #4CAF50;
+ 
 }
 
 .buttoncontainer {
@@ -146,4 +147,23 @@ canvas {
   font-size: 1.10rem;
   color: #6B7280;
   text-align: center;
+}
+
+.btnSendCode{
+  padding: 30px 0px;
+  font-size: clamp(1.10rem, 2.5vw, 1.3rem);
+  font-weight: bold;
+  color: #4CAF50;
+}
+
+.loginFormButton{
+   cursor: pointer;
+
+  width: 100%;
+  padding: 6.5%;
+  border: none;
+  border-radius: 15px;
+
+  font-size: clamp(1.10rem, 2.5vw, 1.3rem);
+  color: white;
 }

@@ -12,7 +12,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
-    const token = getLocalStorage('token');
+    const token = getLocalStorage('token') || null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,7 +24,10 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status == 401 || error.response?.status == 403) {
+    if (
+      (error.response?.status == 401 || error.response?.status == 403) &&
+      url.includes('/Inicio')
+    ) {
       removeLocalStorage('token');
       removeLocalStorage('user_id');
       window.location.href = '/error500';

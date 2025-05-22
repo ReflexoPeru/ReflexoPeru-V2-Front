@@ -89,9 +89,9 @@ export const useAuth = () => {
       showToast('intentoFallido', backendMsg);
     }
   };
-  const sendVerifyCode = async (id) => {
+  const sendVerifyCode = async () => {
     try {
-      const response = await sendVerifyCodeService(id);
+      const response = await sendVerifyCodeService(getLocalStorage('user_id'));
       if (response.status == '200') {
         showToast('codigoEnviado');
       } else {
@@ -103,5 +103,13 @@ export const useAuth = () => {
     }
   };
 
-  return { login, loading, error, validateCode, changePassword, logOut };
+  return {
+    login,
+    loading,
+    error,
+    validateCode,
+    changePassword,
+    logOut,
+    sendVerifyCode,
+  };
 };

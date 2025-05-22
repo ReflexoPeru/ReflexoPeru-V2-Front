@@ -16,7 +16,7 @@ export const validateCode = async (code, id) => {
 };
 
 export const changePassword = async (data) => {
-  const response = await put(`change_password`, data);
+  const response = await put(`change-password`, data);
   console.log(response);
   return response;
 };

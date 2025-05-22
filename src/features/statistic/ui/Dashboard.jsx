@@ -290,8 +290,8 @@ export default function Dashboard() {
                 options={barChartOptions}
                 series={chartSeries}
                 type="bar"
-                height="100%"
-                width="100%"
+                height="180px"
+                width="450px"
               />
             </div>
           </div>
