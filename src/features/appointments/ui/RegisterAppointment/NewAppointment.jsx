@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Form from '../../../../components/Form/Form';
 import styles from '../RegisterAppointment/NewAppointment.module.css';
+import { useAppointments } from '../../hook/appointmentsHook';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
@@ -9,12 +10,13 @@ const NewAppointment = () => {
   const [paymentOption, setPaymentOption] = useState(null);
   const [customAmount, setCustomAmount] = useState(false);
 
-  // Opciones actualizadas según la imagen
+  const { submitNewAppointment } = useAppointments();
+
   const paymentOptions = [
     { label: 'Tarifa completa (S/80)', value: 'completa80', amount: 80 },
     { label: 'Tarifa completa (S/50)', value: 'completa50', amount: 50 },
     { label: 'Media tarifa (S/30)', value: 'media', amount: 30 },
-    { label: 'Cupón sin costo (S/0)', value: 'cupon', amount: 0 }, // Asegúrate que amount sea 0
+    { label: 'Cupón sin costo (S/0)', value: 'cupon', amount: 0 },
     { label: 'Tarifa Personalizada', value: 'custom' },
   ];
 
@@ -23,21 +25,31 @@ const NewAppointment = () => {
     setCustomAmount(value === 'custom');
   };
 
-  const handleSubmit = (values) => {
-    console.log('Valores del formulario:', values);
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        patient_id: 1,
+        appointment_date: null,
+        appointment_hour: null,
+        therapist_id: null,
+        payment: null,
+        appointment_type: null,
+        social_benefit: null,
+        appointment_status_id: null,
+        payment_type_id: null,
+        final_date: null,
+      };
+      const result = await submitNewAppointment(payload);
+      console.log('Cita enviada correctamente:', result);
+    } catch (error) {
+      console.error('Error al enviar la cita:', error);
+    }
   };
 
-  // Ahora definimos appointmentFields después de paymentOptions
   const appointmentFields = [
     {
       type: 'customRow',
-      fields: [
-        {
-          type: 'title',
-          label: 'Nueva Cita',
-          span: 8,
-        },
-      ],
+      fields: [{ type: 'title', label: 'Nueva Cita', span: 8 }],
     },
     {
       type: 'customRow',
@@ -75,7 +87,7 @@ const NewAppointment = () => {
           componentType: 'paymentOptions',
           span: 13,
           props: {
-            paymentOptions: paymentOptions, // Usamos la constante ya definida
+            paymentOptions: paymentOptions,
           },
         },
       ],
@@ -106,7 +118,7 @@ const NewAppointment = () => {
           componentType: 'amountField',
           span: 13,
           props: {
-            paymentOptions: paymentOptions, // Usamos la constante ya definida
+            paymentOptions: paymentOptions,
           },
         },
       ],
