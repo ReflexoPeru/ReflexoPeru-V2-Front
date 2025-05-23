@@ -13,9 +13,12 @@ import {
   persistLocalStorage,
   removeLocalStorage,
 } from '../../../utils/localStorageUtility';
+import { useAuth as useAuthentication } from '../../../routes/AuthContext';
+import { get } from '../../../services/api/Axios/MethodsGeneral';
 
 export const useAuth = () => {
   const { showToast } = useToast();
+  const { setIsAuthenticated, setUserRole } = useAuthentication();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -31,7 +34,9 @@ export const useAuth = () => {
         } else {
           showToast('inicioSesionExitoso');
           persistLocalStorage('token', data.data.token);
+          const rol = await get('get-role');
           removeLocalStorage('user_id');
+          setIsAuthenticated(true);
           navigate('/Inicio');
         }
       }

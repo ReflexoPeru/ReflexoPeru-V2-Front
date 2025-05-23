@@ -7,6 +7,7 @@ import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useNavigate } from 'react-router';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { useAuth } from '../hook/authHook';
+import { removeLocalStorage } from '../../../utils/localStorageUtility';
 
 function Login() {
   //Estados de login
@@ -33,7 +34,9 @@ function Login() {
   //Efecto de particulas
   useEffect(() => {
     const cleanup = initializeParticles();
-
+    removeLocalStorage('token');
+    removeLocalStorage('user_id');
+    removeLocalStorage('name');
     return cleanup;
   }, []);
 

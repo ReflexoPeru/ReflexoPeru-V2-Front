@@ -1,37 +1,42 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import { get } from '../services/api/Axios/MethodsGeneral';
+import {
+  getLocalStorage,
+  persistLocalStorage,
+} from '../utils/localStorageUtility';
+
+import { useToast } from '../services/toastify/ToastContext';
 
 const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
+  const { showToast } = useToast();
   const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null); // 👈 nuevo
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = getLocalStorage('token');
       if (!token) {
         setAuthChecked(true);
         return;
       }
 
       try {
-        const res = await axios.get('/api/validate-token', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await get('get-role');
 
-        if (res.data.valid) {
+        if (res.data.data) {
           setIsAuthenticated(true);
-          setUserRole(res.data.role); // 👈 guarda el rol desde el backend
+          setUserRole(res.data.data.role_id);
+          persistLocalStorage('name', res.data.data.name);
+          persistLocalStorage('user_id', res.data.data.user_id);
         }
       } catch (err) {
-        console.error('Token inválido');
+        showToast('intentoFallido', err?.response?.data?.message);
       } finally {
         setAuthChecked(true);
       }
@@ -41,7 +46,9 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, authChecked, userRole }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, authChecked, userRole, setIsAuthenticated }}
+    >
       {children}
     </AuthContext.Provider>
   );

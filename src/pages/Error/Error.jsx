@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import styles from './Error404.module.css';
-import imgerror from '../../assets/Img/imageError.png';
-import { initializeParticles } from '../../features/auth/hook/loginpacticles';
+import imgerror from '../../assets/Img/Error/imageError.png';
+import { initializeParticles } from '../../hooks/loginpacticles';
+import { useNavigate } from 'react-router';
 
-const Error = () => {
+const Error500 = () => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate('/');
+  };
   useEffect(() => {
     const cleanup = initializeParticles();
 
@@ -27,9 +33,13 @@ const Error = () => {
         <p className={styles.subtitle}>
           Algo esta fallando.
           <br />
-          Por favor, intenta de nuevo o contacta al soporte.
+          Por favor, intenta iniciar sesion de nuevo o contactanos.
         </p>
-        <Button className={styles.homeButton} size="large">
+        <Button
+          className={styles.homeButton}
+          size="large"
+          onClick={handleButtonClick}
+        >
           Intentar de nuevo
         </Button>
       </div>
@@ -37,4 +47,4 @@ const Error = () => {
   );
 };
 
-export default Error;
+export default Error500;

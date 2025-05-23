@@ -1,6 +1,6 @@
 // src/components/ProtectedRoute.jsx
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { Navigate, Outlet } from 'react-router';
+import { useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { isAuthenticated, authChecked, userRole } = useAuth();
@@ -10,7 +10,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
-    return <Navigate to="/Inicio" replace />; // o a un componente de acceso denegado
+    return <Navigate to="/Inicio" replace />; 
   }
 
   return <Outlet />;
