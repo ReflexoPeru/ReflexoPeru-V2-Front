@@ -32,7 +32,7 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { name: 'apellidoPaterno2', label: 'Apellido Paterno', type: 'text', span: 8 },
+      { name: 'nacimiento', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
       {
         name: 'gender',
         label: 'Sexo',

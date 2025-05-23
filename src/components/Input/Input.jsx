@@ -3,11 +3,22 @@ import { Button, Checkbox, DatePicker, Form, Input, InputNumber, Select, TimePic
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
 
+// Importaciones corregidas
+import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import { SelectCountries } from '../Select/SelectCountry';
+import { SelectDepartament } from '../Select/SelectDepartament';
+import { SelectDiagnoses } from '../Select/SelectDiagnoses';
+import { SelectDistrit } from '../Select/SelectDistrit';
+import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
+import { SelectProvince } from '../Select/SelectProvince';
+
+// ... importar los demás componentes Select
 const { Option } = Select;
 
 // Componente principal
 const InputField = ({
   type,
+  form,
   label,
   options = [],
   isPhoneField = false,
@@ -24,22 +35,58 @@ const InputField = ({
 
   switch (type) {
     case 'select':
-      inputComponent = (
-        <Select
-          {...inputProps}
-          dropdownStyle={{ backgroundColor: '#444444', color: '#FFFFFF' }}
-        >
-          {options.map((opt) => (
-            <Option key={opt.value} value={opt.value} style={{ color: '#fff' }}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
-      );
-      break;
+  console.log('Renderizando select, props:', rest);
+  switch (rest.selectType) {
+        case 'country':
+          return <SelectCountries />;
+        case 'departament':
+          return <SelectDepartament 
+                  {...rest}
+                  className={styles.inputStyle}
+                  popupClassName={styles.selectDropdown}
+                  style={{ width: '100%' }}
+                />;
+        case 'province':
+          return <SelectProvince 
+                  {...rest.props} 
+                  {...rest}
+                  className={styles.inputStyle}
+                  popupStyle={{ backgroundColor: '#4B4B4BFF' }}
+                />;
+        case 'distrit':
+          return <SelectDistrit 
+                  {...rest.props} 
+                  {...rest}
+                  className={styles.inputStyle}
+                  popupStyle={{ backgroundColor: '#4B4B4BFF' }}
+                />;
+                  
+        case 'diagnoses':
+          return <SelectDiagnoses {...rest.props} {...rest} />;
+        case 'paymentStatus':
+          return <SelectPaymentStatus {...rest.props} {...rest} />;
+        case 'typeOfDocument':
+          return <SelectTypeOfDocument {...rest.props} {...rest} />;
+        default:
+          // Select genérico para opciones estáticas
+        return (
+          <Select
+            className={styles.inputStyle}
+            popupStyle={{ backgroundColor: '#4B4B4B', color: '#FFFFFF' }}
+            {...rest}
+          >
+            {options.map((opt) => (
+              <Option key={opt.value} value={opt.value} style={{ color: '#fff' }}>
+                {opt.label}
+              </Option>
+            ))}
+          </Select>
+        );
+      }
+    break;
 
     case 'date':
-      inputComponent = <DatePicker {...inputProps} />;
+      inputComponent = <DatePicker {...inputProps}  style={{ width: '100%' }}/>;
       break;
 
     case 'cita':
