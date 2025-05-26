@@ -16,6 +16,11 @@ import Dashboard from '../features/statistic/ui/Dashboard';
 import NewPatient from '../features/patients/ui/RegisterPatient/NewPatient';
 import NewAppointment from '../features/appointments/ui/RegisterAppointment/NewAppointment';
 import NewTherapist from '../features/staff/ui/RegisterTherapist/NewTherapist';
+import Calendar from '../features/calendar/ui/Calendar';
+import System from '../features/configuration/cSystem/System';
+import Payments from '../features/configuration/cPayments/Payments';
+import User from '../features/configuration/cUsers/Users';
+import Profile from '../features/configuration/cProfile/Profile';
 import Error404 from '../pages/Error/Error404';
 
 const router = createBrowserRouter([
@@ -74,6 +79,10 @@ const router = createBrowserRouter([
         element: <ReportGenerator />,
       },
       {
+        path: 'calendar',
+        element: <Calendar />,
+      },
+      {
         path: 'citasCompletas',
         element: <Prueba />,
       },
@@ -97,19 +106,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'configSistema',
-        element: <Prueba />,
+        element: <System />,
       },
       {
         path: 'configPagos',
-        element: <Prueba />,
+        element: <Payments />,
       },
       {
         path: 'configUser',
-        element: <Prueba />,
+        element: <User />,
       },
       {
         path: 'configPerfil',
-        element: <Prueba />,
+        element: <Profile />,
       },
     ],
   },

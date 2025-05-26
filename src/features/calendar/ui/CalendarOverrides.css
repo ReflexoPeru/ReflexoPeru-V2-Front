@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+
+/* === Estilos Globales para react-big-calendar === */
+.rbc-calendar {
+  overflow: hidden;
+
+  height: 100%;
+  border-radius: 12px;
+
+  font-family: 'Poppins', sans-serif;
+
+  background: #1E1E1E;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* === Barra superior del calendario (botones y título) === */
+.rbc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+
+  background: #1E1E1E;
+}
+
+.rbc-toolbar-label { 
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.rbc-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.rbc-toolbar button {
+  cursor: pointer;
+
+  padding: 8px 16px;
+  border: none !important;
+  border-radius: 8px;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #ffffff !important;
+
+  background: #1B7B46 !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  transition: all 0.3s ease;
+}
+
+.rbc-toolbar button:hover {
+  transform: translateY(-2px);
+  background: #1CB54A !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-toolbar button.rbc-active {
+  background: #1CB54A !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === Cabeceras de días (ej: Lunes, Martes, etc.) === */
+.rbc-header {
+  padding: 12px 0;
+  border-bottom: 1px solid #2a2a2a;
+
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1CB54A;
+
+  background: #1E1E1E;
+}
+/* === Días fuera del mes actual === */
+.rbc-off-range-bg {
+  background-color: #686868 !important;
+}
+
+/* === Vistas de mes y tiempo === */
+.rbc-month-view,
+.rbc-time-view {
+  border: 1px solid #2a2a2a;
+  background: #1E1E1E;
+}
+
+/* === Bordes de celdas === */
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid #494949;
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #494949;
+}
+
+/* === Eventos === */
+.rbc-event {
+  padding: 4px 8px;
+  border: none !important;
+  border-radius: 6px;
+
+  font-size: 0.85em;
+  color: white !important;
+
+  background: #1CB54A !important;
+  box-shadow: 0 2px 5px rgba(105, 103, 103, 0.2);
+
+  transition: all 0.3s ease;
+}
+
+.rbc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-event-content {
+  font-weight: 500;
+}
+
+/* === Día actual resaltado === */
+.rbc-today {
+  background-color: rgba(28, 181, 74, 0.2);
+}
+
+/* === Números de los días === */
+.rbc-date-cell {
+  padding: 8px;
+  color: #ffffff;
+}
+
+/* === Hover sobre días del mes === */
+.rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg:hover {
+  background-color: rgb(0, 0, 0);
+}

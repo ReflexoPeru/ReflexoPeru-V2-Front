@@ -80,10 +80,7 @@ const userActions = (record) => (
 const Users = () => {
   return (
     <div className={styles.container}>
-      <div className={styles.header}></div>
       <div className={styles.content}>
-        <div className={styles.sidebar}></div>
-
         <div className={styles.mainContent}>
           <div className={styles.section}>
             <div className={styles.card}>

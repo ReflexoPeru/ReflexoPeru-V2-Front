@@ -5,6 +5,7 @@ import {
   House,
   Nut,
   Person,
+  CalendarDots,
 } from '@phosphor-icons/react';
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
@@ -83,6 +84,15 @@ export default function MenuDashboard() {
     },
     {
       key: '10',
+      label: <Link to="calendar"> Calendario </Link>,
+      icon: (
+        <div className={Style.icon}>
+          <CalendarDots />
+        </div>
+      ),
+    },
+    {
+      key: '11',
       label: <Link to="estadisticas"> Estadisticas </Link>,
       icon: (
         <div className={Style.icon}>
@@ -91,7 +101,7 @@ export default function MenuDashboard() {
       ),
     },
     {
-      key: '11',
+      key: '12',
       label: 'Configuraciones',
       icon: (
         <div className={Style.icon}>
@@ -100,19 +110,19 @@ export default function MenuDashboard() {
       ),
       children: [
         {
-          key: '12',
+          key: '13',
           label: <Link to="configSistema">Sistema</Link>,
         },
         {
-          key: '13',
+          key: '14',
           label: <Link to="configPagos">Pagos</Link>,
         },
         {
-          key: '14',
+          key: '15',
           label: <Link to="configUser">Usuarios</Link>,
         },
         {
-          key: '15',
+          key: '16',
           label: <Link to="configPerfil">Perfil</Link>,
         },
       ],

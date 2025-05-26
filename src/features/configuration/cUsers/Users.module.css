@@ -1,13 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   background-color: #121212;
-}
-
-.header {
-  height: 60px;
-  background-color: #e9e7e7;
 }
 
 .content {
@@ -16,10 +11,7 @@
   flex: 1;
 }
 
-.sidebar {
-  width: 200px;
-  background-color: #ffffff;
-}
+
 
 .mainContent {
   overflow: hidden;
@@ -41,7 +33,7 @@
   display: flex;
   flex-direction: column;
 
-  width: 64%;
+  width: 100%;
   min-height: 70vh;
   max-height: 75vh;
   margin: 0 auto;
@@ -75,7 +67,7 @@
   align-items: center;
   justify-content: center;
 
-  padding: 8px 16px;
+  padding: 7px 14px;
   border: none;
   border-radius: 4px;
 
