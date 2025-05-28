@@ -23,9 +23,7 @@ const Profile = () => {
 
   return (
     <div className={styles.body}>
-      <header className={styles.header}></header>
       <div className={styles.layout}>
-        <aside className={styles.sidebar}></aside>
         <main className={styles.mainContent}>
           <div className={styles.container}>
             <div className={styles.card}>

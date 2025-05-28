@@ -16,6 +16,11 @@ import Dashboard from '../features/statistic/ui/Dashboard';
 import NewPatient from '../features/patients/ui/RegisterPatient/NewPatient';
 import NewAppointment from '../features/appointments/ui/RegisterAppointment/NewAppointment';
 import NewTherapist from '../features/staff/ui/RegisterTherapist/NewTherapist';
+import Calendar from '../features/calendar/ui/Calendar';
+import System from '../features/configuration/cSystem/System';
+import Payments from '../features/configuration/cPayments/Payments';
+import User from '../features/configuration/cUsers/Users';
+import Profile from '../features/configuration/cProfile/Profile';
 import Error404 from '../pages/Error/Error404';
 import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
@@ -76,6 +81,10 @@ const router = createBrowserRouter([
             element: <Appointments />,
           },
           {
+        path: 'calendar',
+        element: <Calendar />,
+      },
+          {
             path: 'citas/registrar',
             element: <NewAppointment />,
           },
@@ -107,21 +116,21 @@ const router = createBrowserRouter([
           },
           {
             path: 'configPagos',
-            element: <Prueba />,
+            element: <Payments />,
           },
           {
             path: 'configPerfil',
-            element: <Prueba />,
+            element: <Profile />,
           },
           {
             path: 'configSistema',
             element: <ProtectedRoute allowedRoles={[1]} />,
-            children: [{ index: true, element: <Prueba /> }],
+            children: [{ index: true, element: <System /> }],
           },
           {
             path: 'configUser',
             element: <ProtectedRoute allowedRoles={[1]} />,
-            children: [{ index: true, element: <Prueba /> }],
+            children: [{ index: true, element: <User /> }],
           },
         ],
       },
