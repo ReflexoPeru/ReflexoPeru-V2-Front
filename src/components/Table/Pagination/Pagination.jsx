@@ -45,6 +45,7 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                         total={total}
                         pageSize={pageSize}
                         onChange={handleChange}
+                        
                     />
                 </div>
                 <div style={{ color: '#555555', marginTop: '10px' }}>

@@ -1,19 +1,9 @@
-import { post , get } from '../../../services/api/Axios/MethodsGeneral';
+import axios from 'axios';
 import { get } from '../../../services/api/Axios/MethodsGeneral'
 
-export const createTherapist = async (data) => {
-  try {
-    const response = await post('therapists', data);
-    return response.data;
-  } catch (error) {
-    console.error('Error en createTherapist:', error);
-    throw error;
-  }
-};
-
-export const getStaff = async (page = 1, perPage = 100) => {
+export const getPatients = async (page = 1, perPage = 100) => {
     try {
-        const response = await get(`therapists?page=${page}&per_page=${perPage}`);
+        const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
         const data = Array.isArray(response.data.data) ? response.data.data : [];
 
@@ -27,9 +17,9 @@ export const getStaff = async (page = 1, perPage = 100) => {
     }
 };
 
-export const searchStaff = async (term) => {
+export const searchPatients = async (term) => {
     try {
-        const res = await get(`therapists/search?search=${term}&per_page=100`);
+        const res = await get(`patients/search?search=${term}&per_page=100`);
         console.log("🔍 Resultado de búsqueda:", res.data);
 
         const data = Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [];
@@ -37,7 +27,7 @@ export const searchStaff = async (term) => {
 
         return { data, total };
     } catch (error) {
-        console.error("❌ Error en searchStaff:", error);
+        console.error("❌ Error en searchPatients:", error);
         throw error;
     }
 };

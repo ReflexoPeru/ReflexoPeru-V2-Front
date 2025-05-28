@@ -3,28 +3,40 @@ import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import patientsMock from '../../../mock/Patients';
+//import patientsMock from '../../../mock/Patients';
 import { Space, Button } from 'antd';
 import { useNavigate } from 'react-router';
+import { usePatients } from '../hook/patientsHook';
 
 export default function Patients() {
   const navigate = useNavigate();
+
+  const { patients, loading, error, pagination, handlePageChange, setSearchTerm } = usePatients();
+
+  // Debug (verifica en consola)
+  console.log("Datos:", {
+    patients,
+    loading,
+    error,
+    pagination
+  });
+
   const columns = [
     {
       title: 'Documento',
-      dataIndex: 'nroDocument',
-      key: 'nroDocument',
+      dataIndex: 'document_number',
+      key: 'document_number',
       width: '110px',
     },
     {
       title: 'Apellido Parterno',
-      dataIndex: 'lastnamePaternal',
-      key: 'lastnamePaternal',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
     },
     {
       title: 'Apellido Materno',
-      dataIndex: 'lastnameMaternal',
-      key: 'lastnameMaternal',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
     },
     {
       title: 'Nombre',
@@ -33,19 +45,19 @@ export default function Patients() {
     },
   ];
 
-  const patientData = patientsMock[0].items;
+  //const patientData = patientsMock[0].items;
 
   const handleButton = () => {
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    console.log('Búsqueda:', value);
     // Aquí puedes implementar la lógica de filtrado
+    setSearchTerm(value);
   };
 
   // Botones personalizados
-  const customActionButtons = (record) => (
+  const customActionButtons = () => (
     <Space size="small">
       <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
         Editar
@@ -89,8 +101,15 @@ export default function Patients() {
 
       <ModeloTable
         columns={columns}
-        data={patientData}
+        data={patients}
+        loading={loading} 
         customActions={customActionButtons}
+        pagination={{
+          current: pagination.currentPage,
+          total: pagination.totalItems,
+          pageSize: 100,
+          onChange: handlePageChange,
+        }}
       />
     </div>
   );

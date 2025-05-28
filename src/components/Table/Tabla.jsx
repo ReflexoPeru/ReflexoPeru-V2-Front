@@ -1,37 +1,67 @@
 import { useState, useLayoutEffect, useRef } from 'react';
-import { Table, Button, Space, ConfigProvider } from 'antd';
+import { Table, Button, Space, ConfigProvider, Spin } from 'antd';
 import estilos from './Tabla.module.css';
 import ModeloPagination from './Pagination/Pagination.jsx';
+import { Package } from '@phosphor-icons/react';
 
-const ModeloTable = ({ columns, data, customActions }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(100);
+
+const ModeloTable = ({ columns, data, customActions, loading = false, pagination }) => {
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [pageSize, setPageSize] = useState(100);
+  const currentPage = pagination?.current || 1;
+  const pageSize = pagination?.pageSize || 100;
+  const onPageChange = pagination?.onChange || (() => {});
+
   const [tableHeight, setTableHeight] = useState('100%');
   const containerRef = useRef(null);
   const paginationRef = useRef(null);
 
-  const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
-  };
+  // const handlePageChange = (page, size) => {
+  //   setCurrentPage(page);
+  //   setPageSize(size);
+  // };
 
-  useLayoutEffect(() => {
-    const calculateHeight = () => {
-      if (containerRef.current && paginationRef.current) {
-        const containerHeight = containerRef.current.clientHeight;
-        const paginationHeight = paginationRef.current.clientHeight;
-        const newHeight = containerHeight - paginationHeight - 64;
-        setTableHeight(newHeight);
+    useLayoutEffect(() => {
+    function debounce(func, wait) {
+      let timeout;
+      function debounced(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
       }
-    };
+      debounced.cancel = () => clearTimeout(timeout);
+      return debounced;
+    }
 
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
+    const debouncedCalculate = debounce(() => {
+      if (!containerRef.current || !paginationRef.current) return;
+
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const paginationRect = paginationRef.current.getBoundingClientRect();
+
+      // Calcula el espacio disponible real
+      const availableHeight = window.innerHeight - containerRect.top - paginationRect.height - 40; // 40px de margen
+
+      // Limita entre 30% y 80% del viewport
+      const minHeight = window.innerHeight * 0.3;
+      const maxHeight = window.innerHeight * 0.6;
+
+      const newHeight = Math.max(
+        minHeight,
+        Math.min(availableHeight, maxHeight)
+      );
+
+      setTableHeight(newHeight);
+    }, 100);
+
+    debouncedCalculate();
+    window.addEventListener('resize', debouncedCalculate);
 
     return () => {
-      window.removeEventListener('resize', calculateHeight);
+      window.removeEventListener('resize', debouncedCalculate);
+      debouncedCalculate.cancel && debouncedCalculate.cancel();
     };
-  }, []);
+  }, [containerRef, paginationRef]);
+
 
   const columnaArreglada = columns.map((col, index, arr) => {
     const NombreColumn = col.key === 'nombre' || col.dataIndex === 'nombre';
@@ -110,10 +140,10 @@ const ModeloTable = ({ columns, data, customActions }) => {
     }),
   };
 
-  const paginationData = data.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
+  // const paginationData = data.slice(
+  //   (currentPage - 1) * pageSize,
+  //   currentPage * pageSize,
+  // );
 
   return (
     <ConfigProvider
@@ -144,6 +174,23 @@ const ModeloTable = ({ columns, data, customActions }) => {
           },
         },
       }}
+      renderEmpty={() => {
+        if (loading) return <div style={{ display: 'none' }}></div>;
+        return (
+          <div style={{ 
+            color: '#a0a0a0', 
+            padding: '16px', 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <Package size={40} />
+            <span>No hay datos disponibles</span>
+          </div>
+        );
+      }}
     >
       <div
         ref={containerRef}
@@ -159,21 +206,31 @@ const ModeloTable = ({ columns, data, customActions }) => {
           <Table
             style={{ maxHeight: 'none' }}
             columns={[...columnaArreglada, actionColumn]}
-            dataSource={paginationData}
+            dataSource={data}
             rowKey="id"
             pagination={false}
             scroll={{ y: tableHeight }}
             rowClassName={(__, index) =>
               index % 2 === 0 ? estilos.zebraRow : ''
             }
+            loading={{
+              spinning: loading,
+              indicator: (
+                <Spin 
+                  size="large" 
+                  style={{ color: '#ffffff' }} // Texto blanco
+                  tip="Cargando..."
+                />
+              )
+            }}
           />
         </div>
         <div ref={paginationRef}>
           <ModeloPagination
-            total={data.length}
+            total={pagination?.total}
             current={currentPage}
             pageSize={pageSize}
-            onChange={handlePageChange}
+            onChange={onPageChange}
           />
         </div>
       </div>
