@@ -27,7 +27,7 @@ export const logOut = async () => {
 };
 
 export const sendVerifyCode = async (id) => {
-  const response = await postID('sendVerifyCode', id);
+  const response = await postID('sendVerifyCode', id, { type_email: 0 });
   return response;
 };
 
