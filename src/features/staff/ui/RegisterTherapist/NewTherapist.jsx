@@ -1,4 +1,5 @@
 import FormGenerator from '../../../../components/Form/Form';
+import { submitTherapist } from '../../hook/staffHook';
 
 const fields = [
   { type: 'title', label: 'Nuevo Terapeuta' },
@@ -24,15 +25,32 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { name: 'lastName', label: 'Apellido Paterno', type: 'text', required: true, span: 8 },
-      { name: 'motherLastName', label: 'Apellido Materno', type: 'text', span: 8 },
-      { name: 'name', label: 'Nombre', type: 'text', required: true, span: 8 },
+      {
+        name: 'lastName',
+        label: 'Apellido Paterno',
+        type: 'text',
+        required: true,
+        span: 8,
+      },
+      {
+        name: 'motherLastName',
+        label: 'Apellido Materno',
+        type: 'text',
+        span: 8,
+      },
+      {
+        name: 'firstName',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        span: 8,
+      },
     ],
   },
+  { name: 'birthDate', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
   {
     type: 'customRow',
     fields: [
-      { name: 'apellidoPaterno2', label: 'Apellido Paterno', type: 'text', span: 8 },
       {
         name: 'gender',
         label: 'Sexo',
@@ -50,7 +68,13 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { name: 'phone', label: 'Teléfono', type: 'text', required: true, span: 8 },
+      {
+        name: 'phone',
+        label: 'Teléfono',
+        type: 'text',
+        required: true,
+        span: 8,
+      },
       { name: 'email', label: 'Correo Electrónico', type: 'email', span: 16 },
     ],
   },
@@ -64,21 +88,21 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'departamento',
+        name: 'region',
         label: 'Departamento',
         type: 'select',
         options: [],
         span: 8,
       },
       {
-        name: 'provincia',
+        name: 'province',
         label: 'Provincia',
         type: 'select',
         options: [],
         span: 8,
       },
       {
-        name: 'distrito',
+        name: 'district',
         label: 'Distrito',
         type: 'select',
         options: [],
@@ -89,7 +113,19 @@ const fields = [
 ];
 
 const NewTherapist = () => {
-  return <FormGenerator fields={fields} mode="create" />;
+  const handleSubmit = async (formData) => {
+    try {
+      const response = await submitTherapist(formData);
+      console.log('Terapeuta creado:', response);
+      // agregar toast
+    } catch (error) {
+      console.error('Error al crear terapeuta:', error);
+    }
+  };
+
+  return (
+    <FormGenerator fields={fields} mode="create" onSubmit={handleSubmit} />
+  );
 };
 
 export default NewTherapist;
