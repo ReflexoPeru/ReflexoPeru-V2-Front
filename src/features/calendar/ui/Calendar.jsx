@@ -5,8 +5,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
 import { Modal } from 'antd';
-import { mockEvents } from '../../../mock/mockEvents';
 import dayjs from 'dayjs';
+import { useCalendar } from '../hook/calendarHook';
 
 // Localización en español
 moment.locale('es', {
@@ -15,15 +15,13 @@ moment.locale('es', {
       '_',
     ),
   weekdays: 'Domingo_Lunes_Martes_Miércoles_Jueves_Viernes_Sábado'.split('_'),
-  weekdaysShort: 'Domingo_Lunes_Martes_Miércoles_Jueves_Viernes_Sábado'.split(
-    '_',
-  ),
+  weekdaysShort: 'Dom_Lun_Mar_Mié_Jue_Vie_Sáb'.split('_'),
 });
 
 const localizer = momentLocalizer(moment);
 
 const Calendario = () => {
-  const [events] = React.useState(mockEvents);
+  const { events, loading, error } = useCalendar();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedEvent, setSelectedEvent] = React.useState(null);
   const [date, setDate] = React.useState(new Date());
@@ -54,6 +52,39 @@ const Calendario = () => {
       border: 'none',
     },
   });
+
+  // Función para mapear el estado de la cita
+  const getAppointmentStatus = (statusId) => {
+    switch (statusId) {
+      case 1:
+        return 'Pendiente';
+      case 2:
+        return 'Confirmada';
+      case 3:
+        return 'Completada';
+      case 4:
+        return 'Cancelada';
+      default:
+        return 'Desconocido';
+    }
+  };
+
+  // Función para mapear el tipo de pago
+  const getPaymentType = (typeId) => {
+    switch (typeId) {
+      case 1:
+        return 'Efectivo';
+      case 2:
+        return 'Tarjeta';
+      case 3:
+        return 'Transferencia';
+      default:
+        return 'Desconocido';
+    }
+  };
+
+  if (loading) return <p>Cargando eventos...</p>;
+  if (error) return <p>Error al cargar eventos: {error.message}</p>;
 
   return (
     <div className={styles.calendarContainer}>
@@ -96,18 +127,10 @@ const Calendario = () => {
         onCancel={handleModalClose}
         footer={null}
         maskClosable={true}
+        width={600}
       >
         {selectedEvent && (
           <div style={{ color: 'black' }}>
-            <p>
-              <strong>Paciente:</strong> {selectedEvent.details.paciente}
-            </p>
-            <p>
-              <strong>Tipo:</strong> {selectedEvent.details.tipo}
-            </p>
-            <p>
-              <strong>Sala:</strong> {selectedEvent.details.sala}
-            </p>
             <p>
               <strong>Fecha:</strong>{' '}
               {dayjs(selectedEvent.start).format('DD/MM/YYYY')}
@@ -118,11 +141,30 @@ const Calendario = () => {
               {dayjs(selectedEvent.end).format('HH:mm')}
             </p>
             <p>
-              <strong>Estado:</strong> {selectedEvent.details.estado}
+              <strong>Tipo de cita:</strong> {selectedEvent.title}
+            </p>
+            <p>
+              <strong>Malestar:</strong>{' '}
+              {selectedEvent.details.ailments || 'No especificado'}
+            </p>
+            <p>
+              <strong>Diagnóstico reflexológico:</strong>{' '}
+              {selectedEvent.details.reflexology_diagnostics ||
+                'No especificado'}
             </p>
             <p>
               <strong>Observaciones:</strong>{' '}
-              {selectedEvent.details.observaciones}
+              {selectedEvent.details.observation || 'Ninguna'}
+            </p>
+            <p>
+              <strong>Estado:</strong>{' '}
+              {getAppointmentStatus(
+                selectedEvent.details.appointment_status_id,
+              )}
+            </p>
+            <p>
+              <strong>Tipo de pago:</strong>{' '}
+              {getPaymentType(selectedEvent.details.payment_type_id)}
             </p>
           </div>
         )}
