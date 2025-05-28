@@ -113,16 +113,8 @@ export default function MenuDashboard() {
       ),
       children: [
         {
-          key: '13',
-          label: <Link to="configSistema">Sistema</Link>,
-        },
-        {
-          key: '14',
+          key: '33',
           label: <Link to="configPagos">Pagos</Link>,
-        },
-        {
-          key: '15',
-          label: <Link to="configUser">Usuarios</Link>,
         },
         {
           key: '16',

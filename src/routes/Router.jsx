@@ -81,9 +81,9 @@ const router = createBrowserRouter([
             element: <Appointments />,
           },
           {
-        path: 'calendar',
-        element: <Calendar />,
-      },
+            path: 'calendar',
+            element: <Calendar />,
+          },
           {
             path: 'citas/registrar',
             element: <NewAppointment />,

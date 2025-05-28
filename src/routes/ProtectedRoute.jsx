@@ -4,16 +4,11 @@ import { useAuth } from './AuthContext';
 import Style from './ProtectedRoute.module.css';
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const { isAuthenticated, authChecked, userRole } = useAuth();
+  const { isAuthenticated, userRole } = useAuth();
 
-  if (!authChecked)
-    return (
-      <div className={Style.container}>
-        <div className={Style.loader}></div>
-      </div>
-    );
-
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
 
   if (allowedRoles && !allowedRoles.includes(userRole)) {
     return <Navigate to="/Inicio" replace />;

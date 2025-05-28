@@ -32,12 +32,25 @@ export const useAuth = () => {
           showToast('inicioSesionExitoso');
           navigate('/primerInicio');
         } else {
-          showToast('inicioSesionExitoso');
           persistLocalStorage('token', data.data.token);
-          const rol = await get('get-role');
           removeLocalStorage('user_id');
-          setIsAuthenticated(true);
-          navigate('/Inicio');
+
+          // Obtener los datos completos del usuario
+          try {
+            const userData = await get('get-role');
+            if (userData.data) {
+              setIsAuthenticated(true);
+              setUserRole(userData.data.role_id);
+              persistLocalStorage('name', userData.data.name);
+              persistLocalStorage('user_id', userData.data.user_id);
+
+              showToast('inicioSesionExitoso');
+              navigate('/Inicio');
+            }
+          } catch (error) {
+            showToast('intentoFallido', 'Error al obtener datos de usuario');
+            removeLocalStorage('token');
+          }
         }
       }
     } catch (error) {
