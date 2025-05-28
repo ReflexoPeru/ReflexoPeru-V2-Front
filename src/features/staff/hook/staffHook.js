@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getPatients, searchPatients } from '../service/patientsService';
+import { getStaff, searchStaff } from '../service/staffService';
 
-export const usePatients = () => {
-    const [patients, setPatients] = useState([]);
+export const useStaff = () => {
+    const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [pagination, setPagination] = useState({
@@ -12,11 +12,11 @@ export const usePatients = () => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    const loadPatients = async (page) => {
+    const loadStaff = async (page) => {
     setLoading(true);
     try {
-        const { data, total } = await getPatients(page);
-        setPatients(data);
+        const { data, total } = await getStaff(page);
+        setStaff(data);
         setPagination({
             currentPage: page,
             totalItems: total,
@@ -29,11 +29,11 @@ export const usePatients = () => {
         }
     };
 
-    const searchPatientsByTerm = async (term) => {
+    const searchStaffByTerm = async (term) => {
         setLoading(true);
         try {
-            const { data, total } = await searchPatients(term);
-            setPatients(data);
+            const { data, total } = await searchStaff(term);
+            setStaff(data);
             setPagination({
                 currentPage: 1,
                 totalItems: total,
@@ -47,15 +47,15 @@ export const usePatients = () => {
     };
 
     useEffect(() => {
-        loadPatients(1);
+        loadStaff(1);
     }, []);
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             if (searchTerm.trim()) {
-                searchPatientsByTerm(searchTerm.trim());
+                searchStaffByTerm(searchTerm.trim());
             } else {
-                loadPatients(1); 
+                loadStaff(1); 
             }
         }, 500); 
 
@@ -63,11 +63,11 @@ export const usePatients = () => {
     }, [searchTerm]);
 
     return {
-        patients,
+        staff,
         loading,
         error,
         pagination,
-        handlePageChange: loadPatients,
+        handlePageChange: loadStaff,
         setSearchTerm,
     };
 };

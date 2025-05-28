@@ -8,7 +8,7 @@ const CustomSearch = ({
     width = "400px",          
     style = {},               
 }) => {
-    const handlePressEnter = (e) => {
+    const handleChange = (e) => {
         onSearch(e.target.value);
     };
 
@@ -32,7 +32,7 @@ const CustomSearch = ({
         <Input
             placeholder={placeholder}
             size={size}
-            onPressEnter={handlePressEnter}
+            onChange={handleChange} 
             style={{ 
             width,
             boxShadow: "none",

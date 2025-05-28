@@ -11,11 +11,15 @@ import { usePatients } from '../hook/patientsHook';
 export default function Patients() {
   const navigate = useNavigate();
 
-  const {patients, loading, totalItems, currentPage, handlePageChange} = usePatients();
+  const { patients, loading, error, pagination, handlePageChange, setSearchTerm } = usePatients();
 
-  // Debug: Verifica los datos recibidos
-  console.log("Datos de pacientes:", patients);
-  console.log("Estado de carga:", loading);
+  // Debug (verifica en consola)
+  console.log("Datos:", {
+    patients,
+    loading,
+    error,
+    pagination
+  });
 
   const columns = [
     {
@@ -48,12 +52,12 @@ export default function Patients() {
   };
 
   const handleSearch = (value) => {
-    console.log('Búsqueda:', value);
     // Aquí puedes implementar la lógica de filtrado
+    setSearchTerm(value);
   };
 
   // Botones personalizados
-  const customActionButtons = (record) => (
+  const customActionButtons = () => (
     <Space size="small">
       <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
         Editar
@@ -98,11 +102,11 @@ export default function Patients() {
       <ModeloTable
         columns={columns}
         data={patients}
-        loading={loading}
+        loading={loading} 
         customActions={customActionButtons}
         pagination={{
-          current: currentPage,
-          total: totalItems,
+          current: pagination.currentPage,
+          total: pagination.totalItems,
           pageSize: 100,
           onChange: handlePageChange,
         }}
