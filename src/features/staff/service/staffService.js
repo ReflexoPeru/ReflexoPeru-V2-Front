@@ -1,5 +1,4 @@
 import { post , get } from '../../../services/api/Axios/MethodsGeneral';
-import { get } from '../../../services/api/Axios/MethodsGeneral'
 
 export const createTherapist = async (data) => {
   try {
