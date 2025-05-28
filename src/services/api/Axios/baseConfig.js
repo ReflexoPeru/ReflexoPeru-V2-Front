@@ -1,7 +1,10 @@
 import axios from 'axios';
+import {
+  getLocalStorage,
+  removeLocalStorage,
+} from '../../../utils/localStorageUtility';
 
 const BaseURL = 'http://127.0.0.1:8000/api/';
-const token = localStorage.getItem('token');
 
 const instance = axios.create({
   baseURL: BaseURL,
@@ -9,13 +12,27 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
   (config) => {
+    const token = getLocalStorage('token') || null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
+  (error) => Promise.reject(error),
+);
+
+instance.interceptors.response.use(
+  (response) => response,
   (error) => {
-    return console.log('Algo fallooo : ' + error);
+    if (
+      (error.response?.status == 401 || error.response?.status == 403) &&
+      url.includes('/Inicio')
+    ) {
+      removeLocalStorage('token');
+      removeLocalStorage('user_id');
+      window.location.href = '/error500';
+    }
+    return Promise.reject(error);
   },
 );
 

@@ -3,13 +3,22 @@ import {
   logOut as LogOutService,
   validateCode as validateCodeService,
   changePassword as changePasswordService,
+  sendVerifyCode as sendVerifyCodeService,
 } from '../service/authService';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { useToast } from '../../../services/toastify/ToastContext';
+import {
+  getLocalStorage,
+  persistLocalStorage,
+  removeLocalStorage,
+} from '../../../utils/localStorageUtility';
+import { useAuth as useAuthentication } from '../../../routes/AuthContext';
+import { get } from '../../../services/api/Axios/MethodsGeneral';
 
 export const useAuth = () => {
   const { showToast } = useToast();
+  const { setIsAuthenticated, setUserRole } = useAuthentication();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,56 +28,93 @@ export const useAuth = () => {
       const data = await LoginService(credentials);
       if (data.status == '200') {
         if (data.data.first_login) {
-          localStorage.setItem('user_id', data.data.user_id);
+          persistLocalStorage('user_id', data.data.user_id);
           showToast('inicioSesionExitoso');
           navigate('/primerInicio');
         } else {
           showToast('inicioSesionExitoso');
-          localStorage.setItem('token', data.data.token);
-          localStorage.removeItem('user_id');
+          persistLocalStorage('token', data.data.token);
+          const rol = await get('get-role');
+          removeLocalStorage('user_id');
+          setIsAuthenticated(true);
           navigate('/Inicio');
         }
-      } else if (data.status == '401') {
-        showToast('intentoFallido');
       }
-    } catch {
-      showToast('intentoFallido');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
   const validateCode = async (code) => {
     try {
-      const data = await validateCodeService(
-        code,
-        localStorage.getItem('user_id'),
-      );
+      const data = await validateCodeService(code, getLocalStorage('user_id'));
       console.log(data);
       if (data.status == '200') {
         showToast('codigoVerificado');
-        localStorage.setItem('token', data.data.token);
+        persistLocalStorage('token', data.data.token);
         navigate('/cambiarContraseña');
-      } else if (data.status == '401') {
+      } else {
         showToast('codigoIncorrecto');
       }
-    } catch {
-      showToast('codigoIncorrecto');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
   const changePassword = async (data) => {
     try {
       const response = await changePasswordService(data);
-      console.log(response);
       if (response.status == '200') {
         showToast('contraseñaCambiada');
         navigate('/Inicio');
-      } else if (data.status == '401') {
+      } else {
         showToast('intentoFallido');
       }
-    } catch {
-      showToast('contraseñaIncorrecta');
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
     }
   };
 
-  return { login, loading, error, validateCode, changePassword };
+  const logOut = async () => {
+    try {
+      const response = await LogOutService();
+      if (response.status == '200') {
+        showToast('cierreSesion');
+        removeLocalStorage('token');
+        removeLocalStorage('user_id');
+        navigate('/');
+      } else {
+        showToast('intentoFallido');
+      }
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
+    }
+  };
+  const sendVerifyCode = async () => {
+    try {
+      const response = await sendVerifyCodeService(getLocalStorage('user_id'));
+      if (response.status == '200') {
+        showToast('codigoEnviado');
+      } else {
+        showToast('intentoFallido');
+      }
+    } catch (error) {
+      const backendMsg = error?.response?.data?.message || null;
+      showToast('intentoFallido', backendMsg);
+    }
+  };
+
+  return {
+    login,
+    loading,
+    error,
+    validateCode,
+    changePassword,
+    logOut,
+    sendVerifyCode,
+  };
 };

@@ -1,12 +1,16 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import styles from './Error404.module.css';
-import imgerror from '../../assets/Img/Error/imageError.png';
+import imgerror from '../../assets/Img/Error/imageError404.png';
 import { initializeParticles } from '../../hooks/loginpacticles';
 import { useNavigate } from 'react-router';
 
 const Error404 = () => {
   const navigate = useNavigate();
+
+  const handleButtonClick = () => {
+    navigate('/Inicio');
+  };
   useEffect(() => {
     const cleanup = initializeParticles();
 
@@ -34,7 +38,7 @@ const Error404 = () => {
         <Button
           className={styles.homeButton}
           size="large"
-          onClick={navigate('/Inicio')}
+          onClick={handleButtonClick}
         >
           Volver al inicio
         </Button>

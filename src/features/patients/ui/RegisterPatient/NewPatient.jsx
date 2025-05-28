@@ -1,7 +1,7 @@
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatient } from '../../hook/patientHook';
 
-const fields = [
+export const fields = [
   { type: 'title', label: 'Nuevo paciente' },
   {
     type: 'customRow',

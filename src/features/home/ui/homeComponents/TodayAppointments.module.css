@@ -1,7 +1,8 @@
 .container {
     flex: 1;
 
-    padding: 25px;
+    width: 100%;
+    padding: clamp(15px, 3vw, 25px);
     border-radius: 20px;
 
     color: white;
@@ -11,7 +12,7 @@
 
 .title {
     margin-bottom: 20px;
-    font-size: 26px;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
     font-weight: bold;
 }
 
@@ -36,8 +37,8 @@
     align-items: center;
     justify-content: space-between;
 
-    margin-bottom: 10px;
-    padding: 12px 15px;
+    margin-bottom: clamp(8px, 1.5vw, 12px);
+    padding: clamp(10px, 2vw, 15px);
     border-radius: 10px;
 
     background-color: #2a2a2a;
@@ -48,12 +49,12 @@
 }
 
 .name {
-    font-size: 18px;
+    font-size: clamp(1rem, 2.2vw, 1.125rem);
     font-weight: 500;
 }
 
 .details {
-    font-size: 14px;
+    font-size: clamp(0.75rem, 1.8vw, 0.875rem);
     color: #ccc;
 }
 
