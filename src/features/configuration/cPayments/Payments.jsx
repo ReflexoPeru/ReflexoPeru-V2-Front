@@ -1,11 +1,12 @@
 import React from 'react';
 import ModeloTable from '../../../components/Table/Tabla';
 import styles from './Payments.module.css';
+import { usePaymentTypes } from './paymentsHook';
 
-const paymentTypes = [
-  { id: 1, paymentType: 'Efectivo', status: 'Habilitado' },
-  { id: 2, paymentType: 'Yape', status: 'Habilitado' },
-];
+// const paymentTypes = [
+//   { id: 1, paymentType: 'Efectivo', status: 'Habilitado' },
+//   { id: 2, paymentType: 'Yape', status: 'Habilitado' },
+// ];
 
 const prices = [
   { id: 1, amount: 'S/ 120', status: 'Habilitado' },
@@ -19,8 +20,8 @@ const renderStatus = (status) => (
 const paymentTypeColumns = [
   {
     title: 'Tipo de pago',
-    dataIndex: 'paymentType',
-    key: 'paymentType',
+    dataIndex: 'name',
+    key: 'name',
     width: 200,
   },
   {
@@ -53,6 +54,7 @@ const paymentTypeActions = (record) => (
     <button className={`${styles.button} ${styles.deactivate}`}>
       Desactivar
     </button>
+    <button className={`${styles.button} ${styles.edit}`}>Editar</button>
     <button className={`${styles.button} ${styles.delete}`}>Eliminar</button>
   </div>
 );
@@ -68,6 +70,8 @@ const priceActions = (record) => (
 );
 
 const Payments = () => {
+  const { paymentTypes, loading } = usePaymentTypes();
+  
   return (
     <div className={styles.container}>
       <div className={styles.content}>
@@ -87,6 +91,7 @@ const Payments = () => {
                     columns={paymentTypeColumns}
                     data={paymentTypes}
                     customActions={paymentTypeActions}
+                    loading={loading}
                   />
                 </div>
               </div>

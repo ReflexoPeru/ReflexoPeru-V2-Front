@@ -115,3 +115,17 @@
 
   background-color: #14F58C3B;
 }
+
+.statusDisabled {
+  display: inline-block;
+
+  padding: 0px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+
+  background-color: #790d0d91;
+}
