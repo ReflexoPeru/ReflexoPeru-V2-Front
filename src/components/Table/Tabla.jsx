@@ -11,6 +11,7 @@ const ModeloTable = ({ columns, data, customActions, loading = false, pagination
   const currentPage = pagination?.current || 1;
   const pageSize = pagination?.pageSize || 100;
   const onPageChange = pagination?.onChange || (() => {});
+  
 
   const [tableHeight, setTableHeight] = useState('100%');
   const containerRef = useRef(null);

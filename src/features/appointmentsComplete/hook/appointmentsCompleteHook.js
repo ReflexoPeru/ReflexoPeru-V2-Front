@@ -109,6 +109,14 @@ export const useAppointmentsComplete = (
     setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
+  const loadPaginatedAppointmentsCompleteByDate = (date) => {
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    if (formattedDate !== selectedDate || searchTerm !== '') {
+      setSelectedDate(formattedDate);
+      setSearchTerm('');
+    }
+  };
+
   return {
     // Estados
     appointmentsComplete,
@@ -123,7 +131,7 @@ export const useAppointmentsComplete = (
     handleDateChange,
     handleSearch,
     handlePageChange,
-
+    loadPaginatedAppointmentsCompleteByDate,
     // Setters
     setSearchTerm,
     setSelectedDate,
