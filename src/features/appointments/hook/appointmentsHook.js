@@ -133,7 +133,13 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
     },
     [loadAppointments],
   );
-
+  const loadPaginatedAppointmentsByDate = (date) => {
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    if (formattedDate !== selectedDate || searchTerm !== '') {
+      setSelectedDate(formattedDate);
+      setSearchTerm('');
+    }
+  };
   return {
     // Estados
     appointments,
@@ -149,7 +155,7 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
     handleSearch,
     handlePageChange,
     submitNewAppointment,
-
+    loadPaginatedAppointmentsByDate,
     // Setters
     setSearchTerm,
     setSelectedDate,
