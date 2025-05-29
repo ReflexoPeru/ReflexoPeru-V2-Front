@@ -1,116 +1,185 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import dayjs from 'dayjs';
 import {
   getPaginatedAppointmentsByDate,
   searchAppointments,
+  createAppointment,
+  cancelAppointment,
+  updateAppointmentStatus
 } from '../service/appointmentsService';
 
-export const useAppointments = () => {
+export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
+  // Estados principales
   const [appointments, setAppointments] = useState([]);
-  const [totalAppointments, setTotalAppointments] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(
-    dayjs().format('YYYY-MM-DD'),
-  );
-  const [error, setError] = useState(null); // 👉 nuevo
-
+  const [selectedDate, setSelectedDate] = useState(initialDate);
+  
+  // Paginación
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalItems: 0,
+    pageSize: 10
   });
 
-  const perPage = 100;
+  // Referencia para evitar llamadas duplicadas
+  const abortControllerRef = useRef(null);
 
-  const loadAppointments = async (
-    date = selectedDate,
-    term = searchTerm,
-    page = pagination.currentPage,
-  ) => {
+  // Función principal para cargar citas
+  const loadAppointments = useCallback(async () => {
+    // Cancelar petición anterior si existe
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Crear nuevo AbortController
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
     setLoading(true);
     setError(null);
 
     try {
-      if (term) {
-        const res = await searchAppointments(term);
-        setAppointments(res.data);
-        setPagination({ currentPage: 1, totalItems: res.total });
+      let response;
+      
+      if (searchTerm.trim()) {
+        response = await searchAppointments(searchTerm, { signal });
       } else {
-        const res = await getPaginatedAppointmentsByDate(date, perPage);
-        setAppointments(res.data);
-        setPagination({ currentPage: page, totalItems: res.total });
+        response = await getPaginatedAppointmentsByDate(
+          selectedDate, 
+          pagination.pageSize, 
+          pagination.currentPage,
+          { signal }
+        );
       }
+
+      setAppointments(response.data || []);
+      setPagination(prev => ({
+        ...prev,
+        totalItems: response.total || 0
+      }));
+
     } catch (error) {
-      console.error('❌ Error al cargar citas:', error);
-      setAppointments([]);
-      setPagination({ currentPage: 1, totalItems: 0 });
-      setError(error); // 👉 nuevo
+      if (error.name !== 'AbortError') {
+        console.error('Error loading appointments:', error);
+        setError(error);
+        setAppointments([]);
+        setPagination(prev => ({ ...prev, totalItems: 0 }));
+      }
+    } finally {
+      abortControllerRef.current = null;
+      setLoading(false);
+    }
+  }, [searchTerm, selectedDate, pagination.currentPage, pagination.pageSize]);
+
+  // Efecto para cargar citas con debounce
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      loadAppointments();
+    }, 300);
+
+    return () => {
+      clearTimeout(debounceTimer);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [loadAppointments]);
+
+  // Cambiar fecha seleccionada
+  const handleDateChange = useCallback((date) => {
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    if (formattedDate !== selectedDate) {
+      setSelectedDate(formattedDate);
+      setSearchTerm('');
+      setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }
+  }, [selectedDate]);
+
+  // Cambiar término de búsqueda
+  const handleSearch = useCallback((term) => {
+    setSearchTerm(term);
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, []);
+
+  // Cambiar página
+  const handlePageChange = useCallback((page) => {
+    setPagination(prev => ({ ...prev, currentPage: page }));
+  }, []);
+
+  // Crear nueva cita
+  const submitNewAppointment = useCallback(async (appointmentData) => {
+    try {
+      setLoading(true);
+      const payload = {
+        ...appointmentData,
+        appointment_date: dayjs(appointmentData.appointment_date).format('YYYY-MM-DD'),
+        created_at: dayjs().format('YYYY-MM-DD HH:mm:ss')
+      };
+
+      const result = await createAppointment(payload);
+      await loadAppointments(); // Recargar lista después de crear
+      return result;
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
-  };
+  }, [loadAppointments]);
 
-  useEffect(() => {
-    loadAppointments();
-  }, [searchTerm, selectedDate]);
-
-  const handleSearch = (term) => {
-    setSearchTerm(term);
-  };
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSearchTerm('');
-  };
-
-  const handlePageChange = (page) => {
-    setPagination((prev) => ({ ...prev, currentPage: page }));
-    loadAppointments(selectedDate, searchTerm, page);
-  };
-
-  const loadPaginatedAppointmentsByDate = (date) => {
-    const formattedDate = dayjs(date).format('YYYY-MM-DD');
-    if (formattedDate !== selectedDate || searchTerm !== '') {
-      setSelectedDate(formattedDate);
-      setSearchTerm('');
-    }
-  };
-
-  const submitNewAppointment = async () => {
-    const payload = {
-      appointment_date: format(new Date(), 'yyyy-MM-dd'), // Fecha actual
-      appointment_hour: '04:00',
-      patient_id: 2,
-      therapist_id: 3,
-      payment: '50.00',
-      appointment_type: 'Terapia individual',
-      social_benefit: false,
-      appointment_status_id: null,
-      payment_type_id: null,
-      final_date: null,
-    };
-
+  // Cancelar cita
+  const cancelExistingAppointment = useCallback(async (appointmentId) => {
     try {
-      const result = await createAppointment(payload);
-      console.log('Cita creada correctamente:', result);
+      setLoading(true);
+      const result = await cancelAppointment(appointmentId);
+      await loadAppointments(); // Recargar lista después de cancelar
       return result;
     } catch (error) {
-      console.error('Error al crear la cita:', error.response?.data || error);
+      console.error('Error canceling appointment:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [loadAppointments]);
+
+  // Actualizar estado de cita
+  const updateAppointment = useCallback(async (appointmentId, statusData) => {
+    try {
+      setLoading(true);
+      const result = await updateAppointmentStatus(appointmentId, statusData);
+      await loadAppointments(); // Recargar lista después de actualizar
+      return result;
+    } catch (error) {
+      console.error('Error updating appointment:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [loadAppointments]);
 
   return {
+    // Estados
     appointments,
-    totalAppointments,
     loading,
     error,
     pagination,
-    handleSearch,
+    selectedDate,
+    searchTerm,
+    
+    // Funciones
+    loadAppointments,
     handleDateChange,
+    handleSearch,
     handlePageChange,
-    setSearchTerm, // 👉 añadido
-    loadPaginatedAppointmentsByDate,
-    submitNewAppointment, // 👉 añadido
+    submitNewAppointment,
+    cancelExistingAppointment,
+    updateAppointment,
+    
+    // Setters
+    setSearchTerm,
+    setSelectedDate,
+    setPagination
   };
 };

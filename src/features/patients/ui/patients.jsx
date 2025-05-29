@@ -11,36 +11,33 @@ import { usePatients } from '../hook/patientsHook';
 export default function Patients() {
   const navigate = useNavigate();
 
-  const { patients, loading, error, pagination, handlePageChange, setSearchTerm } = usePatients();
-
-  // Debug (verifica en consola)
-  console.log("Datos:", {
+  const {
     patients,
     loading,
     error,
-    pagination
+    pagination,
+    handlePageChange,
+    setSearchTerm,
+  } = usePatients();
+
+  // Debug (verifica en consola)
+  console.log('Datos:', {
+    patients,
+    loading,
+    error,
+    pagination,
   });
 
   const columns = [
     {
-      title: 'Documento',
+      title: 'DNI',
       dataIndex: 'document_number',
       key: 'document_number',
       width: '110px',
     },
     {
-      title: 'Apellido Parterno',
-      dataIndex: 'paternal_lastname',
-      key: 'paternal_lastname',
-    },
-    {
-      title: 'Apellido Materno',
-      dataIndex: 'maternal_lastname',
-      key: 'maternal_lastname',
-    },
-    {
       title: 'Nombre',
-      dataIndex: 'name',
+      dataIndex: 'full_name',
       key: 'name',
     },
   ];
@@ -102,7 +99,7 @@ export default function Patients() {
       <ModeloTable
         columns={columns}
         data={patients}
-        loading={loading} 
+        loading={loading}
         customActions={customActionButtons}
         pagination={{
           current: pagination.currentPage,

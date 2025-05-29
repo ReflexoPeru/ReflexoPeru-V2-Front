@@ -11,14 +11,15 @@ import { useStaff } from '../hook/staffHook';
 export default function Staff() {
   const navigate = useNavigate();
 
-  const { staff, loading, error, pagination, handlePageChange, setSearchTerm } = useStaff();
-  
+  const { staff, loading, error, pagination, handlePageChange, setSearchTerm } =
+    useStaff();
+
   // Debug (verifica en consola)
-  console.log("Datos:", {
+  console.log('Datos:', {
     staff,
     loading,
     error,
-    pagination
+    pagination,
   });
 
   const columns = [
@@ -29,18 +30,8 @@ export default function Staff() {
       width: '110px',
     },
     {
-      title: 'Apellido Parterno',
-      dataIndex: 'paternal_lastname',
-      key: 'paternal_lastname',
-    },
-    {
-      title: 'Apellido Materno',
-      dataIndex: 'maternal_lastname',
-      key: 'maternal_lastname',
-    },
-    {
       title: 'Nombre',
-      dataIndex: 'name',
+      dataIndex: 'full_name',
       key: 'name',
     },
   ];

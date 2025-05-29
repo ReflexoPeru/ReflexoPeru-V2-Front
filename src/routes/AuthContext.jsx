@@ -14,12 +14,36 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const { showToast } = useToast();
-  const [authChecked, setAuthChecked] = useState(true); // Ahora siempre está verificado
+  const [authChecked, setAuthChecked] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const [userName, setUserName] = useState(null); // Nuevo estado para el nombre
+  const [userRole, setUserRole] = useState(null); // 👈 nuevo
 
-  // Eliminamos el useEffect que hacía la verificación automática
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = getLocalStorage('token');
+      if (!token) {
+        setAuthChecked(true);
+        return;
+      }
+
+      try {
+        const res = await get('get-role');
+
+        if (res.data) {
+          setIsAuthenticated(true);
+          setUserRole(res.data.role_id);
+          persistLocalStorage('name', res.data.name);
+          persistLocalStorage('user_id', res.data.user_id);
+        }
+      } catch (err) {
+        showToast('intentoFallido', err?.response?.data?.message);
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -27,10 +51,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         authChecked,
         userRole,
-        userName,
         setIsAuthenticated,
         setUserRole,
-        setUserName,
       }}
     >
       {children}

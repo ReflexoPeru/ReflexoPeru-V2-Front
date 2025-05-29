@@ -24,6 +24,7 @@ import Profile from '../features/configuration/cProfile/Profile';
 import Error404 from '../pages/Error/Error404';
 import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
+import AppointmentsComplete from '../features/appointmentsComplete/ui/appointmentsComplete';
 
 const router = createBrowserRouter([
   {
@@ -94,7 +95,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'citasCompletas',
-            element: <Prueba />,
+            element: <AppointmentsComplete />,
           },
           {
             path: 'estadisticas',
