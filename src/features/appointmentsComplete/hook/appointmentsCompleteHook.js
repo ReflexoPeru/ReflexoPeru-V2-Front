@@ -5,7 +5,9 @@ import {
   searchAppointmentsComplete,
 } from '../service/appointmentsCompleteService';
 
-export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
+export const useAppointmentsComplete = (
+  initialDate = dayjs().format('YYYY-MM-DD'),
+) => {
   // Estados principales
   const [appointmentsComplete, setAppointmentsComplete] = useState([]);
   const [loading, setLoading] = useState(false);

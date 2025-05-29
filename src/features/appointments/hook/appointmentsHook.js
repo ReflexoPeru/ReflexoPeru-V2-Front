@@ -4,8 +4,6 @@ import {
   getPaginatedAppointmentsByDate,
   searchAppointments,
   createAppointment,
-  cancelAppointment,
-  updateAppointmentStatus
 } from '../service/appointmentsService';
 
 export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
@@ -15,12 +13,12 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(initialDate);
-  
+
   // Paginación
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalItems: 0,
-    pageSize: 10
+    pageSize: 10,
   });
 
   // Referencia para evitar llamadas duplicadas
@@ -32,7 +30,7 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
-    
+
     // Crear nuevo AbortController
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
@@ -42,30 +40,29 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
 
     try {
       let response;
-      
+
       if (searchTerm.trim()) {
         response = await searchAppointments(searchTerm, { signal });
       } else {
         response = await getPaginatedAppointmentsByDate(
-          selectedDate, 
-          pagination.pageSize, 
+          selectedDate,
+          pagination.pageSize,
           pagination.currentPage,
-          { signal }
+          { signal },
         );
       }
 
       setAppointments(response.data || []);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
-        totalItems: response.total || 0
+        totalItems: response.total || 0,
       }));
-
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Error loading appointments:', error);
         setError(error);
         setAppointments([]);
-        setPagination(prev => ({ ...prev, totalItems: 0 }));
+        setPagination((prev) => ({ ...prev, totalItems: 0 }));
       }
     } finally {
       abortControllerRef.current = null;
@@ -88,76 +85,54 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
   }, [loadAppointments]);
 
   // Cambiar fecha seleccionada
-  const handleDateChange = useCallback((date) => {
-    const formattedDate = dayjs(date).format('YYYY-MM-DD');
-    if (formattedDate !== selectedDate) {
-      setSelectedDate(formattedDate);
-      setSearchTerm('');
-      setPagination(prev => ({ ...prev, currentPage: 1 }));
-    }
-  }, [selectedDate]);
+  const handleDateChange = useCallback(
+    (date) => {
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
+      if (formattedDate !== selectedDate) {
+        setSelectedDate(formattedDate);
+        setSearchTerm('');
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
+      }
+    },
+    [selectedDate],
+  );
 
   // Cambiar término de búsqueda
   const handleSearch = useCallback((term) => {
     setSearchTerm(term);
-    setPagination(prev => ({ ...prev, currentPage: 1 }));
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
   }, []);
 
   // Cambiar página
   const handlePageChange = useCallback((page) => {
-    setPagination(prev => ({ ...prev, currentPage: page }));
+    setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
   // Crear nueva cita
-  const submitNewAppointment = useCallback(async (appointmentData) => {
-    try {
-      setLoading(true);
-      const payload = {
-        ...appointmentData,
-        appointment_date: dayjs(appointmentData.appointment_date).format('YYYY-MM-DD'),
-        created_at: dayjs().format('YYYY-MM-DD HH:mm:ss')
-      };
+  const submitNewAppointment = useCallback(
+    async (appointmentData) => {
+      try {
+        setLoading(true);
+        const payload = {
+          ...appointmentData,
+          appointment_date: dayjs(appointmentData.appointment_date).format(
+            'YYYY-MM-DD',
+          ),
+          created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        };
 
-      const result = await createAppointment(payload);
-      await loadAppointments(); // Recargar lista después de crear
-      return result;
-    } catch (error) {
-      console.error('Error creating appointment:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [loadAppointments]);
-
-  // Cancelar cita
-  const cancelExistingAppointment = useCallback(async (appointmentId) => {
-    try {
-      setLoading(true);
-      const result = await cancelAppointment(appointmentId);
-      await loadAppointments(); // Recargar lista después de cancelar
-      return result;
-    } catch (error) {
-      console.error('Error canceling appointment:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [loadAppointments]);
-
-  // Actualizar estado de cita
-  const updateAppointment = useCallback(async (appointmentId, statusData) => {
-    try {
-      setLoading(true);
-      const result = await updateAppointmentStatus(appointmentId, statusData);
-      await loadAppointments(); // Recargar lista después de actualizar
-      return result;
-    } catch (error) {
-      console.error('Error updating appointment:', error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [loadAppointments]);
+        const result = await createAppointment(payload);
+        await loadAppointments(); // Recargar lista después de crear
+        return result;
+      } catch (error) {
+        console.error('Error creating appointment:', error);
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadAppointments],
+  );
 
   return {
     // Estados
@@ -167,19 +142,17 @@ export const useAppointments = (initialDate = dayjs().format('YYYY-MM-DD')) => {
     pagination,
     selectedDate,
     searchTerm,
-    
+
     // Funciones
     loadAppointments,
     handleDateChange,
     handleSearch,
     handlePageChange,
     submitNewAppointment,
-    cancelExistingAppointment,
-    updateAppointment,
-    
+
     // Setters
     setSearchTerm,
     setSelectedDate,
-    setPagination
+    setPagination,
   };
 };

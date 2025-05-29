@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
 import { getStaff, searchStaff } from '../service/staffService';
 
-const submitTherapist = async (formData) => {
+export const submitTherapist = async (formData) => {
   const payload = {
     code: null,
     document_number: formData.documentNumber,
@@ -107,7 +107,6 @@ export const useStaff = () => {
     loading,
     error,
     pagination,
-    submitTherapist,
     handlePageChange: loadStaff,
     setSearchTerm,
   };
