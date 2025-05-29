@@ -1,52 +1,45 @@
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { getProvinces } from './SelectsApi';
 
-export function SelectProvince({ departamentId }) {
+export function SelectProvince({ departamentId, value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchProvinces = async () => {
-      if (!departamentId) return;
+    const loadProvincias = async () => {
+      if (!departamentId) {
+        setOptions([]);
+        return;
+      }
 
+      setLoading(true);
       try {
         const data = await getProvinces(departamentId);
-        const provinces = data.map((province) => ({
-          value: province.id,
-          label: province.name,
-        }));
-
-        setOptions(provinces);
-      } catch {
-        console.error('Error al obtener las provincias');
+        setOptions(data.map(p => ({ value: p.id, label: p.name })));
+      } catch (error) {
+        console.error("Error loading provincias:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchProvinces();
+    loadProvincias();
   }, [departamentId]);
 
   return (
     <Select
-      style={{ color: '#fff' }}
-      showSearch
-      disabled={!departamentId}
-      filterOption={(input, option) => {
-        var _a;
-        return (
-          (_a =
-            option === null || option === void 0 ? void 0 : option.label) !==
-            null && _a !== void 0
-            ? _a
-            : ''
-        )
-          .toLowerCase()
-          .includes(input.toLowerCase());
-      }}
-      placeholder={departamentId ? "Provincia" : "Seleccione departamento primero"}
       options={options}
-      onChange={(value) => console.log(value)}
+      value={value}
+      onChange={onChange}
+      loading={loading}
+      disabled={!departamentId || loading}
+      showSearch
+      filterOption={(input, option) => 
+        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+      }
+      placeholder={departamentId ? "Seleccione provincia" : "Primero seleccione departamento"}
+      notFoundContent={loading ? <Spin size="small" /> : "No hay provincias para este departamento"}
+      {...rest}
     />
   );
 }
-
-export default SelectProvince;

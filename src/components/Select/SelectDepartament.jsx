@@ -1,47 +1,39 @@
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { getDepartaments } from './SelectsApi';
 
 export function SelectDepartament({ value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchDepartaments = async () => {
+    const loadDepartamentos = async () => {
+      setLoading(true);
       try {
         const data = await getDepartaments();
-        const departaments = data.map((departament) => ({
-          value: departament.id,
-          label: departament.name,
-        }));
-
-        setOptions(departaments);
+        setOptions(data.map(d => ({ value: d.id, label: d.name })));
       } catch (error) {
-        console.error('Error al obtener los departamentos:', error);
+        console.error("Error loading departamentos:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchDepartaments();
+    loadDepartamentos();
   }, []);
-
-  const handleChange = (value) => {
-    if (onChange) {
-      onChange(value);
-    }
-  };
 
   return (
     <Select
-      {...rest}
+      options={options}
       value={value}
-      onChange={handleChange}
+      onChange={onChange}
+      loading={loading}
       showSearch
-      filterOption={(input, option) =>
+      filterOption={(input, option) => 
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
       }
-      placeholder="Departamento"
-      options={options}
+      placeholder="Seleccione departamento"
+      notFoundContent={loading ? <Spin size="small" /> : "No hay departamentos"}
+      {...rest}
     />
   );
 }
-
-export default SelectDepartament;

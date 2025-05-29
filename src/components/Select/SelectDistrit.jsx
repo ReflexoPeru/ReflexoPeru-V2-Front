@@ -1,56 +1,45 @@
-import { Select } from 'antd';
+import { Select, Spin } from 'antd';
 import { useEffect, useState } from 'react';
 import { getDistricts } from './SelectsApi';
 
-export function SelectDistrit({ provinceId, onChange, ...rest }) {
+export function SelectDistrit({ provinceId, value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchDistricts = async () => {
+    const loadDistritos = async () => {
       if (!provinceId) {
         setOptions([]);
         return;
       }
 
+      setLoading(true);
       try {
-        setLoading(true);
         const data = await getDistricts(provinceId);
-        
-        const districts = data.map((district) => ({
-          value: district.id,
-          label: district.name || district.nombre, // Soporta ambos campos
-        }));
-
-        setOptions(districts);
+        setOptions(data.map(d => ({ value: d.id, label: d.name })));
       } catch (error) {
-        console.error('Error al cargar distritos:', error);
+        console.error("Error loading distritos:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchDistricts();
+    loadDistritos();
   }, [provinceId]);
 
   return (
     <Select
-      {...rest}
       options={options}
+      value={value}
       onChange={onChange}
       loading={loading}
       disabled={!provinceId || loading}
       showSearch
-      filterOption={(input, option) => {
-        const label = option?.label ?? '';
-        return label.toLowerCase().includes(input.toLowerCase());
-      }}
-      placeholder={provinceId ? "Seleccione distrito" : "Seleccione primero una provincia"}
-      style={{ width: '100%', color: '#fff' }}
-      popupStyle={{ backgroundColor: '#4B4B4B' }}
-      notFoundContent={loading ? <Spin size="small" /> : "No hay distritos disponibles"}
+      filterOption={(input, option) => 
+        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+      }
+      placeholder={provinceId ? "Seleccione distrito" : "Primero seleccione provincia"}
+      notFoundContent={loading ? <Spin size="small" /> : "No hay distritos para esta provincia"}
+      {...rest}
     />
   );
 }
-
-export default SelectDistrit;
