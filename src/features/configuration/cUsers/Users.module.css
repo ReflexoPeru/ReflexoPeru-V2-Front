@@ -91,6 +91,11 @@
   background-color: #0066FF;
 }
 
+.deactivate {
+  color: white;
+  background-color: #FFAA00;
+}
+
 .delete {
   color: white;
   background-color: #FF3333;
@@ -128,4 +133,21 @@
   text-align: center;
 
   background-color: #790d0d91;
+}
+
+/* Spinner usado dentro de la tabla */
+.spinner {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
