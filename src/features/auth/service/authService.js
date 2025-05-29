@@ -1,4 +1,4 @@
-import { get, post, put } from '../../../services/api/Axios/MethodsGeneral';
+import { post, put } from '../../../services/api/Axios/MethodsGeneral';
 
 export const login = async (data) => {
   const response = await post('login', data);

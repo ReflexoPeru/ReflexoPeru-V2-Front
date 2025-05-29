@@ -2,46 +2,40 @@ import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getDocumentTypes } from './SelectsApi';
 
-export function SelectTypeOfDocument() {
+export function SelectTypeOfDocument({ value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
     const fetchDocumentTypes = async () => {
       try {
         const data = await getDocumentTypes();
-        const types = data.map((type) => ({
-          value: type.id,
-          label: type.name,
-        }));
-
-        setOptions(types);
-      } catch {
-        console.error('Error al obtener los tipos de documento');
+        setOptions(data);
+      } catch (error) {
+        console.error('Error al obtener tipos de documento:', error);
+        setOptions([]);
       }
     };
 
     fetchDocumentTypes();
   }, []);
 
+  const handleChange = (value) => {
+    if (onChange) {
+      onChange(value);
+    }
+  };
+
   return (
     <Select
-      style={{ color: '#fff' }}
+      {...rest}
+      value={value}
+      onChange={handleChange}
       showSearch
-      filterOption={(input, option) => {
-        var _a;
-        return (
-          (_a =
-            option === null || option === void 0 ? void 0 : option.label) !==
-            null && _a !== void 0
-            ? _a
-            : ''
-        )
-          .toLowerCase()
-          .includes(input.toLowerCase());
-      }}
+      filterOption={(input, option) =>
+        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+      }
       placeholder="Tipo de documento"
       options={options}
-      onChange={(value) => console.log(value)}
     />
   );
 }
