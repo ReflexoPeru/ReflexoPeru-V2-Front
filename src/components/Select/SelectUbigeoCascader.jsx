@@ -56,14 +56,23 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
     if (onChange) onChange(value, selectedOptions);
   };
 
+  // Filtro de búsqueda personalizado
+  const filter = (inputValue, path) =>
+    path.some(
+      (option) =>
+        option.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
   return (
     <Cascader
       options={options}
       loadData={loadData}
       onChange={handleChange}
       changeOnSelect
+      showSearch={{ filter }} // activamos el buscador
       placeholder="Seleccione departamento / provincia / distrito"
-      style={{ width: '100%' }}
+      style={{ width: '100%', color: 'black' }}
+      dropdownStyle={{ backgroundColor: '#fff', color: '#000' }} // texto negro
       value={value}
       {...rest}
     />
