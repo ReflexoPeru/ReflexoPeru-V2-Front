@@ -1,15 +1,14 @@
 import FormGenerator from '../../../../components/Form/Form';
 
 const fields = [
-  { type: 'title', label: 'Nuevo Terapeuta' },
+  { type: 'title', label: 'Nuevo Paciente' },
   {
     type: 'customRow',
     fields: [
       {
         name: 'documentType',
         label: 'Tipo de Documento',
-        type: 'select',
-        options: [{ value: 'dni', label: 'DNI' }],
+        type: 'typeOfDocument', // este va directo al switch
         span: 8,
       },
       {
@@ -55,37 +54,18 @@ const fields = [
     ],
   },
   {
+    name: 'ubicacion',
+    label: 'Ubicación',
+    type: 'ubigeo',
+    span: 12,
+  },
+  {
     name: 'address',
     label: 'Dirección de Domicilio',
     type: 'text',
-    span: 24,
+    span: 12,
   },
-  {
-    type: 'customRow',
-    fields: [
-      {
-        name: 'departamento',
-        label: 'Departamento',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-      {
-        name: 'provincia',
-        label: 'Provincia',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-      {
-        name: 'distrito',
-        label: 'Distrito',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-    ],
-  },
+
 ];
 
 const NewTherapist = () => {
