@@ -21,7 +21,7 @@ export default function Appointments() {
     loadPaginatedAppointmentsByDate,
   } = useAppointments();
 
-  const [selectDate, setSelectDate] = useState(dayjs().format('DD/MM/YYYY'));
+  const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
   }, [selectDate]);
