@@ -186,6 +186,13 @@ html, body {
   border-color: #4CAF50 !important;
 }
 
+.emailContainer {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  align-items: center;
+}
+
 .passwordContainer {
   display: flex;
   flex: 1;
@@ -681,4 +688,3 @@ label {
 .ant-select-selection-placeholder {
   color: #aaaaaa !important;
 }
-

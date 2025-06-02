@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Upload, Select, Button, Input, Modal, message, Form } from 'antd';
 import {
@@ -171,19 +172,21 @@ const Profile = () => {
 
               <div className={styles.formField}>
                 <label className={styles.label}>Correo:</label>
-                <Input
-                  className={styles.input}
-                  value={correo}
-                  readOnly
-                  placeholder="tu@correo.com"
-                />
-                <Button
-                  className={styles.cambiarBtn}
-                  onClick={handleOpenEmailModal}
-                  icon={<Envelope size={16} />}
-                >
-                  Cambiar
-                </Button>
+                <div className={styles.emailContainer}>
+                  <Input
+                    className={styles.input}
+                    value={correo}
+                    readOnly
+                    placeholder="tu@correo.com"
+                  />
+                  <Button
+                    className={styles.cambiarBtn}
+                    onClick={handleOpenEmailModal}
+                    icon={<Envelope size={16} />}
+                  >
+                    Cambiar
+                  </Button>
+                </div>
               </div>
 
               <div className={styles.formField}>
