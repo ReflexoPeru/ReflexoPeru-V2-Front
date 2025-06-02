@@ -4,11 +4,11 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
-import { Modal } from 'antd';
+import { Modal, Spin, Flex } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useCalendar } from '../hook/calendarHook';
 
-// Localización en español
 moment.locale('es', {
   months:
     'Enero_Febrero_Marzo_Abril_Mayo_Junio_Julio_Agosto_Septiembre_Octubre_Noviembre_Diciembre'.split(
@@ -50,10 +50,12 @@ const Calendario = () => {
       color: 'white',
       borderRadius: '4px',
       border: 'none',
+      fontWeight: 'bold', //
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   });
 
-  // Función para mapear el estado de la cita
   const getAppointmentStatus = (statusId) => {
     switch (statusId) {
       case 1:
@@ -69,7 +71,6 @@ const Calendario = () => {
     }
   };
 
-  // Función para mapear el tipo de pago
   const getPaymentType = (typeId) => {
     switch (typeId) {
       case 1:
@@ -83,8 +84,17 @@ const Calendario = () => {
     }
   };
 
-  if (loading) return <p>Cargando eventos...</p>;
-  if (error) return <p>Error al cargar eventos: {error.message}</p>;
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p>Error al cargar eventos: {error.message}</p>;
+  }
 
   return (
     <div className={styles.calendarContainer}>

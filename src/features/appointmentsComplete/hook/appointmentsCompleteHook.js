@@ -5,15 +5,15 @@ import {
   searchAppointmentsComplete,
 } from '../service/appointmentsCompleteService';
 
-export const useAppointmentsComplete = (
-  initialDate = dayjs().format('YYYY-MM-DD'),
-) => {
+export const useAppointmentsComplete = () => {
   // Estados principales
   const [appointmentsComplete, setAppointmentsComplete] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(initialDate);
+  const [selectedDate, setSelectedDate] = useState(
+    dayjs().format('YYYY-MM-DD'),
+  );
 
   // Paginación
   const [pagination, setPagination] = useState({
@@ -109,13 +109,20 @@ export const useAppointmentsComplete = (
     setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
-  const loadPaginatedAppointmentsCompleteByDate = (date) => {
-    const formattedDate = dayjs(date).format('YYYY-MM-DD');
-    if (formattedDate !== selectedDate || searchTerm !== '') {
-      setSelectedDate(formattedDate);
-      setSearchTerm('');
-    }
-  };
+  const loadPaginatedAppointmentsCompleteByDate = useCallback(
+    (date) => {
+      const formattedDate = dayjs(date).isValid()
+        ? dayjs(date).format('YYYY-MM-DD')
+        : dayjs().format('YYYY-MM-DD');
+
+      if (formattedDate !== selectedDate || searchTerm !== '') {
+        setSelectedDate(formattedDate);
+        setSearchTerm('');
+        setPagination((prev) => ({ ...prev, currentPage: 1 }));
+      }
+    },
+    [selectedDate, searchTerm],
+  );
 
   return {
     // Estados

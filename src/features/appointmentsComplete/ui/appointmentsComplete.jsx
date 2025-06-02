@@ -19,7 +19,7 @@ export default function AppointmentsComplete() {
     loadPaginatedAppointmentsCompleteByDate,
   } = useAppointmentsComplete();
 
-  const [selectDate, setSelectDate] = useState(dayjs().format('DD/MM/YYYY'));
+  const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
   useEffect(() => {
     loadPaginatedAppointmentsCompleteByDate(selectDate);
   }, [selectDate]);
