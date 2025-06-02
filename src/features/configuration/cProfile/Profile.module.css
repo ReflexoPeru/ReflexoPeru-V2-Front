@@ -1,10 +1,4 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: 'Montserrat', sans-serif;
-}
-
+/* Estilos base */
 .body {
   display: flex;
   flex-direction: column;
@@ -33,13 +27,13 @@ html, body {
 }
 
 .container {
-  overflow: visible; 
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
 
   box-sizing: border-box;
-  width: 45%; 
+  width: 45%;
   height: 100%;
 }
 
@@ -69,7 +63,7 @@ html, body {
   min-width: 100px;
   margin-right: 20px;
   font-size: 16px;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .formRow {
@@ -265,21 +259,11 @@ html, body {
   box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
 }
 
-/* Estilos mejorados para modales */
-.customModal .ant-modal-content {
+/* Estilos para los modales */
+.modalContainer {
   overflow: hidden;
-
-  padding: 0 !important;
   border-radius: 16px !important;
-
-  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.modalBody {
-  padding: 0;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%) !important;
 }
 
 .modalHeader {
@@ -344,7 +328,7 @@ html, body {
   letter-spacing: -0.02em;
 }
 
-.modalMessage {
+.modalDescription {
   max-width: 400px;
   margin: 0 auto 30px;
 
@@ -353,89 +337,28 @@ html, body {
   color: #b0b0b0;
 }
 
-.codeVerificationInfo {
-  margin-bottom: 30px;
-}
-
-.modalSubtitle {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #b0b0b0;
-}
-
-.modalEmail {
-  margin: 8px 0 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #4CAF50;
-}
-
 .modalForm {
   margin-bottom: 32px;
 }
 
 .modalInput {
   height: 52px !important;
-  border: none;
+  border: none !important;
   border-radius: 12px !important;
 
   font-size: 16px !important;
-  color: white !important;
+  color: rgb(255, 255, 255) !important;
 
   background-color: #333 !important;
-
-  transition: all 0.3s ease;
 }
 
-.modalInput::placeholder {
-  color: #666 !important;
-}
-
+.modalInput:hover,
 .modalInput:focus {
   border-color: #4CAF50 !important;
-  background-color: #3a3a3a !important;
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
 }
 
-/* Estilos para Input.OTP */
-.otpContainer {
-  margin-bottom: 40px;
-}
-
-.otpInput {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.otpInput .ant-otp-input {
-  width: 52px !important;
-  height: 64px !important;
-  border: 2px solid #3a3a3a !important;
-  border-radius: 12px !important;
-
-  font-size: 24px !important;
-  font-weight: 700 !important;
-  color: #000 !important;
-  text-align: center !important;
-
-  background-color: white !important;
-
-  transition: all 0.3s ease;
-}
-
-.otpInput .ant-otp-input:focus {
-  border-color: #4CAF50 !important;
-  background-color: white !important;
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.15) !important;
-}
-
-.otpInput .ant-otp-input.ant-otp-input-status-error {
-  border-color: #ff4d4f !important;
-}
-
-.modalButton {
+.modalSubmitButton {
   height: 52px !important;
   margin-bottom: 24px !important;
   border: none !important;
@@ -446,22 +369,47 @@ html, body {
   color: white !important;
 
   background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3) !important;
 
-  transition: all 0.3s ease;
+  transition: all 0.3s ease !important;
 }
 
-.modalButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%) !important;
-  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4) !important;
+.modalSubmitButton:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4) !important;
 }
 
-.modalButton:disabled {
-  cursor: not-allowed;
-  color: #999 !important;
-  background: #555 !important;
-  box-shadow: none;
+.codeDescription {
+  margin-bottom: 30px;
+}
+
+.emailText {
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.otpContainer {
+  margin-bottom: 40px;
+}
+
+.otpInput {
+  gap: 10px;
+  justify-content: center;
+}
+
+.otpSingleInput {
+  width: 46px !important;
+  height: 56px !important;
+  border: 2px solid #4CAF50 !important;
+  border-radius: 8px !important;
+
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: white !important;
+
+  background-color: #2a2a2a !important;
 }
 
 .modalFooter {
@@ -469,13 +417,13 @@ html, body {
   border-top: 1px solid #333;
 }
 
-.modalFooterText {
+.footerText {
   margin: 0 0 12px;
   font-size: 14px;
   color: #b0b0b0;
 }
 
-.modalFooterActions {
+.footerActions {
   display: flex;
   gap: 16px;
   justify-content: center;
@@ -488,18 +436,10 @@ html, body {
   font-size: 14px !important;
   color: #4CAF50 !important;
   text-decoration: underline !important;
-
-  transition: all 0.3s ease;
 }
 
-.resendButton:hover:not(:disabled) {
+.resendButton:hover {
   color: #3d8b40 !important;
-  text-decoration: underline !important;
-}
-
-.resendButton:disabled {
-  cursor: not-allowed;
-  color: #666 !important;
 }
 
 /* Form validation styles */
@@ -509,11 +449,7 @@ html, body {
   color: #ff4d4f;
 }
 
-.ant-form-item-has-error .modalInput {
-  border-color: #ff4d4f !important;
-}
-
-.ant-form-item-has-error .otpInput .ant-otp-input {
+.ant-form-item-has-error .input {
   border-color: #ff4d4f !important;
 }
 
@@ -530,28 +466,25 @@ html, body {
     padding: 24px;
   }
 
-  .customModal {
-    margin: 16px;
-  }
-
   .modalContent {
     padding: 0 24px 24px;
   }
 
-  .otpInput .ant-otp-input {
-    width: 40px !important;
-    height: 56px !important;
-    font-size: 20px !important;
+  .modalTitle {
+    font-size: 20px;
+  }
+
+  .modalDescription {
+    font-size: 14px;
   }
 }
 
-/* --- BOTÓN ICONO CAMBIAR --- */
+/* Estilos generales */
 .ant-btn-icon-only {
   padding: 10px !important;
   background-color: #2ecc71 !important;
 }
 
-/* --- AVATAR Y CARGA --- */
 .avatar-upload {
   display: flex !important;
   align-items: center !important;
@@ -565,111 +498,6 @@ html, body {
   color: #aaa !important;
 }
 
-/* --- SECCIÓN PERFIL --- */
-.perfil-container {
-  max-width: 500px;
-  margin: auto;
-  padding: 30px !important;
-  border-radius: 12px !important;
-
-  color: #fff !important;
-
-  background-color: #121212 !important;
-}
-
-.perfil-container h2 {
-  margin-bottom: 25px;
-  color: #fff;
-  text-align: center;
-}
-
-/* --- MODAL CAMBIO DE CORREO --- */
-.change-email-modal {
-  padding: 30px !important;
-  border-radius: 12px !important;
-  color: #fff !important;
-  background-color: #1a1a1a !important;
-}
-
-.change-email-modal h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  text-align: center;
-}
-
-.change-email-modal p {
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: #ccc;
-  text-align: center;
-}
-
-/* --- VERIFICACIÓN CÓDIGO --- */
-.verify-code-modal {
-  padding: 30px !important;
-  border-radius: 12px !important;
-  color: #fff !important;
-  background-color: #1a1a1a !important;
-}
-
-.verify-code-modal h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  text-align: center;
-}
-
-.verify-code-modal .verification-text {
-  margin-bottom: 8px;
-  font-size: 14px;
-  color: #ccc;
-  text-align: center;
-}
-
-.verify-code-modal .verification-email {
-  margin-bottom: 20px;
-  font-weight: bold;
-  color: #2ecc71;
-  text-align: center;
-}
-
-.verify-code-modal .code-inputs {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.verify-code-modal .code-inputs input {
-  width: 40px;
-  height: 50px;
-  border: 1px solid #555;
-  border-radius: 8px;
-
-  font-size: 22px;
-  color: #000 !important;
-  text-align: center;
-
-  background-color: #111;
-}
-
-/* --- BOTÓN VERIFICAR --- */
-.verify-code-modal .ant-btn {
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-/* --- REENVIAR --- */
-.verify-code-modal .resend {
-  font-size: 13px;
-  color: #999;
-  text-align: center;
-}
-
-.verify-code-modal .resend strong {
-  color: #fff;
-}
-
-/* --- GENERAL --- */
 label {
   color: #bbb !important;
 }
@@ -687,4 +515,12 @@ label {
 
 .ant-select-selection-placeholder {
   color: #aaaaaa !important;
+}
+
+input:-webkit-autofill {
+  color: white !important;
+  background-color: #2a2a2a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #2a2a2a inset !important;
+
+  -webkit-text-fill-color: white !important;
 }

@@ -1,6 +1,14 @@
-
-import React, { useState } from 'react';
-import { Upload, Select, Button, Input, Modal, message, Form } from 'antd';
+import React, { useState, useEffect } from 'react';
+import {
+  Upload,
+  Select,
+  Button,
+  Input,
+  Modal,
+  message,
+  Form,
+  ConfigProvider,
+} from 'antd';
 import {
   Envelope,
   ShieldCheck,
@@ -8,6 +16,7 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import styles from './Profile.module.css';
+import { useSendVerifyCode } from './hook/profileHook';
 
 const Profile = () => {
   const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
@@ -21,12 +30,15 @@ const Profile = () => {
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [verifyLoading, setVerifyLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
   // Forms refs
   const [emailForm] = Form.useForm();
   const [codeForm] = Form.useForm();
+
+  // Hook personalizado para enviar código
+  const { sendCode, verify, updateEmail, loading, error } = useSendVerifyCode();
 
   const handleAvatarChange = (info) => {
     const file = info.file.originFileObj;
@@ -40,35 +52,30 @@ const Profile = () => {
     }
   };
 
-  // Función para abrir el modal de nuevo correo
   const handleOpenEmailModal = () => {
     setShowEmailModal(true);
     emailForm.resetFields();
   };
 
-  // Función para cerrar el modal de nuevo correo
   const handleCloseEmailModal = () => {
     setShowEmailModal(false);
     setNewEmail('');
     emailForm.resetFields();
   };
 
-  // Función para enviar el nuevo correo y abrir el modal de código
   const handleSubmitNewEmail = async (values) => {
-    setLoading(true);
-    setNewEmail(values.email);
-
-    // Simular envío de código
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      setNewEmail(values.email);
+      await sendCode(values.email);
+      message.success('Código de verificación enviado');
       setShowEmailModal(false);
       setShowCodeModal(true);
       startCountdown();
-      message.success('Código de verificación enviado');
-    }, 2000);
+    } catch {
+      message.error('Error al enviar el código. Intenta de nuevo.');
+    }
   };
 
-  // Función para cerrar el modal de código
   const handleCloseCodeModal = () => {
     setShowCodeModal(false);
     setCode('');
@@ -77,13 +84,16 @@ const Profile = () => {
     codeForm.resetFields();
   };
 
-  // Función para verificar el código
   const handleVerifyCode = async (values) => {
-    setLoading(true);
+    setVerifyLoading(true);
+    try {
+      // 1. Verificar el código primero
+      await verify(values.code);
 
-    // Simular verificación del código
-    setTimeout(() => {
-      setLoading(false);
+      // 2. Si la verificación es exitosa, actualizar el correo
+      await updateEmail(newEmail);
+
+      // 3. Actualizar el estado local
       setCorreo(newEmail);
       setShowCodeModal(false);
       setCode('');
@@ -91,22 +101,28 @@ const Profile = () => {
       setCountdown(0);
       codeForm.resetFields();
       message.success('¡Correo actualizado exitosamente!');
-    }, 1500);
+    } catch (error) {
+      message.error(
+        error.response?.data?.message ||
+          'Error al actualizar el correo. Intenta de nuevo.',
+      );
+    } finally {
+      setVerifyLoading(false);
+    }
   };
 
-  // Función para reenviar código
-  const handleResendCode = () => {
+  const handleResendCode = async () => {
     if (countdown > 0) return;
 
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      startCountdown();
+    try {
+      await sendCode(newEmail);
       message.success('Código reenviado');
-    }, 1000);
+      startCountdown();
+    } catch {
+      message.error('Error al reenviar el código');
+    }
   };
 
-  // Countdown para reenvío
   const startCountdown = () => {
     setCountdown(60);
     const timer = setInterval(() => {
@@ -120,139 +136,173 @@ const Profile = () => {
     }, 1000);
   };
 
-  return (
-    <div className={styles.body}>
-      <div className={styles.layout}>
-        <main className={styles.mainContent}>
-          <div className={styles.container}>
-            <div className={styles.card}>
-              <h2 className={styles.title}>PERFIL</h2>
+  useEffect(() => {
+    if (error) {
+      message.error('Error: ' + error.message);
+    }
+  }, [error]);
 
-              {/* Avatar section */}
-              <div className={styles.formRow}>
-                <label className={styles.label}>Avatar:</label>
-                <div className={styles.avatarContainer}>
-                  <div className={styles.avatarBlock}>
-                    <span className={styles.avatarTitle}>Actual</span>
-                    <img
-                      src={avatar}
-                      alt="Avatar actual"
-                      className={styles.avatarImage}
-                    />
-                  </div>
-                  <div className={styles.avatarBlock}>
-                    <span className={styles.avatarTitle}>Subir</span>
-                    <Upload
-                      showUploadList={false}
-                      beforeUpload={() => false}
-                      onChange={handleAvatarChange}
-                      accept="image/*"
-                    >
-                      <button type="button" className={styles.uploadButton}>
-                        <span className={styles.uploadText}>Upload</span>
-                      </button>
-                    </Upload>
+  const theme = {
+    token: {
+      colorPrimary: '#4CAF50',
+      colorBgContainer: '#1e1e1e',
+      colorText: 'white',
+      colorTextPlaceholder: '#666',
+      colorBorder: '#444',
+      colorBgElevated: '#2a2a2a',
+      colorError: '#ff4d4f',
+    },
+    components: {
+      Modal: {
+        contentBg: 'linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%)',
+        headerBg: 'transparent',
+        titleColor: 'white',
+        colorText: '#b0b0b0',
+        borderRadiusLG: 16,
+        paddingContentHorizontal: 0,
+        paddingMD: 0,
+      },
+      Button: {
+        defaultHoverBg: 'rgba(255, 255, 255, 0.08)',
+        defaultHoverColor: 'white',
+      },
+      Input: {
+        colorBgContainer: '#2a2a2a',
+        activeBorderColor: '#4CAF50',
+        hoverBorderColor: '#4CAF50',
+        activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
+      },
+      InputNumber: {
+        colorBgContainer: '#2a2a2a',
+      },
+      Select: {
+        optionSelectedBg: '#333',
+        optionActiveBg: '#3a3a3a',
+      },
+      Form: {
+        itemMarginBottom: 16,
+      },
+    },
+  };
+
+  return (
+    <ConfigProvider theme={theme}>
+      <div className={styles.body}>
+        <div className={styles.layout}>
+          <main className={styles.mainContent}>
+            <div className={styles.container}>
+              <div className={styles.card}>
+                <h2 className={styles.title}>PERFIL</h2>
+
+                <div className={styles.formRow}>
+                  <label className={styles.label}>Avatar:</label>
+                  <div className={styles.avatarContainer}>
+                    <div className={styles.avatarBlock}>
+                      <span className={styles.avatarTitle}>Actual</span>
+                      <img
+                        src={avatar}
+                        alt="Avatar actual"
+                        className={styles.avatarImage}
+                      />
+                    </div>
+                    <div className={styles.avatarBlock}>
+                      <span className={styles.avatarTitle}>Subir</span>
+                      <Upload
+                        showUploadList={false}
+                        beforeUpload={() => false}
+                        onChange={handleAvatarChange}
+                        accept="image/*"
+                      >
+                        <button type="button" className={styles.uploadButton}>
+                          <span className={styles.uploadText}>Upload</span>
+                        </button>
+                      </Upload>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Divider line */}
-              <div className={styles.divider}></div>
+                <div className={styles.divider}></div>
 
-              {/* Form fields */}
-              <div className={styles.formField}>
-                <label className={styles.label}>Nombre:</label>
-                <Input
-                  className={styles.input}
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ingresa tu nombre"
-                />
-              </div>
-
-              <div className={styles.formField}>
-                <label className={styles.label}>Correo:</label>
-                <div className={styles.emailContainer}>
+                <div className={styles.formField}>
+                  <label className={styles.label}>Nombre:</label>
                   <Input
                     className={styles.input}
-                    value={correo}
-                    readOnly
-                    placeholder="tu@correo.com"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
                   />
+                </div>
+
+                <div className={styles.formField}>
+                  <label className={styles.label}>Correo:</label>
+                  <div className={styles.emailContainer}>
+                    <Input className={styles.input} value={correo} readOnly />
+                    <Button
+                      className={styles.cambiarBtn}
+                      onClick={handleOpenEmailModal}
+                      icon={<Envelope size={16} />}
+                    >
+                      Cambiar
+                    </Button>
+                  </div>
+                </div>
+
+                <div className={styles.formField}>
+                  <label className={styles.label}>Género:</label>
+                  <Select
+                    className={styles.select}
+                    value={genero}
+                    onChange={(value) => setGenero(value)}
+                    placeholder="Selecciona tu género"
+                    options={[
+                      { value: 'masculino', label: 'Masculino' },
+                      { value: 'femenino', label: 'Femenino' },
+                      { value: 'otro', label: 'Otro' },
+                    ]}
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label className={styles.label}>Contraseña:</label>
+                  <div className={styles.passwordContainer}>
+                    <Input.Password
+                      className={styles.passwordInput}
+                      value={contrasena}
+                      onChange={(e) => setContrasena(e.target.value)}
+                      placeholder="••••••••"
+                    />
+                    <Button
+                      className={styles.cambiarBtn}
+                      icon={<ShieldCheck size={16} />}
+                    >
+                      Cambiar
+                    </Button>
+                  </div>
+                </div>
+
+                <div className={styles.saveButtonContainer}>
                   <Button
-                    className={styles.cambiarBtn}
-                    onClick={handleOpenEmailModal}
-                    icon={<Envelope size={16} />}
+                    type="primary"
+                    className={styles.saveButton}
+                    size="large"
                   >
-                    Cambiar
+                    Guardar Cambios
                   </Button>
                 </div>
-              </div>
-
-              <div className={styles.formField}>
-                <label className={styles.label}>Género:</label>
-                <Select
-                  className={styles.select}
-                  value={genero}
-                  onChange={(value) => setGenero(value)}
-                  placeholder="Selecciona tu género"
-                  options={[
-                    { value: 'masculino', label: 'Masculino' },
-                    { value: 'femenino', label: 'Femenino' },
-                    { value: 'otro', label: 'Otro' },
-                  ]}
-                />
-              </div>
-
-              <div className={styles.formField}>
-                <label className={styles.label}>Contraseña:</label>
-                <div className={styles.passwordContainer}>
-                  <Input.Password
-                    className={styles.passwordInput}
-                    value={contrasena}
-                    onChange={(e) => setContrasena(e.target.value)}
-                    placeholder="••••••••"
-                  />
-                  <Button
-                    className={styles.cambiarBtn}
-                    icon={<ShieldCheck size={16} />}
-                  >
-                    Cambiar
-                  </Button>
-                </div>
-              </div>
-
-              {/* Save button */}
-              <div className={styles.saveButtonContainer}>
-                <Button
-                  type="primary"
-                  className={styles.saveButton}
-                  size="large"
-                >
-                  Guardar Cambios
-                </Button>
               </div>
             </div>
-          </div>
-        </main>
-      </div>
+          </main>
+        </div>
 
-      {/* MODAL 1: Para agregar nuevo correo */}
-      <Modal
-        title={null}
-        open={showEmailModal}
-        onCancel={handleCloseEmailModal}
-        footer={null}
-        centered
-        width={520}
-        closable={false}
-        className={styles.customModal}
-        styles={{
-          content: { padding: 0, borderRadius: '16px', overflow: 'hidden' },
-        }}
-      >
-        <div className={styles.modalBody}>
-          {/* Header con botón de regreso */}
+        <Modal
+          title={null}
+          open={showEmailModal}
+          onCancel={handleCloseEmailModal}
+          footer={null}
+          centered
+          width={520}
+          closable={false}
+          className={styles.modalContainer}
+        >
           <div className={styles.modalHeader}>
             <Button
               type="text"
@@ -269,10 +319,9 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Contenido */}
           <div className={styles.modalContent}>
             <h3 className={styles.modalTitle}>Cambiar correo electrónico</h3>
-            <p className={styles.modalMessage}>
+            <p className={styles.modalDescription}>
               Para actualizar tu correo electrónico, ingresa tu nuevo correo y
               te enviaremos un código de verificación.
             </p>
@@ -305,32 +354,25 @@ const Profile = () => {
                   size="large"
                   block
                   loading={loading}
-                  className={styles.modalButton}
+                  className={styles.modalSubmitButton}
                 >
                   Enviar código de verificación
                 </Button>
               </Form.Item>
             </Form>
           </div>
-        </div>
-      </Modal>
+        </Modal>
 
-      {/* MODAL 2: Para ingresar código de verificación */}
-      <Modal
-        title={null}
-        open={showCodeModal}
-        onCancel={handleCloseCodeModal}
-        footer={null}
-        centered
-        width={520}
-        closable={false}
-        className={styles.customModal}
-        styles={{
-          content: { padding: 0, borderRadius: '16px', overflow: 'hidden' },
-        }}
-      >
-        <div className={styles.modalBody}>
-          {/* Header con botón de regreso */}
+        <Modal
+          title={null}
+          open={showCodeModal}
+          onCancel={handleCloseCodeModal}
+          footer={null}
+          centered
+          width={520}
+          closable={false}
+          className={styles.modalContainer}
+        >
           <div className={styles.modalHeader}>
             <Button
               type="text"
@@ -343,14 +385,13 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Contenido */}
           <div className={styles.modalContent}>
             <h3 className={styles.modalTitle}>Verificar tu identidad</h3>
-            <div className={styles.codeVerificationInfo}>
-              <p className={styles.modalSubtitle}>
+            <div className={styles.codeDescription}>
+              <p className={styles.modalDescription}>
                 Enviado un código de verificación de 6 dígitos a:
               </p>
-              <p className={styles.modalEmail}>{newEmail}</p>
+              <p className={styles.emailText}>{newEmail}</p>
             </div>
 
             <Form
@@ -370,9 +411,9 @@ const Profile = () => {
                   <Input.OTP
                     size="large"
                     length={6}
-                    placeholder="•"
+                    onChange={setCode}
                     className={styles.otpInput}
-                    onChange={(text) => setCode(text)}
+                    inputClassName={styles.otpSingleInput}
                   />
                 </div>
               </Form.Item>
@@ -383,19 +424,18 @@ const Profile = () => {
                   htmlType="submit"
                   size="large"
                   block
-                  loading={loading}
+                  loading={verifyLoading}
                   disabled={code.length !== 6}
-                  className={styles.modalButton}
+                  className={styles.modalSubmitButton}
                 >
                   Verificar código
                 </Button>
               </Form.Item>
             </Form>
 
-            {/* Opciones adicionales */}
             <div className={styles.modalFooter}>
-              <p className={styles.modalFooterText}>¿No recibiste el código?</p>
-              <div className={styles.modalFooterActions}>
+              <p className={styles.footerText}>¿No recibiste el código?</p>
+              <div className={styles.footerActions}>
                 <Button
                   type="link"
                   onClick={handleResendCode}
@@ -409,9 +449,9 @@ const Profile = () => {
               </div>
             </div>
           </div>
-        </div>
-      </Modal>
-    </div>
+        </Modal>
+      </div>
+    </ConfigProvider>
   );
 };
 
