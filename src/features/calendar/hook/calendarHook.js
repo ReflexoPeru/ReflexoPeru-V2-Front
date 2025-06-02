@@ -13,11 +13,16 @@ export const useCalendar = () => {
     try {
       const data = await getPendingAppointments();
 
+      if (!Array.isArray(data)) {
+        setEvents([]);
+        return;
+      }
+
       const formattedEvents = data.map((item) => {
         const start = dayjs(
           `${item.appointment_date}T${item.appointment_hour}`,
         );
-        const end = start.add(1, 'hour'); // duración 1 hora
+        const end = start.add(1, 'hour');
 
         return {
           id: item.id,

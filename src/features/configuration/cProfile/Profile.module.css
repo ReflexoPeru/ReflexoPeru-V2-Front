@@ -1,11 +1,4 @@
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  font-family: 'Montserrat', sans-serif;
-}
-
+/* Estilos base */
 .body {
   display: flex;
   flex-direction: column;
@@ -16,15 +9,11 @@ html, body {
   padding: 0;
 }
 
-
-
 .layout {
   display: flex;
   flex: 1;
   width: 100%;
 }
-
-
 
 .mainContent {
   display: flex;
@@ -38,26 +27,26 @@ html, body {
 }
 
 .container {
-  overflow: visible; 
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
 
   box-sizing: border-box;
-  width: 45%; 
+  width: 45%;
   height: 100%;
-
 }
 
 .card {
   width: 650px;
   height: 570px;
   padding: 30px;
-  border-radius: 8px;
+  border-radius: 12px;
 
   color: white;
 
   background-color: #1e1e1e;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .title {
@@ -74,7 +63,7 @@ html, body {
   min-width: 100px;
   margin-right: 20px;
   font-size: 16px;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .formRow {
@@ -98,11 +87,13 @@ html, body {
 .avatarTitle {
   margin-bottom: 10px;
   font-size: 14px;
+  color: #b0b0b0;
 }
 
 .avatarImage {
   width: 70px;
   height: 70px;
+  border: 2px solid #333;
   border-radius: 50%;
 
   object-fit: cover;
@@ -118,14 +109,22 @@ html, body {
 
   width: 70px;
   height: 70px;
-  border: none;
+  border: 2px dashed #666;
   border-radius: 50%;
 
-  background-color: #e0e0e0;
+  background-color: #2a2a2a;
+
+  transition: all 0.3s ease;
+}
+
+.uploadButton:hover {
+  border-color: #4CAF50;
+  background-color: #333;
 }
 
 .uploadText {
-  font-size: 14px;
+  font-size: 12px;
+  color: #b0b0b0;
 }
 
 .divider {
@@ -143,26 +142,49 @@ html, body {
 .input {
   flex: 1;
 
-  height: 32px;
-  border: none !important;
-  border-radius: 4px;
+  height: 36px;
+  border: 1px solid #444 !important;
+  border-radius: 6px;
 
   color: white !important;
 
-  background-color: #333 !important;
+  background-color: #2a2a2a !important;
+
+  transition: border-color 0.3s ease;
+}
+
+.input::placeholder {
+  color: #666 !important;
+}
+
+.input:focus {
+  border-color: #4CAF50 !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
 }
 
 .select {
   flex: 1;
-  border-radius: 4px;
-  background-color: #333 !important;
+  border-radius: 6px;
+  background-color: #2a2a2a !important;
 }
 
 .select > div,
 .select [class*="ant-select-selector"] {
-  border: none !important;
+  border: 1px solid #444 !important;
+  border-radius: 6px !important;
   color: white !important;
-  background-color: #333 !important;
+  background-color: #2a2a2a !important;
+}
+
+.select:hover [class*="ant-select-selector"] {
+  border-color: #4CAF50 !important;
+}
+
+.emailContainer {
+  display: flex;
+  flex: 1;
+  gap: 10px;
+  align-items: center;
 }
 
 .passwordContainer {
@@ -173,25 +195,41 @@ html, body {
 
 .passwordInput {
   flex: 1;
-  border: none !important;
+
+  border: 1px solid #444 !important;
+  border-radius: 6px;
+
   color: white !important;
-  background-color: #333 !important;
+
+  background-color: #2a2a2a !important;
 }
 
 .passwordInput .ant-input {
   color: white !important;
-  background-color: #333 !important;
+  background-color: #2a2a2a !important;
 }
 
 .cambiarBtn {
-  height: 32px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+
+  height: 36px;
   padding: 0 15px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
 
   color: white;
 
   background-color: #4CAF50;
+
+  transition: all 0.3s ease;
+}
+
+.cambiarBtn:hover {
+  transform: translateY(-1px);
+  background-color: #3d8b40 !important;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .saveButtonContainer {
@@ -201,21 +239,288 @@ html, body {
 }
 
 .saveButton {
-  height: 36px;
-  padding: 0 20px;
+  height: 44px !important;
+  padding: 0 32px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
 
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 600;
   color: white;
 
   background-color: #4CAF50 !important;
+
+  transition: all 0.3s ease;
 }
 
-.saveButton span {
+.saveButton:hover {
+  transform: translateY(-1px);
+  background-color: #3d8b40 !important;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+}
+
+/* Estilos para los modales */
+.modalContainer {
+  overflow: hidden;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+}
+
+.modalHeader {
+  position: relative;
+
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: 1.2;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding: 32px 32px 0;
 }
 
+.backButton {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: 24px;
+
+  width: 40px;
+  height: 40px;
+  border: none !important;
+  border-radius: 8px !important;
+
+  color: #b0b0b0 !important;
+
+  background: transparent !important;
+
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.modalLogoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.modalLogo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.modalContent {
+  padding: 0 40px 40px;
+  text-align: center;
+}
+
+.modalTitle {
+  margin: 0 0 20px;
+
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.modalDescription {
+  max-width: 400px;
+  margin: 0 auto 30px;
+
+  font-size: 16px;
+  line-height: 1.6;
+  color: #b0b0b0;
+}
+
+.modalForm {
+  margin-bottom: 32px;
+}
+
+.modalInput {
+  height: 52px !important;
+  border: none !important;
+  border-radius: 12px !important;
+
+  font-size: 16px !important;
+  color: rgb(255, 255, 255) !important;
+
+  background-color: #333 !important;
+}
+
+.modalInput:hover,
+.modalInput:focus {
+  border-color: #4CAF50 !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+}
+
+.modalSubmitButton {
+  height: 52px !important;
+  margin-bottom: 24px !important;
+  border: none !important;
+  border-radius: 12px !important;
+
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: white !important;
+
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3) !important;
+
+  transition: all 0.3s ease !important;
+}
+
+.modalSubmitButton:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4) !important;
+}
+
+.codeDescription {
+  margin-bottom: 30px;
+}
+
+.emailText {
+  margin: 8px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #4CAF50;
+}
+
+.otpContainer {
+  margin-bottom: 40px;
+}
+
+.otpInput {
+  gap: 10px;
+  justify-content: center;
+}
+
+.otpSingleInput {
+  width: 46px !important;
+  height: 56px !important;
+  border: 2px solid #4CAF50 !important;
+  border-radius: 8px !important;
+
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  color: white !important;
+
+  background-color: #2a2a2a !important;
+}
+
+.modalFooter {
+  padding-top: 16px;
+  border-top: 1px solid #333;
+}
+
+.footerText {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #b0b0b0;
+}
+
+.footerActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.resendButton {
+  height: auto !important;
+  padding: 0 !important;
+
+  font-size: 14px !important;
+  color: #4CAF50 !important;
+  text-decoration: underline !important;
+}
+
+.resendButton:hover {
+  color: #3d8b40 !important;
+}
+
+/* Form validation styles */
+.ant-form-item-explain-error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #ff4d4f;
+}
+
+.ant-form-item-has-error .input {
+  border-color: #ff4d4f !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    padding: 24px;
+  }
+
+  .modalContent {
+    padding: 0 24px 24px;
+  }
+
+  .modalTitle {
+    font-size: 20px;
+  }
+
+  .modalDescription {
+    font-size: 14px;
+  }
+}
+
+/* Estilos generales */
+.ant-btn-icon-only {
+  padding: 10px !important;
+  background-color: #2ecc71 !important;
+}
+
+.avatar-upload {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 80px !important;
+  height: 80px !important;
+  border: 2px dashed #555 !important;
+  border-radius: 50% !important;
+
+  color: #aaa !important;
+}
+
+label {
+  color: #bbb !important;
+}
+
+.ant-select,
+.ant-select-selector {
+  height: 40px !important;
+  border: 1px solid #3a3a3a !important;
+  border-radius: 8px !important;
+
+  color: #fff !important;
+
+  background-color: #1e1e1e !important;
+}
+
+.ant-select-selection-placeholder {
+  color: #aaaaaa !important;
+}
+
+input:-webkit-autofill {
+  color: white !important;
+  background-color: #2a2a2a !important;
+  -webkit-box-shadow: 0 0 0px 1000px #2a2a2a inset !important;
+
+  -webkit-text-fill-color: white !important;
+}
