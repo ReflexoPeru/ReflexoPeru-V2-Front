@@ -16,11 +16,13 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import styles from './Profile.module.css';
-import { useSendVerifyCode } from './hook/profileHook';
+import { useSendVerifyCode , useProfile, useUpdateProfile } from './hook/profileHook';
 
 const Profile = () => {
   const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
   const [nombre, setNombre] = useState('');
+  const [apellidoPaterno, setApellidoPaterno] = useState('');
+  const [apellidoMaterno, setApellidoMaterno] = useState('');
   const [correo, setCorreo] = useState('');
   const [genero, setGenero] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -39,6 +41,11 @@ const Profile = () => {
 
   // Hook personalizado para enviar código
   const { sendCode, verify, updateEmail, loading, error } = useSendVerifyCode();
+  // Hook personalizado para obtener el perfil
+  const { profile } = useProfile();
+  // Hook personalizado para actualizar el perfil
+  const { updateProfile, isUpdating } = useUpdateProfile();
+
 
   const handleAvatarChange = (info) => {
     const file = info.file.originFileObj;
@@ -137,10 +144,33 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (error) {
-      message.error('Error: ' + error.message);
+    if (profile) {
+      setNombre(profile.name || '');
+      setApellidoPaterno(profile.paternal_lastname || '');
+      setApellidoMaterno(profile.maternal_lastname || '');
+      setCorreo(profile.email || '');
     }
-  }, [error]);
+  }, [profile]);
+
+  // Función para manejar el guardado
+  const handleSaveChanges = async () => {
+    try {
+      const updateData = {
+        name: nombre,
+        paternal_lastname: apellidoPaterno,
+        maternal_lastname: apellidoMaterno,
+      };
+
+      await updateProfile(updateData);
+      message.success('Cambios guardados exitosamente');
+
+      // Recargar la página
+      window.location.reload();
+      refetch();
+    } catch (error) {
+      message.error('Error al actualzilar el perfil:' + (error.response?.data?.message || error.message));
+    }
+  };
 
   const theme = {
     token: {
@@ -233,6 +263,24 @@ const Profile = () => {
                 </div>
 
                 <div className={styles.formField}>
+                  <label className={styles.label}>Apellido Paterno:</label>
+                  <Input
+                    className={styles.input}
+                    value={apellidoPaterno}
+                    onChange={(e) => setApellidoPaterno(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label className={styles.label}>Apellido Materno:</label>
+                  <Input
+                    className={styles.input}
+                    value={apellidoMaterno}
+                    onChange={(e) => setApellidoMaterno(e.target.value)}
+                  />
+                </div>
+
+                <div className={styles.formField}>
                   <label className={styles.label}>Correo:</label>
                   <div className={styles.emailContainer}>
                     <Input className={styles.input} value={correo} readOnly />
@@ -264,12 +312,12 @@ const Profile = () => {
                 <div className={styles.formField}>
                   <label className={styles.label}>Contraseña:</label>
                   <div className={styles.passwordContainer}>
-                    <Input.Password
+                    {/* <Input.Password
                       className={styles.passwordInput}
                       value={contrasena}
                       onChange={(e) => setContrasena(e.target.value)}
                       placeholder="••••••••"
-                    />
+                    /> */}
                     <Button
                       className={styles.cambiarBtn}
                       icon={<ShieldCheck size={16} />}
@@ -284,6 +332,8 @@ const Profile = () => {
                     type="primary"
                     className={styles.saveButton}
                     size="large"
+                    onClick={handleSaveChanges}
+                    loading={isUpdating}
                   >
                     Guardar Cambios
                   </Button>

@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   createPatient,
   verifyCode,
   updateProfileEmail,
+  getProfile,
+  updateAllProfile,
 } from '../service/profileService';
+import { set } from 'date-fns';
 
 export const useSendVerifyCode = () => {
   const [loading, setLoading] = useState(false);
@@ -61,5 +64,62 @@ export const useSendVerifyCode = () => {
     updateEmail,
     loading,
     error,
+  };
+};
+
+export const useProfile = () => {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const data = await getProfile();
+      setProfile(data);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  return {
+    profile,
+    setProfile,
+    loading,
+    error,
+    refetch: fetchProfile,
+  }
+
+
+}
+
+export const useUpdateProfile = () => {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+
+  const updateProfile = async (data) => {
+    try {
+      setIsUpdating(true);
+      setUpdateError(null);
+      const updatedProfile = await updateAllProfile(data);
+      return updatedProfile;
+    } catch (error) {
+      setUpdateError(error);
+      throw error;
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return {
+    updateProfile,
+    isUpdating,
+    error: updateError,
   };
 };

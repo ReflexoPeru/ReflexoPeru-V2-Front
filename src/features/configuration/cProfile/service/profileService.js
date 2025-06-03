@@ -1,4 +1,4 @@
-import { post, patch } from '../../../../services/api/Axios/MethodsGeneral';
+import { get, put, post, patch } from '../../../../services/api/Axios/MethodsGeneral';
 
 export const createPatient = async (data) => {
   try {
@@ -29,3 +29,23 @@ export const updateProfileEmail = async (email) => {
     throw error;
   }
 };
+
+export const getProfile = async () => {
+  try {
+    const res = await get(`profile`);
+    return res.data;
+  } catch (error) {
+    console.error('Error in getProfile:', error);
+    throw error;
+  }
+};
+
+export const updateAllProfile = async (data) => {
+  try {
+    const res = await put(`profile`, data);
+    return res.data;
+  } catch (error) {
+    console.error('Error in updateAllProfile:', error);
+    throw error;
+  }
+}

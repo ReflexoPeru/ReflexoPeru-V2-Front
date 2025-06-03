@@ -9,9 +9,10 @@ export const useUsers = () => {
         const fetchUsers = async () => {
             try {
                 const data = await getUsers();
-                const formattedData = data.map(user => ({
+                const usersArray = Array.isArray(data) ? data : data.users || [];
+                const formattedData = (data || []).map(user => ({
                     id: user.id,
-                    name: `${user.name} ${user.paternal_lastname} ${user.maternal_lastname}`,
+                    name: user.full_name,
                     email: user.email,
                     role: user.role?.name || 'Sin rol', 
                     account_statement: user.account_statement === 1 ? 'Habilitado' : 'Deshabilitado',
