@@ -98,6 +98,7 @@ export default function MenuDashboard() {
           <Nut />
         </div>
       ),
+
       children: [
         {
           key: '12',
@@ -116,6 +117,15 @@ export default function MenuDashboard() {
           label: <Link to="configPerfil">Perfil</Link>,
         },
       ],
+    },
+    {
+      key: '11',
+      label: <Link to="Historia">Historia</Link>,
+      icon: (
+        <div className={Style.icon}>
+          <Nut />
+        </div>
+      ),
     },
   ];
 

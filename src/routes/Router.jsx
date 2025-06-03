@@ -16,6 +16,7 @@ import NewPatient from '../features/patients/ui/RegisterPatient/NewPatient';
 import NewAppointment from '../features/appointments/ui/RegisterAppointment/NewAppointment';
 import NewTherapist from '../features/staff/ui/RegisterTherapist/NewTherapist';
 import Error404 from '../pages/Error/Error404';
+import PatientHistory from '../features/history/components/PatientHistory';
 
 const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
       {
         path: 'configPerfil',
         element: <Prueba />,
+      },
+      {
+        path: 'Historia',
+        element: <PatientHistory />,
       },
     ],
   },
