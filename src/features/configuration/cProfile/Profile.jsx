@@ -16,7 +16,11 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import styles from './Profile.module.css';
-import { useSendVerifyCode , useProfile, useUpdateProfile } from './hook/profileHook';
+import {
+  useSendVerifyCode,
+  useProfile,
+  useUpdateProfile,
+} from './hook/profileHook';
 
 const Profile = () => {
   const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
@@ -35,9 +39,19 @@ const Profile = () => {
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
+  // Estados para los modales de contraseña
+  const [showCurrentPasswordModal, setShowCurrentPasswordModal] =
+    useState(false);
+  const [showNewPasswordModal, setShowNewPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
   // Forms refs
   const [emailForm] = Form.useForm();
   const [codeForm] = Form.useForm();
+  const [currentPasswordForm] = Form.useForm();
+  const [newPasswordForm] = Form.useForm();
 
   // Hook personalizado para enviar código
   const { sendCode, verify, updateEmail, loading, error } = useSendVerifyCode();
@@ -45,7 +59,6 @@ const Profile = () => {
   const { profile } = useProfile();
   // Hook personalizado para actualizar el perfil
   const { updateProfile, isUpdating } = useUpdateProfile();
-
 
   const handleAvatarChange = (info) => {
     const file = info.file.originFileObj;
@@ -59,6 +72,9 @@ const Profile = () => {
     }
   };
 
+  // ==============================================
+  // Funciones para los modales de correo
+  // ==============================================
   const handleOpenEmailModal = () => {
     setShowEmailModal(true);
     emailForm.resetFields();
@@ -130,6 +146,51 @@ const Profile = () => {
     }
   };
 
+  // =========================================//
+  // Funciones para los modales de contraseña //
+  // =========================================//
+  const handleOpenPasswordModal = () => {
+    setShowCurrentPasswordModal(true);
+    currentPasswordForm.resetFields();
+  };
+
+  const handleCloseCurrentPasswordModal = () => {
+    setShowCurrentPasswordModal(false);
+    setCurrentPassword('');
+    currentPasswordForm.resetFields();
+  };
+
+  const handleSubmitCurrentPassword = async (values) => {
+    try {
+      // Aquí iría la lógica para verificar la contraseña actual
+      // Por ahora simulamos que es correcta
+      setCurrentPassword(values.currentPassword);
+      setShowCurrentPasswordModal(false);
+      setShowNewPasswordModal(true);
+      message.success('Contraseña actual verificada');
+    } catch {
+      message.error('Contraseña actual incorrecta');
+    }
+  };
+
+  const handleCloseNewPasswordModal = () => {
+    setShowNewPasswordModal(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    newPasswordForm.resetFields();
+  };
+
+  const handleSubmitNewPassword = async (values) => {
+    try {
+      // Aquí iría la lógica para actualizar la contraseña
+      setContrasena(values.newPassword);
+      setShowNewPasswordModal(false);
+      message.success('¡Contraseña actualizada exitosamente!');
+    } catch {
+      message.error('Error al actualizar la contraseña. Intenta de nuevo.');
+    }
+  };
+
   const startCountdown = () => {
     setCountdown(60);
     const timer = setInterval(() => {
@@ -168,7 +229,10 @@ const Profile = () => {
       window.location.reload();
       refetch();
     } catch (error) {
-      message.error('Error al actualzilar el perfil:' + (error.response?.data?.message || error.message));
+      message.error(
+        'Error al actualzilar el perfil:' +
+          (error.response?.data?.message || error.message),
+      );
     }
   };
 
@@ -312,15 +376,10 @@ const Profile = () => {
                 <div className={styles.formField}>
                   <label className={styles.label}>Contraseña:</label>
                   <div className={styles.passwordContainer}>
-                    {/* <Input.Password
-                      className={styles.passwordInput}
-                      value={contrasena}
-                      onChange={(e) => setContrasena(e.target.value)}
-                      placeholder="••••••••"
-                    /> */}
                     <Button
                       className={styles.cambiarBtn}
                       icon={<ShieldCheck size={16} />}
+                      onClick={handleOpenPasswordModal}
                     >
                       Cambiar
                     </Button>
@@ -343,6 +402,9 @@ const Profile = () => {
           </main>
         </div>
 
+        {/* ========================================*/}
+        {/* Modal para cambiar correo (primer paso) */}
+        {/* ========================================*/}
         <Modal
           title={null}
           open={showEmailModal}
@@ -413,6 +475,9 @@ const Profile = () => {
           </div>
         </Modal>
 
+        {/* =====================================================*/}
+        {/* Modal para verificar código de correo (segundo paso) */}
+        {/* =====================================================*/}
         <Modal
           title={null}
           open={showCodeModal}
@@ -498,6 +563,179 @@ const Profile = () => {
                 </Button>
               </div>
             </div>
+          </div>
+        </Modal>
+
+        {/* ===========================================*/}
+        {/* Modal para contraseña actual (primer paso) */}
+        {/* ===========================================*/}
+        <Modal
+          title={null}
+          open={showCurrentPasswordModal}
+          onCancel={handleCloseCurrentPasswordModal}
+          footer={null}
+          centered
+          width={520}
+          closable={false}
+          className={styles.modalContainer}
+        >
+          <div className={styles.modalHeader}>
+            <Button
+              type="text"
+              icon={<ArrowLeft size={20} />}
+              onClick={handleCloseCurrentPasswordModal}
+              className={styles.backButton}
+            />
+            <div className={styles.modalLogoContainer}>
+              <img
+                src="/src/assets/Img/MiniLogoReflexo.webp"
+                alt="Logo"
+                className={styles.modalLogo}
+              />
+            </div>
+          </div>
+
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalTitle}>Cambiar contraseña</h3>
+            <p className={styles.modalDescription}>
+              Para actualizar tu contraseña, primero ingresa tu contraseña
+              actual para verificar tu identidad.
+            </p>
+
+            <Form
+              form={currentPasswordForm}
+              onFinish={handleSubmitCurrentPassword}
+              layout="vertical"
+              className={styles.modalForm}
+            >
+              <Form.Item
+                name="currentPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Por favor ingresa tu contraseña actual',
+                  },
+                ]}
+              >
+                <Input.Password
+                  size="large"
+                  placeholder="Ingresa tu contraseña actual"
+                  className={styles.modalInput}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  className={styles.modalSubmitButton}
+                >
+                  Verificar contraseña
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </Modal>
+
+        {/* ===========================================*/}
+        {/* Modal para nueva contraseña (segundo paso) */}
+        {/* ===========================================*/}
+        <Modal
+          title={null}
+          open={showNewPasswordModal}
+          onCancel={handleCloseNewPasswordModal}
+          footer={null}
+          centered
+          width={520}
+          closable={false}
+          className={styles.modalContainer}
+        >
+          <div className={styles.modalHeader}>
+            <Button
+              type="text"
+              icon={<ArrowLeft size={20} />}
+              onClick={handleCloseNewPasswordModal}
+              className={styles.backButton}
+            />
+            <div className={styles.modalLogoContainer}>
+              <CheckCircle size={48} color="#4CAF50" weight="fill" />
+            </div>
+          </div>
+
+          <div className={styles.modalContent}>
+            <h3 className={styles.modalTitle}>Crear nueva contraseña</h3>
+            <p className={styles.modalDescription}>
+              Ingresa tu nueva contraseña y confírmala para completar el
+              proceso.
+            </p>
+
+            <Form
+              form={newPasswordForm}
+              onFinish={handleSubmitNewPassword}
+              layout="vertical"
+              className={styles.modalForm}
+            >
+              <Form.Item
+                name="newPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Por favor ingresa tu nueva contraseña',
+                  },
+                  {
+                    min: 8,
+                    message: 'La contraseña debe tener al menos 8 caracteres',
+                  },
+                ]}
+              >
+                <Input.Password
+                  size="large"
+                  placeholder="Ingresa tu nueva contraseña"
+                  className={styles.modalInput}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="confirmPassword"
+                dependencies={['newPassword']}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Por favor confirma tu nueva contraseña',
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('newPassword') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error('Las contraseñas no coinciden'),
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  size="large"
+                  placeholder="Confirma tu nueva contraseña"
+                  className={styles.modalInput}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  className={styles.modalSubmitButton}
+                >
+                  Actualizar contraseña
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
         </Modal>
       </div>
