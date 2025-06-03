@@ -1,22 +1,21 @@
-import { Select } from 'antd';
+import { ConfigProvider, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getPaymentStatuses } from './SelectsApi';
 
-export function SelectPaymentStatus() {
+export function SelectPaymentStatus({ value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
     const fetchPaymentStatuses = async () => {
       try {
-        const data = await getPaymentStatuses();
-        const statuses = data.map((status) => ({
-          value: status.id,
-          label: status.name,
+        const data = await getPaymentStatuses(); // Ya viene con value y label
+        const formattedOptions = data.map((item) => ({
+          ...item,
+          label: <span style={{ color: '#fff' }}>{item.label}</span>,
         }));
-
-        setOptions(statuses);
-      } catch {
-        console.error('Error al obtener los estados de pago');
+        setOptions(formattedOptions);
+      } catch (error) {
+        console.error('Error al obtener los estados de pago:', error);
       }
     };
 
@@ -24,25 +23,39 @@ export function SelectPaymentStatus() {
   }, []);
 
   return (
-    <Select
-      style={{ color: '#fff' }}
-      showSearch
-      filterOption={(input, option) => {
-        var _a;
-        return (
-          (_a =
-            option === null || option === void 0 ? void 0 : option.label) !==
-            null && _a !== void 0
-            ? _a
-            : ''
-        )
-          .toLowerCase()
-          .includes(input.toLowerCase());
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            colorPrimary: '#FFFFFFFF',
+            optionSelectedBg: '#424242FF',
+            colorText: '#fff',
+            colorTextPlaceholder: '#aaa',
+            controlItemBgHover: '#2E2E2EFF',
+            selectorBg: '#444444', // fondo del input
+          },
+        },
+        token: {
+          colorTextBase: '#fff',
+        },
       }}
-      placeholder="Estado de pago"
-      options={options}
-      onChange={(value) => console.log(value)}
-    />
+    >
+      <Select
+        style={{ width: '100%' }}
+        dropdownStyle={{ backgroundColor: '#444444' }}
+        showSearch
+        placeholder="Estado de pago"
+        options={options}
+        value={value}
+        onChange={onChange}
+        filterOption={(input, option) =>
+          (option?.label?.props?.children ?? '')
+            .toLowerCase()
+            .includes(input.toLowerCase())
+        }
+        {...rest}
+      />
+    </ConfigProvider>
   );
 }
 

@@ -1,6 +1,6 @@
 import { Select, Spin } from 'antd';
 import { useEffect, useState } from 'react';
-import { getProvinces } from './SelectsApi';
+import { getProvinces } from '../SelectsApi';
 
 export function SelectProvince({ departamentId, value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
