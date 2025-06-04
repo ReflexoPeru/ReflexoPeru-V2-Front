@@ -5,6 +5,35 @@ import { getDepartaments, getDistricts, getProvinces } from '../Select/SelectsAp
 const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
   const [options, setOptions] = useState([]);
 
+  // Convertir el objeto `value` (ej: { region_id: "15", province_id: "1501" }) 
+  // en un array para el Cascader (ej: ["15", "1501"])
+  const getCascaderValueFromObject = (ubigeoObj) => {
+    if (!ubigeoObj) return [];
+    return [
+      ubigeoObj.region_id,
+      ubigeoObj.province_id,
+      ubigeoObj.district_id,
+    ].filter(Boolean); // Filtramos valores undefined/null/vacíos
+  };
+
+  // Convertir el array del Cascader (ej: ["15", "1501", "150122"]) 
+  // en un objeto (ej: { region_id: "15", province_id: "1501", district_id: "150122" })
+  const getUbigeoObjectFromValue = (cascaderValue) => {
+    return {
+      region_id: cascaderValue[0] || null,
+      province_id: cascaderValue[1] || null,
+      district_id: cascaderValue[2] || null,
+    };
+  };
+
+  // Valor inicial transformado (para que el Cascader muestre la selección actual)
+  const [cascaderValue, setCascaderValue] = useState(getCascaderValueFromObject(value));
+
+  // Actualizar `cascaderValue` cuando `value` cambie desde el padre
+  useEffect(() => {
+    setCascaderValue(getCascaderValueFromObject(value));
+  }, [value]);
+
   useEffect(() => {
     const loadDepartments = async () => {
       try {
@@ -20,7 +49,6 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
         console.error('Error loading departments:', error);
       }
     };
-
     loadDepartments();
   }, []);
 
@@ -52,15 +80,17 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
     }
   };
 
-  const handleChange = (value, selectedOptions) => {
-    if (onChange) onChange(value, selectedOptions);
+  const handleChange = (newCascaderValue, selectedOptions) => {
+    setCascaderValue(newCascaderValue); // Guardar el array para mostrar el texto seleccionado
+    if (onChange) {
+      // Enviar el objeto transformado al padre
+      onChange(getUbigeoObjectFromValue(newCascaderValue), selectedOptions);
+    }
   };
 
-  // Filtro de búsqueda personalizado
   const filter = (inputValue, path) =>
-    path.some(
-      (option) =>
-        option.label.toLowerCase().includes(inputValue.toLowerCase())
+    path.some((option) =>
+      option.label.toLowerCase().includes(inputValue.toLowerCase())
     );
 
   return (
@@ -69,11 +99,11 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
       loadData={loadData}
       onChange={handleChange}
       changeOnSelect
-      showSearch={{ filter }} // activamos el buscador
+      showSearch={{ filter }}
       placeholder="Seleccione departamento / provincia / distrito"
       style={{ width: '100%', color: 'black' }}
-      dropdownStyle={{ backgroundColor: '#fff', color: '#000' }} // texto negro
-      value={value}
+      dropdownStyle={{ backgroundColor: '#fff', color: '#000' }}
+      value={cascaderValue} // Usamos el array, no el objeto
       {...rest}
     />
   );
