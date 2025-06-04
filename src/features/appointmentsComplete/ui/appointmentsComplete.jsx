@@ -1,29 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import estilo from './appointments.module.css';
+import estilo from './appointmentsComplete.module.css';
 import ModeloTable from '../../../components/Table/Tabla';
-import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
-import AppointmentsMock from '../../../mock/Appointments';
 import { useNavigate } from 'react-router';
-import { useAppointments } from '../hook/appointmentsHook';
+import { useAppointmentsComplete } from '../hook/appointmentsCompleteHook';
 import dayjs from 'dayjs';
 
-export default function Appointments() {
+export default function AppointmentsComplete() {
   const navigate = useNavigate();
   const {
-    appointments,
+    appointmentsComplete,
     loading,
     error,
     pagination,
     handlePageChange,
     setSearchTerm,
-    loadPaginatedAppointmentsByDate,
-  } = useAppointments();
+    loadPaginatedAppointmentsCompleteByDate,
+  } = useAppointmentsComplete();
 
   const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
   useEffect(() => {
-    loadPaginatedAppointmentsByDate(selectDate);
+    loadPaginatedAppointmentsCompleteByDate(selectDate);
   }, [selectDate]);
 
   const columns = [
@@ -101,8 +99,6 @@ export default function Appointments() {
           margin: '0 auto',
         }}
       >
-        <CustomButton text="Registrar Cita" onClick={handleButton} />
-
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
@@ -120,7 +116,7 @@ export default function Appointments() {
 
       <ModeloTable
         columns={columns}
-        data={appointments}
+        data={appointmentsComplete}
         loading={loading}
         pagination={{
           current: pagination.currentPage,

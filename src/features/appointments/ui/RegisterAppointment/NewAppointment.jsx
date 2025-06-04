@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Modal, Button, Table, Radio } from 'antd'; // 👈 Importamos lo necesario
 import Form from '../../../../components/Form/Form';
 import styles from '../RegisterAppointment/NewAppointment.module.css';
 import { useAppointments } from '../../hook/appointmentsHook';
@@ -9,6 +10,10 @@ const NewAppointment = () => {
   const [patientType, setPatientType] = useState('nuevo');
   const [paymentOption, setPaymentOption] = useState(null);
   const [customAmount, setCustomAmount] = useState(false);
+
+  // Modal contribuidor
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const { submitNewAppointment } = useAppointments();
 
@@ -28,7 +33,7 @@ const NewAppointment = () => {
   const handleSubmit = async () => {
     try {
       const payload = {
-        patient_id: 1,
+        patient_id: selectedRowKey,
         appointment_date: null,
         appointment_hour: null,
         therapist_id: null,
@@ -86,9 +91,7 @@ const NewAppointment = () => {
           type: 'customComponent',
           componentType: 'paymentOptions',
           span: 13,
-          props: {
-            paymentOptions: paymentOptions,
-          },
+          props: { paymentOptions },
         },
       ],
     },
@@ -110,9 +113,7 @@ const NewAppointment = () => {
           type: 'customComponent',
           componentType: 'amountField',
           span: 13,
-          props: {
-            paymentOptions: paymentOptions,
-          },
+          props: { paymentOptions },
         },
       ],
     },
@@ -150,6 +151,34 @@ const NewAppointment = () => {
     },
   ];
 
+  // Datos falsos
+  const data = [
+    { key: 1, nombres: 'Juan', apellidos: 'Pérez' },
+    { key: 2, nombres: 'Ana', apellidos: 'Gómez' },
+    { key: 3, nombres: 'Luis', apellidos: 'Ramírez' },
+  ];
+
+  const columns = [
+    {
+      title: '',
+      dataIndex: 'key',
+      render: (text, record) => (
+        <Radio
+          checked={selectedRowKey === record.key}
+          onChange={() => setSelectedRowKey(record.key)}
+        />
+      ),
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'nombres',
+    },
+    {
+      title: 'Apellidos',
+      dataIndex: 'apellidos',
+    },
+  ];
+
   return (
     <div className={styles.container}>
       <Form
@@ -161,11 +190,37 @@ const NewAppointment = () => {
         paymentOption={paymentOption}
         customAmount={customAmount}
         onPaymentOptionChange={handlePaymentOptionChange}
-        onPatientTypeChange={setPatientType}
+        onPatientTypeChange={(value) => setPatientType(value)}
         onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
         onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
         onSubmit={handleSubmit}
       />
+
+      {patientType === 'continuador' && (
+        <Button
+          type="primary"
+          onClick={() => setIsModalVisible(true)}
+          style={{ marginTop: 16 }}
+        >
+          Elegir Contribuidor
+        </Button>
+      )}
+
+      <Modal
+        title="Seleccionar Contribuidor"
+        open={isModalVisible}
+        onOk={() => setIsModalVisible(false)}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Seleccionar"
+        cancelText="Cancelar"
+      >
+        <Table
+          dataSource={data}
+          columns={columns}
+          pagination={false}
+          rowKey="key"
+        />
+      </Modal>
     </div>
   );
 };

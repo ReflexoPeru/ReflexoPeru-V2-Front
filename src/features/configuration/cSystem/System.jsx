@@ -23,13 +23,7 @@ const System = () => {
 
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar} aria-label="Sidebar">
-        {/* Sidebar content */}
-      </aside>
-
       <main className={styles.mainContent}>
-        <header className={styles.header}>{/* Header content */}</header>
-
         <section className={styles.container}>
           <div className={styles.box}>
             {/* Logo section */}

@@ -1,5 +1,5 @@
 import FormGenerator from '../../../../components/Form/Form';
-import { usePatient } from '../../hook/patientHook';
+import { usePatients } from '../../hook/patientsHook';
 
 const fields = [
   { type: 'title', label: 'Nuevo paciente' },
@@ -70,7 +70,7 @@ const fields = [
 ];
 
 const NewPatient = () => {
-  const { submitNewPatient } = usePatient();
+  const { submitNewPatient } = usePatients();
 
   const handleSubmit = async (data) => {
     try {

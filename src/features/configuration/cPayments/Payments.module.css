@@ -1,14 +1,11 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 90vh;
   background-color: #121212;
 }
 
-.header {
-  height: 60px;
-  background-color: #e9e7e7;
-}
+
 
 .content {
   overflow: hidden;
@@ -16,10 +13,6 @@
   flex: 1;
 }
 
-.sidebar {
-  width: 240px;
-  background-color: #ffffff;
-}
 
 .mainContent {
   overflow-y: auto;
@@ -121,4 +114,18 @@
   text-align: center;
 
   background-color: #14F58C3B;
+}
+
+.statusDisabled {
+  display: inline-block;
+
+  padding: 0px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+
+  background-color: #790d0d91;
 }

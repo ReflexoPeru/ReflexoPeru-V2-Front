@@ -1,14 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import dayjs from 'dayjs';
 import {
-  getPaginatedAppointmentsByDate,
-  searchAppointments,
-  createAppointment,
-} from '../service/appointmentsService';
+  getPaginatedAppointmentsCompleteByDate,
+  searchAppointmentsComplete,
+} from '../service/appointmentsCompleteService';
 
-export const useAppointments = () => {
+export const useAppointmentsComplete = () => {
   // Estados principales
-  const [appointments, setAppointments] = useState([]);
+  const [appointmentsComplete, setAppointmentsComplete] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,7 +26,7 @@ export const useAppointments = () => {
   const abortControllerRef = useRef(null);
 
   // Función principal para cargar citas
-  const loadAppointments = useCallback(async () => {
+  const loadAppointmentsComplete = useCallback(async () => {
     // Cancelar petición anterior si existe
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -44,10 +43,9 @@ export const useAppointments = () => {
       let response;
 
       if (searchTerm.trim()) {
-        response = await searchAppointments(searchTerm, { signal });
+        response = await searchAppointmentsComplete(searchTerm, { signal });
       } else {
-        console.log('selectedDate:', selectedDate);
-        response = await getPaginatedAppointmentsByDate(
+        response = await getPaginatedAppointmentsCompleteByDate(
           selectedDate,
           pagination.pageSize,
           pagination.currentPage,
@@ -55,7 +53,7 @@ export const useAppointments = () => {
         );
       }
 
-      setAppointments(response.data || []);
+      setAppointmentsComplete(response.data || []);
       setPagination((prev) => ({
         ...prev,
         totalItems: response.total || 0,
@@ -64,7 +62,7 @@ export const useAppointments = () => {
       if (error.name !== 'AbortError') {
         console.error('Error loading appointments:', error);
         setError(error);
-        setAppointments([]);
+        setAppointmentsComplete([]);
         setPagination((prev) => ({ ...prev, totalItems: 0 }));
       }
     } finally {
@@ -76,7 +74,7 @@ export const useAppointments = () => {
   // Efecto para cargar citas con debounce
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      loadAppointments();
+      loadAppointmentsComplete();
     }, 300);
 
     return () => {
@@ -85,7 +83,7 @@ export const useAppointments = () => {
         abortControllerRef.current.abort();
       }
     };
-  }, [loadAppointments]);
+  }, [loadAppointmentsComplete]);
 
   // Cambiar fecha seleccionada
   const handleDateChange = useCallback(
@@ -111,32 +109,7 @@ export const useAppointments = () => {
     setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
-  // Crear nueva cita
-  const submitNewAppointment = useCallback(
-    async (appointmentData) => {
-      try {
-        setLoading(true);
-        const payload = {
-          ...appointmentData,
-          appointment_date: dayjs(appointmentData.appointment_date).format(
-            'YYYY-MM-DD',
-          ),
-          created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-        };
-
-        const result = await createAppointment(payload);
-        await loadAppointments(); // Recargar lista después de crear
-        return result;
-      } catch (error) {
-        console.error('Error creating appointment:', error);
-        throw error;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loadAppointments],
-  );
-  const loadPaginatedAppointmentsByDate = useCallback(
+  const loadPaginatedAppointmentsCompleteByDate = useCallback(
     (date) => {
       const formattedDate = dayjs(date).isValid()
         ? dayjs(date).format('YYYY-MM-DD')
@@ -150,9 +123,10 @@ export const useAppointments = () => {
     },
     [selectedDate, searchTerm],
   );
+
   return {
     // Estados
-    appointments,
+    appointmentsComplete,
     loading,
     error,
     pagination,
@@ -160,12 +134,11 @@ export const useAppointments = () => {
     searchTerm,
 
     // Funciones
-    loadAppointments,
+    loadAppointmentsComplete,
     handleDateChange,
     handleSearch,
     handlePageChange,
-    submitNewAppointment,
-    loadPaginatedAppointmentsByDate,
+    loadPaginatedAppointmentsCompleteByDate,
     // Setters
     setSearchTerm,
     setSelectedDate,

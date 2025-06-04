@@ -29,11 +29,11 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await get('get-role');
 
-        if (res.data.data) {
+        if (res.data) {
           setIsAuthenticated(true);
-          setUserRole(res.data.data.role_id);
-          persistLocalStorage('name', res.data.data.name);
-          persistLocalStorage('user_id', res.data.data.user_id);
+          setUserRole(res.data.role_id);
+          persistLocalStorage('name', res.data.name);
+          persistLocalStorage('user_id', res.data.user_id);
         }
       } catch (err) {
         showToast('intentoFallido', err?.response?.data?.message);
@@ -47,7 +47,13 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, authChecked, userRole, setIsAuthenticated }}
+      value={{
+        isAuthenticated,
+        authChecked,
+        userRole,
+        setIsAuthenticated,
+        setUserRole,
+      }}
     >
       {children}
     </AuthContext.Provider>
