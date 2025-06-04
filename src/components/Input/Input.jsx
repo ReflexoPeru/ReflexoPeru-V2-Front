@@ -45,7 +45,7 @@ const InputField = ({
       return <SelectPaymentStatus />;
         
     case 'typeOfDocument':
-      return <SelectTypeOfDocument />;
+      return <SelectTypeOfDocument onChange={rest.onChange} />;
 
     case 'select': // genérico
       return (

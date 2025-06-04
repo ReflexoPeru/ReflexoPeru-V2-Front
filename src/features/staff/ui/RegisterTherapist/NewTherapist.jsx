@@ -1,18 +1,18 @@
 import FormGenerator from '../../../../components/Form/Form';
 
 const fields = [
-  { type: 'title', label: 'Nuevo Paciente' },
+  { type: 'title', label: 'Nuevo Terapista' },
   {
     type: 'customRow',
     fields: [
       {
-        name: 'documentType',
+        name: 'document_type_id',
         label: 'Tipo de Documento',
         type: 'typeOfDocument', // este va directo al switch
         span: 8,
       },
       {
-        name: 'documentNumber',
+        name: 'document_number',
         label: 'Nro Documento',
         type: 'text',
         required: true,
@@ -23,17 +23,17 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { name: 'lastName', label: 'Apellido Paterno', type: 'text', required: true, span: 8 },
-      { name: 'motherLastName', label: 'Apellido Materno', type: 'text', span: 8 },
+      { name: 'paternal_lastName', label: 'Apellido Paterno', type: 'text', required: true, span: 8 },
+      { name: 'maternal_lastName', label: 'Apellido Materno', type: 'text', span: 8 },
       { name: 'name', label: 'Nombre', type: 'text', required: true, span: 8 },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { name: 'nacimiento', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
+      { name: 'birth_date', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
       {
-        name: 'gender',
+        name: 'sex',
         label: 'Sexo',
         type: 'select',
         options: [
@@ -42,14 +42,14 @@ const fields = [
         ],
         span: 8,
       },
-      { name: 'occupation', label: 'Ocupación', type: 'text', span: 8 },
+      { name: 'personal_reference', label: 'Ocupación', type: 'text', span: 8 },
     ],
   },
   { type: 'title', label: 'Información de contacto' },
   {
     type: 'customRow',
     fields: [
-      { name: 'phone', label: 'Teléfono', type: 'text', required: true, span: 8 },
+      { name: 'primary_phone', label: 'Teléfono', type: 'text', required: true, span: 8 },
       { name: 'email', label: 'Correo Electrónico', type: 'email', span: 16 },
     ],
   },

@@ -34,7 +34,7 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
       theme={{
         components: {
           Select: {
-            colorPrimary: '#1677ff',
+            colorPrimary: '#FFFFFFFF',
             optionSelectedBg: '#333333',
             colorText: '#fff',
             colorBgElevated: '#444444', // fondo del dropdown (opciones)
