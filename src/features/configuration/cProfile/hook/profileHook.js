@@ -5,13 +5,17 @@ import {
   updateProfileEmail,
   getProfile,
   updateAllProfile,
+  validatePassword,
+  changePassword,
+  uploadPhoto,
+  getPhoto,
 } from '../service/profileService';
-import { set } from 'date-fns';
+import { useToast } from '../../../../services/toastify/ToastContext';
 
 export const useSendVerifyCode = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const { showToast } = useToast();
   const sendCode = async (email) => {
     setLoading(true);
     setError(null);
@@ -69,6 +73,7 @@ export const useSendVerifyCode = () => {
 
 export const useProfile = () => {
   const [profile, setProfile] = useState(null);
+  const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -77,6 +82,17 @@ export const useProfile = () => {
       setLoading(true);
       const data = await getProfile();
       setProfile(data);
+
+      // Obtener foto de perfil
+      try {
+        const photoData = await getPhoto();
+        if (photoData) {
+          setPhoto(URL.createObjectURL(photoData));
+        }
+      } catch (photoError) {
+        console.error('Error fetching photo:', photoError);
+        setPhoto('/src/assets/Img/MiniLogoReflexo.webp'); // Imagen por defecto
+      }
     } catch (error) {
       setError(error);
     } finally {
@@ -90,14 +106,13 @@ export const useProfile = () => {
 
   return {
     profile,
-    setProfile,
+    photo,
+    setPhoto,
     loading,
     error,
     refetch: fetchProfile,
-  }
-
-
-}
+  };
+};
 
 export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -117,8 +132,42 @@ export const useUpdateProfile = () => {
     }
   };
 
+  const validateCurrentPassword = async (currentPassword) => {
+    try {
+      const response = await validatePassword({
+        current_password: currentPassword,
+      });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updatePassword = async (newPassword) => {
+    try {
+      const response = await changePassword({ password: newPassword });
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const uploadProfilePhoto = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('photo', file);
+      const response = await uploadPhoto(formData);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return {
     updateProfile,
+    validateCurrentPassword,
+    updatePassword,
+    uploadProfilePhoto,
     isUpdating,
     error: updateError,
   };

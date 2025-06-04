@@ -64,7 +64,13 @@ const Profile = () => {
     error: codeError,
   } = useSendVerifyCode();
   const { profile, loading: profileLoading, refetch } = useProfile();
-  const { updateProfile, isUpdating } = useUpdateProfile();
+  const {
+    updateProfile,
+    isUpdating,
+    validateCurrentPassword,
+    updatePassword,
+    uploadProfilePhoto,
+  } = useUpdateProfile();
 
   // Efecto para cargar los datos del perfil
   useEffect(() => {
@@ -79,15 +85,21 @@ const Profile = () => {
   }, [profile]);
 
   // Función para manejar el cambio de avatar
-  const handleAvatarChange = (info) => {
+  const handleAvatarChange = async (info) => {
     const file = info.file.originFileObj;
-    if (
-      file &&
-      (info.file.status === 'done' || info.file.status === 'uploading')
-    ) {
-      const reader = new FileReader();
-      reader.onload = (e) => setAvatar(e.target.result);
-      reader.readAsDataURL(file);
+    if (file) {
+      try {
+        const formData = new FormData();
+        formData.append('photo', file);
+        await uploadProfilePhoto(formData);
+        message.success('Avatar actualizado correctamente');
+        // Actualizar la imagen mostrada
+        const reader = new FileReader();
+        reader.onload = (e) => setAvatar(e.target.result);
+        reader.readAsDataURL(file);
+      } catch (error) {
+        message.error('Error al actualizar el avatar');
+      }
     }
   };
 
@@ -166,11 +178,12 @@ const Profile = () => {
 
   const handleSubmitCurrentPassword = async (values) => {
     try {
+      await validateCurrentPassword(values.currentPassword);
       setCurrentPassword(values.currentPassword);
       setShowCurrentPasswordModal(false);
       setShowNewPasswordModal(true);
       message.success('Contraseña actual verificada');
-    } catch {
+    } catch (error) {
       message.error('Contraseña actual incorrecta');
     }
   };
@@ -184,10 +197,10 @@ const Profile = () => {
 
   const handleSubmitNewPassword = async (values) => {
     try {
-      // Aquí iría la lógica para actualizar la contraseña
+      await updatePassword(values.newPassword);
       setShowNewPasswordModal(false);
       message.success('¡Contraseña actualizada exitosamente!');
-    } catch {
+    } catch (error) {
       message.error('Error al actualizar la contraseña');
     }
   };
@@ -336,15 +349,6 @@ const Profile = () => {
                     onChange={(e) => setApellidoMaterno(e.target.value)}
                   />
                 </div>
-
-                {/* <div className={styles.formField}>
-                  <label className={styles.label}>Teléfono:</label>
-                  <Input
-                    className={styles.input}
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                  />
-                </div> */}
 
                 <div className={styles.formField}>
                   <label className={styles.label}>Género:</label>
