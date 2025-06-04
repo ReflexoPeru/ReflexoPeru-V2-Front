@@ -8,6 +8,7 @@ import {
   message,
   Form,
   ConfigProvider,
+  Input as AntdInput,
 } from 'antd';
 import {
   Envelope,
@@ -22,24 +23,25 @@ import {
   useUpdateProfile,
 } from './hook/profileHook';
 
+const { Password } = AntdInput;
+
 const Profile = () => {
+  // Estados del perfil
   const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
   const [correo, setCorreo] = useState('');
-  const [genero, setGenero] = useState('');
-  const [contrasena, setContrasena] = useState('');
+  const [genero, setGenero] = useState(null);
+  const [telefono, setTelefono] = useState('');
 
-  // Estados para los modales de correo
+  // Estados para los modales
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [code, setCode] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [countdown, setCountdown] = useState(0);
-
-  // Estados para los modales de contraseña
   const [showCurrentPasswordModal, setShowCurrentPasswordModal] =
     useState(false);
   const [showNewPasswordModal, setShowNewPasswordModal] = useState(false);
@@ -53,13 +55,30 @@ const Profile = () => {
   const [currentPasswordForm] = Form.useForm();
   const [newPasswordForm] = Form.useForm();
 
-  // Hook personalizado para enviar código
-  const { sendCode, verify, updateEmail, loading, error } = useSendVerifyCode();
-  // Hook personalizado para obtener el perfil
-  const { profile } = useProfile();
-  // Hook personalizado para actualizar el perfil
+  // Hooks personalizados
+  const {
+    sendCode,
+    verify,
+    updateEmail,
+    loading: codeLoading,
+    error: codeError,
+  } = useSendVerifyCode();
+  const { profile, loading: profileLoading, refetch } = useProfile();
   const { updateProfile, isUpdating } = useUpdateProfile();
 
+  // Efecto para cargar los datos del perfil
+  useEffect(() => {
+    if (profile) {
+      setNombre(profile.name || '');
+      setApellidoPaterno(profile.paternal_lastname || '');
+      setApellidoMaterno(profile.maternal_lastname || '');
+      setCorreo(profile.email || '');
+      setGenero(profile.sex || null);
+      setTelefono(profile.phone || '');
+    }
+  }, [profile]);
+
+  // Función para manejar el cambio de avatar
   const handleAvatarChange = (info) => {
     const file = info.file.originFileObj;
     if (
@@ -72,9 +91,7 @@ const Profile = () => {
     }
   };
 
-  // ==============================================
-  // Funciones para los modales de correo
-  // ==============================================
+  // Funciones para el manejo del correo
   const handleOpenEmailModal = () => {
     setShowEmailModal(true);
     emailForm.resetFields();
@@ -94,7 +111,7 @@ const Profile = () => {
       setShowEmailModal(false);
       setShowCodeModal(true);
       startCountdown();
-    } catch {
+    } catch (err) {
       message.error('Error al enviar el código. Intenta de nuevo.');
     }
   };
@@ -110,24 +127,14 @@ const Profile = () => {
   const handleVerifyCode = async (values) => {
     setVerifyLoading(true);
     try {
-      // 1. Verificar el código primero
       await verify(values.code);
-
-      // 2. Si la verificación es exitosa, actualizar el correo
       await updateEmail(newEmail);
-
-      // 3. Actualizar el estado local
       setCorreo(newEmail);
       setShowCodeModal(false);
-      setCode('');
-      setNewEmail('');
-      setCountdown(0);
-      codeForm.resetFields();
       message.success('¡Correo actualizado exitosamente!');
     } catch (error) {
       message.error(
-        error.response?.data?.message ||
-          'Error al actualizar el correo. Intenta de nuevo.',
+        error.response?.data?.message || 'Error al actualizar el correo',
       );
     } finally {
       setVerifyLoading(false);
@@ -136,7 +143,6 @@ const Profile = () => {
 
   const handleResendCode = async () => {
     if (countdown > 0) return;
-
     try {
       await sendCode(newEmail);
       message.success('Código reenviado');
@@ -146,9 +152,7 @@ const Profile = () => {
     }
   };
 
-  // =========================================//
-  // Funciones para los modales de contraseña //
-  // =========================================//
+  // Funciones para el manejo de contraseña
   const handleOpenPasswordModal = () => {
     setShowCurrentPasswordModal(true);
     currentPasswordForm.resetFields();
@@ -162,8 +166,6 @@ const Profile = () => {
 
   const handleSubmitCurrentPassword = async (values) => {
     try {
-      // Aquí iría la lógica para verificar la contraseña actual
-      // Por ahora simulamos que es correcta
       setCurrentPassword(values.currentPassword);
       setShowCurrentPasswordModal(false);
       setShowNewPasswordModal(true);
@@ -183,14 +185,14 @@ const Profile = () => {
   const handleSubmitNewPassword = async (values) => {
     try {
       // Aquí iría la lógica para actualizar la contraseña
-      setContrasena(values.newPassword);
       setShowNewPasswordModal(false);
       message.success('¡Contraseña actualizada exitosamente!');
     } catch {
-      message.error('Error al actualizar la contraseña. Intenta de nuevo.');
+      message.error('Error al actualizar la contraseña');
     }
   };
 
+  // Función para el contador de reenvío de código
   const startCountdown = () => {
     setCountdown(60);
     const timer = setInterval(() => {
@@ -204,38 +206,29 @@ const Profile = () => {
     }, 1000);
   };
 
-  useEffect(() => {
-    if (profile) {
-      setNombre(profile.name || '');
-      setApellidoPaterno(profile.paternal_lastname || '');
-      setApellidoMaterno(profile.maternal_lastname || '');
-      setCorreo(profile.email || '');
-    }
-  }, [profile]);
-
-  // Función para manejar el guardado
+  // Función para guardar los cambios del perfil
   const handleSaveChanges = async () => {
     try {
       const updateData = {
         name: nombre,
         paternal_lastname: apellidoPaterno,
         maternal_lastname: apellidoMaterno,
+        sex: genero,
+        phone: telefono,
       };
 
       await updateProfile(updateData);
       message.success('Cambios guardados exitosamente');
-
-      // Recargar la página
-      window.location.reload();
       refetch();
     } catch (error) {
       message.error(
-        'Error al actualzilar el perfil:' +
+        'Error al actualizar el perfil: ' +
           (error.response?.data?.message || error.message),
       );
     }
   };
 
+  // Configuración del tema de Ant Design
   const theme = {
     token: {
       colorPrimary: '#4CAF50',
@@ -266,15 +259,9 @@ const Profile = () => {
         hoverBorderColor: '#4CAF50',
         activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
       },
-      InputNumber: {
-        colorBgContainer: '#2a2a2a',
-      },
       Select: {
         optionSelectedBg: '#333',
         optionActiveBg: '#3a3a3a',
-      },
-      Form: {
-        itemMarginBottom: 16,
       },
     },
   };
@@ -283,11 +270,16 @@ const Profile = () => {
     <ConfigProvider theme={theme}>
       <div className={styles.body}>
         <div className={styles.layout}>
+          <aside className={styles.sidebar}>{/* Sidebar content */}</aside>
+
           <main className={styles.mainContent}>
-            <div className={styles.container}>
+            <header className={styles.header}>{/* Header content */}</header>
+
+            <section className={styles.container}>
               <div className={styles.card}>
                 <h2 className={styles.title}>PERFIL</h2>
 
+                {/* Sección de Avatar */}
                 <div className={styles.formRow}>
                   <label className={styles.label}>Avatar:</label>
                   <div className={styles.avatarContainer}>
@@ -317,6 +309,7 @@ const Profile = () => {
 
                 <div className={styles.divider}></div>
 
+                {/* Campos del formulario */}
                 <div className={styles.formField}>
                   <label className={styles.label}>Nombre:</label>
                   <Input
@@ -344,6 +337,29 @@ const Profile = () => {
                   />
                 </div>
 
+                {/* <div className={styles.formField}>
+                  <label className={styles.label}>Teléfono:</label>
+                  <Input
+                    className={styles.input}
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                  />
+                </div> */}
+
+                <div className={styles.formField}>
+                  <label className={styles.label}>Género:</label>
+                  <Select
+                    className={styles.select}
+                    value={genero}
+                    onChange={setGenero}
+                    allowClear
+                    options={[
+                      { value: 'M', label: 'Masculino' },
+                      { value: 'F', label: 'Femenino' },
+                    ]}
+                  />
+                </div>
+
                 <div className={styles.formField}>
                   <label className={styles.label}>Correo:</label>
                   <div className={styles.emailContainer}>
@@ -356,21 +372,6 @@ const Profile = () => {
                       Cambiar
                     </Button>
                   </div>
-                </div>
-
-                <div className={styles.formField}>
-                  <label className={styles.label}>Género:</label>
-                  <Select
-                    className={styles.select}
-                    value={genero}
-                    onChange={(value) => setGenero(value)}
-                    placeholder="Selecciona tu género"
-                    options={[
-                      { value: 'masculino', label: 'Masculino' },
-                      { value: 'femenino', label: 'Femenino' },
-                      { value: 'otro', label: 'Otro' },
-                    ]}
-                  />
                 </div>
 
                 <div className={styles.formField}>
@@ -398,7 +399,7 @@ const Profile = () => {
                   </Button>
                 </div>
               </div>
-            </div>
+            </section>
           </main>
         </div>
 
@@ -437,7 +438,6 @@ const Profile = () => {
               Para actualizar tu correo electrónico, ingresa tu nuevo correo y
               te enviaremos un código de verificación.
             </p>
-
             <Form
               form={emailForm}
               onFinish={handleSubmitNewEmail}
@@ -455,7 +455,6 @@ const Profile = () => {
                   size="large"
                   prefix={<Envelope size={18} color="#666" />}
                   placeholder="Ingresa tu nuevo correo"
-                  className={styles.modalInput}
                 />
               </Form.Item>
 
@@ -465,8 +464,7 @@ const Profile = () => {
                   htmlType="submit"
                   size="large"
                   block
-                  loading={loading}
-                  className={styles.modalSubmitButton}
+                  loading={codeLoading}
                 >
                   Enviar código de verificación
                 </Button>
@@ -577,7 +575,6 @@ const Profile = () => {
           centered
           width={520}
           closable={false}
-          className={styles.modalContainer}
         >
           <div className={styles.modalHeader}>
             <Button
@@ -601,7 +598,6 @@ const Profile = () => {
               Para actualizar tu contraseña, primero ingresa tu contraseña
               actual para verificar tu identidad.
             </p>
-
             <Form
               form={currentPasswordForm}
               onFinish={handleSubmitCurrentPassword}
@@ -617,21 +613,14 @@ const Profile = () => {
                   },
                 ]}
               >
-                <Input.Password
+                <Password
                   size="large"
                   placeholder="Ingresa tu contraseña actual"
-                  className={styles.modalInput}
                 />
               </Form.Item>
 
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  className={styles.modalSubmitButton}
-                >
+                <Button type="primary" htmlType="submit" size="large" block>
                   Verificar contraseña
                 </Button>
               </Form.Item>
@@ -670,12 +659,10 @@ const Profile = () => {
               Ingresa tu nueva contraseña y confírmala para completar el
               proceso.
             </p>
-
             <Form
               form={newPasswordForm}
               onFinish={handleSubmitNewPassword}
               layout="vertical"
-              className={styles.modalForm}
             >
               <Form.Item
                 name="newPassword"
@@ -690,10 +677,9 @@ const Profile = () => {
                   },
                 ]}
               >
-                <Input.Password
+                <Password
                   size="large"
                   placeholder="Ingresa tu nueva contraseña"
-                  className={styles.modalInput}
                 />
               </Form.Item>
 
@@ -717,21 +703,14 @@ const Profile = () => {
                   }),
                 ]}
               >
-                <Input.Password
+                <Password
                   size="large"
                   placeholder="Confirma tu nueva contraseña"
-                  className={styles.modalInput}
                 />
               </Form.Item>
 
               <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  className={styles.modalSubmitButton}
-                >
+                <Button type="primary" htmlType="submit" size="large" block>
                   Actualizar contraseña
                 </Button>
               </Form.Item>
