@@ -12,11 +12,20 @@ import {
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
 
+// Importaciones corregidas
+import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import { SelectCountries } from '../Select/SelectCountry';
+import { SelectDiagnoses } from '../Select/SelectDiagnoses';
+import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
+import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
+
+// ... importar los demás componentes Select
 const { Option } = Select;
 
 // Componente principal
 const InputField = ({
   type,
+  form,
   label,
   options = [],
   isPhoneField = false,
@@ -32,23 +41,81 @@ const InputField = ({
   };
 
   switch (type) {
-    case 'select':
-      inputComponent = (
-        <Select
-          {...inputProps}
-          dropdownStyle={{ backgroundColor: '#444444', color: '#FFFFFF' }}
+    case 'selestCountry':
+      return <SelectCountries />;
+
+    case 'ubigeo':
+      return <SelectUbigeoCascader onChange={rest.onChange} />;
+
+    case 'diagnoses':
+      return <SelectDiagnoses />;
+
+    case 'paymentStatus':
+      return <SelectPaymentStatus />;
+
+    case 'typeOfDocument':
+      return <SelectTypeOfDocument onChange={rest.onChange} />;
+
+    case 'select': // genérico
+      return (
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                colorPrimary: '#1677ff',
+                optionSelectedBg: '#333333',
+                colorText: '#fff',
+                colorBgElevated: '#444444', // fondo del dropdown
+                colorTextPlaceholder: '#aaa',
+                controlItemBgHover: '#444444',
+                selectorBg: '#444444', // fondo del input
+              },
+            },
+            token: {
+              colorTextBase: '#fff',
+            },
+          }}
         >
-          {options.map((opt) => (
-            <Option key={opt.value} value={opt.value} style={{ color: '#fff' }}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
+          <Select
+            className={styles.inputStyle}
+            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
+            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
+            {...rest}
+          >
+            {options.map((opt) => (
+              <Option
+                key={opt.value}
+                value={opt.value}
+                style={{ color: '#fff' }}
+              >
+                {opt.label}
+              </Option>
+            ))}
+          </Select>
+        </ConfigProvider>
       );
-      break;
 
     case 'date':
-      inputComponent = <DatePicker {...inputProps} />;
+      inputComponent = (
+        <ConfigProvider
+          theme={{
+            components: {
+              DatePicker: {
+                panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
+                colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
+                colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
+                arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
+              },
+            },
+          }}
+        >
+          <DatePicker
+            {...inputProps}
+            style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+            dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
+          />
+        </ConfigProvider>
+      );
       break;
 
     case 'cita':
@@ -89,8 +156,6 @@ const CitaComponents = ({ componentType, form, ...props }) => {
       return <PatientField form={form} {...props} />;
     case 'paymentOptions':
       return <PaymentOptionsField form={form} {...props} />;
-    case 'paymentMethod':
-      return <PaymentMethodField form={form} {...props} />;
     case 'amountField':
       return <AmountField form={form} {...props} />;
     case 'timeField':
@@ -112,7 +177,29 @@ const DateField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
+    <ConfigProvider
+      theme={{
+        components: {
+          DatePicker: {
+            colorText: '#FFFFFFFF',
+            colorBgElevated: '#444444',
+            colorPrimary: '#FFFFFFFF',
+          },
+        },
+      }}
+    >
+      <DatePicker
+        placeholder="Selecciona una fecha"
+        className={`${styles.datePicker} custom-datepicker-input`}
+        style={{
+          width: '100%',
+          backgroundColor: '#444444',
+          color: '#fff',
+        }}
+        popupClassName="custom-datepicker-popup"
+        allowClear={false}
+      />
+    </ConfigProvider>
   </Form.Item>
 );
 
@@ -178,8 +265,8 @@ const PaymentOptionsField = ({
     <Select
       onChange={onPaymentOptionChange}
       placeholder="Seleccione una opción"
-      style={{ width: '100%' }}
-      dropdownClassName={styles.selectDropdown} // Añade esta clase
+      dropdownStyle={{ backgroundColor: '#fff', color: '#000' }}
+      style={{ width: '100%', color: '#fff' }}
     >
       {paymentOptions.map((option) => (
         <Option

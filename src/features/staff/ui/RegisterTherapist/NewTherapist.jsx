@@ -2,19 +2,18 @@ import FormGenerator from '../../../../components/Form/Form';
 import { submitTherapist } from '../../hook/staffHook';
 
 const fields = [
-  { type: 'title', label: 'Nuevo Terapeuta' },
+  { type: 'title', label: 'Nuevo Terapista' },
   {
     type: 'customRow',
     fields: [
       {
-        name: 'documentType',
+        name: 'document_type_id',
         label: 'Tipo de Documento',
-        type: 'select',
-        options: [{ value: 'dni', label: 'DNI' }],
+        type: 'typeOfDocument', // este va directo al switch
         span: 8,
       },
       {
-        name: 'documentNumber',
+        name: 'document_number',
         label: 'Nro Documento',
         type: 'text',
         required: true,
@@ -38,13 +37,7 @@ const fields = [
         type: 'text',
         span: 8,
       },
-      {
-        name: 'firstName',
-        label: 'Nombre',
-        type: 'text',
-        required: true,
-        span: 8,
-      },
+      { name: 'name', label: 'Nombre', type: 'text', required: true, span: 8 },
     ],
   },
   { name: 'birthDate', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
@@ -52,7 +45,13 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'gender',
+        name: 'apellidoPaterno2',
+        label: 'Apellido Paterno',
+        type: 'text',
+        span: 8,
+      },
+      {
+        name: 'sex',
         label: 'Sexo',
         type: 'select',
         options: [
@@ -61,7 +60,7 @@ const fields = [
         ],
         span: 8,
       },
-      { name: 'occupation', label: 'Ocupación', type: 'text', span: 8 },
+      { name: 'personal_reference', label: 'Ocupación', type: 'text', span: 8 },
     ],
   },
   { type: 'title', label: 'Información de contacto' },
@@ -79,30 +78,36 @@ const fields = [
     ],
   },
   {
+    name: 'ubicacion',
+    label: 'Ubicación',
+    type: 'ubigeo',
+    span: 12,
+  },
+  {
     name: 'address',
     label: 'Dirección de Domicilio',
     type: 'text',
-    span: 24,
+    span: 12,
   },
   {
     type: 'customRow',
     fields: [
       {
-        name: 'region',
+        name: 'departamento',
         label: 'Departamento',
         type: 'select',
         options: [],
         span: 8,
       },
       {
-        name: 'province',
+        name: 'provincia',
         label: 'Provincia',
         type: 'select',
         options: [],
         span: 8,
       },
       {
-        name: 'district',
+        name: 'distrito',
         label: 'Distrito',
         type: 'select',
         options: [],
