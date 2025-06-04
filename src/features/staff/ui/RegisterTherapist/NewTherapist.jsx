@@ -1,5 +1,6 @@
 import FormGenerator from '../../../../components/Form/Form';
-import { submitTherapist } from '../../hook/staffHook';
+import { useStaff } from '../../hook/staffHook';
+import { notification } from 'antd';
 
 const fields = [
   { type: 'title', label: 'Nuevo Terapista' },
@@ -9,46 +10,52 @@ const fields = [
       {
         name: 'document_type_id',
         label: 'Tipo de Documento',
-        type: 'typeOfDocument', // este va directo al switch
+        type: 'typeOfDocument',
         span: 8,
+        required: true
       },
       {
         name: 'document_number',
         label: 'Nro Documento',
         type: 'text',
         required: true,
-        span: 8,
+        span: 8
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      {
-        name: 'lastName',
-        label: 'Apellido Paterno',
-        type: 'text',
-        required: true,
-        span: 8,
+      { 
+        name: 'paternal_lastname', 
+        label: 'Apellido Paterno', 
+        type: 'text', 
+        required: true, 
+        span: 8 
       },
-      {
-        name: 'motherLastName',
-        label: 'Apellido Materno',
-        type: 'text',
-        span: 8,
+      { 
+        name: 'maternal_lastname', 
+        label: 'Apellido Materno', 
+        type: 'text', 
+        span: 8 
       },
-      { name: 'name', label: 'Nombre', type: 'text', required: true, span: 8 },
+      { 
+        name: 'name', 
+        label: 'Nombre', 
+        type: 'text', 
+        required: true, 
+        span: 8 
+      },
     ],
   },
-  { name: 'birthDate', label: 'Fecha de Nacimiento', type: 'date', span: 8 },
   {
     type: 'customRow',
     fields: [
-      {
-        name: 'apellidoPaterno2',
-        label: 'Apellido Paterno',
-        type: 'text',
-        span: 8,
+      { 
+        name: 'birth_date', 
+        label: 'Fecha de Nacimiento', 
+        type: 'date', 
+        span: 8 
       },
       {
         name: 'sex',
@@ -59,22 +66,33 @@ const fields = [
           { value: 'F', label: 'Femenino' },
         ],
         span: 8,
+        required: true
       },
-      { name: 'personal_reference', label: 'Ocupación', type: 'text', span: 8 },
+      { 
+        name: 'personal_reference', 
+        label: 'Referencia Personal', 
+        type: 'text', 
+        span: 8 
+      },
     ],
   },
   { type: 'title', label: 'Información de contacto' },
   {
     type: 'customRow',
     fields: [
-      {
-        name: 'phone',
-        label: 'Teléfono',
-        type: 'text',
-        required: true,
-        span: 8,
+      { 
+        name: 'primary_phone', 
+        label: 'Teléfono', 
+        type: 'text', 
+        required: true, 
+        span: 8 
       },
-      { name: 'email', label: 'Correo Electrónico', type: 'email', span: 16 },
+      { 
+        name: 'email', 
+        label: 'Correo Electrónico', 
+        type: 'email', 
+        span: 16 
+      },
     ],
   },
   {
@@ -89,47 +107,42 @@ const fields = [
     type: 'text',
     span: 12,
   },
-  {
-    type: 'customRow',
-    fields: [
-      {
-        name: 'departamento',
-        label: 'Departamento',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-      {
-        name: 'provincia',
-        label: 'Provincia',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-      {
-        name: 'distrito',
-        label: 'Distrito',
-        type: 'select',
-        options: [],
-        span: 8,
-      },
-    ],
-  },
 ];
 
 const NewTherapist = () => {
+  const { submitNewTherapist } = useStaff();
+
   const handleSubmit = async (formData) => {
+    console.log('📝 Formulario enviado:', formData);
+    
     try {
-      const response = await submitTherapist(formData);
-      console.log('Terapeuta creado:', response);
-      // agregar toast
+      // Validación básica de campos requeridos
+      if (!formData.document_number || !formData.name || !formData.primary_phone) {
+        notification.error({
+          message: 'Error',
+          description: 'Documento, nombre y teléfono son campos obligatorios'
+        });
+        return;
+      }
+
+      const result = await submitNewTherapist(formData);
+      console.log('🎉 Terapeuta creado con éxito:', result);
+      return result;
     } catch (error) {
-      console.error('Error al crear terapeuta:', error);
+      console.error('❌ Error al crear terapeuta:', error);
+      throw error;
     }
   };
 
   return (
-    <FormGenerator fields={fields} mode="create" onSubmit={handleSubmit} />
+    <FormGenerator 
+      fields={fields} 
+      mode="create" 
+      onSubmit={handleSubmit}
+      initialValues={{
+        document_type_id: 1 // Valor por defecto
+      }}
+    />
   );
 };
 

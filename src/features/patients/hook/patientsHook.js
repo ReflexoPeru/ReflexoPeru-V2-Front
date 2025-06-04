@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getPatients, searchPatients } from '../service/patientsService';
-import { createPatient } from '../service/patientsService';
-import { format } from 'date-fns';
+import { getPatients, searchPatients, createPatient } from '../service/patientsService';
+import dayjs from 'dayjs';
+import { notification } from 'antd';
 
 export const usePatients = () => {
   const [patients, setPatients] = useState([]);
@@ -15,7 +15,7 @@ export const usePatients = () => {
   const [initialLoad, setInitialLoad] = useState(false);
 
   const loadPatients = async (page) => {
-    if (loading) return; // Evitar llamadas duplicadas
+    if (loading) return;
     setLoading(true);
     try {
       const { data, total } = await getPatients(page);
@@ -26,7 +26,7 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error loading patients:', error);
+      console.error('Error al cargar pacientes');
     } finally {
       setLoading(false);
     }
@@ -44,13 +44,12 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error searching patients:', error);
+      console.error('Error al buscar pacientes');
     } finally {
       setLoading(false);
     }
   };
 
-  // Carga inicial solo una vez
   useEffect(() => {
     if (!initialLoad) {
       loadPatients(1);
@@ -58,7 +57,6 @@ export const usePatients = () => {
     }
   }, [initialLoad]);
 
-  // Búsqueda con debounce mejorado
   useEffect(() => {
     if (!initialLoad) return;
 
@@ -76,35 +74,45 @@ export const usePatients = () => {
   const submitNewPatient = async (formData) => {
     const payload = {
       document_number: formData.document_number,
-      paternal_lastname: formData.paternal_lastname,
-      maternal_lastname: formData.maternal_lastname,
+      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
       name: formData.name,
-      personal_reference: null,
-      birth_date: formData.birth_date
-        ? format(new Date(formData.birth_date), 'yyyy-MM-dd')
+      personal_reference: formData.personal_reference || null,
+      birth_date: formData.birth_date 
+        ? dayjs(formData.birth_date).format('YYYY-MM-DD')
         : null,
       sex: formData.sex,
       primary_phone: formData.primary_phone,
-      secondary_phone: null,
-      email: formData.email,
+      secondary_phone: formData.secondary_phone || null,
+      email: formData.email || null,
       ocupation: formData.occupation || null,
       health_condition: null,
       address: formData.address,
-      document_type_id: formData.document_type,
+      document_type_id: formData.document_type_id,
       country_id: 1,
-      region_id: formData.region_id,
-      province_id: formData.province_id || null,
-      district_id: formData.district_id || null,
+      region_id: formData.region_id || formData.ubicacion?.region_id || null,
+      province_id: formData.province_id || formData.ubicacion?.province_id || null,
+      district_id: formData.district_id || formData.ubicacion?.district_id || null
     };
+
+    console.log('Datos del paciente a registrar:', payload);
 
     try {
       const result = await createPatient(payload);
+      notification.success({
+        message: 'Éxito',
+        description: 'Paciente creado correctamente'
+      });
       return result;
     } catch (error) {
-      console.error('Error al enviar datos del paciente:', error);
+      notification.error({
+        message: 'Error',
+        description: 'No se pudo crear el paciente'
+      });
       throw error;
     }
   };
+
   return {
     patients,
     loading,
