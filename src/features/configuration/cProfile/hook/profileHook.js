@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; // Añadir useEffect al import
 import {
   createPatient,
   verifyCode,
@@ -16,6 +16,7 @@ export const useSendVerifyCode = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { showToast } = useToast();
+
   const sendCode = async (email) => {
     setLoading(true);
     setError(null);
@@ -25,9 +26,11 @@ export const useSendVerifyCode = () => {
         new_email: email,
       };
       const response = await createPatient(data);
+      showToast('codigoEnviado');
       return response;
     } catch (err) {
       setError(err);
+      showToast('intentoFallido', err.response?.data?.message);
       throw err;
     } finally {
       setLoading(false);
@@ -42,6 +45,7 @@ export const useSendVerifyCode = () => {
       return response;
     } catch (err) {
       setError(err);
+      showToast('codigoIncorrecto', err.response?.data?.message);
       throw err;
     } finally {
       setLoading(false);
@@ -53,9 +57,14 @@ export const useSendVerifyCode = () => {
     setError(null);
     try {
       const response = await updateProfileEmail(email);
+      showToast('exito', 'Correo electrónico actualizado con éxito');
       return response;
     } catch (err) {
       setError(err);
+      showToast(
+        'error',
+        err.response?.data?.message || 'Error al actualizar el correo',
+      );
       throw err;
     } finally {
       setLoading(false);
@@ -76,6 +85,7 @@ export const useProfile = () => {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchProfile = async () => {
     try {
@@ -91,10 +101,11 @@ export const useProfile = () => {
         }
       } catch (photoError) {
         console.error('Error fetching photo:', photoError);
-        setPhoto('/src/assets/Img/MiniLogoReflexo.webp'); // Imagen por defecto
+        setPhoto('/src/assets/Img/MiniLogoReflexo.webp');
       }
     } catch (error) {
       setError(error);
+      showToast('error', 'Error al cargar el perfil');
     } finally {
       setLoading(false);
     }
@@ -117,15 +128,21 @@ export const useProfile = () => {
 export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState(null);
+  const { showToast } = useToast();
 
   const updateProfile = async (data) => {
     try {
       setIsUpdating(true);
       setUpdateError(null);
       const updatedProfile = await updateAllProfile(data);
+      showToast('exito', 'Perfil actualizado correctamente');
       return updatedProfile;
     } catch (error) {
       setUpdateError(error);
+      showToast(
+        'error',
+        error.response?.data?.message || 'Error al actualizar el perfil',
+      );
       throw error;
     } finally {
       setIsUpdating(false);
@@ -137,8 +154,10 @@ export const useUpdateProfile = () => {
       const response = await validatePassword({
         current_password: currentPassword,
       });
+      showToast('exito', 'Contraseña verificada correctamente');
       return response;
     } catch (error) {
+      showToast('contraseñaIncorrecta');
       throw error;
     }
   };
@@ -146,8 +165,13 @@ export const useUpdateProfile = () => {
   const updatePassword = async (newPassword) => {
     try {
       const response = await changePassword({ password: newPassword });
+      showToast('contraseñaCambiada');
       return response;
     } catch (error) {
+      showToast(
+        'error',
+        error.response?.data?.message || 'Error al cambiar la contraseña',
+      );
       throw error;
     }
   };
@@ -157,8 +181,10 @@ export const useUpdateProfile = () => {
       const formData = new FormData();
       formData.append('photo', file);
       const response = await uploadPhoto(formData);
+      showToast('exito', 'Foto de perfil actualizada');
       return response;
     } catch (error) {
+      showToast('error', 'Error al subir la foto de perfil');
       throw error;
     }
   };

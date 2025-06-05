@@ -22,6 +22,7 @@ import {
   useProfile,
   useUpdateProfile,
 } from './hook/profileHook';
+import { useToast } from '../../../services/toastify/ToastContext';
 
 const { Password } = AntdInput;
 
@@ -49,6 +50,9 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Estados para loading de contraseña
+  const [currentPasswordLoading, setCurrentPasswordLoading] = useState(false);
+  const [newPasswordLoading, setNewPasswordLoading] = useState(false);
   // Forms refs
   const [emailForm] = Form.useForm();
   const [codeForm] = Form.useForm();
@@ -71,7 +75,7 @@ const Profile = () => {
     updatePassword,
     uploadProfilePhoto,
   } = useUpdateProfile();
-
+  const { showToast } = useToast();
   // Efecto para cargar los datos del perfil
   useEffect(() => {
     if (profile) {
@@ -177,6 +181,7 @@ const Profile = () => {
   };
 
   const handleSubmitCurrentPassword = async (values) => {
+    setCurrentPasswordLoading(true);
     try {
       await validateCurrentPassword(values.currentPassword);
       setCurrentPassword(values.currentPassword);
@@ -185,6 +190,8 @@ const Profile = () => {
       message.success('Contraseña actual verificada');
     } catch (error) {
       message.error('Contraseña actual incorrecta');
+    } finally {
+      setCurrentPasswordLoading(false);
     }
   };
 
@@ -196,12 +203,15 @@ const Profile = () => {
   };
 
   const handleSubmitNewPassword = async (values) => {
+    setNewPasswordLoading(true);
     try {
       await updatePassword(values.newPassword);
       setShowNewPasswordModal(false);
       message.success('¡Contraseña actualizada exitosamente!');
     } catch (error) {
       message.error('Error al actualizar la contraseña');
+    } finally {
+      setNewPasswordLoading(false);
     }
   };
 
@@ -469,6 +479,7 @@ const Profile = () => {
                   size="large"
                   block
                   loading={codeLoading}
+                  className={styles.modalSubmitButton}
                 >
                   Enviar código de verificación
                 </Button>
@@ -624,7 +635,14 @@ const Profile = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" size="large" block>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  loading={currentPasswordLoading}
+                  className={styles.modalSubmitButton}
+                >
                   Verificar contraseña
                 </Button>
               </Form.Item>
@@ -714,7 +732,14 @@ const Profile = () => {
               </Form.Item>
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" size="large" block>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  loading={newPasswordLoading}
+                  className={styles.modalSubmitButton}
+                >
                   Actualizar contraseña
                 </Button>
               </Form.Item>
