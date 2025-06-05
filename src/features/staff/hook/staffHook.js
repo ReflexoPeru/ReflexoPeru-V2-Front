@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createTherapist } from '../service/staffService';
 import { getStaff, searchStaff } from '../service/staffService';
 import dayjs from 'dayjs';
-import { notification } from 'antd';
+import { useToast } from '../../../services/toastify/ToastContext';
 
 export const useStaff = () => {
   const [staff, setStaff] = useState([]);
@@ -14,6 +14,7 @@ export const useStaff = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [initialLoad, setInitialLoad] = useState(false);
+  const { showToast } = useToast();
 
   const loadStaff = async (page) => {
     if (loading) return;
@@ -27,7 +28,7 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error al cargar terapeutas:', error.message);
+      showToast('error', 'Error al cargar terapeutas');
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error al buscar terapeutas:', error.message);
+      showToast('error', 'Error al buscar terapeutas');
     } finally {
       setLoading(false);
     }
@@ -75,11 +76,13 @@ export const useStaff = () => {
   const submitNewTherapist = async (formData) => {
     const payload = {
       document_number: formData.document_number,
-      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
-      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
+      paternal_lastname:
+        formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname:
+        formData.maternal_lastname || formData.maternal_lastName,
       name: formData.name,
       personal_reference: formData.personal_reference || null,
-      birth_date: formData.birth_date 
+      birth_date: formData.birth_date
         ? dayjs(formData.birth_date).format('YYYY-MM-DD')
         : null,
       sex: formData.sex,
@@ -89,26 +92,18 @@ export const useStaff = () => {
       address: formData.address || null,
       document_type_id: formData.document_type_id || 1,
       region_id: formData.region_id || formData.ubicacion?.region_id || null,
-      province_id: formData.province_id || formData.ubicacion?.province_id || null,
-      district_id: formData.district_id || formData.ubicacion?.district_id || null
+      province_id:
+        formData.province_id || formData.ubicacion?.province_id || null,
+      district_id:
+        formData.district_id || formData.ubicacion?.district_id || null,
     };
-
-    console.log('Datos enviados para crear terapeuta:', payload);
 
     try {
       const result = await createTherapist(payload);
-      console.log('Terapeuta creado con éxito');
-      notification.success({
-        message: 'Éxito',
-        description: 'Terapeuta registrado correctamente'
-      });
+      showToast('success', 'Terapeuta registrado correctamente');
       return result;
     } catch (error) {
-      console.error('Error al crear terapeuta');
-      notification.error({
-        message: 'Error',
-        description: 'No se pudo crear el terapeuta'
-      });
+      showToast('error', 'No se pudo crear el terapeuta');
       throw error;
     }
   };

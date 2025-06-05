@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
-import { getPatients, searchPatients, createPatient } from '../service/patientsService';
+import {
+  getPatients,
+  searchPatients,
+  createPatient,
+} from '../service/patientsService';
 import dayjs from 'dayjs';
 import { notification } from 'antd';
+import { useToast } from '../../../services/toastify/ToastContext';
 
 export const usePatients = () => {
   const [patients, setPatients] = useState([]);
@@ -74,11 +79,13 @@ export const usePatients = () => {
   const submitNewPatient = async (formData) => {
     const payload = {
       document_number: formData.document_number,
-      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
-      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
+      paternal_lastname:
+        formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname:
+        formData.maternal_lastname || formData.maternal_lastName,
       name: formData.name,
       personal_reference: formData.personal_reference || null,
-      birth_date: formData.birth_date 
+      birth_date: formData.birth_date
         ? dayjs(formData.birth_date).format('YYYY-MM-DD')
         : null,
       sex: formData.sex,
@@ -91,8 +98,10 @@ export const usePatients = () => {
       document_type_id: formData.document_type_id,
       country_id: 1,
       region_id: formData.region_id || formData.ubicacion?.region_id || null,
-      province_id: formData.province_id || formData.ubicacion?.province_id || null,
-      district_id: formData.district_id || formData.ubicacion?.district_id || null
+      province_id:
+        formData.province_id || formData.ubicacion?.province_id || null,
+      district_id:
+        formData.district_id || formData.ubicacion?.district_id || null,
     };
 
     console.log('Datos del paciente a registrar:', payload);
@@ -101,13 +110,13 @@ export const usePatients = () => {
       const result = await createPatient(payload);
       notification.success({
         message: 'Éxito',
-        description: 'Paciente creado correctamente'
+        description: 'Paciente creado correctamente',
       });
       return result;
     } catch (error) {
       notification.error({
         message: 'Error',
-        description: 'No se pudo crear el paciente'
+        description: 'No se pudo crear el paciente',
       });
       throw error;
     }

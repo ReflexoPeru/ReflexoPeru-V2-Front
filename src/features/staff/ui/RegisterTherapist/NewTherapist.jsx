@@ -1,6 +1,9 @@
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
 import { notification } from 'antd';
+import { useToast } from '../../../../services/toastify/ToastContext';
+
+const { showToast } = useToast();
 
 const fields = [
   { type: 'title', label: 'Nuevo Terapista' },
@@ -12,50 +15,50 @@ const fields = [
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
-        required: true
+        required: true,
       },
       {
         name: 'document_number',
         label: 'Nro Documento',
         type: 'text',
         required: true,
-        span: 8
+        span: 8,
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'paternal_lastname', 
-        label: 'Apellido Paterno', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'paternal_lastname',
+        label: 'Apellido Paterno',
+        type: 'text',
+        required: true,
+        span: 8,
       },
-      { 
-        name: 'maternal_lastname', 
-        label: 'Apellido Materno', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'maternal_lastname',
+        label: 'Apellido Materno',
+        type: 'text',
+        span: 8,
       },
-      { 
-        name: 'name', 
-        label: 'Nombre', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        span: 8,
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'birth_date', 
-        label: 'Fecha de Nacimiento', 
-        type: 'date', 
-        span: 8 
+      {
+        name: 'birth_date',
+        label: 'Fecha de Nacimiento',
+        type: 'date',
+        span: 8,
       },
       {
         name: 'sex',
@@ -66,13 +69,13 @@ const fields = [
           { value: 'F', label: 'Femenino' },
         ],
         span: 8,
-        required: true
+        required: true,
       },
-      { 
-        name: 'personal_reference', 
-        label: 'Referencia Personal', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'personal_reference',
+        label: 'Referencia Personal',
+        type: 'text',
+        span: 8,
       },
     ],
   },
@@ -80,18 +83,18 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'primary_phone', 
-        label: 'Teléfono', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'primary_phone',
+        label: 'Teléfono',
+        type: 'text',
+        required: true,
+        span: 8,
       },
-      { 
-        name: 'email', 
-        label: 'Correo Electrónico', 
-        type: 'email', 
-        span: 16 
+      {
+        name: 'email',
+        label: 'Correo Electrónico',
+        type: 'email',
+        span: 16,
       },
     ],
   },
@@ -114,13 +117,17 @@ const NewTherapist = () => {
 
   const handleSubmit = async (formData) => {
     console.log('📝 Formulario enviado:', formData);
-    
+
     try {
       // Validación básica de campos requeridos
-      if (!formData.document_number || !formData.name || !formData.primary_phone) {
+      if (
+        !formData.document_number ||
+        !formData.name ||
+        !formData.primary_phone
+      ) {
         notification.error({
           message: 'Error',
-          description: 'Documento, nombre y teléfono son campos obligatorios'
+          description: 'Documento, nombre y teléfono son campos obligatorios',
         });
         return;
       }
@@ -135,12 +142,12 @@ const NewTherapist = () => {
   };
 
   return (
-    <FormGenerator 
-      fields={fields} 
-      mode="create" 
+    <FormGenerator
+      fields={fields}
+      mode="create"
       onSubmit={handleSubmit}
       initialValues={{
-        document_type_id: 1 // Valor por defecto
+        document_type_id: 1, // Valor por defecto
       }}
     />
   );
