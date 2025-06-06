@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Modal, Button, Table, Radio } from 'antd'; // 👈 Importamos lo necesario
+import { Modal, Button, Table, Radio, ConfigProvider } from 'antd'; // 👈 Agregamos ConfigProvider
 import Form from '../../../../components/Form/Form';
 import styles from '../RegisterAppointment/NewAppointment.module.css';
-import { useAppointments } from '../../hook/appointmentsHook';
+import { useAppointments, usePatients } from '../../hook/appointmentsHook';
+import CustomSearch from '../../../../components/Search/CustomSearch';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
@@ -13,9 +14,11 @@ const NewAppointment = () => {
 
   // Modal contribuidor
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const { submitNewAppointment } = useAppointments();
+  const { patients } = usePatients();
 
   const paymentOptions = [
     { label: 'Tarifa completa (S/80)', value: 'completa80', amount: 80 },
@@ -159,16 +162,17 @@ const NewAppointment = () => {
   ];
 
   // Datos falsos
-  const data = [
-    { key: 1, nombres: 'Juan', apellidos: 'Pérez' },
-    { key: 2, nombres: 'Ana', apellidos: 'Gómez' },
-    { key: 3, nombres: 'Luis', apellidos: 'Ramírez' },
-  ];
+  // const data = [
+  //   { key: 1, nombres: 'Juan', apellidos: 'Pérez' },
+  //   { key: 2, nombres: 'Ana', apellidos: 'Gómez' },
+  //   { key: 3, nombres: 'Luis', apellidos: 'Ramírez' },
+  // ];
 
   const columns = [
     {
       title: '',
       dataIndex: 'key',
+      width: 50,
       render: (text, record) => (
         <Radio
           checked={selectedRowKey === record.key}
@@ -177,58 +181,130 @@ const NewAppointment = () => {
       ),
     },
     {
-      title: 'Nombres',
-      dataIndex: 'nombres',
+      title: 'Pacientes',
+      dataIndex: 'full_name',
     },
-    {
-      title: 'Apellidos',
-      dataIndex: 'apellidos',
-    },
+    // {
+    //   title: 'Apellidos',
+    //   dataIndex: 'apellidos',
+    // },
+    // {
+    //   title: 'Apellidos',
+    //   dataIndex: 'apellidos',
+    // },
   ];
 
   return (
-    <div className={styles.container}>
-      <Form
-        fields={appointmentFields}
-        mode="create"
-        showHourField={showHourField}
-        isPaymentRequired={!isPaymentRequired}
-        patientType={patientType}
-        paymentOption={paymentOption}
-        customAmount={customAmount}
-        onPaymentOptionChange={handlePaymentOptionChange}
-        onPatientTypeChange={(value) => setPatientType(value)}
-        onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
-        onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
-        onSubmit={handleSubmit}
-      />
-
-      {patientType === 'continuador' && (
-        <Button
-          type="primary"
-          onClick={() => setIsModalVisible(true)}
-          style={{ marginTop: 16 }}
-        >
-          Elegir Contribuidor
-        </Button>
-      )}
-
-      <Modal
-        title="Seleccionar Contribuidor"
-        open={isModalVisible}
-        onOk={() => setIsModalVisible(false)}
-        onCancel={() => setIsModalVisible(false)}
-        okText="Seleccionar"
-        cancelText="Cancelar"
-      >
-        <Table
-          dataSource={data}
-          columns={columns}
-          pagination={false}
-          rowKey="key"
+    <ConfigProvider
+      theme={{
+        components: {
+          // Configuración para el componente Button
+          Button: {
+            colorPrimary: '#1cb54a',                 
+            colorPrimaryHover: '#148235',             
+            colorPrimaryActive: '#148235',       
+            borderRadius: 6,                         
+            fontWeight: 500,                         
+            paddingContentHorizontal: 16,
+            defaultBg: '#ff3333',   
+            defaultColor: '#ffffff',    
+            defaultBorderColor: 'none',
+            defaultHoverColor: '#ffffff',   
+            defaultActiveBg: '#b22525', 
+            defaultActiveColor: '#ffffff', 
+          },
+          // Configuración para el componente Table
+          Table: {
+            headerBg: '#272727', 
+            headerColor: 'rgba(199,26,26,0.88)',
+            colorBgContainer: '#272727',                 
+            borderColor: '#555555',                  
+            rowHoverBg: '#555555',                    
+            cellPaddingBlock: 12,                     
+            cellPaddingInline: 16, 
+          },
+          // Configuración para el componente Radio
+          Radio: {
+            colorPrimary: '#1cb54a',                 // Color del radio seleccionado
+          }
+        },
+      }}
+    >
+      <div className={styles.container}>
+        <Form
+          fields={appointmentFields}
+          mode="create"
+          showHourField={showHourField}
+          isPaymentRequired={!isPaymentRequired}
+          patientType={patientType}
+          paymentOption={paymentOption}
+          customAmount={customAmount}
+          onPaymentOptionChange={handlePaymentOptionChange}
+          onPatientTypeChange={(value) => setPatientType(value)}
+          onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
+          onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
+          onSubmit={handleSubmit}
+          submitButtonText={patientType === 'continuador' ? 'Elegir' : 'Crear'}
         />
-      </Modal>
-    </div>
+
+        {/* {patientType === 'continuador' && (
+          <Button
+            type="primary"
+            onClick={() => setIsModalVisible(true)}
+            style={{ marginTop: 16 }}
+          >
+            Elegir Contribuidor
+          </Button>
+        )} */}
+
+        <Modal
+          title="Seleccionar Contribuidor"
+          open={isModalVisible}
+          onCancel={() => setIsModalVisible(false)}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => setIsModalVisible(false)}
+              style={{ backgroundColor: '#b22525', color: '#fff', border: 'none' }}
+            >
+              Cancelar
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={() => setIsModalVisible(false)}
+              style={{ backgroundColor: '#1cb54a', borderColor: '#1cb54a' }}
+            >
+              Seleccionar
+            </Button>,
+          ]}
+        >
+          <CustomSearch
+            placeholder="Buscar por Apellido/Nombre o DNI..."
+            onSearch={(value) => console.log('Buscar:', value)}
+            width="100%"
+            style={{ marginBottom: 16 }}
+          />
+          <Table
+            dataSource={patients}
+            columns={columns}
+            pagination={false}
+            rowKey="key"
+            scroll={{ y: 200 }}
+          />
+        </Modal>
+
+        {/* Modal para crear nuevo paciente */}
+        <Modal
+          title="Crear nuevo paciente"
+          open={isCreatePatientModalVisible}
+          onCancel={() => setIsCreatePatientModalVisible(false)}
+          footer={null}
+        >
+          <p>Aquí va tu formulario para crear paciente nuevo</p>
+        </Modal>
+      </div>
+    </ConfigProvider>
   );
 };
 
