@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPatients, searchPatients } from '../service/patientsService';
+import { getPatients, searchPatients, deletePatient } from '../service/patientsService';
 import { createPatient } from '../service/patientsService';
 import { format } from 'date-fns';
 
@@ -105,6 +105,22 @@ export const usePatients = () => {
       throw error;
     }
   };
+
+const handleDeletePatient = async (patientId) => {
+    try {
+      await deletePatient(patientId);
+      // Recargar la lista de pacientes después de eliminar
+      if (searchTerm.trim()) {
+        await searchPatientsByTerm(searchTerm.trim());
+      } else {
+        await loadPatients(pagination.currentPage);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Error deleting patient:', error);
+    }
+  };
+
   return {
     patients,
     loading,
@@ -113,5 +129,6 @@ export const usePatients = () => {
     pagination,
     handlePageChange: loadPatients,
     setSearchTerm,
+     handleDeletePatient,
   };
 };

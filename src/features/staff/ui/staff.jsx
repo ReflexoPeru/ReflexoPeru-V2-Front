@@ -1,17 +1,15 @@
-import React from 'react';
-import estilo from './staff.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
+// import StaffMock from '../../../mock/Staff';
+import { Button, Space } from 'antd';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-// import StaffMock from '../../../mock/Staff';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
+import ModeloTable from '../../../components/Table/Tabla';
 import { useStaff } from '../hook/staffHook';
 
 export default function Staff() {
   const navigate = useNavigate();
 
-  const { staff, loading, error, pagination, handlePageChange, setSearchTerm } =
+  const { staff, loading, error, pagination, handlePageChange, setSearchTerm, handleDeleteTherapist, } =
     useStaff();
 
   // Debug (verifica en consola)
@@ -48,7 +46,7 @@ export default function Staff() {
   };
 
   // Botones personalizados
-  const customActionButtons = () => (
+  const customActionButtons = (record) => (
     <Space size="small">
       <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
         Editar
@@ -56,7 +54,10 @@ export default function Staff() {
       <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
         Más Info
       </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
+      <Button 
+        style={{ backgroundColor: '#FF3333', color: '#fff' }}
+        onClick={() => handleDeleteTherapist(record.id)}
+      >
         Eliminar
       </Button>
     </Space>
@@ -91,7 +92,7 @@ export default function Staff() {
         columns={columns}
         data={staff}
         loading={loading}
-        customActions={customActionButtons}
+        customActions={(record) => customActionButtons(record)}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

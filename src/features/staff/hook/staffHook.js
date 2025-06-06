@@ -1,7 +1,6 @@
-import { createTherapist } from '../service/staffService';
 import { format } from 'date-fns';
-import { useState, useEffect } from 'react';
-import { getStaff, searchStaff } from '../service/staffService';
+import { useEffect, useState } from 'react';
+import { createTherapist, deleteTherapist, getStaff, searchStaff } from '../service/staffService';
 
 export const submitTherapist = async (formData) => {
   const payload = {
@@ -102,6 +101,22 @@ export const useStaff = () => {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, initialLoad]);
 
+  const handleDeleteTherapist = async (therapistId) => {
+    try {
+      await deleteTherapist(therapistId);
+      // Recargar la lista de terapeutas después de eliminar
+      if (searchTerm.trim()) {
+        await searchStaffByTerm(searchTerm.trim());
+      } else {
+        await loadStaff(pagination.currentPage);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Error deleting therapist:', error);
+    }
+  };
+
+
   return {
     staff,
     loading,
@@ -109,5 +124,6 @@ export const useStaff = () => {
     pagination,
     handlePageChange: loadStaff,
     setSearchTerm,
+    handleDeleteTherapist,
   };
 };
