@@ -1,35 +1,52 @@
 import React from 'react';
 import styles from './TodayAppointments.module.css';
 import { CheckCircle } from '@phosphor-icons/react';
-
-const appointments = [
-    { name: 'Teresa Mendoza', service: 'Reflexología podal', time: '13:00' },
-    { name: 'Carlos Ramirez', service: 'Masaje terapéutico', time: '14:30' },
-    { name: 'Ana García', service: 'Reflexología podal', time: '16:00' },
-    { name: 'Pedro López', service: 'Masaje relajante', time: '17:30' },
-    { name: 'María Torres', service: 'Reflexología podal', time: '18:45' },
-    { name: 'Luis Pérez', service: 'Terapia de espalda', time: '20:00' }
-];
+import { useTodayAppointments } from '../../hook/homeHook';
+import { Empty, Spin } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 
 const TodayAppointments = () => {
-    return (
-        <div className={styles.container}>
-            <h2 className={styles.title}>Citas para hoy</h2>
-            <div className={styles.scrollArea}>
-                {appointments.map((appt, index) => (
-                    <div key={index} className={styles.appointment}>
-                        <div>
-                            <div className={styles.name}>{appt.name}</div>
-                            <div className={styles.details}>{appt.service} - {appt.time}</div>
-                        </div>
-                        <div className={styles.check}>
-                            <CheckCircle  size={30} />
-                        </div>
-                    </div>
-                ))}
+  const { appointments, loading } = useTodayAppointments();
+
+  return (
+    <div className={styles.container}>
+      <h2 className={styles.title}>Citas para hoy</h2>
+      <div className={styles.scrollArea}>
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <Spin size="large" />
+          </div>
+        ) : appointments.length > 0 ? (
+          appointments.map((appt, index) => (
+            <div
+              key={`${appt.details.id}-${index}`}
+              className={styles.appointment}
+            >
+              <div className={styles.appointmentContent}>
+                <div className={styles.name}>{appt.name}</div>
+                <div className={styles.details}>
+                  {appt.service} - {appt.time}
+                </div>
+              </div>
+              <div className={styles.check}>
+                <CheckCircle size={22} />
+              </div>
             </div>
-        </div>
-    );
+          ))
+        ) : (
+          <div className={styles.emptyState}>
+            <Empty
+              image={
+                <CalendarOutlined style={{ fontSize: '48px', color: '#999' }} />
+              }
+              imageStyle={{ height: 60 }}
+              description={<span>No hay citas para hoy</span>}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
-export default TodayAppointments;
+export default React.memo(TodayAppointments);

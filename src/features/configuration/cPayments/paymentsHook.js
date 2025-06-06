@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPayments } from "./paymentsServices";
+import { getPayments, getPrices } from "./paymentsServices";
 
 export const usePaymentTypes = () => {
     const [paymentTypes, setPaymentTypes] = useState([]);
@@ -27,3 +27,31 @@ export const usePaymentTypes = () => {
 
     return { paymentTypes, loading };
 };
+
+export const usePrices = () => {
+    const [prices, setPrices] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPrices = async () => {
+            try {
+                const response = await getPrices();
+                const formatted = response.map((item) => ({
+                    id: item.id,
+                    name: item.name,
+                    price: `S/ ${parseFloat(item.price).toFixed(2)}`,
+                    status: item.deleted_at ? 'Deshabilitado' : 'Habilitado',
+                }));
+                setPrices(formatted);
+            } catch (error) {
+                console.error('Error al cargar precios:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPrices();
+    }, []);
+
+    return { prices, loading };
+}

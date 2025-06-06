@@ -3,7 +3,6 @@ import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-//import patientsMock from '../../../mock/Patients';
 import { Space, Button } from 'antd';
 import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
@@ -40,11 +39,63 @@ export default function Patients() {
       dataIndex: 'full_name',
       key: 'name',
     },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('info', record)}
+          >
+            Más Info
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('history', record)}
+          >
+            Historia
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
-  //const patientData = patientsMock[0].items;
+  const handleAction = (action, record) => {
+    // Implementa las acciones según el tipo
+    console.log(`${action} action for:`, record);
+    switch(action) {
+      case 'edit':
+        // Lógica para editar
+        break;
+      case 'info':
+        // Lógica para más info
+        break;
+      case 'history':
+        // Lógica para historia
+        break;
+      case 'delete':
+        // Lógica para eliminar
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
+    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
@@ -52,24 +103,6 @@ export default function Patients() {
     // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
-
-  // Botones personalizados
-  const customActionButtons = () => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>
-        Historia
-      </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
-        Eliminar
-      </Button>
-    </Space>
-  );
 
   return (
     <div
@@ -100,7 +133,6 @@ export default function Patients() {
         columns={columns}
         data={patients}
         loading={loading}
-        customActions={customActionButtons}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

@@ -3,7 +3,6 @@ import estilo from './staff.module.css';
 import ModeloTable from '../../../components/Table/Tabla';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-// import StaffMock from '../../../mock/Staff';
 import { Space, Button } from 'antd';
 import { useNavigate } from 'react-router';
 import { useStaff } from '../hook/staffHook';
@@ -11,8 +10,14 @@ import { useStaff } from '../hook/staffHook';
 export default function Staff() {
   const navigate = useNavigate();
 
-  const { staff, loading, error, pagination, handlePageChange, setSearchTerm } =
-    useStaff();
+  const { 
+    staff, 
+    loading, 
+    error, 
+    pagination, 
+    handlePageChange, 
+    setSearchTerm 
+  } = useStaff();
 
   // Debug (verifica en consola)
   console.log('Datos:', {
@@ -34,11 +39,54 @@ export default function Staff() {
       dataIndex: 'full_name',
       key: 'name',
     },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('info', record)}
+          >
+            Más Info
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
-  // const staffData = StaffMock[0].items;
+  const handleAction = (action, record) => {
+    // Implementa las acciones según el tipo
+    console.log(`${action} action for:`, record);
+    switch(action) {
+      case 'edit':
+        // Lógica para editar
+        break;
+      case 'info':
+        // Lógica para más info
+        break;
+      case 'delete':
+        // Lógica para eliminar
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
+    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
@@ -47,20 +95,6 @@ export default function Staff() {
     setSearchTerm(value);
   };
 
-  // Botones personalizados
-  const customActionButtons = () => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
-        Eliminar
-      </Button>
-    </Space>
-  );
 
   return (
     <div
@@ -91,7 +125,6 @@ export default function Staff() {
         columns={columns}
         data={staff}
         loading={loading}
-        customActions={customActionButtons}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
