@@ -23,7 +23,7 @@ const TodayAppointments = () => {
               className={styles.appointment}
             >
               <div>
-                <div className={styles.name}></div>
+                <div className={styles.name}>{appt.name}</div>
                 <div className={styles.details}>
                   {appt.service} - {appt.time}
                 </div>
