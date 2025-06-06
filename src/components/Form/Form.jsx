@@ -44,7 +44,7 @@ const FormComponent = ({
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
-    form.validateFields(['phone']);
+    form.validateFields(['primary_phone']);
   };
 
   const renderField = (field, index) => {
@@ -93,7 +93,7 @@ const FormComponent = ({
       );
     }
 
-    const isPhoneField = field.name === 'phone';
+    const isPhoneField = field.name === 'primary_phone';
     return (
       <Col span={field.span || 8} key={index}>
         <Form.Item
@@ -102,16 +102,27 @@ const FormComponent = ({
           className={styles.formItem}
           rules={
             isPhoneField
-              ? isPhoneRequired
-                ? [{ required: true, message: `Por favor complete el campo ${field.label}` }]
-                : []
-              : field.required
-              ? [{ required: isPaymentRequired, message: `Por favor complete el campo ${field.label}` }]
-              : []
-          }
-        >
+              ? [
+                  ...(isPhoneRequired ? [
+                    { 
+                      required: true, 
+                      message: 'Por favor ingrese su teléfono' 
+                    }
+                  ] : []),
+                  () => ({
+                    validator(_, value) {
+                      if (!value || (value && value.length === 9)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                    },
+                  })
+                ]
+              : field.rules
+          }>
+
           <InputField
-            type={field.type}
+            type={isPhoneField ? 'phoneNumber' : field.type}
             label={field.label}
             options={field.options || []}
             isPhoneField={isPhoneField}

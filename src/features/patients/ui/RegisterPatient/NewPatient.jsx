@@ -1,6 +1,6 @@
+import { notification } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
-import { notification } from 'antd';
 
 const fields = [
   { type: 'title', label: 'Nuevo Paciente' },
@@ -17,9 +17,19 @@ const fields = [
       {
         name: 'document_number',
         label: 'Nro Documento',
-        type: 'text',
+        type: 'documentNumber', // Usamos nuestro tipo personalizado
         required: true,
-        span: 8
+        span: 8,
+        rules: [
+          { 
+            required: true, 
+            message: 'Por favor ingrese el número de documento' 
+          },
+          {
+            pattern: /^\d{8,9}$/,
+            message: 'El documento debe tener 8 dígitos'
+          }
+        ]
       },
     ],
   },
@@ -80,12 +90,32 @@ const fields = [
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'primary_phone', 
-        label: 'Teléfono', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'primary_phone',
+        label: 'Teléfono',
+        type: 'phoneNumber', // Usamos nuestro tipo personalizado
+        required: true,
+        span: 8,
+        rules: [
+          { 
+            required: true, 
+            message: 'Por favor ingrese su número telefónico' 
+          },
+          () => ({
+            validator(_, value) {
+              if (!value) {
+                return Promise.reject(new Error('Por favor ingrese su teléfono'));
+              }
+              if (value.length < 9) {
+                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+              }
+              if (value.length > 9) {
+                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]
       },
       { 
         name: 'email', 

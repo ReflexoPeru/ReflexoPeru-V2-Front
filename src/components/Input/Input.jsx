@@ -48,6 +48,36 @@ const InputField = ({
     case 'ubigeo':
       return <SelectUbigeoCascader onChange={rest.onChange} />;
 
+    case 'documentNumber':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
+      );
+      break;
+
+    case 'phoneNumber':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
+      );
+      break;
+
     case 'diagnoses':
       return <SelectDiagnoses />;
 
@@ -128,9 +158,22 @@ const InputField = ({
   }
 
   if (isPhoneField) {
+    const phoneInput = (
+      <Input
+        {...inputProps}
+        onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+        onChange={(e) => {
+          const cleanValue = e.target.value.replace(/\D/g, '');
+          e.target.value = cleanValue;
+          if (rest.onChange) rest.onChange(cleanValue);
+        }}
+        maxLength={9}
+      />
+    );
+
     return (
       <div className={styles.inputWrapper}>
-        {inputComponent}
+        {phoneInput}
         <CheckCircleFilled
           onClick={togglePhoneRequired}
           title={
