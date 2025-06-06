@@ -15,7 +15,8 @@ const System = () => {
   React.useEffect(() => {
     if (systemInfo.data) {
       setCompanyName(systemInfo.data.company_name);
-      setLogoUrl(`${process.env.REACT_APP_API_BASE_URL || ''}${systemInfo.data.logo_url}` || '/src/assets/Img/MiniLogoReflexo.webp');
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      setLogoUrl(`${apiBaseUrl}${systemInfo.data.logo_url}` || '/src/assets/Img/MiniLogoReflexo.webp');
     }
   }, [systemInfo]);
 
