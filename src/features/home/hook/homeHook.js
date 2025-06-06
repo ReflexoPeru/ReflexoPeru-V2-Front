@@ -2,54 +2,39 @@ import { useState, useEffect } from 'react';
 import { getPendingAppointments } from '../service/homeService';
 import dayjs from 'dayjs';
 
-export const useCalendar = () => {
-  const [events, setEvents] = useState([]);
+export const useTodayAppointments = () => {
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchEvents = async () => {
+  const fetchTodayAppointments = async () => {
     setLoading(true);
     setError(null);
     try {
       const data = await getPendingAppointments();
 
       if (!Array.isArray(data)) {
-        setEvents([]);
+        setAppointments([]);
         return;
       }
 
-      const formattedEvents = data.map((item) => {
-        const start = dayjs(
-          `${item.appointment_date}T${item.appointment_hour}`,
-        );
-        const end = start.add(1, 'hour');
+      // Filtrar solo las citas del día actual
+      const today = dayjs().format('YYYY-MM-DD');
+      const todayAppointments = data.filter(
+        (item) => item.appointment_date === today,
+      );
 
+      // Formatear los datos para el componente
+      const formattedAppointments = todayAppointments.map((item) => {
         return {
-          id: item.id,
-          title: item.appointment_type,
-          start: start.toDate(),
-          end: end.toDate(),
-          details: {
-            ailments: item.ailments,
-            diagnosis: item.diagnosis,
-            surgeries: item.surgeries,
-            reflexology_diagnostics: item.reflexology_diagnostics,
-            medications: item.medications,
-            observation: item.observation,
-            room: item.room,
-            payment: item.payment,
-            ticket_number: item.ticket_number,
-            appointment_status_id: item.appointment_status_id,
-            payment_type_id: item.payment_type_id,
-            patient_id: item.patient_id,
-            therapist_id: item.therapist_id,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          },
+          name: item.patient_name || ' ',
+          service: item.appointment_type,
+          time: dayjs(item.appointment_hour, 'HH:mm:ss').format('HH:mm'),
+          details: item,
         };
       });
 
-      setEvents(formattedEvents);
+      setAppointments(formattedAppointments);
     } catch (error) {
       setError(error);
     } finally {
@@ -58,8 +43,8 @@ export const useCalendar = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchTodayAppointments();
   }, []);
 
-  return { events, loading, error, fetchEvents };
+  return { appointments, loading, error, refetch: fetchTodayAppointments };
 };
