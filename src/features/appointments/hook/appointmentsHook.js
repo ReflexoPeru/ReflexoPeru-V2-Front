@@ -4,6 +4,8 @@ import {
   getPaginatedAppointmentsByDate,
   searchAppointments,
   createAppointment,
+  getPatients,
+  searchPatients,
 } from '../service/appointmentsService';
 
 export const useAppointments = () => {
@@ -170,5 +172,87 @@ export const useAppointments = () => {
     setSearchTerm,
     setSelectedDate,
     setPagination,
+  };
+};
+
+export const usePatients = () => {
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalItems: 0,
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [initialLoad, setInitialLoad] = useState(false);
+
+  // Función para cargar pacientes paginados
+  const loadPatients = async (page) => {
+    if (loading) return; // Evitar llamadas duplicadas
+    setLoading(true);
+    try {
+      const { data, total } = await getPatients(page);
+      setPatients(data);
+      setPagination({
+        currentPage: page,
+        totalItems: total,
+      });
+    } catch (error) {
+      setError(error.message);
+      console.error('Error loading patients:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para buscar pacientes por término
+  const searchPatientsByTerm = async (term) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const { data, total } = await searchPatients(term);
+      setPatients(data);
+      setPagination({
+        currentPage: 1,
+        totalItems: total,
+      });
+    } catch (error) {
+      setError(error.message);
+      console.error('Error searching patients:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carga inicial solo una vez
+  useEffect(() => {
+    if (!initialLoad) {
+      loadPatients(1);
+      setInitialLoad(true);
+    }
+  }, [initialLoad]);
+
+  // Búsqueda con debounce
+  useEffect(() => {
+    if (!initialLoad) return;
+
+    const delayDebounce = setTimeout(() => {
+      if (searchTerm.trim()) {
+        searchPatientsByTerm(searchTerm.trim());
+      } else {
+        loadPatients(1);
+      }
+    }, 1200);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm, initialLoad]);
+
+  return {
+    patients,       // Lista de pacientes
+    loading,       // Estado de carga
+    error,         // Mensaje de error (si existe)
+    pagination,    // Información de paginación
+    setSearchTerm, // Función para establecer término de búsqueda
+    handlePageChange: loadPatients, // Función para cambiar de página
   };
 };

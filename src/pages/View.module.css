@@ -4,15 +4,17 @@
 }
 
 .SideBar {
-  width: 17%;
+  /* width: 17%; */
+  flex: 0.12;
   height: 100vh;
   background-color: #1e1e1e; /* opcional: darle fondo */
 }
 
 .Content {
   display: flex;
+  flex: 0.88;
   flex-direction: column;
-  width: 83%;
+  /* width: 83%; */
   height: 100vh;
 }
 

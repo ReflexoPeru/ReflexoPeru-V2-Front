@@ -8,6 +8,7 @@ import {
   InputNumber,
   Select,
   TimePicker,
+  ConfigProvider,
 } from 'antd';
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
@@ -105,6 +106,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
 };
 
 // Componentes individuales
+// En Input.jsx
 const DateField = ({ form }) => (
   <Form.Item
     label="Fecha de cita"
@@ -112,7 +114,30 @@ const DateField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
+    <ConfigProvider
+      theme={{
+        components: {
+          DatePicker: {
+            colorTextPlaceholder: "#AAAAAA",
+            colorBgContainer: "#333333",
+            colorText: "#FFFFFF",
+            colorBorder: "#444444",
+            hoverBorderColor: "#555555",
+            activeBorderColor: "#00AA55",
+            colorIcon: "#FFFFFF",
+            colorIconHover:'#00AA55',
+            colorBgElevated: '#121212',
+            colorPrimary: '#00AA55',
+            colorTextDisabled: '#333333',
+            colorTextHeading:'#FFFFFF',
+            cellHoverBg:'#00AA55',
+            colorSplit:'#444444',
+          }
+        }
+      }}
+    >
+      <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
+    </ConfigProvider>
   </Form.Item>
 );
 
@@ -175,22 +200,40 @@ const PaymentOptionsField = ({
     ]}
     className={styles.formItem}
   >
-    <Select
-      onChange={onPaymentOptionChange}
-      placeholder="Seleccione una opción"
-      style={{ width: '100%' }}
-      dropdownClassName={styles.selectDropdown} // Añade esta clase
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            activeBorderColor: '#1cb54a',
+            hoverBorderColor: '#1cb54a',
+            colorBgContainer: '#333333',
+            colorText: '#ffffff',
+            colorBgElevated: '#121212',
+            optionSelectedBg: '#1cb54a',
+            colorTextPlaceholder: '#AAAAAA',
+            optionActiveBg: '#333333',
+            colorTextQuaternary: '#AAAAAA',
+          }
+        }
+      }}
     >
-      {paymentOptions.map((option) => (
-        <Option
-          key={option.value}
-          value={option.value}
-          className={styles.selectOption} // Añade esta clase
-        >
-          {option.label}
-        </Option>
-      ))}
-    </Select>
+      <Select
+        onChange={onPaymentOptionChange}
+        placeholder="Seleccione una opción"
+        style={{ width: '100%' }}
+        dropdownClassName={styles.selectDropdown}
+      >
+        {paymentOptions.map((option) => (
+          <Option
+            key={option.value}
+            value={option.value}
+            className={styles.selectOption}
+          >
+            {option.label}
+          </Option>
+        ))}
+      </Select>
+    </ConfigProvider>
   </Form.Item>
 );
 
@@ -203,13 +246,34 @@ const PaymentMethodField = ({ form, isPaymentRequired, paymentMethods }) => (
     ]}
     className={styles.formItem}
   >
-    <Select placeholder="Seleccione un método" style={{ width: '100%' }}>
-      {paymentMethods.map((method) => (
-        <Option key={method.value} value={method.value}>
-          {method.label}
-        </Option>
-      ))}
-    </Select>
+    <ConfigProvider
+      theme={{
+        components: {
+          Select: {
+            activeBorderColor: '#1cb54a',
+            hoverBorderColor: '#1cb54a',
+            colorBgContainer: '#333333',
+            colorText: '#ffffff',
+            colorBgElevated: '#121212',
+            optionSelectedBg: '#1cb54a',
+            colorTextPlaceholder: '#AAAAAA',
+            optionActiveBg: '#333333',
+            colorTextQuaternary: '#AAAAAA',
+          }
+        }
+      }}
+    >
+      <Select 
+        placeholder="Seleccione un método" 
+        style={{ width: '100%' }}
+      >
+        {paymentMethods.map((method) => (
+          <Option key={method.value} value={method.value}>
+            {method.label}
+          </Option>
+        ))}
+      </Select>
+    </ConfigProvider>
   </Form.Item>
 );
 
@@ -227,7 +291,6 @@ const AmountField = ({
       (opt) => opt.value === paymentOption,
     );
 
-    // Modificación aquí: verificar explícitamente si amount es 0 o no es undefined
     if (
       selectedOption &&
       !customAmount &&
@@ -251,17 +314,33 @@ const AmountField = ({
       ]}
       className={styles.formItem}
     >
-      <InputNumber
-        className={styles.inputNumber}
-        disabled={!customAmount}
-        min={0}
-        step={10}
-        formatter={(value) =>
-          `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-        }
-        parser={(value) => value.replace(/S\/\s?|(,*)/g, '')}
-        style={{ width: '100%' }}
-      />
+      <ConfigProvider
+        theme={{
+          components: {
+            InputNumber: {
+              colorPrimary: '#1cb54a',
+              colorText: '#ffffff',
+              colorBgContainer: '#333333',
+              colorBorder: '#555555',
+              colorPrimaryHover: '#1cb54a',
+              colorPrimaryActive: '#1cb54a',
+              colorIcon: '#AAAAAA',
+            }
+          }
+        }}
+      >
+        <InputNumber
+          className={styles.inputNumber}
+          disabled={!customAmount}
+          min={0}
+          step={10}
+          formatter={(value) =>
+            `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+          }
+          parser={(value) => value.replace(/S\/\s?|(,*)/g, '')}
+          style={{ width: '100%' }}
+        />
+      </ConfigProvider>
     </Form.Item>
   );
 };
@@ -273,11 +352,42 @@ const TimeField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <TimePicker
-      format="HH:mm"
-      className={styles.datePicker}
-      style={{ width: '100%' }}
-    />
+    <ConfigProvider
+      theme={{
+        components: {
+          TimePicker: {
+            colorTextPlaceholder: "#AAAAAA",
+            colorBgContainer: "#333333",
+            colorText: "#FFFFFF",
+            colorBorder: "#444444",
+            borderRadius: 4,
+            hoverBorderColor: "#555555",
+            activeBorderColor: "#00AA55",
+            colorIcon: "#FFFFFF",
+            colorIconHover:'#00AA55',
+            colorBgElevated: '#121212',
+            colorPrimary: '#00AA55',
+            colorTextDisabled: '#333333',
+            colorTextHeading:'#FFFFFF',
+            cellHoverBg:'#00AA55',
+            colorSplit:'#444444',
+          },
+          // Personalización adicional para el panel de tiempo
+          TimePanel: {
+            cellHoverBg: '#444444',
+            cellActiveBg: '#1a3a1a',
+            cellHeight: 32,
+            cellWidth: 56,
+          }
+        }
+      }}
+    >
+      <TimePicker
+        format="HH:mm"
+        className={styles.datePicker}
+        style={{ width: '100%' }}
+      />
+    </ConfigProvider>
   </Form.Item>
 );
 
