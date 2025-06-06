@@ -23,7 +23,7 @@ import {
   useUpdateProfile,
 } from './hook/profileHook';
 import { useToast } from '../../../services/toastify/ToastContext';
-
+import ModalBase from '../../../components/Modal/BaseModalProfile/BaseModalProfile';
 const { Password } = AntdInput;
 
 const Profile = () => {
@@ -417,335 +417,44 @@ const Profile = () => {
           </main>
         </div>
 
-        {/* ========================================*/}
-        {/* Modal para cambiar correo (primer paso) */}
-        {/* ========================================*/}
-        <Modal
-          title={null}
-          open={showEmailModal}
-          onCancel={handleCloseEmailModal}
-          footer={null}
-          centered
-          width={520}
-          closable={false}
-          className={styles.modalContainer}
-        >
-          <div className={styles.modalHeader}>
-            <Button
-              type="text"
-              icon={<ArrowLeft size={20} />}
-              onClick={handleCloseEmailModal}
-              className={styles.backButton}
-            />
-            <div className={styles.modalLogoContainer}>
-              <img
-                src="/src/assets/Img/MiniLogoReflexo.webp"
-                alt="Logo"
-                className={styles.modalLogo}
-              />
-            </div>
-          </div>
-
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Cambiar correo electrónico</h3>
-            <p className={styles.modalDescription}>
-              Para actualizar tu correo electrónico, ingresa tu nuevo correo y
-              te enviaremos un código de verificación.
-            </p>
-            <Form
-              form={emailForm}
-              onFinish={handleSubmitNewEmail}
-              layout="vertical"
-              className={styles.modalForm}
-            >
-              <Form.Item
-                name="email"
-                rules={[
-                  { required: true, message: 'Por favor ingresa tu correo' },
-                  { type: 'email', message: 'Ingresa un correo válido' },
-                ]}
-              >
-                <Input
-                  size="large"
-                  prefix={<Envelope size={18} color="#666" />}
-                  placeholder="Ingresa tu nuevo correo"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  loading={codeLoading}
-                  className={styles.modalSubmitButton}
-                >
-                  Enviar código de verificación
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </Modal>
-
-        {/* =====================================================*/}
-        {/* Modal para verificar código de correo (segundo paso) */}
-        {/* =====================================================*/}
-        <Modal
-          title={null}
-          open={showCodeModal}
-          onCancel={handleCloseCodeModal}
-          footer={null}
-          centered
-          width={520}
-          closable={false}
-          className={styles.modalContainer}
-        >
-          <div className={styles.modalHeader}>
-            <Button
-              type="text"
-              icon={<ArrowLeft size={20} />}
-              onClick={handleCloseCodeModal}
-              className={styles.backButton}
-            />
-            <div className={styles.modalLogoContainer}>
-              <CheckCircle size={48} color="#4CAF50" weight="fill" />
-            </div>
-          </div>
-
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Verificar tu identidad</h3>
-            <div className={styles.codeDescription}>
-              <p className={styles.modalDescription}>
-                Enviado un código de verificación de 6 dígitos a:
-              </p>
-              <p className={styles.emailText}>{newEmail}</p>
-            </div>
-
-            <Form
-              form={codeForm}
-              onFinish={handleVerifyCode}
-              layout="vertical"
-              className={styles.modalForm}
-            >
-              <Form.Item
-                name="code"
-                rules={[
-                  { required: true, message: 'Por favor ingresa el código' },
-                  { len: 6, message: 'El código debe tener 6 dígitos' },
-                ]}
-              >
-                <div className={styles.otpContainer}>
-                  <Input.OTP
-                    size="large"
-                    length={6}
-                    onChange={setCode}
-                    className={styles.otpInput}
-                    inputClassName={styles.otpSingleInput}
-                  />
-                </div>
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  loading={verifyLoading}
-                  disabled={code.length !== 6}
-                  className={styles.modalSubmitButton}
-                >
-                  Verificar código
-                </Button>
-              </Form.Item>
-            </Form>
-
-            <div className={styles.modalFooter}>
-              <p className={styles.footerText}>¿No recibiste el código?</p>
-              <div className={styles.footerActions}>
-                <Button
-                  type="link"
-                  onClick={handleResendCode}
-                  disabled={countdown > 0}
-                  className={styles.resendButton}
-                >
-                  {countdown > 0
-                    ? `Reenviar en ${countdown}s`
-                    : 'Reenviar código'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Modal>
-
-        {/* ===========================================*/}
-        {/* Modal para contraseña actual (primer paso) */}
-        {/* ===========================================*/}
-        <Modal
-          title={null}
-          open={showCurrentPasswordModal}
-          onCancel={handleCloseCurrentPasswordModal}
-          footer={null}
-          centered
-          width={520}
-          closable={false}
-        >
-          <div className={styles.modalHeader}>
-            <Button
-              type="text"
-              icon={<ArrowLeft size={20} />}
-              onClick={handleCloseCurrentPasswordModal}
-              className={styles.backButton}
-            />
-            <div className={styles.modalLogoContainer}>
-              <img
-                src="/src/assets/Img/MiniLogoReflexo.webp"
-                alt="Logo"
-                className={styles.modalLogo}
-              />
-            </div>
-          </div>
-
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Cambiar contraseña</h3>
-            <p className={styles.modalDescription}>
-              Para actualizar tu contraseña, primero ingresa tu contraseña
-              actual para verificar tu identidad.
-            </p>
-            <Form
-              form={currentPasswordForm}
-              onFinish={handleSubmitCurrentPassword}
-              layout="vertical"
-              className={styles.modalForm}
-            >
-              <Form.Item
-                name="currentPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Por favor ingresa tu contraseña actual',
-                  },
-                ]}
-              >
-                <Password
-                  size="large"
-                  placeholder="Ingresa tu contraseña actual"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  loading={currentPasswordLoading}
-                  className={styles.modalSubmitButton}
-                >
-                  Verificar contraseña
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </Modal>
-
-        {/* ===========================================*/}
-        {/* Modal para nueva contraseña (segundo paso) */}
-        {/* ===========================================*/}
-        <Modal
-          title={null}
-          open={showNewPasswordModal}
-          onCancel={handleCloseNewPasswordModal}
-          footer={null}
-          centered
-          width={520}
-          closable={false}
-          className={styles.modalContainer}
-        >
-          <div className={styles.modalHeader}>
-            <Button
-              type="text"
-              icon={<ArrowLeft size={20} />}
-              onClick={handleCloseNewPasswordModal}
-              className={styles.backButton}
-            />
-            <div className={styles.modalLogoContainer}>
-              <CheckCircle size={48} color="#4CAF50" weight="fill" />
-            </div>
-          </div>
-
-          <div className={styles.modalContent}>
-            <h3 className={styles.modalTitle}>Crear nueva contraseña</h3>
-            <p className={styles.modalDescription}>
-              Ingresa tu nueva contraseña y confírmala para completar el
-              proceso.
-            </p>
-            <Form
-              form={newPasswordForm}
-              onFinish={handleSubmitNewPassword}
-              layout="vertical"
-            >
-              <Form.Item
-                name="newPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Por favor ingresa tu nueva contraseña',
-                  },
-                  {
-                    min: 8,
-                    message: 'La contraseña debe tener al menos 8 caracteres',
-                  },
-                ]}
-              >
-                <Password
-                  size="large"
-                  placeholder="Ingresa tu nueva contraseña"
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="confirmPassword"
-                dependencies={['newPassword']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Por favor confirma tu nueva contraseña',
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue('newPassword') === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Las contraseñas no coinciden'),
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Password
-                  size="large"
-                  placeholder="Confirma tu nueva contraseña"
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  block
-                  loading={newPasswordLoading}
-                  className={styles.modalSubmitButton}
-                >
-                  Actualizar contraseña
-                </Button>
-              </Form.Item>
-            </Form>
-          </div>
-        </Modal>
+        <ModalBase
+          isOpen={showEmailModal}
+          onClose={() => setShowEmailModal(false)}
+          onSubmit={handleSubmitNewEmail}
+          title="Cambiar correo electrónico"
+          description="Para actualizar tu correo electrónico, ingresa tu nuevo correo y te enviaremos un código de verificación."
+          type="email"
+          loading={codeLoading}
+        />
+        <ModalBase
+          isOpen={showCodeModal}
+          onClose={handleCloseCodeModal}
+          onSubmit={handleVerifyCode}
+          title="Verificar tu identidad"
+          type="code"
+          email={newEmail}
+          countdown={countdown}
+          onResend={handleResendCode}
+          loading={verifyLoading}
+        />
+        <ModalBase
+          isOpen={showCurrentPasswordModal}
+          onClose={() => setShowCurrentPasswordModal(false)}
+          onSubmit={handleSubmitCurrentPassword}
+          title="Cambiar contraseña"
+          description="Para actualizar tu contraseña, primero ingresa tu contraseña actual para verificar tu identidad."
+          type="currentPassword"
+          loading={currentPasswordLoading}
+        />
+        <ModalBase
+          isOpen={showNewPasswordModal}
+          onClose={handleCloseNewPasswordModal}
+          onSubmit={handleSubmitNewPassword}
+          title="Crear nueva contraseña"
+          description="Ingresa tu nueva contraseña y confírmala para completar el proceso."
+          type="newPassword"
+          loading={newPasswordLoading}
+        />
       </div>
     </ConfigProvider>
   );
