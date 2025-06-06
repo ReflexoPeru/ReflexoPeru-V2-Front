@@ -1,28 +1,49 @@
 .container {
   box-sizing: border-box;
+  min-height: 300px; /* Altura mínima para evitar saltos */
   padding: 20px 30px;
   color: white;
 }
 
 .sections {
   display: flex;
-
-  /* Asegura que los hijos se adapten en pantallas pequeñas */
   flex-direction: row;
   flex-wrap: wrap;
   gap: 30px;
   justify-content: space-between;
 
+  min-height: 200px; /* Altura mínima del contenedor */
   margin-top: 25px;
+}
+
+/* Skeleton loading - mantiene el espacio durante la carga */
+.skeleton-section {
+  flex: 1;
+
+  min-width: 300px;
+  min-height: 200px;
+  border-radius: 10px;
+
+  background-color: #2a2a2a;
+
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.3; }
 }
 
 /* Diseño adaptativo para pantallas pequeñas */
 @media (max-width: 768px) {
   .sections {
-    flex-direction: column; /* Cambia de fila a columna */
+    flex-direction: column;
     gap: 20px;
   }
   .container {
     padding: 20px 15px;
+  }
+  .skeleton-section {
+    min-width: 100%;
   }
 }
