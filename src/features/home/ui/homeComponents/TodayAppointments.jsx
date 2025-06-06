@@ -23,7 +23,7 @@ const TodayAppointments = () => {
               className={styles.appointment}
             >
               <div>
-                <div className={styles.name}>{appt.name}</div>
+                <div className={styles.name}></div>
                 <div className={styles.details}>
                   {appt.service} - {appt.time}
                 </div>
@@ -34,13 +34,15 @@ const TodayAppointments = () => {
             </div>
           ))
         ) : (
-          <Empty
-            image={
-              <CalendarOutlined style={{ fontSize: '48px', color: '#999' }} />
-            }
-            imageStyle={{ height: 60 }}
-            description={<span>No hay citas para hoy</span>}
-          />
+          <div className={styles.emptyState}>
+            <Empty
+              image={
+                <CalendarOutlined style={{ fontSize: '48px', color: '#999' }} />
+              }
+              imageStyle={{ height: 60 }}
+              description={<span>No hay citas para hoy</span>}
+            />
+          </div>
         )}
       </div>
     </div>
