@@ -22,14 +22,14 @@ const TodayAppointments = () => {
               key={`${appt.details.id}-${index}`}
               className={styles.appointment}
             >
-              <div>
+              <div className={styles.appointmentContent}>
                 <div className={styles.name}>{appt.name}</div>
                 <div className={styles.details}>
                   {appt.service} - {appt.time}
                 </div>
               </div>
               <div className={styles.check}>
-                <CheckCircle size={30} />
+                <CheckCircle size={22} />
               </div>
             </div>
           ))

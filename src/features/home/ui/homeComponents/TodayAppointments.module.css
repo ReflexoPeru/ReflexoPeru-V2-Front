@@ -1,7 +1,9 @@
 .container {
     flex: 1;
 
+    box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
     width: 100%;
+    min-width: 340px; /* Ancho mínimo consistente */
     padding: clamp(15px, 3vw, 25px);
     border-radius: 20px;
 
@@ -23,9 +25,9 @@
 
     overflow-y: auto;
 
-    min-height: 200px; /* Añadido para mantener el espacio */
+    box-sizing: border-box;
+    min-height: 200px; /* Altura fija para todos los estados */
     max-height: 200px;
-    padding-right: 5px;
 
     -ms-overflow-style: none;
 }
@@ -38,7 +40,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 160px; /* Altura consistente */
+    height: 200px; /* Misma altura que scrollArea */
 }
 
 .appointment {
@@ -48,6 +50,8 @@
     align-items: center;
     justify-content: space-between;
 
+    box-sizing: border-box;
+    min-width: 0; /* Previene expansión no deseada */
     margin-bottom: 0.5rem;
     padding: 0.75rem 1rem;
     border-left: 3px solid transparent;
@@ -69,12 +73,18 @@
     transform: translateY(0);
 }
 
+.appointmentContent {
+    overflow: hidden;
+    flex: 1;
+    min-width: 0; /* Permite que el texto se trunque correctamente */
+}
+
 .name {
     overflow: hidden;
 
     margin-bottom: 0.15rem;
 
-    font-size: 0.95rem;
+    font-size: 0.85rem; /* Tamaño reducido */
     font-weight: 600;
     color: #FFFFFF;
     text-overflow: ellipsis;
@@ -87,7 +97,7 @@
     gap: 0.5rem;
     align-items: center;
 
-    font-size: 0.75rem;
+    font-size: 0.7rem; /* Tamaño reducido */
     color: #AAAAAA;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -100,8 +110,8 @@
 }
 
 .check svg {
-    width: 24px;
-    height: 24px;
+    width: 22px; /* Tamaño reducido */
+    height: 22px; /* Tamaño reducido */
 }
 
 .appointment:hover .check {
@@ -112,7 +122,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 180px; /* Altura consistente */
+
+    box-sizing: border-box;
+    height: 200px; /* Misma altura que scrollArea */
 }
 
 /* Responsive */
@@ -122,11 +134,15 @@
     }
     
     .name {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
+    }
+    
+    .details {
+        font-size: 0.65rem;
     }
     
     .check svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
     }
 }
