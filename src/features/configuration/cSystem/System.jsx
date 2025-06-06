@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, Input, Button } from 'antd';
+import React from 'react';
+import { Upload, Input, Button, Spin } from 'antd';
 import { UploadSimple } from '@phosphor-icons/react';
 import styles from './System.module.css';
 import { useSystemHook } from './hook/systemHook';
@@ -7,10 +7,18 @@ import { useState } from 'react';
 
 // Asegúrate de que la ruta sea correcta
 const System = () => {
-  const [companyName, setCompanyName] = useState('Centro de Reflexoterapia');
-  const [logoUrl, setLogoUrl] = useState(
-    '/src/assets/Img/MiniLogoReflexo.webp',
-  );
+  const { systemInfo, loading, error } = useSystemHook();
+  const [companyName, setCompanyName] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+
+  // Actualizar los estados locales cuando systemInfo cambie
+  React.useEffect(() => {
+    if (systemInfo.data) {
+      setCompanyName(systemInfo.data.company_name);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      setLogoUrl(`${apiBaseUrl}${systemInfo.data.logo_url}` || '/src/assets/Img/MiniLogoReflexo.webp');
+    }
+  }, [systemInfo]);
 
   const handleLogoChange = (info) => {
     const file = info.file.originFileObj;
@@ -24,6 +32,22 @@ const System = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className={styles.layout}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.layout}>
+        <p>Error al cargar la información de la empresa: {error.message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.layout}>
       <main className={styles.mainContent}>
@@ -35,11 +59,18 @@ const System = () => {
               <div className={styles.logoRow}>
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Actual</span>
-                  <img
-                    src={logoUrl}
-                    alt="Logo actual de la empresa"
-                    className={styles.logoImage}
-                  />
+                  {systemInfo.data?.has_logo ? (
+                    <img
+                      src={logoUrl}
+                      alt={`Logo de ${companyName}`}
+                      className={styles.logoImage}
+                      onError={(e) => {
+                        e.target.src = '/src/assets/Img/MiniLogoReflexo.webp';
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.noLogo}>No hay logo disponible</div>
+                  )}
                 </div>
 
                 <div className={styles.logoBlock}>
@@ -59,42 +90,28 @@ const System = () => {
               </div>
             </div>
 
-                <div className={styles.divider}></div>
-
-                {/* Company Name Section */}
-                <div className={styles.formField}>
-                  <label className={styles.label} htmlFor="companyNameInput">
-                    Nombre de la empresa:
-                  </label>
-                  <div className={styles.nameContainer}>
-                    <Input
-                      id="companyNameInput"
-                      className={styles.input}
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Ingresa el nombre de la empresa"
-                    />
-                    <Button className={styles.cambiarBtn}>
-                      Cambiar
-                    </Button>
-                  </div>
-                </div>
-
-                <div className={styles.saveButtonContainer}>
-                  <Button
-                    type="primary"
-                    className={styles.saveButton}
-                    size="large"
-                  >
-                    Guardar Cambios
-                  </Button>
-                </div>
+            {/* Company name section */}
+            <div className={styles.section}>
+              <label className={styles.label} htmlFor="companyNameInput">
+                Nombre de la empresa:
+              </label>
+              <div className={styles.nameRow}>
+                <Input
+                  id="companyNameInput"
+                  className={styles.input}
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Ingresa el nombre de la empresa"
+                />
+                <Button type="primary" className={styles.changeBtn}>
+                  Cambiar
+                </Button>
               </div>
             </div>
-          </main>
-        </div>
-      </div>
-    </ConfigProvider>
+          </div>
+        </section>
+      </main>
+    </div>
   );
 };
 
