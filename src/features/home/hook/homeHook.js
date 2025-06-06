@@ -27,7 +27,7 @@ export const useTodayAppointments = () => {
       // Formatear los datos para el componente
       const formattedAppointments = todayAppointments.map((item) => {
         return {
-          name: item.full_name || ' ', // Usamos el full_name del API
+          name: item.full_name || ' ',
           service: item.appointment_type,
           time: dayjs(item.appointment_hour, 'HH:mm:ss').format('HH:mm'),
           details: item, // Guardamos todos los detalles
