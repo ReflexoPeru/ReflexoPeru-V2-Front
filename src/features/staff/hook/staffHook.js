@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
-import { createTherapist } from '../service/staffService';
-import { getStaff, searchStaff } from '../service/staffService';
+import { 
+  createTherapist, 
+  getStaff, 
+  searchStaff, 
+  deleteTherapist 
+} from '../service/staffService';
 import dayjs from 'dayjs';
 import { useToast } from '../../../services/toastify/ToastContext';
 
@@ -52,6 +56,63 @@ export const useStaff = () => {
     }
   };
 
+  const handleDeleteTherapist = async (id) => {
+    try {
+      setLoading(true);
+      await deleteTherapist(id);
+      showToast('success', 'Terapeuta eliminado correctamente');
+      
+      // Actualización optimizada
+      setStaff(prev => prev.filter(item => item.id !== id));
+      setPagination(prev => ({
+        ...prev,
+        totalItems: prev.totalItems - 1
+      }));
+      
+      return true;
+    } catch (error) {
+      let errorMessage = 'Error al eliminar terapeuta';
+      if (error.response?.status === 404) {
+        errorMessage = 'El terapeuta no existe';
+      }
+      showToast('error', errorMessage);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitNewTherapist = async (formData) => {
+    const payload = {
+      document_number: formData.document_number,
+      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
+      name: formData.name,
+      personal_reference: formData.personal_reference || null,
+      birth_date: formData.birth_date
+        ? dayjs(formData.birth_date).format('YYYY-MM-DD')
+        : null,
+      sex: formData.sex,
+      primary_phone: formData.primary_phone,
+      secondary_phone: formData.secondary_phone || null,
+      email: formData.email || null,
+      address: formData.address || null,
+      document_type_id: formData.document_type_id || 1,
+      region_id: formData.region_id || formData.ubicacion?.region_id || null,
+      province_id: formData.province_id || formData.ubicacion?.province_id || null,
+      district_id: formData.district_id || formData.ubicacion?.district_id || null,
+    };
+
+    try {
+      const result = await createTherapist(payload);
+      showToast('success', 'Terapeuta registrado correctamente');
+      return result;
+    } catch (error) {
+      showToast('error', 'No se pudo crear el terapeuta');
+      throw error;
+    }
+  };
+
   useEffect(() => {
     if (!initialLoad) {
       loadStaff(1);
@@ -72,41 +133,6 @@ export const useStaff = () => {
 
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, initialLoad]);
-
-  const submitNewTherapist = async (formData) => {
-    const payload = {
-      document_number: formData.document_number,
-      paternal_lastname:
-        formData.paternal_lastname || formData.paternal_lastName,
-      maternal_lastname:
-        formData.maternal_lastname || formData.maternal_lastName,
-      name: formData.name,
-      personal_reference: formData.personal_reference || null,
-      birth_date: formData.birth_date
-        ? dayjs(formData.birth_date).format('YYYY-MM-DD')
-        : null,
-      sex: formData.sex,
-      primary_phone: formData.primary_phone,
-      secondary_phone: formData.secondary_phone || null,
-      email: formData.email || null,
-      address: formData.address || null,
-      document_type_id: formData.document_type_id || 1,
-      region_id: formData.region_id || formData.ubicacion?.region_id || null,
-      province_id:
-        formData.province_id || formData.ubicacion?.province_id || null,
-      district_id:
-        formData.district_id || formData.ubicacion?.district_id || null,
-    };
-
-    try {
-      const result = await createTherapist(payload);
-      showToast('success', 'Terapeuta registrado correctamente');
-      return result;
-    } catch (error) {
-      showToast('error', 'No se pudo crear el terapeuta');
-      throw error;
-    }
-  };
 
   return {
     staff,

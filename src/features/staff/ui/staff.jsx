@@ -1,3 +1,4 @@
+// import StaffMock from '../../../mock/Staff';
 import { Button, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
@@ -8,15 +9,16 @@ import { useStaff } from '../hook/staffHook';
 export default function Staff() {
   const navigate = useNavigate();
 
-  const { 
-    staff, 
-    loading, 
-    error, 
-    pagination, 
-    handlePageChange, 
-    setSearchTerm,
-    handleDeleteTherapist // Asegúrate de incluir esta función en tu hook
-  } = useStaff();
+  const { staff, loading, error, pagination, handlePageChange, setSearchTerm, handleDeleteTherapist, } =
+    useStaff();
+
+  // Debug (verifica en consola)
+  console.log('Datos:', {
+    staff,
+    loading,
+    error,
+    pagination,
+  });
 
   const columns = [
     {
@@ -36,19 +38,19 @@ export default function Staff() {
       render: (_, record) => (
         <Space size="small">
           <Button 
-            type="primary"
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
             onClick={() => handleAction('edit', record)}
           >
             Editar
           </Button>
           <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff' }}
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
             onClick={() => handleAction('info', record)}
           >
             Más Info
           </Button>
           <Button 
-            danger
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
             onClick={() => handleAction('delete', record)}
           >
             Eliminar
@@ -59,55 +61,73 @@ export default function Staff() {
   ];
 
   const handleAction = (action, record) => {
+    // Implementa las acciones según el tipo
+    console.log(`${action} action for:`, record);
     switch(action) {
       case 'edit':
-        navigate(`editar/${record.id}`);
+        // Lógica para editar
         break;
       case 'info':
-        navigate(`info/${record.id}`);
+        // Lógica para más info
         break;
       case 'delete':
-        if (window.confirm('¿Está seguro de eliminar este terapeuta?')) {
-          handleDeleteTherapist(record.id);
-        }
+        // Lógica para eliminar
         break;
       default:
         break;
     }
   };
 
-  const handleNewTherapist = () => {
+  const handleButton = () => {
+    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
+    // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
 
+  // Botones personalizados
+  const customActionButtons = (record) => (
+    <Space size="small">
+      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
+        Editar
+      </Button>
+      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
+        Más Info
+      </Button>
+      <Button 
+        style={{ backgroundColor: '#FF3333', color: '#fff' }}
+        onClick={() => handleDeleteTherapist(record.id)}
+      >
+        Eliminar
+      </Button>
+    </Space>
+  );
+
   return (
-    <div style={{
-      padding: '20px',
-      maxWidth: '1200px',
-      margin: '0 auto'
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
-        marginBottom: '20px',
-        flexWrap: 'wrap'
-      }}>
-        <CustomButton 
-          text="Crear Terapeuta" 
-          onClick={handleNewTherapist}
-          type="primary"
-        />
+    <div
+      style={{
+        height: '100%',
+        paddingTop: '50px',
+        maxWidth: 'calc(100% - 200px)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          margin: '0 auto',
+        }}
+      >
+        <CustomButton text="Crear Terapeuta" onClick={handleButton} />
 
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
-          width="400px"
-          allowClear
+          width="100%"
         />
       </div>
 
@@ -115,15 +135,13 @@ export default function Staff() {
         columns={columns}
         data={staff}
         loading={loading}
+        customActions={(record) => customActionButtons(record)}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: pagination.pageSize || 10,
+          pageSize: 50,
           onChange: handlePageChange,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100']
         }}
-        scroll={{ x: 800 }}
       />
     </div>
   );
