@@ -49,7 +49,7 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                     />
                 </div>
                 <div style={{ color: '#555555', marginTop: '10px' }}>
-                    100 / página
+                    50 / página
                 </div>
             </div>
         </ConfigProvider>

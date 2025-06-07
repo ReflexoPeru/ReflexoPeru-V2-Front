@@ -2,22 +2,32 @@ import { CheckCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
+  ConfigProvider,
   DatePicker,
   Form,
   Input,
   InputNumber,
   Select,
   TimePicker,
-  ConfigProvider,
+  theme,
 } from 'antd';
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
 
+// Importaciones corregidas
+import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import { SelectCountries } from '../Select/SelectCountry';
+import { SelectDiagnoses } from '../Select/SelectDiagnoses';
+import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
+import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
+
+// ... importar los demás componentes Select
 const { Option } = Select;
 
 // Componente principal
 const InputField = ({
   type,
+  form,
   label,
   options = [],
   isPhoneField = false,
@@ -33,23 +43,111 @@ const InputField = ({
   };
 
   switch (type) {
-    case 'select':
+    case 'selestCountry':
+      return <SelectCountries />;
+
+    case 'ubigeo':
+      return <SelectUbigeoCascader onChange={rest.onChange} />;
+
+    case 'documentNumber':
       inputComponent = (
-        <Select
+        <Input
           {...inputProps}
-          dropdownStyle={{ backgroundColor: '#444444', color: '#FFFFFF' }}
-        >
-          {options.map((opt) => (
-            <Option key={opt.value} value={opt.value} style={{ color: '#fff' }}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
       );
       break;
 
+    case 'phoneNumber':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
+      );
+      break;
+
+    case 'diagnoses':
+      return <SelectDiagnoses />;
+
+    case 'paymentStatus':
+      return <SelectPaymentStatus />;
+
+    case 'typeOfDocument':
+      return <SelectTypeOfDocument onChange={rest.onChange} />;
+
+    case 'select': // genérico
+      return (
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                colorPrimary: '#1677ff',
+                optionSelectedBg: '#333333',
+                colorText: '#fff',
+                colorBgElevated: '#444444', // fondo del dropdown
+                colorTextPlaceholder: '#aaa',
+                controlItemBgHover: '#444444',
+                selectorBg: '#444444', // fondo del input
+              },
+            },
+            token: {
+              colorTextBase: '#fff',
+            },
+          }}
+        >
+          <Select
+            className={styles.inputStyle}
+            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
+            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
+            {...rest}
+          >
+            {options.map((opt) => (
+              <Option
+                key={opt.value}
+                value={opt.value}
+                style={{ color: '#fff' }}
+              >
+                {opt.label}
+              </Option>
+            ))}
+          </Select>
+        </ConfigProvider>
+      );
+
     case 'date':
-      inputComponent = <DatePicker {...inputProps} />;
+      inputComponent = (
+        <ConfigProvider
+          theme={{
+            components: {
+              DatePicker: {
+                panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
+                colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
+                colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
+                arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
+              },
+            },
+          }}
+        >
+          <DatePicker
+            {...inputProps}
+            style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+            dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
+          />
+        </ConfigProvider>
+      );
       break;
 
     case 'cita':
@@ -61,9 +159,22 @@ const InputField = ({
   }
 
   if (isPhoneField) {
+    const phoneInput = (
+      <Input
+        {...inputProps}
+        onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+        onChange={(e) => {
+          const cleanValue = e.target.value.replace(/\D/g, '');
+          e.target.value = cleanValue;
+          if (rest.onChange) rest.onChange(cleanValue);
+        }}
+        maxLength={9}
+      />
+    );
+
     return (
       <div className={styles.inputWrapper}>
-        {inputComponent}
+        {phoneInput}
         <CheckCircleFilled
           onClick={togglePhoneRequired}
           title={
@@ -90,8 +201,6 @@ const CitaComponents = ({ componentType, form, ...props }) => {
       return <PatientField form={form} {...props} />;
     case 'paymentOptions':
       return <PaymentOptionsField form={form} {...props} />;
-    case 'paymentMethod':
-      return <PaymentMethodField form={form} {...props} />;
     case 'amountField':
       return <AmountField form={form} {...props} />;
     case 'timeField':
@@ -114,30 +223,7 @@ const DateField = ({ form }) => (
     rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
-    <ConfigProvider
-      theme={{
-        components: {
-          DatePicker: {
-            colorTextPlaceholder: "#AAAAAA",
-            colorBgContainer: "#333333",
-            colorText: "#FFFFFF",
-            colorBorder: "#444444",
-            hoverBorderColor: "#555555",
-            activeBorderColor: "#00AA55",
-            colorIcon: "#FFFFFF",
-            colorIconHover:'#00AA55',
-            colorBgElevated: '#121212',
-            colorPrimary: '#00AA55',
-            colorTextDisabled: '#333333',
-            colorTextHeading:'#FFFFFF',
-            cellHoverBg:'#00AA55',
-            colorSplit:'#444444',
-          }
-        }
-      }}
-    >
-      <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
-    </ConfigProvider>
+    <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
   </Form.Item>
 );
 
@@ -146,6 +232,8 @@ const PatientField = ({
   patientType,
   onPatientTypeChange,
   patientTypeOptions,
+  onOpenCreateModal,
+  onOpenSelectModal,
 }) => (
   <div className={styles.patientRow}>
     <div className={styles.patientContainer}>
@@ -164,7 +252,17 @@ const PatientField = ({
 
       {/* Botón Crear/Elegir */}
       <div className={styles.patientButtonContainer}>
-        <Button type="primary" className={styles.patientButton}>
+        <Button 
+          type="primary" 
+          className={styles.patientButton}
+          onClick={() => {
+            if (patientType === 'nuevo') {
+              onOpenCreateModal();
+            } else {
+              onOpenSelectModal();
+            }
+          }}
+        >
           {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
         </Button>
       </div>
@@ -200,40 +298,22 @@ const PaymentOptionsField = ({
     ]}
     className={styles.formItem}
   >
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            activeBorderColor: '#1cb54a',
-            hoverBorderColor: '#1cb54a',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBgElevated: '#121212',
-            optionSelectedBg: '#1cb54a',
-            colorTextPlaceholder: '#AAAAAA',
-            optionActiveBg: '#333333',
-            colorTextQuaternary: '#AAAAAA',
-          }
-        }
-      }}
+    <Select
+      onChange={onPaymentOptionChange}
+      placeholder="Seleccione una opción"
+      style={{ width: '100%' }}
+      dropdownClassName={styles.selectDropdown} // Añade esta clase
     >
-      <Select
-        onChange={onPaymentOptionChange}
-        placeholder="Seleccione una opción"
-        style={{ width: '100%' }}
-        dropdownClassName={styles.selectDropdown}
-      >
-        {paymentOptions.map((option) => (
-          <Option
-            key={option.value}
-            value={option.value}
-            className={styles.selectOption}
-          >
-            {option.label}
-          </Option>
-        ))}
-      </Select>
-    </ConfigProvider>
+      {paymentOptions.map((option) => (
+        <Option
+          key={option.value}
+          value={option.value}
+          className={styles.selectOption} // Añade esta clase
+        >
+          {option.label}
+        </Option>
+      ))}
+    </Select>
   </Form.Item>
 );
 
@@ -354,31 +434,22 @@ const TimeField = ({ form }) => (
   >
     <ConfigProvider
       theme={{
+        algorithm: theme.darkAlgorithm,
         components: {
           TimePicker: {
-            colorTextPlaceholder: "#AAAAAA",
-            colorBgContainer: "#333333",
-            colorText: "#FFFFFF",
-            colorBorder: "#444444",
-            borderRadius: 4,
-            hoverBorderColor: "#555555",
-            activeBorderColor: "#00AA55",
-            colorIcon: "#FFFFFF",
-            colorIconHover:'#00AA55',
+            colorTextPlaceholder: '#AAAAAA',
+            colorBgContainer: '#333333',
+            colorText: '#FFFFFF',
+            colorBorder: '#444444',
+            hoverBorderColor: '#555555',
+            activeBorderColor: '#00AA55',
+            colorIcon: '#FFFFFF',
+            colorIconHover: '#00AA55',
             colorBgElevated: '#121212',
             colorPrimary: '#00AA55',
             colorTextDisabled: '#333333',
-            colorTextHeading:'#FFFFFF',
-            cellHoverBg:'#00AA55',
-            colorSplit:'#444444',
+            colorTextHeading: '#FFFFFF',
           },
-          // Personalización adicional para el panel de tiempo
-          TimePanel: {
-            cellHoverBg: '#444444',
-            cellActiveBg: '#1a3a1a',
-            cellHeight: 32,
-            cellWidth: 56,
-          }
         }
       }}
     >

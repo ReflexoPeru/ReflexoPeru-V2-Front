@@ -10,7 +10,7 @@ export const createTherapist = async (data) => {
   }
 };
 
-export const getStaff = async (page = 1, perPage = 100) => {
+export const getStaff = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`therapists?page=${page}&per_page=${perPage}`);
 

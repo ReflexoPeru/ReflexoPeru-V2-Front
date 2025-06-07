@@ -1,11 +1,9 @@
-import axios from 'axios';
 import { get, post } from '../../../services/api/Axios/MethodsGeneral';
 
-export const getPatients = async (page = 1, perPage = 100) => {
+export const getPatients = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
-    // Asegurar que siempre trabajamos con un array
     let data = [];
     if (response.data) {
       if (Array.isArray(response.data)) {
@@ -23,7 +21,7 @@ export const getPatients = async (page = 1, perPage = 100) => {
       status: response.status,
     };
   } catch (error) {
-    console.error('Error en getPatients:', error);
+    console.error('Error al obtener pacientes');
     throw error;
   }
 };
@@ -31,26 +29,24 @@ export const getPatients = async (page = 1, perPage = 100) => {
 export const searchPatients = async (term) => {
   try {
     const res = await get(`patients/search?search=${term}&per_page=100`);
-    console.log('🔍 Resultado de búsqueda:', res.data);
-
-    const data = Array.isArray(res.data)
-      ? res.data
-      : res.data.items || res.data.data || [];
-    const total = res.data.total || data.length;
-
-    return { data, total };
+    return { 
+      data: Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [],
+      total: res.data.total || data.length 
+    };
   } catch (error) {
-    console.error('❌ Error en searchPatients:', error);
+    console.error('Error al buscar pacientes');
     throw error;
   }
 };
 
 export const createPatient = async (data) => {
   try {
+    console.log('Datos enviados para crear paciente:');
     const response = await post('patients', data);
+    console.log('Paciente creado exitosamente');
     return response.data;
   } catch (error) {
-    console.error('Error en createPatient:', error);
+    console.error('Error al crear paciente');
     throw error;
   }
 };

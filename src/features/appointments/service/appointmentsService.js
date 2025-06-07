@@ -10,7 +10,7 @@ export const createAppointment = async (data) => {
   }
 };
 
-export const getAppointments = async (page = 1, perPage = 100) => {
+export const getAppointments = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`appointments?page=${page}&per_page=${perPage}`);
 
@@ -69,7 +69,7 @@ export const getPaginatedAppointmentsByDate = async (date, perPage = 100) => {
   }
 };
 
-export const getPatients = async (page = 1, perPage = 100) => {
+export const getPatients = async (page = 1, perPage = 10) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
@@ -98,7 +98,7 @@ export const getPatients = async (page = 1, perPage = 100) => {
 
 export const searchPatients = async (term) => {
   try {
-    const res = await get(`patients/search?search=${term}&per_page=100`);
+    const res = await get(`patients/search?search=${term}&per_page=50`);
     console.log('🔍 Resultado de búsqueda:', res.data);
 
     const data = Array.isArray(res.data)
