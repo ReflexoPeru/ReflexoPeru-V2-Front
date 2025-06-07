@@ -9,7 +9,6 @@ import {
   InputNumber,
   Select,
   TimePicker,
-  ConfigProvider,
   theme,
 } from 'antd';
 import { useEffect } from 'react';
