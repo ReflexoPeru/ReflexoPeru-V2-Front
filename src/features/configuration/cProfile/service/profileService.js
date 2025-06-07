@@ -5,6 +5,31 @@ import {
   patch,
 } from '../../../../services/api/Axios/MethodsGeneral';
 
+// Cache para peticiones
+const apiCache = new Map();
+
+const cachedRequest = async (key, requestFn) => {
+  const now = Date.now();
+
+  // Verificar si existe en caché y no ha expirado (5 minutos)
+  if (apiCache.has(key)) {
+    const { data, timestamp } = apiCache.get(key);
+    if (now - timestamp < 300000) {
+      // 5 minutos
+      return data;
+    }
+  }
+
+  // Hacer la petición real
+  const response = await requestFn();
+  apiCache.set(key, {
+    data: response.data,
+    timestamp: now,
+  });
+
+  return response.data;
+};
+
 export const createPatient = async (data) => {
   try {
     const response = await post('sendVerifyCode', data);
@@ -28,6 +53,8 @@ export const verifyCode = async (code) => {
 export const updateProfileEmail = async (email) => {
   try {
     const response = await patch('profile', { email });
+    // Invalidar caché del perfil
+    apiCache.delete('profile');
     return response.data;
   } catch (error) {
     console.error('Error al actualizar el correo:', error);
@@ -37,8 +64,7 @@ export const updateProfileEmail = async (email) => {
 
 export const getProfile = async () => {
   try {
-    const res = await get(`profile`);
-    return res.data;
+    return await cachedRequest('profile', () => get('profile'));
   } catch (error) {
     console.error('Error in getProfile:', error);
     throw error;
@@ -47,7 +73,9 @@ export const getProfile = async () => {
 
 export const updateAllProfile = async (data) => {
   try {
-    const res = await put(`profile`, data);
+    const res = await put('profile', data);
+    // Invalidar caché del perfil
+    apiCache.delete('profile');
     return res.data;
   } catch (error) {
     console.error('Error in updateAllProfile:', error);
@@ -82,6 +110,8 @@ export const uploadPhoto = async (formData) => {
         'Content-Type': 'multipart/form-data',
       },
     });
+    // Invalidar caché de la foto
+    apiCache.delete('users/photo');
     return res.data;
   } catch (error) {
     console.error('Error in uploadPhoto:', error);
@@ -91,10 +121,9 @@ export const uploadPhoto = async (formData) => {
 
 export const getPhoto = async () => {
   try {
-    const res = await get('users/photo', {
-      responseType: 'blob',
-    });
-    return res.data;
+    return await cachedRequest('users/photo', () =>
+      get('users/photo', { responseType: 'blob' }),
+    );
   } catch (error) {
     console.error('Error in getPhoto:', error);
     throw error;

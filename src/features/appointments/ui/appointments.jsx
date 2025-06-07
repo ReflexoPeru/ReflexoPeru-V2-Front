@@ -38,10 +38,13 @@ export default function Appointments() {
       title: 'Paciente',
       key: 'patient_id',
       width: '155px',
-      render: (text, record) => {
-        return `${record.patient.paternal_lastname} ${record.patient.maternal_lastname} ${record.patient.name}`;
+      render: (_, record) => {
+        const patient = record?.patient;
+        if (!patient) return 'Paciente no disponible';
+        return `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
       },
     },
+
     {
       title: 'Sala',
       dataIndex: 'room',
@@ -72,45 +75,65 @@ export default function Appointments() {
       width: '200px',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#555555', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#555555',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('edit', record)}
           >
             Editar
           </Button>
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('imprimir', record)}
           >
             Imprimir
           </Button>
-          <Button 
-            style={{ backgroundColor: '#69276F', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#69276F',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('boleta', record)}
           >
             Boleta
           </Button>
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('history', record)}
           >
             Historia
           </Button>
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('delete', record)}
           >
             Eliminar
           </Button>
         </Space>
       ),
-    }
+    },
   ];
 
   const handleAction = (action, record) => {
     // Implementa las acciones según el tipo
     console.log(`${action} action for:`, record);
-    switch(action) {
+    switch (action) {
       case 'edit':
         // Lógica para editar
         break;

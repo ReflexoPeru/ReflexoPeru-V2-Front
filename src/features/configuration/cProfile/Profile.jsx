@@ -27,7 +27,6 @@ import ModalBase from '../../../components/Modal/BaseModalProfile/BaseModalProfi
 const { Password } = AntdInput;
 
 const Profile = () => {
-  // Estados del perfil
   const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
@@ -36,7 +35,6 @@ const Profile = () => {
   const [genero, setGenero] = useState(null);
   const [telefono, setTelefono] = useState('');
 
-  // Estados para los modales
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [newEmail, setNewEmail] = useState('');
@@ -50,16 +48,14 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Estados para loading de contraseña
   const [currentPasswordLoading, setCurrentPasswordLoading] = useState(false);
   const [newPasswordLoading, setNewPasswordLoading] = useState(false);
-  // Forms refs
+
   const [emailForm] = Form.useForm();
   const [codeForm] = Form.useForm();
   const [currentPasswordForm] = Form.useForm();
   const [newPasswordForm] = Form.useForm();
 
-  // Hooks personalizados
   const {
     sendCode,
     verify,
@@ -76,7 +72,7 @@ const Profile = () => {
     uploadProfilePhoto,
   } = useUpdateProfile();
   const { showToast } = useToast();
-  // Efecto para cargar los datos del perfil
+
   useEffect(() => {
     if (profile) {
       setNombre(profile.name || '');
@@ -88,7 +84,6 @@ const Profile = () => {
     }
   }, [profile]);
 
-  // Función para manejar el cambio de avatar
   const handleAvatarChange = async (info) => {
     const file = info.file.originFileObj;
     if (file) {
@@ -97,7 +92,6 @@ const Profile = () => {
         formData.append('photo', file);
         await uploadProfilePhoto(formData);
         message.success('Avatar actualizado correctamente');
-        // Actualizar la imagen mostrada
         const reader = new FileReader();
         reader.onload = (e) => setAvatar(e.target.result);
         reader.readAsDataURL(file);
@@ -107,7 +101,6 @@ const Profile = () => {
     }
   };
 
-  // Funciones para el manejo del correo
   const handleOpenEmailModal = () => {
     setShowEmailModal(true);
     emailForm.resetFields();
@@ -168,7 +161,6 @@ const Profile = () => {
     }
   };
 
-  // Funciones para el manejo de contraseña
   const handleOpenPasswordModal = () => {
     setShowCurrentPasswordModal(true);
     currentPasswordForm.resetFields();
@@ -215,7 +207,6 @@ const Profile = () => {
     }
   };
 
-  // Función para el contador de reenvío de código
   const startCountdown = () => {
     setCountdown(60);
     const timer = setInterval(() => {
@@ -229,7 +220,6 @@ const Profile = () => {
     }, 1000);
   };
 
-  // Función para guardar los cambios del perfil
   const handleSaveChanges = async () => {
     try {
       const updateData = {
@@ -251,7 +241,6 @@ const Profile = () => {
     }
   };
 
-  // Configuración del tema de Ant Design
   const theme = {
     token: {
       colorPrimary: '#4CAF50',
@@ -302,7 +291,6 @@ const Profile = () => {
               <div className={styles.card}>
                 <h2 className={styles.title}>PERFIL</h2>
 
-                {/* Sección de Avatar */}
                 <div className={styles.formRow}>
                   <label className={styles.label}>Avatar:</label>
                   <div className={styles.avatarContainer}>
@@ -332,7 +320,6 @@ const Profile = () => {
 
                 <div className={styles.divider}></div>
 
-                {/* Campos del formulario */}
                 <div className={styles.formField}>
                   <label className={styles.label}>Nombre:</label>
                   <Input
@@ -419,7 +406,7 @@ const Profile = () => {
 
         <ModalBase
           isOpen={showEmailModal}
-          onClose={() => setShowEmailModal(false)}
+          onClose={handleCloseEmailModal}
           onSubmit={handleSubmitNewEmail}
           title="Cambiar correo electrónico"
           description="Para actualizar tu correo electrónico, ingresa tu nuevo correo y te enviaremos un código de verificación."
@@ -439,7 +426,7 @@ const Profile = () => {
         />
         <ModalBase
           isOpen={showCurrentPasswordModal}
-          onClose={() => setShowCurrentPasswordModal(false)}
+          onClose={handleCloseCurrentPasswordModal}
           onSubmit={handleSubmitCurrentPassword}
           title="Cambiar contraseña"
           description="Para actualizar tu contraseña, primero ingresa tu contraseña actual para verificar tu identidad."
