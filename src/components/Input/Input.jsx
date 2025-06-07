@@ -9,6 +9,7 @@ import {
   Select,
   TimePicker,
   ConfigProvider,
+  theme,
 } from 'antd';
 import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
@@ -136,7 +137,7 @@ const DateField = ({ form }) => (
         }
       }}
     >
-      <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
+      <DatePicker className={styles.datePicker} style={{ width: '100%' }} placeholder="Seleccione una fecha" />
     </ConfigProvider>
   </Form.Item>
 );
@@ -146,6 +147,8 @@ const PatientField = ({
   patientType,
   onPatientTypeChange,
   patientTypeOptions,
+  onOpenCreateModal,
+  onOpenSelectModal,
 }) => (
   <div className={styles.patientRow}>
     <div className={styles.patientContainer}>
@@ -164,7 +167,17 @@ const PatientField = ({
 
       {/* Botón Crear/Elegir */}
       <div className={styles.patientButtonContainer}>
-        <Button type="primary" className={styles.patientButton}>
+        <Button 
+          type="primary" 
+          className={styles.patientButton}
+          onClick={() => {
+            if (patientType === 'nuevo') {
+              onOpenCreateModal();
+            } else {
+              onOpenSelectModal();
+            }
+          }}
+        >
           {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
         </Button>
       </div>
@@ -354,31 +367,22 @@ const TimeField = ({ form }) => (
   >
     <ConfigProvider
       theme={{
+        algorithm: theme.darkAlgorithm,
         components: {
           TimePicker: {
-            colorTextPlaceholder: "#AAAAAA",
-            colorBgContainer: "#333333",
-            colorText: "#FFFFFF",
-            colorBorder: "#444444",
-            borderRadius: 4,
-            hoverBorderColor: "#555555",
-            activeBorderColor: "#00AA55",
-            colorIcon: "#FFFFFF",
-            colorIconHover:'#00AA55',
+            colorTextPlaceholder: '#AAAAAA',
+            colorBgContainer: '#333333',
+            colorText: '#FFFFFF',
+            colorBorder: '#444444',
+            hoverBorderColor: '#555555',
+            activeBorderColor: '#00AA55',
+            colorIcon: '#FFFFFF',
+            colorIconHover: '#00AA55',
             colorBgElevated: '#121212',
             colorPrimary: '#00AA55',
             colorTextDisabled: '#333333',
-            colorTextHeading:'#FFFFFF',
-            cellHoverBg:'#00AA55',
-            colorSplit:'#444444',
+            colorTextHeading: '#FFFFFF',
           },
-          // Personalización adicional para el panel de tiempo
-          TimePanel: {
-            cellHoverBg: '#444444',
-            cellActiveBg: '#1a3a1a',
-            cellHeight: 32,
-            cellWidth: 56,
-          }
         }
       }}
     >

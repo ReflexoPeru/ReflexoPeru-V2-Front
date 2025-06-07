@@ -30,17 +30,17 @@ const FormComponent = ({
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
 
   const handleFinish = async (values) => {
-    try {
-      setLoading(true);
-      console.log('Datos del formulario:', values);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onSubmit(values);
-    } catch (error) {
-      console.error('Error al enviar el formulario:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    console.log('Datos del formulario:', values);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await onSubmit(values); // ← AQUÍ el cambio importante
+  } catch (error) {
+    console.error('Error al enviar el formulario:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
@@ -88,6 +88,9 @@ const FormComponent = ({
             onPaymentOptionChange={onPaymentOptionChange}
             onShowHourFieldChange={onShowHourFieldChange}
             onPaymentRequiredChange={onPaymentRequiredChange}
+            // Añade estas nuevas props
+            onOpenCreateModal={() => onSubmit({})} // Esto activará el modal de creación
+            onOpenSelectModal={() => onSubmit({})} // Esto activará el modal de selección
           />
         </Col>
       );

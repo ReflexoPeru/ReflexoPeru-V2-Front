@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { get, post } from '../../../services/api/Axios/MethodsGeneral';
 
-export const getPatients = async (page = 1, perPage = 100) => {
+export const getPatients = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
