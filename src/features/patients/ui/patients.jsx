@@ -1,7 +1,6 @@
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-//import patientsMock from '../../../mock/Patients';
 import { Button, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
@@ -12,20 +11,38 @@ export default function Patients() {
   const {
     patients,
     loading,
-    error,
     pagination,
     handlePageChange,
     setSearchTerm,
     handleDeletePatient,
   } = usePatients();
 
-  // Debug (verifica en consola)
-  console.log('Datos:', {
-    patients,
-    loading,
-    error,
-    pagination,
-  });
+  const handleAction = (action, record) => {
+    switch(action) {
+      case 'edit':
+        navigate(`editar/${record.id}`);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'history':
+        navigate(`historia/${record.id}`);
+        break;
+      case 'delete':
+        handleDeletePatient(record.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleButton = () => {
+    navigate('registrar');
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
 
   const columns = [
     {
@@ -73,58 +90,6 @@ export default function Patients() {
     },
   ];
 
-  const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
-    switch(action) {
-      case 'edit':
-        // Lógica para editar
-        break;
-      case 'info':
-        // Lógica para más info
-        break;
-      case 'history':
-        // Lógica para historia
-        break;
-      case 'delete':
-        // Lógica para eliminar
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
-    navigate('registrar');
-  };
-
-  const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
-    setSearchTerm(value);
-  };
-
-  // Botones personalizados
-  const customActionButtons = (record) => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>
-        Historia
-      </Button>
-      <Button 
-      style={{ backgroundColor: '#FF3333', color: '#fff' }}
-      onClick={() => handleDeletePatient(record.id)}
-      >
-        Eliminar
-      </Button>
-    </Space>
-  );
-
   return (
     <div
       style={{
@@ -154,7 +119,6 @@ export default function Patients() {
         columns={columns}
         data={patients}
         loading={loading}
-        customActions={(record) => customActionButtons(record)}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getPatients, searchPatients, deletePatient } from '../service/patientsService';
 import { createPatient } from '../service/patientsService';
-
+import dayjs from 'dayjs';
 
 export const usePatients = () => {
   const [patients, setPatients] = useState([]);
@@ -26,7 +26,7 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error al cargar pacientes');
+      console.error('Error al cargar pacientes:', error);
     } finally {
       setLoading(false);
     }
@@ -44,9 +44,31 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error al buscar pacientes');
+      console.error('Error al buscar pacientes:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeletePatient = async (patientId) => {
+    try {
+      await deletePatient(patientId);
+      // Actualización optimista del estado
+      setPatients(prev => prev.filter(p => p.id !== patientId));
+      setPagination(prev => ({
+        ...prev,
+        totalItems: prev.totalItems - 1
+      }));
+      
+      // Recarga de datos para asegurar consistencia
+      if (searchTerm.trim()) {
+        await searchPatientsByTerm(searchTerm.trim());
+      } else {
+        await loadPatients(pagination.currentPage);
+      }
+    } catch (error) {
+      console.error('Error eliminando paciente:', error);
+      throw error;
     }
   };
 
@@ -74,10 +96,8 @@ export const usePatients = () => {
   const submitNewPatient = async (formData) => {
     const payload = {
       document_number: formData.document_number,
-      paternal_lastname:
-        formData.paternal_lastname || formData.paternal_lastName,
-      maternal_lastname:
-        formData.maternal_lastname || formData.maternal_lastName,
+      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
       name: formData.name,
       personal_reference: formData.personal_reference || null,
       birth_date: formData.birth_date
@@ -93,42 +113,17 @@ export const usePatients = () => {
       document_type_id: formData.document_type_id,
       country_id: 1,
       region_id: formData.region_id || formData.ubicacion?.region_id || null,
-      province_id:
-        formData.province_id || formData.ubicacion?.province_id || null,
-      district_id:
-        formData.district_id || formData.ubicacion?.district_id || null,
+      province_id: formData.province_id || formData.ubicacion?.province_id || null,
+      district_id: formData.district_id || formData.ubicacion?.district_id || null,
     };
-
-    console.log('Datos del paciente a registrar:', payload);
 
     try {
       const result = await createPatient(payload);
-      notification.success({
-        message: 'Éxito',
-        description: 'Paciente creado correctamente',
-      });
+      await loadPatients(pagination.currentPage); // Recargar lista
       return result;
     } catch (error) {
-      notification.error({
-        message: 'Error',
-        description: 'No se pudo crear el paciente',
-      });
+      console.error('Error creando paciente:', error);
       throw error;
-    }
-  };
-
-const handleDeletePatient = async (patientId) => {
-    try {
-      await deletePatient(patientId);
-      // Recargar la lista de pacientes después de eliminar
-      if (searchTerm.trim()) {
-        await searchPatientsByTerm(searchTerm.trim());
-      } else {
-        await loadPatients(pagination.currentPage);
-      }
-    } catch (error) {
-      setError(error.message);
-      console.error('Error deleting patient:', error);
     }
   };
 
@@ -140,6 +135,6 @@ const handleDeletePatient = async (patientId) => {
     pagination,
     handlePageChange: loadPatients,
     setSearchTerm,
-     handleDeletePatient,
+    handleDeletePatient,
   };
 };

@@ -27,10 +27,10 @@ export const getStaff = async (page = 1, perPage = 50) => {
 
     return {
       data,
-      total: response.data.total || data.length || 0,
-      status: response.status,
+      total: response.data?.total || data.length || 0,
     };
   } catch (error) {
+    console.error('Error en getStaff:', error);
     throw error;
   }
 };
@@ -38,20 +38,15 @@ export const getStaff = async (page = 1, perPage = 50) => {
 export const searchStaff = async (term) => {
   try {
     const res = await get(`therapists/search?search=${term}&per_page=100`);
-    console.log('🔍 Resultado de búsqueda:', res.data);
-
-    const data = Array.isArray(res.data)
-      ? res.data
-      : res.data.items || res.data.data || [];
-    const total = res.data.total || data.length;
-
-    return { data, total };
+    return { 
+      data: Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [],
+      total: res.data?.total || 0
+    };
   } catch (error) {
-    console.error('❌ Error en searchStaff:', error);
+    console.error('Error en searchStaff:', error);
     throw error;
   }
 };
-
 
 export const deleteTherapist = async (therapistId) => {
   try {

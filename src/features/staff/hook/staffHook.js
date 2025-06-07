@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { 
-  createTherapist, 
-  getStaff, 
-  searchStaff, 
-  deleteTherapist 
+import {
+  createTherapist,
+  getStaff,
+  searchStaff,
+  deleteTherapist,
 } from '../service/staffService';
 import dayjs from 'dayjs';
 import { useToast } from '../../../services/toastify/ToastContext';
@@ -61,22 +61,25 @@ export const useStaff = () => {
       setLoading(true);
       await deleteTherapist(id);
       showToast('success', 'Terapeuta eliminado correctamente');
-      
-      // Actualización optimizada
-      setStaff(prev => prev.filter(item => item.id !== id));
-      setPagination(prev => ({
+
+      // Actualización optimista
+      setStaff((prevStaff) =>
+        prevStaff.filter((therapist) => therapist.id !== id),
+      );
+      setPagination((prev) => ({
         ...prev,
-        totalItems: prev.totalItems - 1
+        totalItems: prev.totalItems - 1,
       }));
-      
-      return true;
-    } catch (error) {
-      let errorMessage = 'Error al eliminar terapeuta';
-      if (error.response?.status === 404) {
-        errorMessage = 'El terapeuta no existe';
+
+      // Recargar datos actualizados
+      if (searchTerm.trim()) {
+        await searchStaffByTerm(searchTerm.trim());
+      } else {
+        await loadStaff(pagination.currentPage);
       }
-      showToast('error', errorMessage);
-      return false;
+    } catch (error) {
+      showToast('error', 'Error al eliminar terapeuta');
+      console.error('Error deleting therapist:', error);
     } finally {
       setLoading(false);
     }
@@ -85,8 +88,10 @@ export const useStaff = () => {
   const submitNewTherapist = async (formData) => {
     const payload = {
       document_number: formData.document_number,
-      paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
-      maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
+      paternal_lastname:
+        formData.paternal_lastname || formData.paternal_lastName,
+      maternal_lastname:
+        formData.maternal_lastname || formData.maternal_lastName,
       name: formData.name,
       personal_reference: formData.personal_reference || null,
       birth_date: formData.birth_date
@@ -99,8 +104,10 @@ export const useStaff = () => {
       address: formData.address || null,
       document_type_id: formData.document_type_id || 1,
       region_id: formData.region_id || formData.ubicacion?.region_id || null,
-      province_id: formData.province_id || formData.ubicacion?.province_id || null,
-      district_id: formData.district_id || formData.ubicacion?.district_id || null,
+      province_id:
+        formData.province_id || formData.ubicacion?.province_id || null,
+      district_id:
+        formData.district_id || formData.ubicacion?.district_id || null,
     };
 
     try {
