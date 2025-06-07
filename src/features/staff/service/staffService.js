@@ -1,4 +1,4 @@
-import { post, get } from '../../../services/api/Axios/MethodsGeneral';
+import { del, get, post } from '../../../services/api/Axios/MethodsGeneral';
 
 export const createTherapist = async (data) => {
   try {
@@ -48,6 +48,17 @@ export const searchStaff = async (term) => {
     return { data, total };
   } catch (error) {
     console.error('❌ Error en searchStaff:', error);
+    throw error;
+  }
+};
+
+
+export const deleteTherapist = async (therapistId) => {
+  try {
+    const response = await del(`therapists/${therapistId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error en deleteTherapist:', error);
     throw error;
   }
 };

@@ -1,4 +1,4 @@
-import { get, post } from '../../../services/api/Axios/MethodsGeneral';
+import { del, get, post } from '../../../services/api/Axios/MethodsGeneral';
 
 export const getPatients = async (page = 1, perPage = 50) => {
   try {
@@ -47,6 +47,16 @@ export const createPatient = async (data) => {
     return response.data;
   } catch (error) {
     console.error('Error al crear paciente');
+    throw error;
+  }
+};
+
+export const deletePatient = async (patientId) => {
+  try {
+    const response = await del(`patients/${patientId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error en deletePatient:', error);
     throw error;
   }
 };

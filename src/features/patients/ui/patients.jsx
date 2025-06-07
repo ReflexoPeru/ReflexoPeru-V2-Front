@@ -1,9 +1,8 @@
-import React from 'react';
-import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { Space, Button } from 'antd';
+//import patientsMock from '../../../mock/Patients';
+import { Button, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
 
@@ -17,6 +16,7 @@ export default function Patients() {
     pagination,
     handlePageChange,
     setSearchTerm,
+    handleDeletePatient,
   } = usePatients();
 
   // Debug (verifica en consola)
@@ -104,6 +104,27 @@ export default function Patients() {
     setSearchTerm(value);
   };
 
+  // Botones personalizados
+  const customActionButtons = (record) => (
+    <Space size="small">
+      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
+        Editar
+      </Button>
+      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
+        Más Info
+      </Button>
+      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>
+        Historia
+      </Button>
+      <Button 
+      style={{ backgroundColor: '#FF3333', color: '#fff' }}
+      onClick={() => handleDeletePatient(record.id)}
+      >
+        Eliminar
+      </Button>
+    </Space>
+  );
+
   return (
     <div
       style={{
@@ -133,6 +154,7 @@ export default function Patients() {
         columns={columns}
         data={patients}
         loading={loading}
+        customActions={(record) => customActionButtons(record)}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

@@ -116,5 +116,6 @@ export const useStaff = () => {
     submitNewTherapist,
     handlePageChange: loadStaff,
     setSearchTerm,
+    handleDeleteTherapist,
   };
 };

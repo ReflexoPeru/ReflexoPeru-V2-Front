@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
-import {
-  getPatients,
-  searchPatients,
-  createPatient,
-} from '../service/patientsService';
-import dayjs from 'dayjs';
-import { notification } from 'antd';
-import { useToast } from '../../../services/toastify/ToastContext';
+import { getPatients, searchPatients, deletePatient } from '../service/patientsService';
+import { createPatient } from '../service/patientsService';
+
 
 export const usePatients = () => {
   const [patients, setPatients] = useState([]);
@@ -122,6 +117,21 @@ export const usePatients = () => {
     }
   };
 
+const handleDeletePatient = async (patientId) => {
+    try {
+      await deletePatient(patientId);
+      // Recargar la lista de pacientes después de eliminar
+      if (searchTerm.trim()) {
+        await searchPatientsByTerm(searchTerm.trim());
+      } else {
+        await loadPatients(pagination.currentPage);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Error deleting patient:', error);
+    }
+  };
+
   return {
     patients,
     loading,
@@ -130,5 +140,6 @@ export const usePatients = () => {
     pagination,
     handlePageChange: loadPatients,
     setSearchTerm,
+     handleDeletePatient,
   };
 };
