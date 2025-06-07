@@ -91,17 +91,10 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
-          name: 'payment',
           type: 'customComponent',
           componentType: 'paymentMethod',
           span: 13,
-          props: {
-            paymentMethods: [
-              { label: 'Efectivo', value: 'efectivo' },
-              { label: 'Tarjeta', value: 'tarjeta' },
-              { label: 'Yape', value: 'yape' },
-            ],
-          },
+          required: true,
         },
       ],
     },
