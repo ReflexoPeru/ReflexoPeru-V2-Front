@@ -4,6 +4,7 @@ import Form from '../../../../components/Form/Form';
 import styles from '../RegisterAppointment/NewAppointment.module.css';
 import { useAppointments, usePatients } from '../../hook/appointmentsHook';
 import CustomSearch from '../../../../components/Search/CustomSearch';
+import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
@@ -42,6 +43,25 @@ const NewAppointment = () => {
       setIsModalVisible(true);
     }
   };
+
+  const handleCreatePatient = async (patientData) => {
+  try {
+    // Aquí puedes hacer cualquier transformación necesaria de los datos
+    const payload = {
+      ...patientData,
+      // Asegúrate de que los nombres de los campos coincidan con lo que espera tu API
+    };
+    
+    // Asumiendo que tienes un hook para crear pacientes
+    const response = await submitNewPatient(payload);
+    
+    return response.data; // O lo que devuelva tu API
+    
+  } catch (error) {
+    console.error('Error al crear paciente:', error);
+    throw error;
+  }
+};
 
   const appointmentFields = [
     {
@@ -297,8 +317,37 @@ const NewAppointment = () => {
           open={isCreatePatientModalVisible}
           onCancel={() => setIsCreatePatientModalVisible(false)}
           footer={null}
+          width={800} // Ajusta el ancho según necesites
+          destroyOnClose // Esto asegura que el formulario se resetee al cerrar
         >
-          <p>Aquí va tu formulario para crear paciente nuevo</p>
+          <NewPatient 
+            onSubmit={async (patientData) => {
+              try {
+                // Aquí puedes manejar la creación del paciente
+                const newPatient = await handleCreatePatient(patientData);
+                
+                // Cierra el modal después de crear el paciente
+                setIsCreatePatientModalVisible(false);
+                
+                // Opcional: Actualiza la lista de pacientes si es necesario
+                // fetchPatients();
+                
+                // Opcional: Selecciona automáticamente el nuevo paciente
+                // setSelectedPatient(newPatient.id);
+                
+                notification.success({
+                  message: 'Paciente creado',
+                  description: 'El paciente se ha registrado correctamente'
+                });
+              } catch (error) {
+                console.error('Error al crear paciente:', error);
+                notification.error({
+                  message: 'Error',
+                  description: 'No se pudo crear el paciente'
+                });
+              }
+            }}
+          />
         </Modal>
       </div>
     </ConfigProvider>
