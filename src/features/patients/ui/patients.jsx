@@ -1,31 +1,21 @@
 import React from 'react';
-import estilo from './patients.module.css';
+import { useNavigate } from 'react-router-dom';
+import { Space, Button } from 'antd';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
+import './patients.module.css';
 
 export default function Patients() {
   const navigate = useNavigate();
-
   const {
     patients,
     loading,
-    error,
     pagination,
     handlePageChange,
     setSearchTerm,
   } = usePatients();
-
-  // Debug (verifica en consola)
-  console.log('Datos:', {
-    patients,
-    loading,
-    error,
-    pagination,
-  });
 
   const columns = [
     {
@@ -74,17 +64,15 @@ export default function Patients() {
   ];
 
   const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
     switch(action) {
-      case 'edit':
-        // Lógica para editar
+      case 'history':
+        navigate(`/Inicio/pacientes/historia/${record.id}`); // Ruta absoluta
         break;
       case 'info':
         // Lógica para más info
         break;
       case 'history':
-        // Lógica para historia
+        navigate(`/Inicio/pacientes/historia/${record.id}`); // Ruta absoluta
         break;
       case 'delete':
         // Lógica para eliminar
@@ -95,40 +83,23 @@ export default function Patients() {
   };
 
   const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
 
   return (
-    <div
-      style={{
-        height: '100%',
-        paddingTop: '50px',
-        maxWidth: 'calc(100% - 200px)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          margin: '0 auto',
-        }}
-      >
+    <div style={{ height: '100%', paddingTop: '50px', maxWidth: 'calc(100% - 200px)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto' }}>
         <CustomButton text="Crear Paciente" onClick={handleButton} />
-
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
           width="100%"
         />
       </div>
-
       <ModeloTable
         columns={columns}
         data={patients}

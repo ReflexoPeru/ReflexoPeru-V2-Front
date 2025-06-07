@@ -11,6 +11,8 @@ import {
 } from 'antd';
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useParams, useNavigate } from 'react-router-dom';
+
 
 const { Title } = Typography;
 const { Option } = Select;

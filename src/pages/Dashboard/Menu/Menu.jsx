@@ -135,15 +135,6 @@ export default function MenuDashboard() {
           : []),
       ],
     },
-    {
-      key: '11',
-      label: <Link to="Historia">Historia</Link>,
-      icon: (
-        <div className={Style.icon}>
-          <Nut />
-        </div>
-      ),
-    },
   ];
 
   //////Funciones para tener solo 1 submenu abierto/////////
