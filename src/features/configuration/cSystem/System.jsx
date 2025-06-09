@@ -1,33 +1,49 @@
-import React from 'react';
-import { Upload, Input, Button, Spin } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Upload, Input, Button, Spin, Image } from 'antd';
 import { UploadSimple } from '@phosphor-icons/react';
 import styles from './System.module.css';
 import { useSystemHook } from './hook/systemHook';
-import { useState } from 'react';
 
-// Asegúrate de que la ruta sea correcta
 const System = () => {
-  const { systemInfo, loading, error } = useSystemHook();
+  const { companyInfo, logoInfo, loading, error } = useSystemHook();
   const [companyName, setCompanyName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [logoError, setLogoError] = useState(false);
 
-  // Actualizar los estados locales cuando systemInfo cambie
-  React.useEffect(() => {
-    if (systemInfo.data) {
-      setCompanyName(systemInfo.data.company_name);
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-      setLogoUrl(`${apiBaseUrl}${systemInfo.data.logo_url}` || '/src/assets/Img/MiniLogoReflexo.webp');
+  // Manejo de datos de la API
+  useEffect(() => {
+    if (companyInfo) {
+      setCompanyName(companyInfo.company_name || '');
     }
-  }, [systemInfo]);
+
+    if (logoInfo?.logo_url) {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const cleanLogoPath = logoInfo.logo_url.replace(/^\/+/, '');
+      const fullLogoUrl = `${apiBaseUrl}/${cleanLogoPath}`;
+      
+      // Pre-cargar imagen para verificar si existe
+      const testImage = new Image();
+      testImage.src = fullLogoUrl;
+      testImage.onload = () => {
+        setLogoUrl(fullLogoUrl);
+        setLogoError(false);
+      };
+      testImage.onerror = () => {
+        console.error('Logo no encontrado en:', fullLogoUrl);
+        setLogoError(true);
+        setLogoUrl('/src/assets/Img/MiniLogoReflexo.webp');
+      };
+    }
+  }, [companyInfo, logoInfo]);
 
   const handleLogoChange = (info) => {
     const file = info.file.originFileObj;
-    if (
-      file &&
-      (info.file.status === 'done' || info.file.status === 'uploading')
-    ) {
+    if (file && (info.file.status === 'done' || info.file.status === 'uploading')) {
       const reader = new FileReader();
-      reader.onload = (e) => setLogoUrl(e.target.result);
+      reader.onload = (e) => {
+        setLogoUrl(e.target.result);
+        setLogoError(false);
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -43,7 +59,15 @@ const System = () => {
   if (error) {
     return (
       <div className={styles.layout}>
-        <p>Error al cargar la información de la empresa: {error.message}</p>
+        <p>Error al cargar la información: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (!companyInfo || !logoInfo) {
+    return (
+      <div className={styles.layout}>
+        <p>No se encontraron datos de la empresa</p>
       </div>
     );
   }
@@ -53,23 +77,24 @@ const System = () => {
       <main className={styles.mainContent}>
         <section className={styles.container}>
           <div className={styles.box}>
-            {/* Logo section */}
+            {/* Sección del Logo */}
             <div className={styles.section}>
               <label className={styles.label}>Logo de la empresa:</label>
               <div className={styles.logoRow}>
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Actual</span>
-                  {systemInfo.data?.has_logo ? (
-                    <img
+                  {logoInfo.logo_url && !logoError ? (
+                    <Image
                       src={logoUrl}
                       alt={`Logo de ${companyName}`}
                       className={styles.logoImage}
-                      onError={(e) => {
-                        e.target.src = '/src/assets/Img/MiniLogoReflexo.webp';
-                      }}
+                      fallback="/src/assets/Img/MiniLogoReflexo.webp"
+                      preview={false}
                     />
                   ) : (
-                    <div className={styles.noLogo}>No hay logo disponible</div>
+                    <div className={styles.noLogo}>
+                      {logoError ? 'Error al cargar el logo' : 'No hay logo disponible'}
+                    </div>
                   )}
                 </div>
 
@@ -90,7 +115,7 @@ const System = () => {
               </div>
             </div>
 
-            {/* Company name section */}
+            {/* Sección del Nombre */}
             <div className={styles.section}>
               <label className={styles.label} htmlFor="companyNameInput">
                 Nombre de la empresa:
