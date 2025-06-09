@@ -3,27 +3,31 @@ import { Form, Input, Button, ConfigProvider } from 'antd';
 import styles from './ChangesPassword.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../../../../hooks/loginpacticles'; // Import the function
+import { initializeParticles } from '../../../../hooks/loginpacticles';
 import { useAuth } from '../../hook/authHook';
 
 function ChangesPassword() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordVisible2, setPasswordVisible2] = useState(false);
-
+  const [loading, setLoading] = useState(false); // Estado para el loading
   const { changePassword } = useAuth();
 
   useEffect(() => {
-    const cleanup = initializeParticles(); // Use the function
-
+    const cleanup = initializeParticles();
     return cleanup;
   }, []);
 
-  const onSubmit = (values) => {
-    const body = {
-      password: values.password,
-      password_confirmation: values.password,
-    };
-    changePassword(body);
+  const onSubmit = async (values) => {
+    setLoading(true); // Activar loading al enviar el formulario
+    try {
+      const body = {
+        password: values.password,
+        password_confirmation: values.password2, // Usar el valor del segundo campo
+      };
+      await changePassword(body);
+    } finally {
+      setLoading(false); // Desactivar loading cuando termine
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -44,7 +48,6 @@ function ChangesPassword() {
             activeBorderColor: 'transparent',
             activeBg: 'transparent',
             addonBg: 'transparent',
-
             fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
           },
           Button: {
@@ -52,7 +55,14 @@ function ChangesPassword() {
             colorPrimaryHover: '#16623a',
             colorPrimaryActive: '#144e30',
             colorTextLightSolid: '#fff',
+            // Estilos para el loading
+            loadingBg: '#1b7b46',
+            loadingColor: '#fff',
+            loadingBorderColor: '#1b7b46',
           },
+        },
+        token: {
+          colorPrimary: '#fff', // Color del spinner
         },
       }}
     >
@@ -77,6 +87,10 @@ function ChangesPassword() {
                   {
                     required: true,
                     message: 'Por favor ingresa tu contraseña!',
+                  },
+                  {
+                    min: 8,
+                    message: 'La contraseña debe tener al menos 8 caracteres',
                   },
                 ]}
               >
@@ -107,7 +121,7 @@ function ChangesPassword() {
                 rules={[
                   {
                     required: true,
-                    message: 'Por favor ingresa tu contraseña!',
+                    message: 'Por favor repite tu contraseña!',
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
@@ -116,7 +130,7 @@ function ChangesPassword() {
                       }
                       return Promise.reject(
                         new Error(
-                          'Las contraseñas no coinciden, por favor verifica tu contraseña',
+                          'Las contraseñas no coinciden, por favor verifica tu contraseña',
                         ),
                       );
                     },
@@ -148,9 +162,10 @@ function ChangesPassword() {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="login-form-button"
+                  className={styles.loginButton}
+                  loading={loading}
                 >
-                  Verificar
+                  {loading ? 'Cambiando...' : 'Cambiar contraseña'}
                 </Button>
               </Form.Item>
             </Form>

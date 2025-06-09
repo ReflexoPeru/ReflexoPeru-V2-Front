@@ -1,0 +1,438 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+
+/* === Estilos Globales para react-big-calendar === */
+.rbc-calendar {
+  overflow: hidden;
+
+  height: 100%;
+  border-radius: 12px;
+
+  font-family: 'Poppins', sans-serif;
+
+  background: #1E1E1E;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* === Barra superior del calendario (botones y título) === */
+.rbc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+
+  background: #1E1E1E;
+}
+
+.rbc-toolbar-label { 
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.rbc-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.rbc-toolbar button {
+  cursor: pointer;
+
+  padding: 8px 16px;
+  border: none !important;
+  border-radius: 8px;
+
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #ffffff !important;
+
+  background: #1B7B46 !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+  transition: all 0.3s ease;
+}
+
+.rbc-toolbar button:hover {
+  transform: translateY(-2px);
+  background: #1CB54A !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-toolbar button.rbc-active {
+  background: #1CB54A !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* === Cabeceras de días (ej: Lunes, Martes, etc.) === */
+.rbc-header {
+  padding: 12px 0;
+  border-bottom: 1px solid #2a2a2a;
+
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1CB54A;
+
+  background: #1E1E1E;
+}
+/* === Días fuera del mes actual === */
+.rbc-off-range-bg {
+  background-color: #686868 !important;
+}
+
+/* === Vistas de mes y tiempo === */
+.rbc-month-view,
+.rbc-time-view {
+  border: 1px solid #2a2a2a;
+  background: #1E1E1E;
+}
+
+/* === Bordes de celdas === */
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid #494949;
+}
+
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid #494949;
+}
+
+/* === Eventos === */
+.rbc-event {
+  padding: 4px 8px;
+  border: none !important;
+  border-radius: 6px;
+
+  font-size: 0.85em;
+  color: white !important;
+
+  background: #1CB54A !important;
+  box-shadow: 0 2px 5px rgba(105, 103, 103, 0.2);
+
+  transition: all 0.3s ease;
+}
+
+.rbc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.rbc-event-content {
+  font-weight: 500;
+}
+
+/* === Día actual resaltado === */
+.rbc-today {
+  background-color: rgba(28, 181, 74, 0.2);
+}
+
+/* === Números de los días === */
+.rbc-date-cell {
+  padding: 8px;
+  color: #ffffff;
+}
+
+/* === Hover sobre días del mes === */
+.rbc-month-view .rbc-month-row .rbc-row-bg .rbc-day-bg:hover {
+  background-color: rgb(0, 0, 0);
+}
+/* === Vista Agenda === */
+.rbc-agenda-view {
+  padding: 24px;
+  border-radius: 20px;
+
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+
+  background-color: #1e1e1e;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+
+  animation: fadeIn 0.4s ease;
+}
+
+/* Animación suave al cargar */
+@keyframes fadeIn {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Tabla Agenda */
+.rbc-agenda-table th {
+  padding: 14px;
+  border-bottom: 1px solid #2a2a2a;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1CB54A;
+  text-align: left;
+
+  background-color: #252525;
+}
+
+
+.rbc-agenda-table thead {
+  background-color: transparent;
+}
+
+.rbc-agenda-table th {
+  padding: 16px 18px;
+  border-bottom: 2px solid #2a2a2a;
+
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1cb54a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rbc-agenda-table td {
+  padding: 18px;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+
+  font-size: 0.95rem;
+  color: #f0f0f0;
+
+  background: #252525;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.rbc-agenda-table tr:hover td {
+  transform: scale(1.01);
+  background: #2e2e2e;
+}
+
+/* Columnas específicas */
+.rbc-agenda-date-cell {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1cb54a;
+  white-space: nowrap;
+}
+
+.rbc-agenda-time-cell {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #bbbbbb;
+}
+
+.rbc-agenda-event-cell {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Quitar borde inferior al último */
+.rbc-agenda-table tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* Cabeceras */
+.rbc-agenda-table thead {
+  background-color: #252525;
+}
+
+.rbc-agenda-table th {
+  padding: 12px;
+  border-bottom: 1px solid #2a2a2a;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1CB54A;
+  text-align: left;
+}
+
+/* Celdas */
+.rbc-agenda-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #2a2a2a;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+/* Columnas específicas */
+.rbc-agenda-date-cell {
+  font-weight: 600;
+  color: #1CB54A;
+  white-space: nowrap;
+}
+
+.rbc-agenda-time-cell {
+  font-style: italic;
+  color: #ffffff;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.rbc-agenda-event-cell {
+  font-weight: 500;
+}
+
+/* Última fila sin borde */
+.rbc-agenda-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hover efecto */
+.rbc-agenda-table tr:hover {
+  background-color: #2C2C2C;
+  transition: background-color 0.2s ease;
+}
+
+/* === Vista Semana/Día - estilos de cabecera y contenido === */
+.rbc-time-header {
+  border-bottom: 1px solid #2a2a2a;
+  color: white;
+  background-color: #1E1E1E;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #2a2a2a;
+  background-color: #1E1E1E;
+}
+
+.rbc-timeslot-group {
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* === Horas visibles en la columna lateral === */
+.rbc-time-gutter {
+  border-right: 1px solid #2a2a2a;
+  color: white;
+  background: #1E1E1E;
+}
+
+/* === Líneas en la vista de tiempo === */
+.rbc-time-view .rbc-day-slot .rbc-time-slot {
+  border-top: 1px solid #2a2a2a;
+}
+
+/* === Estilos personalizados para el modal de Ant Design === */
+.ant-modal-content {
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #1E1E1E 0%, #252525 100%) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+ 
+}
+
+.ant-modal-header {
+  padding: 20px 24px !important;
+  border-bottom: 2px solid #1CB54A !important;
+  border-radius: 16px 16px 0 0 !important;
+
+  text-align: center !important;
+
+  background: linear-gradient(135deg, #1E1E1E 0%, #252525 100%) !important;
+}
+
+.ant-modal-title {
+  margin: 0 !important;
+
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-modal-close {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+
+  color: #ffffff !important;
+
+  background: rgba(255, 255, 255, 0.1) !important;
+
+  transition: all 0.3s ease !important;
+}
+
+.ant-modal-close:hover {
+  transform: scale(1.1) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+  font-family: 'Poppins', sans-serif !important;
+  line-height: 1.6 !important;
+  color: #ffffff !important;
+}
+
+.ant-modal-body p {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+
+  margin: 0 0 12px 0 !important;
+  padding: 8px 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-modal-body p:last-child {
+  margin-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+.ant-modal-body strong {
+  display: inline-block !important;
+  min-width: 120px !important;
+  font-weight: 600 !important;
+  color: #1CB54A !important;
+}
+
+.ant-modal-mask {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+.ant-modal-body * {
+ color: #ffffff !important;
+}
+
+/* Scroll interno para vista de día y semana */
+.rbc-time-view {
+  scrollbar-color: #1cb54a79 #333;
+  scrollbar-width: thin;
+  overflow-y: auto;
+  max-height: 70vh; 
+}
+
+
+.rbc-time-view::-webkit-scrollbar {
+  width: 6px;
+}
+
+.rbc-time-view::-webkit-scrollbar-track {
+  background: #111; /* fondo del scroll */
+}
+
+.rbc-time-view::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background-color: #333; /* barra del scroll */
+}
+
+/* Oculta el scroll horizontal si existiera */
+.rbc-time-view::-webkit-scrollbar:horizontal {
+  display: none;
+}
+
+
+
+/* Evitar negrita inesperada en celdas de calendario */
+.rbc-agenda-table td,
+.rbc-date-cell,
+.rbc-header,
+.rbc-event-content,
+.rbc-agenda-event-cell {
+  font-weight: bolder !important;
+}

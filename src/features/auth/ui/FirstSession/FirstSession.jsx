@@ -3,26 +3,43 @@ import { Form, Input, Button, ConfigProvider } from 'antd';
 import styles from './FirstSession.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
-import { initializeParticles } from '../../../../hooks/loginpacticles'; // Import the function
+import { initializeParticles } from '../../../../hooks/loginpacticles';
 import { useAuth } from '../../hook/authHook';
 
 function FirstSession() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [code, setCode] = useState('');
+  const [sendCode, setSendCode] = useState(false);
+  const [sending, setSending] = useState(false); // Estado para loading de enviar código
+  const [verifying, setVerifying] = useState(false); // Estado para loading de verificación
 
-  const { validateCode } = useAuth();
+  const { validateCode, sendVerifyCode } = useAuth();
 
   useEffect(() => {
-    const cleanup = initializeParticles(); // Use the function
-
+    const cleanup = initializeParticles();
     return cleanup;
   }, []);
 
-  const onSubmit = () => {
-    const codeVerification = {
-      code: code,
-    };
-    validateCode(codeVerification);
+  const onSubmit = async () => {
+    setVerifying(true); // Activar loading de verificación
+    try {
+      const codeVerification = {
+        code: code,
+      };
+      await validateCode(codeVerification);
+    } finally {
+      setVerifying(false); // Desactivar loading de verificación
+    }
+  };
+
+  const sendCodeVerification = async () => {
+    setSending(true); // Activar loading de envío
+    try {
+      await sendVerifyCode();
+      setSendCode(true);
+    } finally {
+      setSending(false); // Desactivar loading de envío
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -49,7 +66,14 @@ function FirstSession() {
             colorPrimaryHover: '#16623a',
             colorPrimaryActive: '#144e30',
             colorTextLightSolid: '#fff',
+            // Estilos para el loading
+            loadingBg: '#1b7b46',
+            loadingColor: '#fff',
+            loadingBorderColor: '#1b7b46',
           },
+        },
+        token: {
+          colorPrimary: '#fff', // Color del spinner
         },
       }}
     >
@@ -58,40 +82,66 @@ function FirstSession() {
         <div className={styles.loginContainer}>
           <div className={styles.loginForm}>
             <img src={logo} className={styles.logo} alt="Logo de la empresa" />
-            <h2>
-              ¡Es tu primera vez! <br />
-              Se te envio un codigo de verificación a tu correo
-            </h2>
+            <h2>¡Es tu primera vez!</h2>
+            {sendCode ? (
+              <p>
+                Ingresa el código de verificación que te hemos enviado a tu
+                correo electrónico
+              </p>
+            ) : (
+              <p>
+                Dale a enviar codigo para que te enviamos un código de
+                verificación
+              </p>
+            )}
             <Form
               name="normal_login"
               initialValues={{ remember: true }}
               onFinish={onSubmit}
             >
-              <Form.Item
-                name="code"
-                rules={[
-                  { required: true, message: 'Por favor ingresa el codigo' },
-                ]}
-              >
-                <div className={styles.inputContainer}>
-                  <Input.OTP
-                    variant="filled"
-                    placeholder="######"
-                    className={styles.input}
-                    onChange={(text) => setCode(text)}
-                  />
-                </div>
-              </Form.Item>
-
-              <Form.Item className={styles.buttoncontainer}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="login-form-button"
+              {sendCode ? (
+                <Form.Item
+                  name="code"
+                  rules={[
+                    { required: true, message: 'Por favor ingresa el codigo' },
+                  ]}
                 >
-                  Verificar
-                </Button>
-              </Form.Item>
+                  <div className={styles.inputContainer}>
+                    <Input.OTP
+                      variant="filled"
+                      placeholder="######"
+                      className={styles.input}
+                      onChange={(text) => setCode(text)}
+                    />
+                  </div>
+                </Form.Item>
+              ) : (
+                <div className={styles.buttoncontainer}>
+                  <Button
+                    type="link"
+                    htmlType="button"
+                    className={styles.btnSendCode}
+                    onClick={sendCodeVerification}
+                    loading={sending} // Loading para enviar código
+                  >
+                    {sending ? 'Enviando...' : 'Enviar código'}
+                  </Button>
+                </div>
+              )}
+
+              {sendCode && (
+                <Form.Item className={styles.buttoncontainer}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className={styles.loginFormButton}
+                    loading={verifying} // Loading para verificación
+                    disabled={code.length !== 6} // Deshabilitar si el código no está completo
+                  >
+                    {verifying ? 'Verificando...' : 'Verificar'}
+                  </Button>
+                </Form.Item>
+              )}
             </Form>
           </div>
         </div>

@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
-import { Upload, Input, Button } from 'antd';
+import React from 'react';
+import { Upload, Input, Button, Spin } from 'antd';
 import { UploadSimple } from '@phosphor-icons/react';
 import styles from './System.module.css';
+import { useSystemHook } from './hook/systemHook';
+import { useState } from 'react';
 
+// Asegúrate de que la ruta sea correcta
 const System = () => {
-  const [companyName, setCompanyName] = useState('Centro de Reflexoterapia');
-  const [logoUrl, setLogoUrl] = useState(
-    '/src/assets/Img/MiniLogoReflexo.webp',
-  );
+  const { systemInfo, loading, error } = useSystemHook();
+  const [companyName, setCompanyName] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+
+  // Actualizar los estados locales cuando systemInfo cambie
+  React.useEffect(() => {
+    if (systemInfo.data) {
+      setCompanyName(systemInfo.data.company_name);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      setLogoUrl(`${apiBaseUrl}${systemInfo.data.logo_url}` || '/src/assets/Img/MiniLogoReflexo.webp');
+    }
+  }, [systemInfo]);
 
   const handleLogoChange = (info) => {
     const file = info.file.originFileObj;
@@ -21,15 +32,25 @@ const System = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className={styles.layout}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.layout}>
+        <p>Error al cargar la información de la empresa: {error.message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar} aria-label="Sidebar">
-        {/* Sidebar content */}
-      </aside>
-
       <main className={styles.mainContent}>
-        <header className={styles.header}>{/* Header content */}</header>
-
         <section className={styles.container}>
           <div className={styles.box}>
             {/* Logo section */}
@@ -38,11 +59,18 @@ const System = () => {
               <div className={styles.logoRow}>
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Actual</span>
-                  <img
-                    src={logoUrl}
-                    alt="Logo actual de la empresa"
-                    className={styles.logoImage}
-                  />
+                  {systemInfo.data?.has_logo ? (
+                    <img
+                      src={logoUrl}
+                      alt={`Logo de ${companyName}`}
+                      className={styles.logoImage}
+                      onError={(e) => {
+                        e.target.src = '/src/assets/Img/MiniLogoReflexo.webp';
+                      }}
+                    />
+                  ) : (
+                    <div className={styles.noLogo}>No hay logo disponible</div>
+                  )}
                 </div>
 
                 <div className={styles.logoBlock}>

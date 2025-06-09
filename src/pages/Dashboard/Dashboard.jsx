@@ -3,8 +3,10 @@ import { name, img } from '../../utils/vars';
 import { Avatar, Divider } from 'antd';
 import MenuDashboard from './Menu/Menu';
 import BtnLogOut from './ButtonLogOut/btnLogOut';
+import { getLocalStorage } from '../../utils/localStorageUtility';
 
 export default function Dashboard() {
+  const name = getLocalStorage('name');
   return (
     <div className={Style.dashboardContainer}>
       <div className={Style.dashboardHeader}>
@@ -22,7 +24,7 @@ export default function Dashboard() {
         <Avatar alt="Logo de avatar" src={img} size={45} />
         <div className={Style.dashboardUserName}>
           <div>
-            <h1>Luis Jeremy Villodas Almiron</h1>
+            <h1>{name}</h1>
           </div>
           <div>
             <p>Administrador</p>

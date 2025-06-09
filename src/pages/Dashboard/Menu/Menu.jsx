@@ -5,12 +5,16 @@ import {
   House,
   Nut,
   Person,
+  CalendarDots,
 } from '@phosphor-icons/react';
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+
+import { useAuth } from '../../../routes/AuthContext';
 import Style from './Menu.module.css';
 export default function MenuDashboard() {
+  const { userRole } = useAuth();
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
 
@@ -27,7 +31,7 @@ export default function MenuDashboard() {
   const items = [
     {
       key: '1',
-      label: <Link to="/"> Inicio </Link>,
+      label: <Link to="/Inicio"> Inicio </Link>,
       icon: (
         <div className={Style.icon}>
           <House />
@@ -83,6 +87,15 @@ export default function MenuDashboard() {
     },
     {
       key: '10',
+      label: <Link to="calendar"> Calendario </Link>,
+      icon: (
+        <div className={Style.icon}>
+          <CalendarDots />
+        </div>
+      ),
+    },
+    {
+      key: '11',
       label: <Link to="estadisticas"> Estadisticas </Link>,
       icon: (
         <div className={Style.icon}>
@@ -91,7 +104,7 @@ export default function MenuDashboard() {
       ),
     },
     {
-      key: '11',
+      key: '12',
       label: 'Configuraciones',
       icon: (
         <div className={Style.icon}>
@@ -100,21 +113,25 @@ export default function MenuDashboard() {
       ),
       children: [
         {
-          key: '12',
-          label: <Link to="configSistema">Sistema</Link>,
-        },
-        {
-          key: '13',
+          key: '33',
           label: <Link to="configPagos">Pagos</Link>,
         },
         {
-          key: '14',
-          label: <Link to="configUser">Usuarios</Link>,
-        },
-        {
-          key: '15',
+          key: '16',
           label: <Link to="configPerfil">Perfil</Link>,
         },
+        ...(userRole === 1
+          ? [
+              {
+                key: '12',
+                label: <Link to="configSistema">Sistema</Link>,
+              },
+              {
+                key: '14',
+                label: <Link to="configUser">Usuarios</Link>,
+              },
+            ]
+          : []),
       ],
     },
   ];

@@ -1,118 +1,145 @@
 import React from 'react';
 import ModeloTable from '../../../components/Table/Tabla';
 import styles from './Payments.module.css';
+import { usePaymentTypes, usePrices } from './paymentsHook';
+import { Button, Space } from 'antd';
 
-const paymentTypes = [
-  { id: 1, paymentType: 'Efectivo', status: 'Habilitado' },
-  { id: 2, paymentType: 'Yape', status: 'Habilitado' },
-];
+// Renderiza el estado con color simple
+const renderStatus = (status) => {
+  if (status === 'Habilitado') {
+    return <span className={styles.statusEnabled}>{status}</span>;
+  }
+  return <span style={{ color: 'red' }}>{status}</span>;
+};
 
-const prices = [
-  { id: 1, amount: 'S/ 120', status: 'Habilitado' },
-  { id: 2, amount: 'S/ 60', status: 'Habilitado' },
-];
+const Payments = () => {                                                            
+  const { paymentTypes, loading: loadingPayments } = usePaymentTypes();
+  const { prices, loading: loadingPrices } = usePrices();
 
-const renderStatus = (status) => (
-  <span className={styles.statusEnabled}>{status}</span>
-);
+  const handleAction = (action, record) => {
+    console.log(`${action} action for:`, record);
+  };
 
-const paymentTypeColumns = [
-  {
-    title: 'Tipo de pago',
-    dataIndex: 'paymentType',
-    key: 'paymentType',
-    width: 200,
-  },
-  {
-    title: 'Estado',
-    dataIndex: 'status',
-    key: 'status',
-    width: 150,
-    render: renderStatus,
-  },
-];
+  const paymentTypeColumns = [
+    {
+      title: 'Tipo de pago',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Estado',
+      dataIndex: 'status',
+      key: 'status',
+      render: renderStatus,
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      align: 'center',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}>Editar</Button>
+          <Button 
+            style={{ backgroundColor: '#FFAA00', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('deactivate', record)}>Desactivar</Button>
+          <Button
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }} 
+            onClick={() => handleAction('delete', record)}>Eliminar</Button>
+        </Space>
+      ),
+    },
+  ];
 
-const priceColumns = [
-  {
-    title: 'Monto',
-    dataIndex: 'amount',
-    key: 'amount',
-    width: 200,
-  },
-  {
-    title: 'Estado',
-    dataIndex: 'status',
-    key: 'status',
-    width: 150,
-    render: renderStatus,
-  },
-];
+  const priceColumns = [
+    {
+      title: 'Tipo',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Costo',
+      dataIndex: 'price',
+      key: 'price',
+    },
+    {
+      title: 'Estado',
+      dataIndex: 'status',
+      key: 'status',
+      render: renderStatus,
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      align: 'center',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+          style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+          onClick={() => handleAction('edit', record)}>Editar</Button>
+          <Button 
+          style={{ backgroundColor: '#FFAA00', color: '#fff', border: 'none' }}
+          onClick={() => handleAction('deactivate', record)}>Desactivar</Button>
+          <Button
+          style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }} 
+          onClick={() => handleAction('delete', record)}>Eliminar</Button>
+        </Space>
+      ),
+    },
+  ];
 
-const paymentTypeActions = (record) => (
-  <div className={styles.actions}>
-    <button className={`${styles.button} ${styles.deactivate}`}>
-      Desactivar
-    </button>
-    <button className={`${styles.button} ${styles.delete}`}>Eliminar</button>
-  </div>
-);
-
-const priceActions = (record) => (
-  <div className={styles.actions}>
-    <button className={`${styles.button} ${styles.deactivate}`}>
-      Desactivar
-    </button>
-    <button className={`${styles.button} ${styles.edit}`}>Editar</button>
-    <button className={`${styles.button} ${styles.delete}`}>Eliminar</button>
-  </div>
-);
-
-const Payments = () => {
   return (
-    <div className={styles.container}>
-      <div className={styles.header}></div>
-      <div className={styles.content}>
-        <div className={styles.sidebar}></div>
-
-        <div className={styles.mainContent}>
-          <div className={styles.section}>
-            <div className={styles.card}>
-              {/* Payment Types Table */}
-              <div className={styles.tableContainer}>
-                <div className={styles.titleContainer}>
-                  <h2 className={styles.title}>Tipos de pago</h2>
-                  <button className={`${styles.button} ${styles.add}`}>
-                    Agregar
-                  </button>
-                </div>
-                <div className={styles.tableWrapper}>
-                  <ModeloTable
-                    columns={paymentTypeColumns}
-                    data={paymentTypes}
-                    customActions={paymentTypeActions}
-                  />
-                </div>
-              </div>
-
-              {/* Prices Table */}
-              <div className={styles.tableContainer}>
-                <div className={styles.titleContainer}>
-                  <h2 className={styles.title}>Precios</h2>
-                  <button className={`${styles.button} ${styles.add}`}>
-                    Agregar
-                  </button>
-                </div>
-                <div className={styles.tableWrapper}>
-                  <ModeloTable
-                    columns={priceColumns}
-                    data={prices}
-                    customActions={priceActions}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+    <div
+      style={{
+        height: '100%',
+        paddingTop: '20px',
+        maxWidth: 'calc(100% - 200px)',
+        margin: '0 auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '5px',
+        justifyContent: 'center',
+      }}
+    >
+      {/* Tipos de Pago */}
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <h2 style={{ margin: 0 }}>Tipos de pago</h2>
+          <Button type="primary">Agregar</Button>
         </div>
+        <ModeloTable
+          columns={paymentTypeColumns}
+          data={paymentTypes}
+          loading={loadingPayments}
+        />
+      </div>
+
+      {/* Precios */}
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+          }}
+        >
+          <h2 style={{ margin: 0 }}>Precios</h2>
+          <Button type="primary">Agregar</Button>
+        </div>
+        <ModeloTable
+          columns={priceColumns}
+          data={prices}
+          loading={loadingPrices}
+        />
       </div>
     </div>
   );
