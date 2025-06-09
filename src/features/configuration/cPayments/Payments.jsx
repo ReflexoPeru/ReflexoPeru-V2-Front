@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ModeloTable from '../../../components/Table/Tabla';
 import styles from './Payments.module.css';
 import { usePaymentTypes, usePrices } from './paymentsHook';
@@ -10,6 +10,7 @@ import {
   Switch,
   message,
   ConfigProvider,
+  Popconfirm,
 } from 'antd';
 import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
 
@@ -22,52 +23,202 @@ const renderStatus = (status) => {
 
 const Payments = () => {
   const [form] = Form.useForm();
-  const { paymentTypes, loading: loadingPayments } = usePaymentTypes();
-  const { prices, loading: loadingPrices } = usePrices();
+  const {
+    paymentTypes,
+    loading: loadingPayments,
+    addPaymentType,
+    editPaymentType,
+    removePaymentType,
+    refreshPaymentTypes,
+  } = usePaymentTypes();
+
+  const {
+    prices,
+    loading: loadingPrices,
+    addPrice,
+    editPrice,
+    removePrice,
+    refreshPrices,
+  } = usePrices();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
-  const [modalType, setModalType] = useState(''); // 'payment' | 'price'
-  const [action, setAction] = useState(''); // 'create' | 'edit'
+  const [modalType, setModalType] = useState('');
+  const [action, setAction] = useState('');
+
+  // Preparar los valores iniciales para el modal
+  const getInitialValues = () => {
+    if (action === 'edit' && currentRecord) {
+      const formData = {
+        name: currentRecord.name,
+        status: currentRecord.status === 'Habilitado',
+      };
+
+      // Si es un precio, agregar el campo price
+      if (modalType === 'price' && currentRecord.price) {
+        formData.price = parseFloat(currentRecord.price);
+      }
+
+      return formData;
+    }
+
+    // Valores por defecto para crear
+    return {
+      name: '',
+      status: true,
+      ...(modalType === 'price' && { price: '' }),
+    };
+  };
 
   const handleAction = (action, record) => {
     setAction(action);
     setCurrentRecord(record);
+    setModalType(record.price !== undefined ? 'price' : 'payment');
 
-    if (action === 'edit') {
-      setModalType(record.price ? 'price' : 'payment');
-      form.setFieldsValue({
-        ...record,
-        status: record.status === 'Habilitado',
-      });
-      setModalVisible(true);
-    } else if (action === 'delete') {
-      message.error('Función de eliminar no implementada');
-    } else if (action === 'deactivate') {
-      message.warning('Función de desactivar no implementada');
-    }
+    // Resetear el formulario antes de abrir el modal
+    form.resetFields();
+
+    setModalVisible(true);
+
+    // Usar setTimeout para asegurar que el modal se haya renderizado
+    setTimeout(() => {
+      if (action === 'edit') {
+        const formData = {
+          name: record.name, // Mantener el formato original para mostrar
+          status: record.status === 'Habilitado',
+        };
+
+        if (record.price !== undefined) {
+          formData.price = parseFloat(record.price);
+        }
+
+        form.setFieldsValue(formData);
+      }
+    }, 0);
   };
 
   const handleCreate = (type) => {
     setAction('create');
     setModalType(type);
+    setCurrentRecord(null);
+
+    // Resetear completamente el formulario
     form.resetFields();
+
     setModalVisible(true);
+
+    // Establecer valores por defecto después de abrir el modal
+    setTimeout(() => {
+      form.setFieldsValue({
+        name: '',
+        status: true,
+        ...(type === 'price' && { price: '' }),
+      });
+    }, 0);
   };
 
-  const handleSubmit = (values) => {
-    const payload = {
-      ...values,
-      status: values.status ? 'Habilitado' : 'Deshabilitado',
-    };
+  const handleSubmit = async (values) => {
+    try {
+      const payload = {
+        ...values,
+        // Convertir el nombre a mayúsculas
+        name: values.name?.toUpperCase().trim(),
+        status: values.status ? 'active' : 'inactive',
+      };
 
-    console.log('Datos enviados:', payload);
-    message.success(
-      action === 'create'
-        ? 'Registro creado exitosamente'
-        : 'Registro actualizado exitosamente',
-    );
+      if (modalType === 'payment') {
+        if (action === 'create') {
+          await addPaymentType({ name: payload.name, status: payload.status });
+        } else {
+          await editPaymentType(currentRecord.id, {
+            name: payload.name,
+            status: payload.status,
+          });
+        }
+        refreshPaymentTypes();
+      } else {
+        if (action === 'create') {
+          await addPrice({
+            name: payload.name,
+            price: payload.price,
+            status: payload.status,
+          });
+        } else {
+          await editPrice(currentRecord.id, {
+            name: payload.name,
+            price: payload.price,
+            status: payload.status,
+          });
+        }
+        refreshPrices();
+      }
+
+      message.success(
+        action === 'create'
+          ? 'Registro creado exitosamente'
+          : 'Registro actualizado exitosamente',
+      );
+      handleModalCancel();
+    } catch (error) {
+      message.error('Ocurrió un error al procesar la solicitud');
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id, type) => {
+    try {
+      if (type === 'payment') {
+        await removePaymentType(id);
+        refreshPaymentTypes();
+      } else {
+        await removePrice(id);
+        refreshPrices();
+      }
+      message.success('Registro eliminado exitosamente');
+    } catch (error) {
+      message.error('Ocurrió un error al eliminar el registro');
+      console.error(error);
+    }
+  };
+
+  const handleDeactivate = async (record) => {
+    try {
+      const newStatus = record.status === 'Habilitado' ? 'inactive' : 'active';
+
+      if (record.price !== undefined) {
+        await editPrice(record.id, { status: newStatus });
+        refreshPrices();
+      } else {
+        await editPaymentType(record.id, { status: newStatus });
+        refreshPaymentTypes();
+      }
+
+      message.success(
+        record.status === 'Habilitado'
+          ? 'Registro desactivado exitosamente'
+          : 'Registro activado exitosamente',
+      );
+    } catch (error) {
+      message.error('Ocurrió un error al cambiar el estado del registro');
+      console.error(error);
+    }
+  };
+
+  const handleModalCancel = () => {
     setModalVisible(false);
+    setCurrentRecord(null);
+    setAction('');
+    setModalType('');
+    // Resetear el formulario al cancelar
+    form.resetFields();
   };
+
+  // Efecto para resetear el formulario cuando cambia el modal
+  useEffect(() => {
+    if (!modalVisible) {
+      form.resetFields();
+    }
+  }, [modalVisible, form]);
 
   const paymentTypeColumns = [
     {
@@ -95,16 +246,18 @@ const Payments = () => {
           </Button>
           <Button
             className={styles.deactivateButton}
-            onClick={() => handleAction('deactivate', record)}
+            onClick={() => handleDeactivate(record)}
           >
-            Desactivar
+            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
           </Button>
-          <Button
-            className={styles.deleteButton}
-            onClick={() => handleAction('delete', record)}
+          <Popconfirm
+            title="¿Estás seguro de eliminar este tipo de pago?"
+            onConfirm={() => handleDelete(record.id, 'payment')}
+            okText="Sí"
+            cancelText="No"
           >
-            Eliminar
-          </Button>
+            <Button className={styles.deleteButton}>Eliminar</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -118,9 +271,8 @@ const Payments = () => {
     },
     {
       title: 'Costo',
-      dataIndex: 'price',
+      dataIndex: 'formattedPrice',
       key: 'price',
-      render: (price) => `S/${parseFloat(price).toFixed(2)}`,
     },
     {
       title: 'Estado',
@@ -142,16 +294,18 @@ const Payments = () => {
           </Button>
           <Button
             className={styles.deactivateButton}
-            onClick={() => handleAction('deactivate', record)}
+            onClick={() => handleDeactivate(record)}
           >
-            Desactivar
+            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
           </Button>
-          <Button
-            className={styles.deleteButton}
-            onClick={() => handleAction('delete', record)}
+          <Popconfirm
+            title="¿Estás seguro de eliminar este precio?"
+            onConfirm={() => handleDelete(record.id, 'price')}
+            okText="Sí"
+            cancelText="No"
           >
-            Eliminar
-          </Button>
+            <Button className={styles.deleteButton}>Eliminar</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -177,6 +331,27 @@ const Payments = () => {
             headerBg: '#FAFAFA',
             headerColor: '#333333',
           },
+          Button: {
+            controlHeight: 40,
+            borderRadius: 6,
+            colorPrimary: '#4CAF50',
+            colorTextLightSolid: '#ffffff',
+            colorBgContainer: '#333333',
+            colorText: '#ffffff',
+            colorBorder: '#333333',
+          },
+          Popconfirm: {
+            borderRadius: 8,
+            padding: 12,
+          },
+          Popover: {
+            colorBgElevated: '#000',
+            colorText: '#ffffff',
+          },
+        },
+        token: {
+          colorPrimary: '#4CAF50',
+          colorText: '#ffffff',
         },
       }}
     >
@@ -221,18 +396,21 @@ const Payments = () => {
           />
         </div>
 
-        {/* Modal Reutilizable */}
+        {/* Modal con BaseModal */}
         <BaseModal
           visible={modalVisible}
-          onCancel={() => setModalVisible(false)}
+          onCancel={handleModalCancel}
           onOk={handleSubmit}
           title={
             action === 'create'
               ? `Agregar nuevo ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`
               : `Editar ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`
           }
-          form={form}
           okText={action === 'create' ? 'Crear' : 'Actualizar'}
+          cancelText="Cancelar"
+          width={500}
+          form={form}
+          initialValues={getInitialValues()}
         >
           <Form.Item
             name="name"
@@ -243,7 +421,16 @@ const Payments = () => {
             }
             rules={[{ required: true, message: 'Este campo es requerido' }]}
           >
-            <Input size="large" className={styles.inputField} />
+            <Input
+              size="large"
+              className={styles.inputField}
+              placeholder={`Ingrese el nombre del ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`}
+              onChange={(e) => {
+                // Convertir a mayúsculas mientras se escribe
+                const value = e.target.value.toUpperCase();
+                form.setFieldValue('name', value);
+              }}
+            />
           </Form.Item>
 
           {modalType === 'price' && (
@@ -254,7 +441,7 @@ const Payments = () => {
                 { required: true, message: 'Este campo es requerido' },
                 {
                   pattern: /^\d+(\.\d{1,2})?$/,
-                  message: 'Ingrese un valor válido',
+                  message: 'Ingrese un valor válido (ej: 10.50)',
                 },
               ]}
             >
@@ -264,6 +451,7 @@ const Payments = () => {
                 step="0.01"
                 size="large"
                 className={styles.inputField}
+                placeholder="0.00"
               />
             </Form.Item>
           )}

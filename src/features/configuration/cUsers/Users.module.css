@@ -11,8 +11,21 @@
   background-color: rgba(20, 245, 140, 0.23);
 }
 
-/* Botones - Estilos base */
+.statusDisabled {
+  display: inline-block;
+
+  padding: 4px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+
+  background-color: rgba(255, 59, 48, 0.23);
+}
+
 .editButton {
+  height: 40px !important;
   border: none !important;
   border-radius: 6px !important;
 
@@ -23,6 +36,7 @@
 }
 
 .deactivateButton {
+  height: 40px !important;
   border: none !important;
   border-radius: 6px !important;
 
@@ -33,6 +47,7 @@
 }
 
 .deleteButton {
+  height: 40px !important;
   border: none !important;
   border-radius: 6px !important;
 
@@ -42,7 +57,6 @@
   background-color: #FF3333 !important;
 }
 
-/* Botones - Hover */
 .editButton:hover {
   color: #fff !important;
   background-color: #0052CC !important;
@@ -59,6 +73,7 @@
 }
 
 .addButton {
+  height: 40px !important;
   border-color: #4CAF50 !important;
   border-radius: 6px !important;
 
@@ -74,7 +89,6 @@
   background-color: #3d8b40 !important;
 }
 
-/* Layout */
 .container {
   display: flex !important;
   flex-direction: column !important;
@@ -100,19 +114,35 @@
   font-weight: 600 !important;
 }
 
-/* Formularios */
-.inputField {
+.uniformInput {
+  width: 100% !important;
+  height: 40px !important;
   border-radius: 6px !important;
+}
+
+.formContainer .ant-form-item {
+  margin-bottom: 16px !important;
+}
+
+.formContainer .ant-form-item-label > label {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.85) !important;
 }
 
 .statusSwitch {
   width: 110px !important;
 }
 
-/* Sobrescribir estilos de Ant Design */
+.switchContainer .ant-form-item-control-input-content {
+  display: flex;
+  align-items: center;
+  height: 40px;
+}
+
 .ant-btn:not(.ant-btn-link):hover, 
 .ant-btn:not(.ant-btn-link):focus {
   border-color: transparent !important;
   color: #fff !important;
   background: inherit !important;
 }
+
