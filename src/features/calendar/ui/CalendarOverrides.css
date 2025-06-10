@@ -159,12 +159,18 @@
 }
 
 /* Tabla Agenda */
-.rbc-agenda-table {
-  border-spacing: 0 14px;
-  border-collapse: separate;
-  width: 100%;
-  background-color: transparent;
+.rbc-agenda-table th {
+  padding: 14px;
+  border-bottom: 1px solid #2a2a2a;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1CB54A;
+  text-align: left;
+
+  background-color: #252525;
 }
+
 
 .rbc-agenda-table thead {
   background-color: transparent;
@@ -420,3 +426,13 @@
   display: none;
 }
 
+
+
+/* Evitar negrita inesperada en celdas de calendario */
+.rbc-agenda-table td,
+.rbc-date-cell,
+.rbc-header,
+.rbc-event-content,
+.rbc-agenda-event-cell {
+  font-weight: bolder !important;
+}

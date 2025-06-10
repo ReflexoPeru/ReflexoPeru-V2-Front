@@ -1,66 +1,94 @@
-import React from 'react';
-import estilo from './patients.module.css';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import patientsMock from '../../../mock/Patients';
-import { Space, Button } from 'antd';
+import { Button, Space } from 'antd';
 import { useNavigate } from 'react-router';
+import { usePatients } from '../hook/patientsHook';
 
 export default function Patients() {
   const navigate = useNavigate();
-  const columns = [
-    {
-      title: 'Documento',
-      dataIndex: 'nroDocument',
-      key: 'nroDocument',
-      width: '110px',
-    },
-    {
-      title: 'Apellido Parterno',
-      dataIndex: 'lastnamePaternal',
-      key: 'lastnamePaternal',
-    },
-    {
-      title: 'Apellido Materno',
-      dataIndex: 'lastnameMaternal',
-      key: 'lastnameMaternal',
-    },
-    {
-      title: 'Nombre',
-      dataIndex: 'name',
-      key: 'name',
-    },
-  ];
 
-  const patientData = patientsMock[0].items;
+  const {
+    patients,
+    loading,
+    pagination,
+    handlePageChange,
+    setSearchTerm,
+    handleDeletePatient,
+  } = usePatients();
+
+  const handleAction = (action, record) => {
+    switch(action) {
+      case 'edit':
+        navigate(`editar/${record.id}`);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'history':
+        navigate(`historia/${record.id}`);
+        break;
+      case 'delete':
+        handleDeletePatient(record.id);
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    console.log('Búsqueda:', value);
-    // Aquí puedes implementar la lógica de filtrado
+    setSearchTerm(value);
   };
 
-  // Botones personalizados
-  const customActionButtons = (record) => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#8800CC', color: '#fff' }}>
-        Historia
-      </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
-        Eliminar
-      </Button>
-    </Space>
-  );
+  const columns = [
+    {
+      title: 'DNI',
+      dataIndex: 'document_number',
+      key: 'document_number',
+      width: '110px',
+    },
+    {
+      title: 'Nombre',
+      dataIndex: 'full_name',
+      key: 'name',
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('info', record)}
+          >
+            Más Info
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('history', record)}
+          >
+            Historia
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div
@@ -89,8 +117,14 @@ export default function Patients() {
 
       <ModeloTable
         columns={columns}
-        data={patientData}
-        customActions={customActionButtons}
+        data={patients}
+        loading={loading}
+        pagination={{
+          current: pagination.currentPage,
+          total: pagination.totalItems,
+          pageSize: 50,
+          onChange: handlePageChange,
+        }}
       />
     </div>
   );

@@ -22,11 +22,18 @@ import Payments from '../features/configuration/cPayments/Payments';
 import User from '../features/configuration/cUsers/Users';
 import Profile from '../features/configuration/cProfile/Profile';
 import Error404 from '../pages/Error/Error404';
+import ProtectedRoute from './ProtectedRoute';
+import Error500 from '../pages/Error/Error';
+import AppointmentsComplete from '../features/appointmentsComplete/ui/appointmentsComplete';
 
 const router = createBrowserRouter([
   {
     path: '*',
     element: <Error404 />,
+  },
+  {
+    path: '/error500',
+    element: <Error500 />,
   },
   {
     path: '/',
@@ -46,79 +53,87 @@ const router = createBrowserRouter([
   },
   {
     path: '/Inicio',
-    element: <View />,
+    element: <ProtectedRoute allowedRoles={[1, 2]} />,
     children: [
       {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: 'pacientes',
-        element: <Patients />,
+        path: '',
+        element: <View />,
         children: [
           {
-            path: 'editar/:id',
-            element: <Prueba />,
+            index: true,
+            element: <Home />,
           },
-        ],
-      },
-      {
-        path: 'pacientes/registrar',
-        element: <NewPatient />,
-      },
-      {
-        path: 'citas',
-        element: <Appointments />,
-      },
-      {
-        path: 'citas/registrar',
-        element: <NewAppointment />,
-      },
-      {
-        path: 'reportes',
-        element: <ReportGenerator />,
-      },
-      {
-        path: 'calendar',
-        element: <Calendar />,
-      },
-      {
-        path: 'citasCompletas',
-        element: <Prueba />,
-      },
-      {
-        path: 'estadisticas',
-        element: <Dashboard />,
-      },
-      {
-        path: 'terapeutas',
-        element: <Staff />,
-        children: [
           {
-            path: 'editar/:id',
-            element: <Prueba />,
+            path: 'pacientes',
+            element: <Patients />,
+            children: [
+              {
+                path: 'editar/:id',
+                element: <Prueba />,
+              },
+            ],
+          },
+          {
+            path: 'pacientes/registrar',
+            element: <NewPatient />,
+          },
+          {
+            path: 'citas',
+            element: <Appointments />,
+          },
+          {
+            path: 'calendar',
+            element: <Calendar />,
+          },
+          {
+            path: 'citas/registrar',
+            element: <NewAppointment />,
+          },
+          {
+            path: 'reportes',
+            element: <ReportGenerator />,
+          },
+          {
+            path: 'citasCompletas',
+            element: <AppointmentsComplete />,
+          },
+          {
+            path: 'estadisticas',
+            element: <Dashboard />,
+          },
+          {
+            path: 'terapeutas',
+            element: <Staff />,
+            children: [
+              {
+                path: 'editar/:id',
+                element: <Prueba />,
+              },
+            ],
+          },
+          {
+            path: 'terapeutas/registrar',
+            element: <NewTherapist />,
+          },
+          {
+            path: 'configPagos',
+            element: <Payments />,
+          },
+          {
+            path: 'configPerfil',
+            element: <Profile />,
+          },
+          {
+            path: 'configSistema',
+            element: <ProtectedRoute allowedRoles={[1]} />,
+            children: [{ index: true, element: <System /> }],
+          },
+          {
+            path: 'configUser',
+            element: <ProtectedRoute allowedRoles={[1]} />,
+            children: [{ index: true, element: <User /> }],
           },
         ],
-      },
-      {
-        path: 'terapeutas/registrar',
-        element: <NewTherapist />,
-      },
-      {
-        path: 'configSistema',
-        element: <System />,
-      },
-      {
-        path: 'configPagos',
-        element: <Payments />,
-      },
-      {
-        path: 'configUser',
-        element: <User />,
-      },
-      {
-        path: 'configPerfil',
-        element: <Profile />,
       },
     ],
   },

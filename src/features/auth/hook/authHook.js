@@ -13,15 +13,35 @@ import {
   persistLocalStorage,
   removeLocalStorage,
 } from '../../../utils/localStorageUtility';
+import { useAuth as useAuthentication } from '../../../routes/AuthContext';
+import { get } from '../../../services/api/Axios/MethodsGeneral';
 
 export const useAuth = () => {
   const { showToast } = useToast();
+  const { setIsAuthenticated, setUserRole } = useAuthentication();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const fetchUserData = async () => {
+    try {
+      const res = await get('get-role');
+      if (res.data) {
+        setIsAuthenticated(true);
+        setUserRole(res.data.role_id);
+        persistLocalStorage('name', res.data.name);
+        persistLocalStorage('user_id', res.data.user_id);
+        return true;
+      }
+    } catch (err) {
+      showToast('intentoFallido', err?.response?.data?.message);
+      return false;
+    }
+  };
+
   const login = async (credentials) => {
     try {
+      setLoading(true);
       const data = await LoginService(credentials);
       if (data.status == '200') {
         if (data.data.first_login) {
@@ -32,12 +52,23 @@ export const useAuth = () => {
           showToast('inicioSesionExitoso');
           persistLocalStorage('token', data.data.token);
           removeLocalStorage('user_id');
-          navigate('/Inicio');
+
+          // Obtener los datos del usuario después del login
+          const userDataFetched = await fetchUserData();
+          if (userDataFetched) {
+            navigate('/Inicio');
+          } else {
+            removeLocalStorage('token');
+            setIsAuthenticated(false);
+            setUserRole(null);
+          }
         }
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
       showToast('intentoFallido', backendMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,6 +111,9 @@ export const useAuth = () => {
         showToast('cierreSesion');
         removeLocalStorage('token');
         removeLocalStorage('user_id');
+        removeLocalStorage('name');
+        setIsAuthenticated(false);
+        setUserRole(null);
         navigate('/');
       } else {
         showToast('intentoFallido');
@@ -89,6 +123,7 @@ export const useAuth = () => {
       showToast('intentoFallido', backendMsg);
     }
   };
+
   const sendVerifyCode = async () => {
     try {
       const response = await sendVerifyCodeService(getLocalStorage('user_id'));

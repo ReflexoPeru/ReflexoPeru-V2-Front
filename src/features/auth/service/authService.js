@@ -1,4 +1,5 @@
 import {
+  get,
   del,
   post,
   postID,
@@ -26,6 +27,11 @@ export const logOut = async () => {
 };
 
 export const sendVerifyCode = async (id) => {
-  const response = await postID('sendVerifyCode', id);
+  const response = await postID('sendVerifyCode', id, { type_email: 0 });
+  return response;
+};
+
+export const getRole = async () => {
+  const response = await get('get-role');
   return response;
 };

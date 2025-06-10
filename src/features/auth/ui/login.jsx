@@ -7,33 +7,36 @@ import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useNavigate } from 'react-router';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { useAuth } from '../hook/authHook';
+import { removeLocalStorage } from '../../../utils/localStorageUtility';
 
 function Login() {
-  //Estados de login
+  // Estados de login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
 
-  // Definir el estado para la visibilidad de la contraseña
+  // Definir el estado para la visibilidad de la contraseña
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   //Toastify
   const { showToast } = useToast();
 
-  //Navegacion
+  //Navegación
   const navigate = useNavigate();
 
   //////////Funciones simples///////////////////
 
-  //Redirecciona a la pagina de olvido de contraseña
+  //Redirecciona a la página de olvido de contraseña
   const onForgotPassword = () => {
     navigate('/contraseñaolvidada');
   };
 
-  //Efecto de particulas
+  //Efecto de partículas
   useEffect(() => {
     const cleanup = initializeParticles();
-
+    removeLocalStorage('token');
+    removeLocalStorage('user_id');
+    removeLocalStorage('name');
     return cleanup;
   }, []);
 
@@ -42,8 +45,8 @@ function Login() {
   //////////////Formulario///////////////////
 
   const onSubmit = () => {
-    const crendentials = { email, password };
-    login(crendentials);
+    const credentials = { email, password };
+    login(credentials);
   };
 
   const togglePasswordVisibility = () => {
@@ -67,7 +70,17 @@ function Login() {
             colorPrimaryHover: '#16623a',
             colorPrimaryActive: '#144e30',
             colorTextLightSolid: '#fff',
+            // Estilos para el estado loading
+            loadingActiveBorderColor: '#1b7b46',
+            loadingBg: '#1b7b46',
+            loadingColor: '#fff',
           },
+        },
+        // Estilos para el spinner de loading
+        token: {
+          colorPrimary: '#fff',
+          colorBgContainer: '#fff',
+          colorText: '#fff',
         },
       }}
     >
@@ -131,14 +144,14 @@ function Login() {
               <a className={styles.forgot} onClick={onForgotPassword}>
                 Olvide mi Contraseña
               </a>
-              <Form.Item className={styles.buttoncontainer}>
+              <Form.Item className={styles.buttonContainer}>
                 <Button
                   type="primary"
                   htmlType="submit"
-                  className="login-form-button"
-                  style={{ hoverBg: '#1a3928' }}
+                  className={styles.loginButton}
+                  loading={loading}
                 >
-                  Entrar
+                  {loading ? 'Cargando...' : 'Entrar'}
                 </Button>
               </Form.Item>
             </Form>

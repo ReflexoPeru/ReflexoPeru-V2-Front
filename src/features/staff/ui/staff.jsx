@@ -1,63 +1,84 @@
-import React from 'react';
-import estilo from './staff.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
+import { Button, Space } from 'antd';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import StaffMock from '../../../mock/Staff';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
+import ModeloTable from '../../../components/Table/Tabla';
+import { useStaff } from '../hook/staffHook';
 
 export default function Staff() {
   const navigate = useNavigate();
-  const columns = [
-    {
-      title: 'Documento',
-      dataIndex: 'nroDocument',
-      key: 'nroDocument',
-      width: '110px',
-    },
-    {
-      title: 'Apellido Parterno',
-      dataIndex: 'lastnamePaternal',
-      key: 'lastnamePaternal',
-    },
-    {
-      title: 'Apellido Materno',
-      dataIndex: 'lastnameMaternal',
-      key: 'lastnameMaternal',
-    },
-    {
-      title: 'Nombre',
-      dataIndex: 'name',
-      key: 'name',
-    },
-  ];
+  const {
+    staff,
+    loading,
+    pagination,
+    handlePageChange,
+    setSearchTerm,
+    handleDeleteTherapist,
+  } = useStaff();
 
-  const staffData = StaffMock[0].items;
+  const handleAction = (action, record) => {
+    switch(action) {
+      case 'edit':
+        navigate(`editar/${record.id}`);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'delete':
+        handleDeleteTherapist(record.id);
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    console.log('Búsqueda:', value);
-    // Aquí puedes implementar la lógica de filtrado
+    setSearchTerm(value);
   };
 
-  // Botones personalizados
-  const customActionButtons = (record) => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
-        Eliminar
-      </Button>
-    </Space>
-  );
+  const columns = [
+    {
+      title: 'Documento',
+      dataIndex: 'document_number',
+      key: 'document_number',
+      width: '110px',
+    },
+    {
+      title: 'Nombre',
+      dataIndex: 'full_name',
+      key: 'name',
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('info', record)}
+          >
+            Más Info
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div
@@ -86,8 +107,14 @@ export default function Staff() {
 
       <ModeloTable
         columns={columns}
-        data={staffData}
-        customActions={customActionButtons}
+        data={staff}
+        loading={loading}
+        pagination={{
+          current: pagination.currentPage,
+          total: pagination.totalItems,
+          pageSize: 50,
+          onChange: handlePageChange,
+        }}
       />
     </div>
   );

@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { DatePicker, ConfigProvider } from "antd";
 import es_ES from "antd/lib/locale/es_ES"; // Locale en español
+import dayjs from "dayjs";
 
 
 const CustomTimeFilter = ({
-    onChange,
+    onDateChange,
     size = "large",
     style = {},
-    format = "DD/MM/YYYY", 
 }) => {
+    const [selectDate, setSelectDate] = useState(dayjs);
+    const handleDateChange = (date) => {
+        setSelectDate(date);
+        const formattedDate = date.format('YYYY-MM-DD');
+        onDateChange(formattedDate);
+    };
+
     return (
     <ConfigProvider
         locale={es_ES}
@@ -36,8 +43,8 @@ const CustomTimeFilter = ({
     >
         <DatePicker
                 size={size}
-                onChange={onChange}
-                format={format}
+                onChange={handleDateChange}
+                value={selectDate}
                 style={{
                     width: '200px',
                     boxShadow: "none",

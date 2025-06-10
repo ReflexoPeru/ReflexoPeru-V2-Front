@@ -10,8 +10,11 @@ import {
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+
+import { useAuth } from '../../../routes/AuthContext';
 import Style from './Menu.module.css';
 export default function MenuDashboard() {
+  const { userRole } = useAuth();
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
 
@@ -110,21 +113,25 @@ export default function MenuDashboard() {
       ),
       children: [
         {
-          key: '13',
-          label: <Link to="configSistema">Sistema</Link>,
-        },
-        {
-          key: '14',
+          key: '33',
           label: <Link to="configPagos">Pagos</Link>,
-        },
-        {
-          key: '15',
-          label: <Link to="configUser">Usuarios</Link>,
         },
         {
           key: '16',
           label: <Link to="configPerfil">Perfil</Link>,
         },
+        ...(userRole === 1
+          ? [
+              {
+                key: '12',
+                label: <Link to="configSistema">Sistema</Link>,
+              },
+              {
+                key: '14',
+                label: <Link to="configUser">Usuarios</Link>,
+              },
+            ]
+          : []),
       ],
     },
   ];
