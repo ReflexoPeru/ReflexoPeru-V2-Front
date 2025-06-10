@@ -333,3 +333,18 @@
     font-size: 24px;
   }
 }
+
+.loadingContainer {
+  position: fixed;         
+  z-index: 9999;
+  top: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 84vw;           
+  height: 100vh;
+  margin-left: 16vw;       
+}
