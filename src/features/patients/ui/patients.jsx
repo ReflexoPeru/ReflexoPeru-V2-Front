@@ -15,7 +15,35 @@ export default function Patients() {
     pagination,
     handlePageChange,
     setSearchTerm,
+    handleDeletePatient,
   } = usePatients();
+
+  const handleAction = (action, record) => {
+    switch(action) {
+      case 'edit':
+        navigate(`editar/${record.id}`);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'history':
+        navigate(`historia/${record.id}`);
+        break;
+      case 'delete':
+        handleDeletePatient(record.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleButton = () => {
+    navigate('registrar');
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
 
   const columns = [
     {
@@ -63,33 +91,6 @@ export default function Patients() {
     },
   ];
 
-  const handleAction = (action, record) => {
-    switch(action) {
-      case 'history':
-        navigate(`/Inicio/pacientes/historia/${record.id}`); // Ruta absoluta
-        break;
-      case 'info':
-        // Lógica para más info
-        break;
-      case 'history':
-        navigate(`/Inicio/pacientes/historia/${record.id}`); // Ruta absoluta
-        break;
-      case 'delete':
-        // Lógica para eliminar
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleButton = () => {
-    navigate('registrar');
-  };
-
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-  };
-
   return (
     <div style={{ height: '100%', paddingTop: '50px', maxWidth: 'calc(100% - 200px)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto' }}>
@@ -107,7 +108,7 @@ export default function Patients() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />

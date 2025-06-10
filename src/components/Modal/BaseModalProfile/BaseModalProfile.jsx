@@ -22,7 +22,6 @@ const ModalBase = ({
 }) => {
   const [form] = Form.useForm();
 
-  // Efecto para resetear el formulario cuando se abre/cierra
   React.useEffect(() => {
     if (isOpen) {
       form.resetFields();
@@ -36,7 +35,6 @@ const ModalBase = ({
 
   const handleSubmit = (values) => {
     onSubmit(values);
-    // Limpiamos el formulario después de un submit exitoso
     if (type !== 'code') {
       form.resetFields();
     }
@@ -99,6 +97,19 @@ const ModalBase = ({
                     inputClassName={styles.otpSingleInput}
                   />
                 </div>
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  block
+                  loading={loading}
+                  className={styles.modalSubmitButton}
+                >
+                  Verificar código
+                </Button>
               </Form.Item>
             </Form>
 
@@ -219,9 +230,10 @@ const ModalBase = ({
   };
 
   const renderSubmitButton = () => {
+    if (type === 'code') return null;
+
     const buttonTexts = {
       email: 'Enviar código de verificación',
-      code: 'Verificar código',
       currentPassword: 'Verificar contraseña',
       newPassword: 'Actualizar contraseña',
     };
@@ -251,8 +263,8 @@ const ModalBase = ({
       width={520}
       closable={false}
       className={styles.modalContainer}
-      destroyOnClose // Esto asegura que el componente se destruya al cerrar
-      forceRender // Fuerza el renderizado del contenido al abrir el modal
+      destroyOnClose
+      forceRender
     >
       <div className={styles.modalHeader}>
         <Button
@@ -272,7 +284,7 @@ const ModalBase = ({
 
         {renderContent()}
 
-        {type !== 'code' && renderSubmitButton()}
+        {renderSubmitButton()}
       </div>
     </Modal>
   );

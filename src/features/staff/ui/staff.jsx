@@ -1,31 +1,44 @@
-import React from 'react';
-import estilo from './staff.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
+import { Button, Space } from 'antd';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
+import ModeloTable from '../../../components/Table/Tabla';
 import { useStaff } from '../hook/staffHook';
 
 export default function Staff() {
   const navigate = useNavigate();
-
-  const { 
-    staff, 
-    loading, 
-    error, 
-    pagination, 
-    handlePageChange, 
-    setSearchTerm 
-  } = useStaff();
-
-  // Debug (verifica en consola)
-  console.log('Datos:', {
+  const {
     staff,
     loading,
-    error,
     pagination,
-  });
+    handlePageChange,
+    setSearchTerm,
+    handleDeleteTherapist,
+  } = useStaff();
+
+  const handleAction = (action, record) => {
+    switch(action) {
+      case 'edit':
+        navigate(`editar/${record.id}`);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'delete':
+        handleDeleteTherapist(record.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleButton = () => {
+    navigate('registrar');
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
 
   const columns = [
     {
@@ -67,35 +80,6 @@ export default function Staff() {
     },
   ];
 
-  const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
-    switch(action) {
-      case 'edit':
-        // Lógica para editar
-        break;
-      case 'info':
-        // Lógica para más info
-        break;
-      case 'delete':
-        // Lógica para eliminar
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
-    navigate('registrar');
-  };
-
-  const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
-    setSearchTerm(value);
-  };
-
-
   return (
     <div
       style={{
@@ -128,7 +112,7 @@ export default function Staff() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />

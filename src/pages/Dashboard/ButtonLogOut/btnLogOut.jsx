@@ -10,14 +10,16 @@ export default function BtnLogOut() {
     setLoading(true);
     try {
       await logOut();
+    } catch (error) {
+      console.error('Error durante el logout:', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <button 
-      onClick={handleLogOut} 
+    <button
+      onClick={handleLogOut}
       className={Style.btnLogOut}
       disabled={loading}
     >

@@ -1,11 +1,9 @@
-import axios from 'axios';
-import { get, post } from '../../../services/api/Axios/MethodsGeneral';
+import { del, get, post } from '../../../services/api/Axios/MethodsGeneral';
 
-export const getPatients = async (page = 1, perPage = 100) => {
+export const getPatients = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
-    // Asegurar que siempre trabajamos con un array
     let data = [];
     if (response.data) {
       if (Array.isArray(response.data)) {
@@ -20,10 +18,9 @@ export const getPatients = async (page = 1, perPage = 100) => {
     return {
       data,
       total: response.data?.total || data.length || 0,
-      status: response.status,
     };
   } catch (error) {
-    console.error('Error en getPatients:', error);
+    console.error('Error obteniendo pacientes:', error);
     throw error;
   }
 };
@@ -31,16 +28,12 @@ export const getPatients = async (page = 1, perPage = 100) => {
 export const searchPatients = async (term) => {
   try {
     const res = await get(`patients/search?search=${term}&per_page=100`);
-    console.log('🔍 Resultado de búsqueda:', res.data);
-
-    const data = Array.isArray(res.data)
-      ? res.data
-      : res.data.items || res.data.data || [];
-    const total = res.data.total || data.length;
-
-    return { data, total };
+    return { 
+      data: Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [],
+      total: res.data?.total || 0
+    };
   } catch (error) {
-    console.error('❌ Error en searchPatients:', error);
+    console.error('Error buscando pacientes:', error);
     throw error;
   }
 };
@@ -50,7 +43,17 @@ export const createPatient = async (data) => {
     const response = await post('patients', data);
     return response.data;
   } catch (error) {
-    console.error('Error en createPatient:', error);
+    console.error('Error creando paciente:', error);
+    throw error;
+  }
+};
+
+export const deletePatient = async (patientId) => {
+  try {
+    const response = await del(`patients/${patientId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error eliminando paciente:', error);
     throw error;
   }
 };

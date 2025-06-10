@@ -19,7 +19,7 @@ export const searchAppointmentsComplete = async (term) => {
   }
 };
 
-export const getPaginatedAppointmentsCompleteByDate = async (date, perPage = 100) => {
+export const getPaginatedAppointmentsCompleteByDate = async (date, perPage = 50) => {
   try {
     const res = await get(
       `appointments/completed?per_page=${perPage}&date=${date}`,
