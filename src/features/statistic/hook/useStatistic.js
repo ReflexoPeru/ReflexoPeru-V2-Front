@@ -43,12 +43,13 @@ export const useStatistic = (startDate, endDate) => {
       setTotalPatients(patientsTotal);
       setTotalEarnings(earningsTotal);
 
-      // Procesar datos de terapeutas (top 5 ordenados por sesiones)
+      // Procesar datos de terapeutas (ordenados por sesiones)
       const sortedTherapists = [...data.data.terapeutas]
         .sort((a, b) => b.sesiones - a.sesiones)
-        .slice(0, 5)
         .map((therapist) => ({
-          name: therapist.terapeuta.split(',')[0], // Mostrar solo el apellido y primer nombre
+          id: therapist.id,
+          name: therapist.terapeuta.split(',')[0].trim(), // Mostrar solo el apellido
+          fullName: therapist.terapeuta, // Guardar nombre completo para tooltip
           sessions: therapist.sesiones,
           income: therapist.ingresos,
           rating: therapist.raiting,
@@ -96,15 +97,26 @@ export const useStatistic = (startDate, endDate) => {
         dateFormat = 'DD MMM';
         const weeks = Math.ceil(daysDiff / 7);
         for (let i = 0; i < weeks; i++) {
-          dateCategories.push(`Sem ${i + 1}`);
+          dateCategories.push(
+            dayjs(startDate).add(i * 7, 'day').format('DD MMM'),
+          );
         }
-      } else {
-        // 3 meses - mostrar meses
-        dateFormat = 'MMM';
-        const months = Math.ceil(daysDiff / 30);
+      } else if (daysDiff <= 365) {
+        // Hasta 1 año - mostrar meses
+        dateFormat = 'MMM YYYY';
+        const months = endDate.diff(startDate, 'month') + 1;
         for (let i = 0; i < months; i++) {
           dateCategories.push(
             dayjs(startDate).add(i, 'month').format(dateFormat),
+          );
+        }
+      } else {
+        // Más de 1 año - mostrar años
+        dateFormat = 'YYYY';
+        const years = endDate.diff(startDate, 'year') + 1;
+        for (let i = 0; i < years; i++) {
+          dateCategories.push(
+            dayjs(startDate).add(i, 'year').format(dateFormat),
           );
         }
       }
@@ -250,6 +262,13 @@ export const useStatistic = (startDate, endDate) => {
           },
           x: {
             show: true,
+            formatter: (val) => {
+              if (daysDiff <= 1) return `Hora: ${val}`;
+              if (daysDiff <= 7) return `Día: ${val}`;
+              if (daysDiff <= 30) return `Semana: ${val}`;
+              if (daysDiff <= 365) return `Mes: ${val}`;
+              return `Año: ${val}`;
+            },
           },
           y: {
             formatter: (val) => `${val} sesiones`,

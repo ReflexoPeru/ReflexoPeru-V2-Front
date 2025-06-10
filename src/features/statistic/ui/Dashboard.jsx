@@ -84,8 +84,8 @@ export default function PerformanceDashboard() {
   const [timeFilter, setTimeFilter] = useState('7días');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState([
-    dayjs().subtract(6, 'day'),
-    dayjs(),
+    dayjs().subtract(6, 'day').startOf('day'),
+    dayjs().endOf('day'),
   ]);
 
   const {
@@ -109,7 +109,7 @@ export default function PerformanceDashboard() {
     setTimeFilter(value);
     setShowDatePicker(false);
 
-    const today = dayjs();
+    const today = dayjs().endOf('day');
     let startDate = today;
 
     switch (value) {
@@ -117,13 +117,16 @@ export default function PerformanceDashboard() {
         startDate = today.subtract(1, 'day');
         break;
       case '7días':
-        startDate = today.subtract(7, 'day');
+        startDate = today.subtract(6, 'day').startOf('day');
         break;
       case '28días':
-        startDate = today.subtract(28, 'day');
+        startDate = today.subtract(27, 'day').startOf('day');
         break;
       case '3meses':
-        startDate = today.subtract(3, 'month');
+        startDate = today.subtract(2, 'month').startOf('month');
+        break;
+      case '1año':
+        startDate = today.subtract(11, 'month').startOf('month');
         break;
       default:
         return;
@@ -134,9 +137,34 @@ export default function PerformanceDashboard() {
 
   const handleDateRangeChange = (dates) => {
     if (dates) {
-      setDateRange(dates);
+      setDateRange([dates[0].startOf('day'), dates[1].endOf('day')]);
       setTimeFilter('personalizado');
     }
+  };
+
+  // Configuración del scroll personalizado
+  const scrollbarStyles = {
+    scrollbarWidth: 'thin',
+    scrollbarColor: '#1DB954 #2a2a2a',
+    '&::-webkit-scrollbar': {
+      width: '8px',
+      height: '8px',
+    },
+    '&::-webkit-scrollbar-track': {
+      background: '#2a2a2a',
+      borderRadius: '10px',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: '#1DB954',
+      borderRadius: '10px',
+    },
+  };
+
+  // Función para obtener color según rating
+  const getRatingColor = (rating) => {
+    if (rating >= 4) return '#1DB954'; // Verde
+    if (rating >= 2.5) return '#F97316'; // Naranja
+    return '#EF4444'; // Rojo
   };
 
   // Configuración del gráfico de distribución de pagos
@@ -194,7 +222,9 @@ export default function PerformanceDashboard() {
       theme: 'dark',
       y: {
         formatter: (val) =>
-          `${val}% (${formatCurrency(paymentTypes.find((p) => p.percentage == val)?.value || 0)})`,
+          `${val}% (${formatCurrency(
+            paymentTypes.find((p) => p.percentage == val)?.value || 0,
+          )})`,
       },
     },
     legend: { show: false },
@@ -206,6 +236,23 @@ export default function PerformanceDashboard() {
       data: paymentTypes.map((payment) => parseFloat(payment.percentage)),
     },
   ];
+
+  // Función para obtener el subtítulo del rango de fechas
+  const getDateRangeSubtitle = () => {
+    if (timeFilter === '24horas') return 'Últimas 24 horas';
+    if (timeFilter === '7días') return 'Últimos 7 días';
+    if (timeFilter === '28días') return 'Últimas 4 semanas';
+    if (timeFilter === '3meses') return 'Últimos 3 meses';
+    if (timeFilter === '1año') return 'Último año';
+    
+    // Para rangos personalizados
+    const daysDiff = dateRange[1].diff(dateRange[0], 'day');
+    if (daysDiff <= 1) return `Día: ${dateRange[0].format('DD MMM YYYY')}`;
+    if (daysDiff <= 7) return `Semana: ${dateRange[0].format('DD MMM')} - ${dateRange[1].format('DD MMM YYYY')}`;
+    if (daysDiff <= 30) return `Mes: ${dateRange[0].format('MMM')} - ${dateRange[1].format('MMM YYYY')}`;
+    if (daysDiff <= 365) return `${dateRange[0].format('MMM YYYY')} - ${dateRange[1].format('MMM YYYY')}`;
+    return `${dateRange[0].format('YYYY')} - ${dateRange[1].format('YYYY')}`;
+  };
 
   return (
     <ConfigProvider theme={themeConfig}>
@@ -222,6 +269,7 @@ export default function PerformanceDashboard() {
             <Radio.Button value="7días">7 DÍAS</Radio.Button>
             <Radio.Button value="28días">28 DÍAS</Radio.Button>
             <Radio.Button value="3meses">3 MESES</Radio.Button>
+            <Radio.Button value="1año">1 AÑO</Radio.Button>
           </Radio.Group>
 
           <Button
@@ -242,7 +290,7 @@ export default function PerformanceDashboard() {
               }
               placeholder={['Fecha inicio', 'Fecha fin']}
               format="DD/MM/YYYY"
-              allowClear={true}
+              allowClear={false}
               size="large"
             />
           )}
@@ -286,15 +334,7 @@ export default function PerformanceDashboard() {
               <div className={Style.chartHeader}>
                 <h3 className={Style.chartTitle}>Indicación de Sesiones</h3>
                 <span className={Style.chartSubtitle}>
-                  {timeFilter === '24horas'
-                    ? 'Últimas 24 horas'
-                    : timeFilter === '7días'
-                      ? 'Últimos 7 días'
-                      : timeFilter === '28días'
-                        ? 'Últimas 4 semanas'
-                        : timeFilter === '3meses'
-                          ? 'Últimos 3 meses'
-                          : 'Período personalizado'}
+                  {getDateRangeSubtitle()}
                 </span>
               </div>
               <div className={Style.chartContainer}>
@@ -331,55 +371,37 @@ export default function PerformanceDashboard() {
                 <h3 className={Style.sectionTitle}>
                   Rendimiento de Terapeutas
                 </h3>
-                <p className={Style.sectionSubtitle}>Top 5 terapeutas</p>
+                <p className={Style.sectionSubtitle}>
+                  {therapistPerformance.length} terapeutas en el período
+                </p>
 
                 <div
                   className={Style.therapistsTableContainer}
-                  style={{ overflow: 'hidden' }}
+                  style={{
+                    maxHeight: '400px',
+                    overflowY: 'auto',
+                    ...scrollbarStyles,
+                  }}
                 >
                   <div className={Style.tableHeader}>
-                    <span
-                      style={{
-                        flex: '2',
-                        minWidth: 0,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      Terapeuta
-                    </span>
-                    <span
-                      style={{
-                        flex: '0 0 80px',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <span style={{ flex: '2', minWidth: 0 }}>Terapeuta</span>
+                    <span style={{ flex: '0 0 80px', textAlign: 'center' }}>
                       Sesiones
                     </span>
-                    <span
-                      style={{
-                        flex: '0 0 90px',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <span style={{ flex: '0 0 90px', textAlign: 'center' }}>
                       Ingresos
                     </span>
-                    <span
-                      style={{
-                        flex: '0 0 70px',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <span style={{ flex: '0 0 70px', textAlign: 'center' }}>
                       Rating
                     </span>
                   </div>
 
                   {therapistPerformance.map((therapist, index) => (
                     <div
-                      key={index}
-                      className={`${Style.tableRow} ${index % 2 === 0 ? Style.evenRow : Style.oddRow}`}
-                      style={{ overflow: 'hidden' }}
+                      key={therapist.id}
+                      className={`${Style.tableRow} ${
+                        index % 2 === 0 ? Style.evenRow : Style.oddRow
+                      }`}
                     >
                       <span
                         style={{
@@ -388,8 +410,8 @@ export default function PerformanceDashboard() {
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          paddingRight: '8px',
                         }}
+                        title={therapist.fullName}
                       >
                         {therapist.name}
                       </span>
@@ -414,6 +436,7 @@ export default function PerformanceDashboard() {
                         style={{
                           flex: '0 0 70px',
                           textAlign: 'center',
+                          color: getRatingColor(therapist.rating),
                         }}
                       >
                         {therapist.rating.toFixed(1)}
