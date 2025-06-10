@@ -1,13 +1,14 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Space, Button } from 'antd';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { Button, Space } from 'antd';
-import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
+import './patients.module.css';
 
 export default function Patients() {
   const navigate = useNavigate();
-
   const {
     patients,
     loading,
@@ -91,30 +92,15 @@ export default function Patients() {
   ];
 
   return (
-    <div
-      style={{
-        height: '100%',
-        paddingTop: '50px',
-        maxWidth: 'calc(100% - 200px)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          margin: '0 auto',
-        }}
-      >
+    <div style={{ height: '100%', paddingTop: '50px', maxWidth: 'calc(100% - 200px)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto' }}>
         <CustomButton text="Crear Paciente" onClick={handleButton} />
-
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
           width="100%"
         />
       </div>
-
       <ModeloTable
         columns={columns}
         data={patients}

@@ -673,10 +673,25 @@ export const defaultConfig = {
     duration: 5000,
   },
   efectivo: {
-    type: 'success',
+    type: 'info',
     icon: 'fa-solid fa-money-bill-wave',
-    title: 'Efectivo',
+    title: 'Actualizado',
     message: 'Método de pago Efectivo',
+    duration: 5000,
+  },
+  pagoelminado: {
+    type: 'success',
+    icon: 'fa-solid fa-trash-can',
+    title: 'Eliminado',
+    message: 'Pago eliminado exitosamente',
+    duration: 5000,
+  },
+
+  actualizadouser: {
+    type: 'info',
+    icon: 'fa-solid fa-user-pen',
+    title: 'Actualizado',
+    message: 'Aquí hay información importante',
     duration: 5000,
   },
 };

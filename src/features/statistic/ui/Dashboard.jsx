@@ -1,393 +1,528 @@
 import React, { useState } from 'react';
-import { DatePicker, ConfigProvider, theme } from 'antd';
+import { Radio, Button, DatePicker, ConfigProvider } from 'antd';
 import dayjs from 'dayjs';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
-import { useStatistic } from '../hook/useStatistic';
 
-export default function Dashboard() {
-  const [dateRange, setDateRange] = useState([dayjs(), dayjs()]);
+const { RangePicker } = DatePicker;
 
-  const {
-    chartSeries,
-    categories,
-    pieSeries,
-    pieOptions,
-    chartOptions,
-    therapistPerformance,
-    paymentTypes,
-    monthlySessions,
-    patientTypes,
-    metricsSeries,
-  } = useStatistic(
-    dateRange[0].format('YYYY-MM-DD'),
-    dateRange[1].format('YYYY-MM-DD'),
-  );
-  console.log(metricsSeries);
-  // Opciones para el gráfico de barras apiladas
-  const stackedBarOptions = {
-    chart: {
-      type: 'bar',
-      stacked: true,
-      toolbar: {
-        show: false,
+// Configuración del tema premium mejorada
+const themeConfig = {
+  token: {
+    colorPrimary: '#1DB954',
+    colorBgBase: '#121212',
+    colorTextBase: '#f1f1f1',
+    colorBorder: '#393939',
+    colorBgContainer: '#1a1a1a',
+    colorText: '#f1f1f1',
+    colorTextSecondary: '#9CA3AF',
+    borderRadius: 8,
+    controlHeight: 40,
+    fontSize: 14,
+  },
+  components: {
+    Radio: {
+      buttonBg: '#2a2a2a',
+      buttonColor: '#f1f1f1',
+      buttonCheckedBg: '#1DB954',
+      buttonCheckedColor: '#121212',
+      colorBorder: '#393939',
+      buttonPaddingInline: 16,
+      fontWeight: 500,
+    },
+    Button: {
+      defaultBg: '#2a2a2a',
+      defaultColor: '#f1f1f1',
+      defaultBorderColor: '#393939',
+      primaryBg: '#1DB954',
+      primaryColor: '#121212',
+      borderRadius: 8,
+      fontWeight: 500,
+      paddingInline: 16,
+    },
+    DatePicker: {
+      colorBgContainer: '#2a2a2a',
+      colorBorder: '#393939',
+      colorText: '#f1f1f1',
+      colorTextPlaceholder: '#9CA3AF',
+      colorBgElevated: '#1a1a1a',
+      colorTextDisabled: '#666666',
+      colorBorderSecondary: '#393939',
+      controlItemBgHover: '#333333',
+      controlItemBgActive: '#1DB954',
+      controlItemBgActiveHover: '#1DB954',
+      colorPrimary: '#1DB954',
+      colorPrimaryHover: '#1ed760',
+      colorPrimaryActive: '#1aa34a',
+      colorTextHeading: '#f1f1f1',
+      colorIcon: '#9CA3AF',
+      colorIconHover: '#f1f1f1',
+      borderRadius: 8,
+      borderRadiusOuter: 8,
+      controlHeightLG: 40,
+      paddingInline: 12,
+    },
+    Picker: {
+      colorBgContainer: '#2a2a2a',
+      colorBorder: '#393939',
+      colorText: '#f1f1f1',
+      colorTextPlaceholder: '#9CA3AF',
+      colorBgElevated: '#1a1a1a',
+      colorPrimary: '#1DB954',
+      colorPrimaryHover: '#1ed760',
+      controlItemBgHover: '#333333',
+      controlItemBgActive: '#1DB954',
+      colorTextHeading: '#f1f1f1',
+      colorIcon: '#9CA3AF',
+      colorIconHover: '#f1f1f1',
+    },
+  },
+};
+
+export default function PerformanceDashboard() {
+  const [timeFilter, setTimeFilter] = useState('7días');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateRange, setDateRange] = useState([
+    dayjs().subtract(6, 'week'),
+    dayjs(),
+  ]);
+
+  // Datos de ejemplo con picos pronunciados
+  const metrics = {
+    sessions: 324,
+    patients: 262,
+    payments: {
+      total: 6324,
+      yape: 4237,
+      efectivo: 1582,
+      transferencia: 505,
+      cupon: 0,
+    },
+    therapists: [
+      { name: 'LOPEZ MARILLO, JOSEL', sessions: 22, income: 1100, rating: 4.2 },
+      {
+        name: 'OLISPE GAMBOA, NICOLASA VILLA',
+        sessions: 20,
+        income: 1100,
+        rating: 4.0,
       },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        barHeight: '100%',
-      },
-    },
-    dataLabels: {
-      enabled: true,
-      style: {
-        colors: ['#00008066'],
-      },
-    },
-    stroke: {
-      width: 1,
-      colors: ['#00000066'],
-    },
-    xaxis: {
-      categories: ['Pacientes'],
-      labels: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-    },
-    yaxis: {
-      labels: {
-        show: false,
-      },
-    },
-    fill: {
-      opacity: 1,
-      colors: ['#FF5733', '#33FF57'],
-    },
-    legend: {
-      position: 'bottom',
-    },
-    grid: {
-      show: false,
-    },
+      { name: 'GUTIERREZ, MARIA', sessions: 18, income: 950, rating: 4.5 },
+      { name: 'RODRIGUEZ, CARLOS', sessions: 15, income: 800, rating: 4.1 },
+      { name: 'PEREZ, ANA', sessions: 12, income: 700, rating: 3.9 },
+    ],
+    // Datos con picos más pronunciados como en la imagen
+    sessionData: [85, 88, 92, 89, 95, 40, 18],
   };
 
-  // Opciones para el gráfico de barras
-  const barChartOptions = {
+  // Configuración del gráfico con área y picos pronunciados
+  const sessionChartOptions = {
     chart: {
-      type: 'bar',
+      type: 'area',
       height: '100%',
-      width: '100%',
-      toolbar: {
-        show: false,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+      background: 'transparent',
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
       },
-    },
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '55%',
-        endingShape: 'rounded',
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    stroke: {
-      show: true,
-      width: 2,
-      colors: ['transparent'],
-    },
-    colors: ['#1DB954'],
-    xaxis: {
-      categories: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
-      labels: {
-        show: true,
-      },
-    },
-    yaxis: {
-      labels: {},
-      axisTicks: {
-        show: false,
-      },
-    },
-    fill: {
-      opacity: 1,
-    },
-    grid: {
-      show: false,
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return val + ' sesiones';
-        },
-      },
-    },
-  };
-
-  // Opciones para el gráfico de líneas
-  const lineChartOptions = {
-    chart: {
-      type: 'line',
-      height: '100%',
-      width: '100%',
-      toolbar: {
-        show: false,
-      },
-    },
-    toolbar: {
-      show: false,
     },
     stroke: {
       curve: 'smooth',
+      width: 3,
+      colors: ['#1DB954'],
+    },
+    markers: {
+      size: 5,
+      colors: ['#1DB954'],
+      strokeWidth: 2,
+      strokeColors: '#1DB954',
+      hover: {
+        size: 8,
+        sizeOffset: 3,
+      },
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        type: 'vertical',
+        opacityFrom: 0.8,
+        opacityTo: 0.1,
+        colorStops: [
+          {
+            offset: 0,
+            color: '#1DB954',
+            opacity: 0.8,
+          },
+          {
+            offset: 50,
+            color: '#1DB954',
+            opacity: 0.4,
+          },
+          {
+            offset: 100,
+            color: '#1DB954',
+            opacity: 0.1,
+          },
+        ],
+      },
     },
     xaxis: {
-      categories: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+      categories: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+      labels: {
+        style: {
+          colors: '#9CA3AF',
+          fontSize: '11px',
+          fontWeight: 500,
+        },
+      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
     },
     yaxis: {
       labels: {
-        formatter: function (val) {
-          return 'S/' + val;
+        style: {
+          colors: '#9CA3AF',
+          fontSize: '11px',
         },
+        formatter: (val) => Math.floor(val),
       },
+      min: 0,
+      max: 100,
     },
     colors: ['#1DB954'],
     grid: {
-      show: false,
+      borderColor: 'rgba(255, 255, 255, 0.08)',
+      strokeDashArray: 2,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
+      },
     },
     tooltip: {
+      theme: 'dark',
+      style: {
+        fontSize: '12px',
+      },
+      x: {
+        show: true,
+      },
       y: {
-        formatter: function (val) {
-          return 'S/' + val;
-        },
+        formatter: (val) => `${val} sesiones`,
+      },
+      marker: {
+        show: true,
       },
     },
+    dataLabels: { enabled: false },
   };
 
-  // Opciones para el gráfico de barras horizontales
-  const barChartHorizontalOptions = {
+  // Configuración del gráfico de distribución de pagos con colores específicos
+  const paymentDistributionOptions = {
     chart: {
       type: 'bar',
-      height: '100%',
-      width: '100%',
-      toolbar: {
-        show: false,
-      },
+      height: 280,
+      toolbar: { show: false },
+      background: 'transparent',
     },
     plotOptions: {
       bar: {
         horizontal: true,
+        borderRadius: 6,
         distributed: true,
+        barHeight: '60%',
       },
-    },
-    toolbar: {
-      show: false,
     },
     dataLabels: {
       enabled: true,
-      textAnchor: 'start',
+      formatter: (val) => `S/ ${val.toLocaleString()}`,
       style: {
+        fontSize: '11px',
+        fontWeight: 'bold',
         colors: ['#fff'],
       },
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex] + ':  ' + val;
-      },
-      offsetX: 0,
-      dropShadow: {
-        enabled: true,
-      },
+      offsetX: 10,
     },
-    stroke: {
-      show: true,
-      width: 2,
-      colors: ['transparent'],
-    },
+    // Colores específicos: Yape (morado), Efectivo (verde), Transferencia (celeste), Cupón (naranja)
+    colors: ['#8B5CF6', '#10B981', '#06B6D4', '#F97316'],
     xaxis: {
-      categories: ['Yape', 'Efectivo', 'Cupon'],
+      categories: ['Yape', 'Efectivo', 'Transferencia', 'Cupón'],
       labels: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
+        style: {
+          colors: '#9CA3AF',
+          fontSize: '11px',
+        },
+        formatter: (val) => `S/ ${val.toLocaleString()}`,
       },
     },
-    colors: ['#FF5733', '#33FF57', '#3357FF', '#F3FF33', '#FF33F3'],
     yaxis: {
       labels: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
+        style: {
+          colors: '#f1f1f1',
+          fontSize: '12px',
+          fontWeight: 500,
+        },
       },
     },
     grid: {
-      show: false,
+      borderColor: 'rgba(255, 255, 255, 0.08)',
+      strokeDashArray: 2,
     },
-    legend: {
-      show: false,
+    tooltip: {
+      theme: 'dark',
+      y: {
+        formatter: (val) => `S/ ${val.toLocaleString()}`,
+      },
     },
-    fill: {
-      opacity: 1,
+    legend: { show: false },
+  };
+
+  const paymentDistributionSeries = [
+    {
+      name: 'Monto',
+      data: [
+        metrics.payments.yape,
+        metrics.payments.efectivo,
+        metrics.payments.transferencia,
+        metrics.payments.cupon,
+      ],
     },
+  ];
+
+  const handleTimeFilterChange = (e) => {
+    const value = e.target.value;
+    setTimeFilter(value);
+    setShowDatePicker(false);
+
+    const today = dayjs();
+    let startDate = today;
+
+    switch (value) {
+      case '24horas':
+        startDate = today.subtract(1, 'day');
+        break;
+      case '7días':
+        startDate = today.subtract(7, 'day');
+        break;
+      case '28días':
+        startDate = today.subtract(28, 'day');
+        break;
+      case '3meses':
+        startDate = today.subtract(3, 'month');
+        break;
+      default:
+        return;
+    }
+
+    setDateRange([startDate, today]);
+  };
+
+  const handleDateRangeChange = (dates) => {
+    if (dates) {
+      setDateRange(dates);
+      setTimeFilter('personalizado');
+    }
   };
 
   return (
-    <div className={Style.container}>
-      <div className={Style.dynamicContent}>
-        <div className={Style.groupone}>
-          <div
-            style={{
-              gap: '10px',
-              justifyContent: 'space-between',
-            }}
+    <ConfigProvider theme={themeConfig}>
+      <div className={Style.dashboardContainer}>
+        {/* Filtros superiores */}
+        <div className={Style.filterBar}>
+          <Radio.Group
+            value={timeFilter}
+            onChange={handleTimeFilterChange}
+            buttonStyle="solid"
+            className={Style.timeFilters}
           >
-            <div className={Style.contgraph}>
-              <h3>Tipos de Pacientes</h3>
-              <div className={Style.graph}>
-                <Chart
-                  options={stackedBarOptions}
-                  series={pieSeries}
-                  type="bar"
-                  height="70%"
-                  width="100%"
-                />
-              </div>
-            </div>
-            <div className={Style.contgraph}>
-              <h3>Rango de Fecha</h3>
-              <ConfigProvider
-                theme={{
-                  algorithm: theme.darkAlgorithm,
-                }}
-              >
-                <DatePicker.RangePicker
-                  value={dateRange}
-                  style={{ width: '100%', marginBottom: 16 }}
-                  onChange={(dates) => {
-                    setDateRange(dates);
-                  }}
-                  format="YYYY-MM-DD"
-                />
-              </ConfigProvider>
-            </div>
+            <Radio.Button value="24horas">24 HORAS</Radio.Button>
+            <Radio.Button value="7días">7 DÍAS</Radio.Button>
+            <Radio.Button value="28días">28 DÍAS</Radio.Button>
+            <Radio.Button value="3meses">3 MESES</Radio.Button>
+          </Radio.Group>
+
+          <Button
+            type={showDatePicker ? 'primary' : 'default'}
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className={Style.customDateButton}
+          >
+            Personalizado
+          </Button>
+
+          {showDatePicker && (
+            <RangePicker
+              value={dateRange}
+              onChange={handleDateRangeChange}
+              className={Style.datePicker}
+              disabledDate={(current) =>
+                current && current > dayjs().endOf('day')
+              }
+              placeholder={['Fecha inicio', 'Fecha fin']}
+              format="DD/MM/YYYY"
+              allowClear={true}
+              size="large"
+            />
+          )}
+        </div>
+
+        {/* Sección de métricas compactas - MÁS BAJAS */}
+        <div className={Style.compactMetricsSection}>
+          <div className={Style.smallMetricCard}>
+            <h3 className={Style.metricTitle}>SESIONES TOTALES</h3>
+            <div className={Style.metricValue}>{metrics.sessions}</div>
           </div>
-          <div className={Style.contgraph}>
-            <h3>Sesiones por Mes</h3>
-            <div className={Style.graph}>
-              <Chart
-                options={barChartOptions}
-                series={chartSeries}
-                type="bar"
-                height="180px"
-                width="450px"
-              />
-            </div>
+
+          <div className={Style.smallMetricCard}>
+            <h3 className={Style.metricTitle}>PACIENTES TOTALES</h3>
+            <div className={Style.metricValue}>{metrics.patients}</div>
           </div>
-          <div className={Style.contgraph}>
-            <h3>Ingresos Mensuales</h3>
-            <div className={Style.graph}>
-              <Chart
-                options={lineChartOptions}
-                series={monthlySessions}
-                type="line"
-                height="100%"
-                width="100%"
-              />
+
+          <div className={Style.earningsCard}>
+            <h3 className={Style.metricTitle}>GANANCIA TOTAL</h3>
+            <div className={Style.earningsValue}>
+              S/ {metrics.payments.total.toLocaleString()}
             </div>
+            <p className={Style.earningsSubtitle}>
+              Acumulado en el período seleccionado
+            </p>
           </div>
         </div>
-        <div className={Style.grouptwo}>
-          <div className={Style.contgraph}>
-            <div className={Style.contgraphbig}>
-              <h3>Rendimiento de Terapeutas</h3>
-              <div className={Style.graph}>
-                <div className={Style.tableContainer}>
-                  <table className={Style.table}>
-                    <thead>
-                      <tr>
-                        <th>Terapeuta</th>
-                        <th>Sesiones</th>
-                        <th>Ingresos</th>
-                        <th>Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {therapistPerformance.map((therapist, index) => (
-                        <tr key={index}>
-                          <td style={{ textAlign: 'center' }}>
-                            {therapist.name}
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            {therapist.data[0]}
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            S/ {therapist.data[1]}
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            {therapist.data[2].toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+
+        {/* Gráfico principal con picos */}
+        <div className={Style.mainChartSection}>
+          <div className={Style.chartHeader}>
+            <h3 className={Style.chartTitle}>Indicación de Sesiones</h3>
+            <span className={Style.chartSubtitle}>Últimas 6 semanas</span>
+          </div>
+          <div className={Style.chartContainer}>
+            <Chart
+              options={sessionChartOptions}
+              series={[{ name: 'Sesiones', data: metrics.sessionData }]}
+              type="area"
+              height="100%"
+            />
+          </div>
+        </div>
+
+        {/* Sección inferior con dos columnas */}
+        <div className={Style.bottomSection}>
+          {/* Distribución de pagos */}
+          <div className={Style.paymentSection}>
+            <h3 className={Style.sectionTitle}>Distribución de Pagos</h3>
+            <p className={Style.sectionSubtitle}>Por métodos de pago</p>
+
+            <div className={Style.paymentChartContainer}>
+              <Chart
+                options={paymentDistributionOptions}
+                series={paymentDistributionSeries}
+                type="bar"
+                height={280}
+              />
             </div>
           </div>
-          <div className={Style.groupthree}>
-            <div className={Style.contgraph}>
-              <h3>Métricas Principales</h3>
-              <div className={Style.graph}>
-                <div className={Style.metricsContainer}>
-                  <div className={Style.metricsRow}>
-                    <div className={Style.metrics}>
-                      <p>Pacientes:</p>
-                      <h1 className={Style.number}>
-                        {metricsSeries[1]?.data[0] || 0}
-                      </h1>
-                    </div>
-                    <div className={Style.metrics}>
-                      <p>Sesiones:</p>
-                      <h1 className={Style.number}>
-                        {metricsSeries[2]?.data[0] || 0}
-                      </h1>
-                    </div>
-                  </div>
 
-                  <div className={Style.bigmetrics}>
-                    <p>Ingresos:</p>
-                    <h1 className={Style.number}>
-                      {metricsSeries[0]?.data[0] || 0}
-                    </h1>
-                  </div>
+          {/* Rendimiento de terapeutas */}
+          <div className={Style.therapistsSection}>
+            <h3 className={Style.sectionTitle}>Rendimiento de Terapeutas</h3>
+            <p className={Style.sectionSubtitle}>Top 5 terapeutas</p>
+
+            <div
+              className={Style.therapistsTableContainer}
+              style={{ overflow: 'hidden' }}
+            >
+              <div className={Style.tableHeader}>
+                <span
+                  style={{
+                    flex: '2',
+                    minWidth: 0,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  Terapeuta
+                </span>
+                <span
+                  style={{
+                    flex: '0 0 80px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Sesiones
+                </span>
+                <span
+                  style={{
+                    flex: '0 0 90px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Ingresos
+                </span>
+                <span
+                  style={{
+                    flex: '0 0 70px',
+                    textAlign: 'center',
+                  }}
+                >
+                  Rating
+                </span>
+              </div>
+
+              {metrics.therapists.map((therapist, index) => (
+                <div
+                  key={index}
+                  className={`${Style.tableRow} ${index % 2 === 0 ? Style.evenRow : Style.oddRow}`}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <span
+                    style={{
+                      flex: '2',
+                      minWidth: 0,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      paddingRight: '8px',
+                    }}
+                  >
+                    {therapist.name}
+                  </span>
+                  <span
+                    style={{
+                      flex: '0 0 80px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {therapist.sessions}
+                  </span>
+                  <span
+                    style={{
+                      flex: '0 0 90px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    S/ {therapist.income.toFixed(2)}
+                  </span>
+                  <span
+                    className={Style.rating}
+                    style={{
+                      flex: '0 0 70px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {therapist.rating.toFixed(1)}
+                  </span>
                 </div>
-              </div>
-            </div>
-            <div className={Style.contgraph}>
-              <h3>Métodos de Pago</h3>
-              <div className={Style.graph}>
-                <Chart
-                  options={barChartHorizontalOptions}
-                  series={[{ data: paymentTypes }]}
-                  type="bar"
-                />
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 }
