@@ -1,17 +1,16 @@
+import { Button, ConfigProvider, Modal, Radio, Table, notification } from 'antd';
 import { useState } from 'react';
-import { Modal, Button, Table, Radio, ConfigProvider, Spin } from 'antd'; // 👈 Agregamos ConfigProvider
 import Form from '../../../../components/Form/Form';
-import styles from '../RegisterAppointment/NewAppointment.module.css';
-import { useAppointments, usePatients } from '../../hook/appointmentsHook';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
+import { useAppointments, usePatients } from '../../hook/appointmentsHook';
+import styles from '../RegisterAppointment/NewAppointment.module.css';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
   const [patientType, setPatientType] = useState('nuevo');
-  const [paymentOption, setPaymentOption] = useState(null);
-  const [customAmount, setCustomAmount] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   // Modal contribuidor
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -19,19 +18,11 @@ const NewAppointment = () => {
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const { submitNewAppointment } = useAppointments();
-  const { patients, loading, setSearchTerm } = usePatients(true);
+  const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
 
-  const paymentOptions = [
-    { label: 'Tarifa completa (S/80)', value: 'completa80', amount: 80 },
-    { label: 'Tarifa completa (S/50)', value: 'completa50', amount: 50 },
-    { label: 'Media tarifa (S/30)', value: 'media', amount: 30 },
-    { label: 'Cupón sin costo (S/0)', value: 'cupon', amount: 0 },
-    { label: 'Tarifa Personalizada', value: 'custom' },
-  ];
-
-  const handlePaymentOptionChange = (value) => {
-    setPaymentOption(value);
-    setCustomAmount(value === 'custom');
+  const handleServiceChange = (value) => {
+    console.log('Servicio seleccionado:', value);
+    setSelectedService(value);
   };
 
   const handleSubmit = async (values) => {
@@ -45,23 +36,36 @@ const NewAppointment = () => {
   };
 
   const handleCreatePatient = async (patientData) => {
-  try {
-    // Aquí puedes hacer cualquier transformación necesaria de los datos
-    const payload = {
-      ...patientData,
-      // Asegúrate de que los nombres de los campos coincidan con lo que espera tu API
-    };
-    
-    // Asumiendo que tienes un hook para crear pacientes
-    const response = await submitNewPatient(payload);
-    
-    return response.data; // O lo que devuelva tu API
-    
-  } catch (error) {
-    console.error('Error al crear paciente:', error);
-    throw error;
-  }
-};
+    try {
+      // Aquí deberías implementar la llamada a tu API para crear el paciente
+      // Ejemplo:
+      // const response = await api.createPatient(patientData);
+      // return response.data;
+      
+      // Simulación de creación exitosa
+      const mockResponse = { 
+        id: `new-patient-${Date.now()}`,
+        ...patientData,
+        full_name: `${patientData.first_name} ${patientData.last_name}`
+      };
+      
+      // Actualizar la lista de pacientes
+      await fetchPatients();
+      
+      return mockResponse;
+    } catch (error) {
+      console.error('Error al crear paciente:', error);
+      throw error;
+    }
+  };
+
+  const handleOpenCreateModal = () => {
+    setIsCreatePatientModalVisible(true);
+  };
+
+  const handleOpenSelectModal = () => {
+    setIsModalVisible(true);
+  };
 
   const appointmentFields = [
     {
@@ -75,7 +79,8 @@ const NewAppointment = () => {
           name: 'appointment_date',
           type: 'customComponent',
           componentType: 'dateField',
-          span: 13,
+          required: true,
+          span: 15,
         },
       ],
     },
@@ -86,12 +91,20 @@ const NewAppointment = () => {
           name: 'patient_id',
           type: 'customComponent',
           componentType: 'patientField',
-          span: 18,
+          span: 21,
           props: {
             patientTypeOptions: [
               { label: 'Nuevo', value: 'nuevo' },
               { label: 'Continuador', value: 'continuador' },
             ],
+            selectedPatient,
+            patientType,
+            onPatientTypeChange: (value) => {
+              setPatientType(value);
+              setSelectedPatient(null);
+            },
+            onOpenCreateModal: handleOpenCreateModal,
+            onOpenSelectModal: handleOpenSelectModal,
           },
         },
       ],
@@ -100,35 +113,25 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
-          type: 'customComponent',
-          componentType: 'paymentOptions',
-          span: 13,
-          props: { paymentOptions },
+          type: 'selectPrices',
+          required: true,
+          span: 15,
+          onChange: handleServiceChange,
         },
       ],
     },
+
     {
       type: 'customRow',
       fields: [
         {
-          type: 'customComponent',
-          componentType: 'paymentMethod',
-          span: 13,
+          type: 'paymentStatus',
+          span: 15,
           required: true,
         },
       ],
     },
-    {
-      type: 'customRow',
-      fields: [
-        {
-          type: 'customComponent',
-          componentType: 'amountField',
-          span: 13,
-          props: { paymentOptions },
-        },
-      ],
-    },
+
     {
       type: 'customRow',
       fields: [
@@ -136,7 +139,7 @@ const NewAppointment = () => {
           name: 'appointment_hour',
           type: 'customComponent',
           componentType: 'timeField',
-          span: 13,
+          span: 15,
           show: 'showHourField',
         },
       ],
@@ -157,17 +160,15 @@ const NewAppointment = () => {
         {
           type: 'customComponent',
           componentType: 'paymentCheckbox',
-          span: 8,
+          span: 10,
         },
       ],
     },
   ];
 
-
-  // Procesar los pacientes para asegurar que tengan keys únicos
   const processedPatients = patients.map((patient, index) => ({
     ...patient,
-    key: patient.id || `patient-${index}`, // Usar ID existente o crear uno temporal
+    key: patient.id || `patient-${index}`,
   }));
 
   const columns = [
@@ -190,7 +191,7 @@ const NewAppointment = () => {
     {
       title: 'Pacientes',
       dataIndex: 'full_name',
-      key: 'full_name', // Añadir key para la columna
+      key: 'full_name',
     },
   ];
 
@@ -198,7 +199,6 @@ const NewAppointment = () => {
     <ConfigProvider
       theme={{
         components: {
-          // Configuración para el componente Button
           Button: {
             colorPrimary: '#1cb54a',                 
             colorPrimaryHover: '#148235',             
@@ -213,7 +213,6 @@ const NewAppointment = () => {
             defaultActiveBg: '#b22525', 
             defaultActiveColor: '#ffffff', 
           },
-          // Configuración para el componente Table
           Table: {
             headerBg: '#272727', 
             headerColor: 'rgba(199,26,26,0.88)',
@@ -223,7 +222,6 @@ const NewAppointment = () => {
             cellPaddingBlock: 12,                     
             cellPaddingInline: 16, 
           },
-          // Configuración para el componente Radio
           Radio: {
             colorPrimary: '#1cb54a',                
           }
@@ -237,16 +235,17 @@ const NewAppointment = () => {
           showHourField={showHourField}
           isPaymentRequired={!isPaymentRequired}
           patientType={patientType}
-          paymentOption={paymentOption}
-          customAmount={customAmount}
-          onPaymentOptionChange={handlePaymentOptionChange}
-          onPatientTypeChange={(value) => setPatientType(value)}
+          onPatientTypeChange={(value) => {
+            setPatientType(value);
+            setSelectedPatient(null); // Resetear paciente al cambiar tipo
+          }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
           onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
           onSubmit={handleSubmit}
+          onOpenCreateModal={handleOpenCreateModal}
+          onOpenSelectModal={handleOpenSelectModal}
           submitButtonText={patientType === 'continuador' ? 'Elegir' : 'Crear'}
         />
-
 
         {/* MODAL SELECCIONAR CONTRIBUIDOR */}
         <Modal
@@ -270,20 +269,16 @@ const NewAppointment = () => {
               onClick={async () => {
                 if (!selectedRowKey) return;
                 
+                const selectedPatient = processedPatients.find(p => p.key === selectedRowKey);
+                setSelectedPatient(selectedPatient);
+                
                 setIsModalVisible(false);
-                try {
-                  const selectedPatient = processedPatients.find(p => p.key === selectedRowKey);
-                  const payload = {
-                    patient_id: selectedPatient.id || selectedRowKey,
-                    appointment_date: null,
-                    // ... otros campos ...
-                  };
-                  const result = await submitNewAppointment(payload);
-                  console.log('Cita enviada correctamente:', result);
-                  setSelectedRowKey(null);
-                } catch (error) {
-                  console.error('Error al enviar la cita:', error);
-                }
+                setSelectedRowKey(null);
+                
+                notification.success({
+                  message: 'Paciente seleccionado',
+                  description: `Se ha seleccionado a ${selectedPatient.full_name}`
+                });
               }}
             >
               Seleccionar
@@ -300,7 +295,7 @@ const NewAppointment = () => {
             dataSource={processedPatients}
             columns={columns}
             pagination={false}
-            rowKey="key" // Asegurar que la tabla use la propiedad key
+            rowKey="key"
             scroll={{ y: 200 }}
             loading={loading}
             onRow={(record) => ({
@@ -317,28 +312,28 @@ const NewAppointment = () => {
           open={isCreatePatientModalVisible}
           onCancel={() => setIsCreatePatientModalVisible(false)}
           footer={null}
-          width={800} // Ajusta el ancho según necesites
-          destroyOnClose // Esto asegura que el formulario se resetee al cerrar
+          width={800}
+          destroyOnClose
         >
           <NewPatient 
             onSubmit={async (patientData) => {
               try {
-                // Aquí puedes manejar la creación del paciente
                 const newPatient = await handleCreatePatient(patientData);
                 
-                // Cierra el modal después de crear el paciente
+                setSelectedPatient({
+                  id: newPatient.id,
+                  full_name: newPatient.full_name
+                });
+                
                 setIsCreatePatientModalVisible(false);
-                
-                // Opcional: Actualiza la lista de pacientes si es necesario
-                // fetchPatients();
-                
-                // Opcional: Selecciona automáticamente el nuevo paciente
-                // setSelectedPatient(newPatient.id);
                 
                 notification.success({
                   message: 'Paciente creado',
                   description: 'El paciente se ha registrado correctamente'
                 });
+                
+                // Cambiar automáticamente a tipo "continuador" después de crear
+                setPatientType('continuador');
               } catch (error) {
                 console.error('Error al crear paciente:', error);
                 notification.error({
@@ -355,3 +350,4 @@ const NewAppointment = () => {
 };
 
 export default NewAppointment;
+
