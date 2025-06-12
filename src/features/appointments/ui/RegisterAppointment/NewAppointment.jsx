@@ -25,6 +25,7 @@ const NewAppointment = () => {
     setSelectedService(value);
   };
 
+  //============================================================
   const handleSubmit = async (values) => {
     console.log('Valores recibidos en handleSubmit:', values);
 
@@ -34,6 +35,7 @@ const NewAppointment = () => {
       setIsModalVisible(true);
     }
   };
+  //===============================================================
 
   const handleCreatePatient = async (patientData) => {
     try {
