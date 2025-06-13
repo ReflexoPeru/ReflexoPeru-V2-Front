@@ -25,6 +25,18 @@ export const getPatients = async (page = 1, perPage = 50) => {
   }
 };
 
+//==============================================================================
+export const updatePatient = async (patientId, patientData) => {
+  try {
+    const response = await patch(`patients/${patientId}`, patientData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando paciente:', error);
+    throw error;
+  }
+};
+//==============================================================================
+
 export const searchPatients = async (term) => {
   try {
     const res = await get(`patients/search?search=${term}&per_page=100`);
