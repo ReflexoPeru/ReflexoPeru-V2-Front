@@ -1,6 +1,6 @@
 import { Form, Modal, notification } from 'antd';
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react'; // Importa useState aquí
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
 
@@ -144,9 +144,20 @@ const fields = [
 ];
 
 const EditPatient = ({ patientId, onClose }) => {
-  const [form] = Form.useForm(); // Usa Form.useForm directamente de antd
+  const [form] = Form.useForm();
   const { patients, handleUpdatePatient } = usePatients();
-  const patientData = patients.find(p => p.id === patientId);
+  const [loading, setLoading] = useState(false); // Ahora useState está definido
+  const [patientData, setPatientData] = useState(null); // Y aquí también
+
+  useEffect(() => {
+    if (patientId) {
+      const patient = patients.find(p => p.id === patientId);
+      if (patient) {
+        setPatientData(patient);
+        setLoading(false);
+      }
+    }
+  }, [patientId, patients]);
 
   useEffect(() => {
     if (patientData && form) {
@@ -166,6 +177,7 @@ const EditPatient = ({ patientId, onClose }) => {
 
   const handleSubmit = async (formData) => {
     try {
+      setLoading(true);
       await handleUpdatePatient(patientId, formData);
       notification.success({
         message: 'Éxito',
@@ -177,14 +189,17 @@ const EditPatient = ({ patientId, onClose }) => {
         message: 'Error',
         description: error.response?.data?.message || 'Error al actualizar el paciente'
       });
+    } finally {
+      setLoading(false);
     }
   };
 
+  if (loading) return <div>Cargando...</div>;
   if (!patientData) return null;
 
   return (
     <Modal
-      title="Editar Paciente"
+      title={`Editar Paciente: ${patientData.name}`}
       open={true}
       onCancel={onClose}
       footer={null}
@@ -193,11 +208,12 @@ const EditPatient = ({ patientId, onClose }) => {
       destroyOnClose
     >
       <FormGenerator 
-        form={form}  // Pasa la instancia del formulario
+        form={form}
         fields={fields}
         mode="edit"
         onSubmit={handleSubmit}
         onCancel={onClose}
+        loading={loading}
       />
     </Modal>
   );

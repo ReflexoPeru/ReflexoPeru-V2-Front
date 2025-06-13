@@ -69,6 +69,7 @@ const handleUpdatePatient = async (patientId, formData) => {
       throw error;
     }
   };
+//==================================================================================================
 
   const searchPatientsByTerm = async (term) => {
     if (loading) return;
