@@ -1,4 +1,4 @@
-import { del, get, post } from '../../../services/api/Axios/MethodsGeneral';
+import { del, get, post, put } from '../../../services/api/Axios/MethodsGeneral';
 
 export const getPatients = async (page = 1, perPage = 50) => {
   try {
@@ -21,6 +21,16 @@ export const getPatients = async (page = 1, perPage = 50) => {
     };
   } catch (error) {
     console.error('Error obteniendo pacientes:', error);
+    throw error;
+  }
+};
+
+export const updatePatient = async (patientId, patientData) => {
+  try {
+    const response = await put(`patients/${patientId}`, patientData);
+    return response.data;
+  } catch (error) {
+    console.error('Error actualizando paciente:', error);
     throw error;
   }
 };

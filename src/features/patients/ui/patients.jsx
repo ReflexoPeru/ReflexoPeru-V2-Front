@@ -1,13 +1,15 @@
+import { Button, Space } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { Button, Space } from 'antd';
-import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
+import EditPatient from '../ui/EditPatient/EditPatient';
 
 export default function Patients() {
   const navigate = useNavigate();
-
+  const [editingPatient, setEditingPatient] = useState(null);
   const {
     patients,
     loading,
@@ -20,19 +22,43 @@ export default function Patients() {
   const handleAction = (action, record) => {
     switch(action) {
       case 'edit':
-        navigate(`editar/${record.id}`);
-        break;
+        return (
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => setEditingPatient(record)}
+          >
+            Editar
+          </Button>
+        );
       case 'info':
-        navigate(`info/${record.id}`);
-        break;
+        return (
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => navigate(`info/${record.id}`)}
+          >
+            Más Info
+          </Button>
+        );
       case 'history':
-        navigate(`historia/${record.id}`);
-        break;
+        return (
+          <Button 
+            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
+            onClick={() => navigate(`historia/${record.id}`)}
+          >
+            Historia
+          </Button>
+        );
       case 'delete':
-        handleDeletePatient(record.id);
-        break;
+        return (
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleDeletePatient(record.id)}
+          >
+            Eliminar
+          </Button>
+        );
       default:
-        break;
+        return null;
     }
   };
 
@@ -61,53 +87,19 @@ export default function Patients() {
       key: 'actions',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('edit', record)}
-          >
-            Editar
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('info', record)}
-          >
-            Más Info
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('history', record)}
-          >
-            Historia
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('delete', record)}
-          >
-            Eliminar
-          </Button>
+          {handleAction('edit', record)}
+          {handleAction('info', record)}
+          {handleAction('history', record)}
+          {handleAction('delete', record)}
         </Space>
       ),
     },
   ];
 
   return (
-    <div
-      style={{
-        height: '100%',
-        paddingTop: '50px',
-        maxWidth: 'calc(100% - 200px)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          margin: '0 auto',
-        }}
-      >
+    <div style={{ height: '100%', paddingTop: '50px', maxWidth: 'calc(100% - 200px)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto' }}>
         <CustomButton text="Crear Paciente" onClick={handleButton} />
-
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
@@ -126,6 +118,14 @@ export default function Patients() {
           onChange: handlePageChange,
         }}
       />
+
+      {/* Modal de edición */}
+      {editingPatient && (
+        <EditPatient 
+          patientId={editingPatient.id} 
+          onClose={() => setEditingPatient(null)} 
+        />
+      )}
     </div>
   );
 }

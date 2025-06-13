@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { getPatients, searchPatients, deletePatient } from '../service/patientsService';
-import { createPatient } from '../service/patientsService';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { createPatient, deletePatient, getPatients, searchPatients, updatePatient } from '../service/patientsService';
 
 export const usePatients = () => {
   const [patients, setPatients] = useState([]);
@@ -29,6 +28,45 @@ export const usePatients = () => {
       console.error('Error al cargar pacientes:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  
+  //================================================================================================
+const handleUpdatePatient = async (patientId, formData) => {
+    try {
+      const payload = {
+        document_number: formData.document_number,
+        paternal_lastname: formData.paternal_lastname || formData.paternal_lastName,
+        maternal_lastname: formData.maternal_lastname || formData.maternal_lastName,
+        name: formData.name,
+        personal_reference: formData.personal_reference || null,
+        birth_date: formData.birth_date
+          ? dayjs(formData.birth_date).format('YYYY-MM-DD')
+          : null,
+        sex: formData.sex,
+        primary_phone: formData.primary_phone,
+        secondary_phone: formData.secondary_phone || null,
+        email: formData.email || null,
+        ocupation: formData.occupation || null,
+        address: formData.address,
+        document_type_id: formData.document_type_id,
+        country_id: 1,
+        region_id: formData.region_id || formData.ubicacion?.region_id || null,
+        province_id: formData.province_id || formData.ubicacion?.province_id || null,
+        district_id: formData.district_id || formData.ubicacion?.district_id || null,
+      };
+
+      await updatePatient(patientId, payload);
+      
+      // Recargar los datos actualizados
+      if (searchTerm.trim()) {
+        await searchPatientsByTerm(searchTerm.trim());
+      } else {
+        await loadPatients(pagination.currentPage);
+      }
+    } catch (error) {
+      console.error('Error actualizando paciente:', error);
+      throw error;
     }
   };
 
@@ -127,10 +165,12 @@ export const usePatients = () => {
     }
   };
 
+
   return {
     patients,
     loading,
     submitNewPatient,
+    handleUpdatePatient, // se añadio nueva funcion
     error,
     pagination,
     handlePageChange: loadPatients,
