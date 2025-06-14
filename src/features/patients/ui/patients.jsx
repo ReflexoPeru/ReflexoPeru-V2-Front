@@ -1,11 +1,15 @@
+import { Button, Space } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
 import { usePatients } from '../hook/patientsHook';
+import EditPatient from '../ui/EditPatient/EditPatient';
 
 export default function Patients() {
   const navigate = useNavigate();
-
+  const [editingPatient, setEditingPatient] = useState(null);
   const {
     patients,
     loading,
@@ -131,6 +135,7 @@ export default function Patients() {
           width="100%"
         />
       </div>
+
       <ModeloTable
         columns={columns}
         data={patients}
@@ -146,7 +151,7 @@ export default function Patients() {
       {/* Modal de edición */}
       {editingPatient && (
         <EditPatient
-          patientId={editingPatient.id}
+          patient={editingPatient}
           onClose={() => setEditingPatient(null)}
         />
       )}

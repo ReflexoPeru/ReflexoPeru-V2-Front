@@ -4,6 +4,8 @@ import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
 import { useStaff } from '../hook/staffHook';
+import { useState } from 'react';
+import EditTherapist from './EditTherapist/EditTherapist';
 
 export default function Staff() {
   const navigate = useNavigate();
@@ -15,11 +17,12 @@ export default function Staff() {
     setSearchTerm,
     handleDeleteTherapist,
   } = useStaff();
+  const [editingTherapist, setEditingTherapist] = useState(null);
 
   const handleAction = (action, record) => {
-    switch(action) {
+    switch (action) {
       case 'edit':
-        navigate(`editar/${record.id}`);
+        setEditingTherapist(record);
         break;
       case 'info':
         navigate(`info/${record.id}`);
@@ -57,20 +60,32 @@ export default function Staff() {
       key: 'actions',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('edit', record)}
           >
             Editar
           </Button>
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('info', record)}
           >
             Más Info
           </Button>
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('delete', record)}
           >
             Eliminar
@@ -116,6 +131,13 @@ export default function Staff() {
           onChange: handlePageChange,
         }}
       />
+
+      {editingTherapist && (
+        <EditTherapist
+          therapist={editingTherapist}
+          onClose={() => setEditingTherapist(null)}
+        />
+      )}
     </div>
   );
 }
