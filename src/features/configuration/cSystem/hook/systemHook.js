@@ -1,21 +1,16 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { getSystemInfo } from "../services/systemServices";
+import { getSystemInfo, getCompanyLogo } from "../services/systemServices";
 
 export const useSystemHook = () => {
-    const [systemInfo, setSystemInfo] = useState({
-        data: {
-            company_name: '',
-            logo_url: '',
-            has_logo: false
-        }
-    });
+    const [companyInfo, setCompanyInfo] = useState(null);
+    const [logoInfo, setLogoInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const abortControllerRef = useRef(null);
 
-    const fetchSystemInfo = useCallback(async () => {
+    const fetchData = useCallback(async () => {
         if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
+            abortControllerRef.current.abort();
         }
 
         abortControllerRef.current = new AbortController();
@@ -25,19 +20,30 @@ export const useSystemHook = () => {
         setError(null);
 
         try {
-        const data = await getSystemInfo(signal);
-        setSystemInfo(data);
+            const [infoResponse, logoResponse] = await Promise.all([
+                getSystemInfo(signal),
+                getCompanyLogo(signal)
+            ]);
+
+            setCompanyInfo(infoResponse.data);
+            setLogoInfo(logoResponse.data);
         } catch (err) {
-        setError(err);
-        console.error('Error fetching system info:', err);
+            setError(err);
+            console.error('Error fetching company data:', err);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchSystemInfo();
-    }, [fetchSystemInfo]);
+        fetchData();
+    }, [fetchData]);
 
-    return { systemInfo, loading, error, refetch: fetchSystemInfo };
-}
+    return { 
+        companyInfo,
+        logoInfo,
+        loading, 
+        error, 
+        refetch: fetchData 
+    };
+};

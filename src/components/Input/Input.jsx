@@ -8,7 +8,7 @@ import {
   Input,
   Select,
   TimePicker,
-  theme
+  theme,
 } from 'antd';
 import { useEffect } from 'react'; // 👈 Añadir esta importación
 import styles from '../Input/Input.module.css';
@@ -20,7 +20,6 @@ import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
 import SelectPrices from '../Select/SelectPrices'; // Ajusta la ruta según donde esté
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
-
 
 // ... importar los demás componentes Select
 const { Option } = Select;
@@ -48,7 +47,16 @@ const InputField = ({
       return <SelectCountries />;
 
     case 'ubigeo':
-      return <SelectUbigeoCascader onChange={rest.onChange} />;
+      return (
+        <Form.Item
+          name="ubicacion"
+          rules={[
+            { required: true, message: 'Por favor seleccione la ubicación' },
+          ]}
+        >
+          <SelectUbigeoCascader value={rest.value} onChange={rest.onChange} />
+        </Form.Item>
+      );
 
     case 'documentNumber':
       inputComponent = (
@@ -84,25 +92,29 @@ const InputField = ({
       return <SelectDiagnoses />;
 
     case 'paymentStatus':
-      return <Form.Item
-      label="Metodos de Pago:"
-      name="paymentstatus"
-      rules={[{ required: true, message: 'Este campo es requerido' }]}
-      >
-        <SelectPaymentStatus />
+      return (
+        <Form.Item
+          label="Metodos de Pago:"
+          name="paymentstatus"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <SelectPaymentStatus />
         </Form.Item>
+      );
 
     case 'typeOfDocument':
       return <SelectTypeOfDocument onChange={rest.onChange} />;
 
     case 'selectPrices':
-      return <Form.Item
-      label="Opciones de Pago:"
-      name="prices"
-      rules={[{ required: true, message: 'Este campo es requerido' }]}
-      >
-        <SelectPrices {...rest} />
+      return (
+        <Form.Item
+          label="Opciones de Pago:"
+          name="prices"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <SelectPrices {...rest} />
         </Form.Item>
+      );
 
     case 'select': // genérico
       return (
@@ -236,22 +248,22 @@ const DateField = ({ form }) => (
     className={styles.formItem}
   >
     <ConfigProvider
-          theme={{
-            components: {
-              DatePicker: {
-                panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
-                colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
-                colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
-                arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
-              },
-            },
-          }}
-        >
-          <DatePicker
-            style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
-            dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
-          />
-        </ConfigProvider>
+      theme={{
+        components: {
+          DatePicker: {
+            panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
+            colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
+            colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
+            arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
+          },
+        },
+      }}
+    >
+      <DatePicker
+        style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+        dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
+      />
+    </ConfigProvider>
   </Form.Item>
 );
 
@@ -266,13 +278,13 @@ const PatientField = ({
 }) => {
   // Usa useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
-  
+
   // Actualizar el valor del campo cuando cambia el paciente seleccionado
   useEffect(() => {
     if (formInstance && selectedPatient) {
       formInstance.setFieldsValue({
         pacienteId: selectedPatient.full_name,
-        patient_id: selectedPatient.id
+        patient_id: selectedPatient.id,
       });
     }
   }, [selectedPatient, formInstance]);
@@ -289,10 +301,10 @@ const PatientField = ({
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
-            <Input 
-              className={styles.inputStyle} 
+            <Input
+              className={styles.inputStyle}
               value={selectedPatient ? selectedPatient.full_name : ''}
-              readOnly 
+              readOnly
             />
           </Form.Item>
           {/* Campo oculto para el ID del paciente */}
@@ -303,8 +315,8 @@ const PatientField = ({
 
         {/* Botón Crear/Elegir */}
         <div className={styles.patientButtonContainer}>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             className={styles.patientButton}
             onClick={() => {
               if (patientType === 'nuevo') {
@@ -340,7 +352,7 @@ const TimeField = ({ form }) => (
   <Form.Item
     label="Hora de cita"
     name="horaCita"
-    rules={[{  message: 'Este campo es requerido' }]}
+    rules={[{ message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
     <ConfigProvider
@@ -361,7 +373,7 @@ const TimeField = ({ form }) => (
             colorTextDisabled: '#333333',
             colorTextHeading: '#FFFFFF',
           },
-        }
+        },
       }}
     >
       <TimePicker

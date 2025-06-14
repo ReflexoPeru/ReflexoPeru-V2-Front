@@ -1,24 +1,224 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ModeloTable from '../../../components/Table/Tabla';
 import styles from './Payments.module.css';
 import { usePaymentTypes, usePrices } from './paymentsHook';
-import { Button, Space } from 'antd';
+import {
+  Button,
+  Space,
+  Form,
+  Input,
+  Switch,
+  message,
+  ConfigProvider,
+  Popconfirm,
+} from 'antd';
+import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
 
-// Renderiza el estado con color simple
 const renderStatus = (status) => {
   if (status === 'Habilitado') {
     return <span className={styles.statusEnabled}>{status}</span>;
   }
-  return <span style={{ color: 'red' }}>{status}</span>;
+  return <span className={styles.statusDisabled}>{status}</span>;
 };
 
-const Payments = () => {                                                            
-  const { paymentTypes, loading: loadingPayments } = usePaymentTypes();
-  const { prices, loading: loadingPrices } = usePrices();
+const Payments = () => {
+  const [form] = Form.useForm();
+  const {
+    paymentTypes,
+    loading: loadingPayments,
+    addPaymentType,
+    editPaymentType,
+    removePaymentType,
+    refreshPaymentTypes,
+  } = usePaymentTypes();
+
+  const {
+    prices,
+    loading: loadingPrices,
+    addPrice,
+    editPrice,
+    removePrice,
+    refreshPrices,
+  } = usePrices();
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState(null);
+  const [modalType, setModalType] = useState('');
+  const [action, setAction] = useState('');
+
+  // Preparar los valores iniciales para el modal
+  const getInitialValues = () => {
+    if (action === 'edit' && currentRecord) {
+      const formData = {
+        name: currentRecord.name,
+        status: currentRecord.status === 'Habilitado',
+      };
+
+      // Si es un precio, agregar el campo price
+      if (modalType === 'price' && currentRecord.price) {
+        formData.price = parseFloat(currentRecord.price);
+      }
+
+      return formData;
+    }
+
+    // Valores por defecto para crear
+    return {
+      name: '',
+      status: true,
+      ...(modalType === 'price' && { price: '' }),
+    };
+  };
 
   const handleAction = (action, record) => {
-    console.log(`${action} action for:`, record);
+    setAction(action);
+    setCurrentRecord(record);
+    setModalType(record.price !== undefined ? 'price' : 'payment');
+
+    // Resetear el formulario antes de abrir el modal
+    form.resetFields();
+
+    setModalVisible(true);
+
+    // Usar setTimeout para asegurar que el modal se haya renderizado
+    setTimeout(() => {
+      if (action === 'edit') {
+        const formData = {
+          name: record.name, // Mantener el formato original para mostrar
+          status: record.status === 'Habilitado',
+        };
+
+        if (record.price !== undefined) {
+          formData.price = parseFloat(record.price);
+        }
+
+        form.setFieldsValue(formData);
+      }
+    }, 0);
   };
+
+  const handleCreate = (type) => {
+    setAction('create');
+    setModalType(type);
+    setCurrentRecord(null);
+
+    // Resetear completamente el formulario
+    form.resetFields();
+
+    setModalVisible(true);
+
+    // Establecer valores por defecto después de abrir el modal
+    setTimeout(() => {
+      form.setFieldsValue({
+        name: '',
+        status: true,
+        ...(type === 'price' && { price: '' }),
+      });
+    }, 0);
+  };
+
+  const handleSubmit = async (values) => {
+    try {
+      const payload = {
+        ...values,
+        // Convertir el nombre a mayúsculas
+        name: values.name?.toUpperCase().trim(),
+        status: values.status ? 'active' : 'inactive',
+      };
+
+      if (modalType === 'payment') {
+        if (action === 'create') {
+          await addPaymentType({ name: payload.name, status: payload.status });
+        } else {
+          await editPaymentType(currentRecord.id, {
+            name: payload.name,
+            status: payload.status,
+          });
+        }
+        refreshPaymentTypes();
+      } else {
+        if (action === 'create') {
+          await addPrice({
+            name: payload.name,
+            price: payload.price,
+            status: payload.status,
+          });
+        } else {
+          await editPrice(currentRecord.id, {
+            name: payload.name,
+            price: payload.price,
+            status: payload.status,
+          });
+        }
+        refreshPrices();
+      }
+
+      message.success(
+        action === 'create'
+          ? 'Registro creado exitosamente'
+          : 'Registro actualizado exitosamente',
+      );
+      handleModalCancel();
+    } catch (error) {
+      message.error('Ocurrió un error al procesar la solicitud');
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async (id, type) => {
+    try {
+      if (type === 'payment') {
+        await removePaymentType(id);
+        refreshPaymentTypes();
+      } else {
+        await removePrice(id);
+        refreshPrices();
+      }
+      message.success('Registro eliminado exitosamente');
+    } catch (error) {
+      message.error('Ocurrió un error al eliminar el registro');
+      console.error(error);
+    }
+  };
+
+  const handleDeactivate = async (record) => {
+    try {
+      const newStatus = record.status === 'Habilitado' ? 'inactive' : 'active';
+
+      if (record.price !== undefined) {
+        await editPrice(record.id, { status: newStatus });
+        refreshPrices();
+      } else {
+        await editPaymentType(record.id, { status: newStatus });
+        refreshPaymentTypes();
+      }
+
+      message.success(
+        record.status === 'Habilitado'
+          ? 'Registro desactivado exitosamente'
+          : 'Registro activado exitosamente',
+      );
+    } catch (error) {
+      message.error('Ocurrió un error al cambiar el estado del registro');
+      console.error(error);
+    }
+  };
+
+  const handleModalCancel = () => {
+    setModalVisible(false);
+    setCurrentRecord(null);
+    setAction('');
+    setModalType('');
+    // Resetear el formulario al cancelar
+    form.resetFields();
+  };
+
+  // Efecto para resetear el formulario cuando cambia el modal
+  useEffect(() => {
+    if (!modalVisible) {
+      form.resetFields();
+    }
+  }, [modalVisible, form]);
 
   const paymentTypeColumns = [
     {
@@ -38,15 +238,26 @@ const Payments = () => {
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('edit', record)}>Editar</Button>
-          <Button 
-            style={{ backgroundColor: '#FFAA00', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('deactivate', record)}>Desactivar</Button>
           <Button
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }} 
-            onClick={() => handleAction('delete', record)}>Eliminar</Button>
+            className={styles.editButton}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button
+            className={styles.deactivateButton}
+            onClick={() => handleDeactivate(record)}
+          >
+            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
+          </Button>
+          <Popconfirm
+            title="¿Estás seguro de eliminar este tipo de pago?"
+            onConfirm={() => handleDelete(record.id, 'payment')}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button className={styles.deleteButton}>Eliminar</Button>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -60,7 +271,7 @@ const Payments = () => {
     },
     {
       title: 'Costo',
-      dataIndex: 'price',
+      dataIndex: 'formattedPrice',
       key: 'price',
     },
     {
@@ -75,73 +286,186 @@ const Payments = () => {
       align: 'center',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-          style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
-          onClick={() => handleAction('edit', record)}>Editar</Button>
-          <Button 
-          style={{ backgroundColor: '#FFAA00', color: '#fff', border: 'none' }}
-          onClick={() => handleAction('deactivate', record)}>Desactivar</Button>
           <Button
-          style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }} 
-          onClick={() => handleAction('delete', record)}>Eliminar</Button>
+            className={styles.editButton}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button
+            className={styles.deactivateButton}
+            onClick={() => handleDeactivate(record)}
+          >
+            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
+          </Button>
+          <Popconfirm
+            title="¿Estás seguro de eliminar este precio?"
+            onConfirm={() => handleDelete(record.id, 'price')}
+            okText="Sí"
+            cancelText="No"
+          >
+            <Button className={styles.deleteButton}>Eliminar</Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
   return (
-    <div
-      style={{
-        height: '100%',
-        paddingTop: '20px',
-        maxWidth: 'calc(100% - 200px)',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '5px',
-        justifyContent: 'center',
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#0066FF',
+          colorSuccess: '#52C41A',
+          colorWarning: '#FAAD14',
+          colorError: '#FF4D4F',
+          borderRadius: 6,
+          colorBgContainer: '#FFFFFF',
+          colorText: '#333333',
+        },
+        components: {
+          Button: {
+            primaryShadow: 'none',
+          },
+          Table: {
+            headerBg: '#FAFAFA',
+            headerColor: '#333333',
+          },
+          Button: {
+            controlHeight: 40,
+            borderRadius: 6,
+            colorPrimary: '#4CAF50',
+            colorTextLightSolid: '#ffffff',
+            colorBgContainer: '#333333',
+            colorText: '#ffffff',
+            colorBorder: '#333333',
+          },
+          Popconfirm: {
+            borderRadius: 8,
+            padding: 12,
+          },
+          Popover: {
+            colorBgElevated: '#000',
+            colorText: '#ffffff',
+          },
+        },
+        token: {
+          colorPrimary: '#4CAF50',
+          colorText: '#ffffff',
+        },
       }}
     >
-      {/* Tipos de Pago */}
-      <div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '16px',
-          }}
-        >
-          <h2 style={{ margin: 0 }}>Tipos de pago</h2>
-          <Button type="primary">Agregar</Button>
+      <div className={styles.container}>
+        {/* Tipos de Pago */}
+        <div>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Tipos de pago</h2>
+            <Button
+              type="primary"
+              className={styles.addButton}
+              onClick={() => handleCreate('payment')}
+            >
+              Agregar
+            </Button>
+          </div>
+          <ModeloTable
+            columns={paymentTypeColumns}
+            data={paymentTypes}
+            loading={loadingPayments}
+            pagination={false}
+          />
         </div>
-        <ModeloTable
-          columns={paymentTypeColumns}
-          data={paymentTypes}
-          loading={loadingPayments}
-        />
-      </div>
 
-      {/* Precios */}
-      <div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '16px',
-          }}
-        >
-          <h2 style={{ margin: 0 }}>Precios</h2>
-          <Button type="primary">Agregar</Button>
+        {/* Precios */}
+        <div>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Precios</h2>
+            <Button
+              type="primary"
+              className={styles.addButton}
+              onClick={() => handleCreate('price')}
+            >
+              Agregar
+            </Button>
+          </div>
+          <ModeloTable
+            columns={priceColumns}
+            data={prices}
+            loading={loadingPrices}
+            pagination={false}
+          />
         </div>
-        <ModeloTable
-          columns={priceColumns}
-          data={prices}
-          loading={loadingPrices}
-        />
+
+        {/* Modal con BaseModal */}
+        <BaseModal
+          visible={modalVisible}
+          onCancel={handleModalCancel}
+          onOk={handleSubmit}
+          title={
+            action === 'create'
+              ? `Agregar nuevo ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`
+              : `Editar ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`
+          }
+          okText={action === 'create' ? 'Crear' : 'Actualizar'}
+          cancelText="Cancelar"
+          width={500}
+          form={form}
+          initialValues={getInitialValues()}
+        >
+          <Form.Item
+            name="name"
+            label={
+              modalType === 'payment'
+                ? 'Nombre del tipo de pago'
+                : 'Nombre del precio'
+            }
+            rules={[{ required: true, message: 'Este campo es requerido' }]}
+          >
+            <Input
+              size="large"
+              className={styles.inputField}
+              placeholder={`Ingrese el nombre del ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`}
+              onChange={(e) => {
+                // Convertir a mayúsculas mientras se escribe
+                const value = e.target.value.toUpperCase();
+                form.setFieldValue('name', value);
+              }}
+            />
+          </Form.Item>
+
+          {modalType === 'price' && (
+            <Form.Item
+              name="price"
+              label="Costo"
+              rules={[
+                { required: true, message: 'Este campo es requerido' },
+                {
+                  pattern: /^\d+(\.\d{1,2})?$/,
+                  message: 'Ingrese un valor válido (ej: 10.50)',
+                },
+              ]}
+            >
+              <Input
+                prefix="S/"
+                type="number"
+                step="0.01"
+                size="large"
+                className={styles.inputField}
+                placeholder="0.00"
+              />
+            </Form.Item>
+          )}
+
+          <Form.Item name="status" label="Estado" valuePropName="checked">
+            <Switch
+              checkedChildren="Habilitado"
+              unCheckedChildren="Deshabilitado"
+              className={styles.statusSwitch}
+            />
+          </Form.Item>
+        </BaseModal>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

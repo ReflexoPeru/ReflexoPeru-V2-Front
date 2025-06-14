@@ -1,12 +1,12 @@
 import { Form, Modal, notification } from 'antd';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react'; // Importa useState aquí
+import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
+import { getPatientById } from '../../service/patientsService';
 
 // Reutilizamos los mismos campos del formulario de creación
 const fields = [
-  { type: 'title', label: 'Editar Paciente' },
   {
     type: 'customRow',
     fields: [
@@ -15,7 +15,7 @@ const fields = [
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
-        required: true
+        required: true,
       },
       {
         name: 'document_number',
@@ -24,51 +24,51 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese el número de documento' 
+          {
+            required: true,
+            message: 'Por favor ingrese el número de documento',
           },
           {
             pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos'
-          }
-        ]
+            message: 'El documento debe tener 8 dígitos',
+          },
+        ],
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'paternal_lastname', 
-        label: 'Apellido Paterno', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'paternal_lastname',
+        label: 'Apellido Paterno',
+        type: 'text',
+        required: true,
+        span: 8,
       },
-      { 
-        name: 'maternal_lastname', 
-        label: 'Apellido Materno', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'maternal_lastname',
+        label: 'Apellido Materno',
+        type: 'text',
+        span: 8,
       },
-      { 
-        name: 'name', 
-        label: 'Nombre', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        span: 8,
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'birth_date', 
-        label: 'Fecha de Nacimiento', 
-        type: 'date', 
-        span: 8 
+      {
+        name: 'birth_date',
+        label: 'Fecha de Nacimiento',
+        type: 'date',
+        span: 8,
       },
       {
         name: 'sex',
@@ -79,13 +79,13 @@ const fields = [
           { value: 'F', label: 'Femenino' },
         ],
         span: 8,
-        required: true
+        required: true,
       },
-      { 
-        name: 'occupation', 
-        label: 'Ocupación', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'occupation',
+        label: 'Ocupación',
+        type: 'text',
+        span: 8,
       },
     ],
   },
@@ -100,31 +100,37 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese su número telefónico' 
+          {
+            required: true,
+            message: 'Por favor ingrese su número telefónico',
           },
           () => ({
             validator(_, value) {
               if (!value) {
-                return Promise.reject(new Error('Por favor ingrese su teléfono'));
+                return Promise.reject(
+                  new Error('Por favor ingrese su teléfono'),
+                );
               }
               if (value.length < 9) {
-                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener 9 dígitos'),
+                );
               }
               if (value.length > 9) {
-                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener exactamente 9 dígitos'),
+                );
               }
               return Promise.resolve();
             },
           }),
-        ]
+        ],
       },
-      { 
-        name: 'email', 
-        label: 'Correo Electrónico', 
-        type: 'email', 
-        span: 16 
+      {
+        name: 'email',
+        label: 'Correo Electrónico',
+        type: 'email',
+        span: 16,
       },
     ],
   },
@@ -139,67 +145,95 @@ const fields = [
     label: 'Dirección de Domicilio',
     type: 'text',
     span: 12,
-    required: true
+    required: true,
   },
 ];
 
-const EditPatient = ({ patientId, onClose }) => {
+const EditPatient = ({ patient, onClose }) => {
   const [form] = Form.useForm();
-  const { patients, handleUpdatePatient } = usePatients();
-  const [loading, setLoading] = useState(false); // Ahora useState está definido
-  const [patientData, setPatientData] = useState(null); // Y aquí también
+  const { handleUpdatePatient } = usePatients();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (patientId) {
-      const patient = patients.find(p => p.id === patientId);
-      if (patient) {
-        setPatientData(patient);
-        setLoading(false);
-      }
-    }
-  }, [patientId, patients]);
-
-  useEffect(() => {
-    if (patientData && form) {
-      const formData = {
-        ...patientData,
-        birth_date: patientData.birth_date ? dayjs(patientData.birth_date) : null,
-        occupation: patientData.ocupation,
-        ubicacion: {
-          region_id: patientData.region_id,
-          province_id: patientData.province_id,
-          district_id: patientData.district_id
+    if (patient) {
+      // Si no existen los campos individuales, los extraemos de full_name
+      let name = patient.name || '';
+      let paternal_lastname = patient.paternal_lastname || '';
+      let maternal_lastname = patient.maternal_lastname || '';
+      if (
+        (!name || !paternal_lastname || !maternal_lastname) &&
+        patient.full_name
+      ) {
+        const parts = patient.full_name.trim().split(' ');
+        if (parts.length >= 3) {
+          paternal_lastname = paternal_lastname || parts[0];
+          maternal_lastname = maternal_lastname || parts[1];
+          name = name || parts.slice(2).join(' ');
+        } else if (parts.length === 2) {
+          paternal_lastname = paternal_lastname || parts[0];
+          name = name || parts[1];
+        } else if (parts.length === 1) {
+          name = name || parts[0];
         }
+      }
+      // Mapeo para el select en cascada: ids y nombres
+      const ubicacion = {
+        region_id: patient.region_id || null,
+        province_id: patient.province_id || null,
+        district_id: patient.district_id || null,
+      };
+
+      const formData = {
+        name,
+        paternal_lastname,
+        maternal_lastname,
+        document_type_id: patient.document_type_id || '',
+        document_number: patient.document_number || '',
+        personal_reference: patient.personal_reference || '',
+        birth_date: patient.birth_date ? dayjs(patient.birth_date) : null,
+        sex: patient.sex || '',
+        primary_phone: patient.primary_phone || '',
+        secondary_phone: patient.secondary_phone || '',
+        email: patient.email || '',
+        occupation: patient.ocupation || patient.occupation || '',
+        address: patient.address || '',
+        country_id: patient.country_id || '',
+        ubicacion,
       };
       form.setFieldsValue(formData);
     }
-  }, [patientData, form]);
+  }, [patient, form]);
 
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      await handleUpdatePatient(patientId, formData);
+      await handleUpdatePatient(patient.id, formData);
       notification.success({
         message: 'Éxito',
-        description: 'Paciente actualizado correctamente'
+        description: 'Paciente actualizado correctamente',
       });
       onClose();
     } catch (error) {
       notification.error({
         message: 'Error',
-        description: error.response?.data?.message || 'Error al actualizar el paciente'
+        description:
+          error.response?.data?.message || 'Error al actualizar el paciente',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) return <div>Cargando...</div>;
-  if (!patientData) return null;
+  if (!patient) return null;
+
+  // Mostrar el nombre completo en el título
+  const modalTitle =
+    patient.full_name ||
+    `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
 
   return (
     <Modal
-      title={`Editar Paciente: ${patientData.name}`}
+      title={`Editar Paciente: ${modalTitle}`}
       open={true}
       onCancel={onClose}
       footer={null}
@@ -207,7 +241,7 @@ const EditPatient = ({ patientId, onClose }) => {
       centered
       destroyOnClose
     >
-      <FormGenerator 
+      <FormGenerator
         form={form}
         fields={fields}
         mode="edit"

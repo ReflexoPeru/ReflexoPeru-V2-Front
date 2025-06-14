@@ -20,29 +20,41 @@ export default function Patients() {
   } = usePatients();
 
   const handleAction = (action, record) => {
-    switch(action) {
+    switch (action) {
       case 'edit':
         return (
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => setEditingPatient(record)}
           >
             Editar
           </Button>
         );
-      case 'info':
+      /*       case 'info':
         return (
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => navigate(`info/${record.id}`)}
           >
             Más Info
           </Button>
-        );
+        ); */
       case 'history':
         return (
-          <Button 
-            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#8800CC',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => navigate(`historia/${record.id}`)}
           >
             Historia
@@ -50,8 +62,12 @@ export default function Patients() {
         );
       case 'delete':
         return (
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleDeletePatient(record.id)}
           >
             Eliminar
@@ -97,8 +113,21 @@ export default function Patients() {
   ];
 
   return (
-    <div style={{ height: '100%', paddingTop: '50px', maxWidth: 'calc(100% - 200px)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto' }}>
+    <div
+      style={{
+        height: '100%',
+        paddingTop: '50px',
+        maxWidth: 'calc(100% - 200px)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          margin: '0 auto',
+        }}
+      >
         <CustomButton text="Crear Paciente" onClick={handleButton} />
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -121,9 +150,9 @@ export default function Patients() {
 
       {/* Modal de edición */}
       {editingPatient && (
-        <EditPatient 
-          patientId={editingPatient.id} 
-          onClose={() => setEditingPatient(null)} 
+        <EditPatient
+          patient={editingPatient}
+          onClose={() => setEditingPatient(null)}
         />
       )}
     </div>
