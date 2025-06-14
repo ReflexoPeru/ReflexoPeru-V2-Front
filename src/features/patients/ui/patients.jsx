@@ -34,7 +34,7 @@ export default function Patients() {
             Editar
           </Button>
         );
-      case 'info':
+      /*       case 'info':
         return (
           <Button
             style={{
@@ -46,7 +46,7 @@ export default function Patients() {
           >
             Más Info
           </Button>
-        );
+        ); */
       case 'history':
         return (
           <Button

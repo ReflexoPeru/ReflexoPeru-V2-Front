@@ -70,7 +70,7 @@ export default function Staff() {
           >
             Editar
           </Button>
-          <Button
+          {/*           <Button
             style={{
               backgroundColor: '#00AA55',
               color: '#fff',
@@ -79,7 +79,7 @@ export default function Staff() {
             onClick={() => handleAction('info', record)}
           >
             Más Info
-          </Button>
+          </Button> */}
           <Button
             style={{
               backgroundColor: '#FF3333',
