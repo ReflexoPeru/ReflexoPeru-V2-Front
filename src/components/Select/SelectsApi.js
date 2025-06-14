@@ -40,6 +40,16 @@ export const getPaymentStatuses = async () => {
   })) || [];
 };
 
+// Servicios para precios predeterminados
+export const getPredeterminedPrices = async () => {
+  const response = await get('predetermined-prices'); // Endpoint exacto
+  return response.data?.map(item => ({
+    value: item.id,
+    label: item.name,
+    price: item.price // Agregamos el precio como propiedad adicional
+  })) || [];
+};
+
 // Servicios para diagnósticos  =====================> FALTA COLOCAR LA API UBICARLO EN LA CARPETA CORRECTA
 export const getDiagnoses = async () => {
   const response = await get('diagnosticos');
