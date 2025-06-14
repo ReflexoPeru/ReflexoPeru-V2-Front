@@ -6,27 +6,26 @@ import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import AppointmentsMock from '../../../mock/Appointments';
 import { useNavigate } from 'react-router';
-import { useAppointments } from '../hook/appointmentsHook'; 
+import { useAppointments } from '../hook/appointmentsHook';
+import { Space, Button } from 'antd';
 import dayjs from 'dayjs';
 
 export default function Appointments() {
   const navigate = useNavigate();
-  const { appointments, loading, error, pagination, handlePageChange, setSearchTerm, loadPaginatedAppointmentsByDate } = useAppointments();
-
-  // Debug (verifica en consola)
-  console.log("Datos de citas:", {
+  const {
     appointments,
     loading,
     error,
-    pagination
-  });
+    pagination,
+    handlePageChange,
+    setSearchTerm,
+    loadPaginatedAppointmentsByDate,
+  } = useAppointments();
 
-  const [selectDate, setSelectDate] = useState(dayjs().format('DD/MM/YYYY'));
+  const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
-  } , [selectDate]);
-
-
+  }, [selectDate]);
 
   const columns = [
     {
@@ -37,13 +36,15 @@ export default function Appointments() {
     },
     {
       title: 'Paciente',
-      dataIndex: 'patient_id',
       key: 'patient_id',
-      width: '140px',
-      // render: (text, record) => {
-      //   return `${record.paciente_lastnamePaternal} ${record.paciente_lastnameMaternal} ${record.paciente_name}`;
-      // },
+      width: '155px',
+      render: (_, record) => {
+        const patient = record?.patient;
+        if (!patient) return 'Paciente no disponible';
+        return `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
+      },
     },
+
     {
       title: 'Sala',
       dataIndex: 'room',
@@ -54,25 +55,107 @@ export default function Appointments() {
       title: 'Hora',
       dataIndex: 'appointment_hour',
       key: 'appointment_hour',
-      width: '60px',
+      width: '70px',
     },
     {
       title: 'Pago',
       dataIndex: 'payment',
       key: 'payment',
-      width: '60px',
+      width: '70px',
     },
     {
       title: 'Metodo Pago',
       dataIndex: 'payment_type_id',
       key: 'payment_type_id',
-      width: '75px',
+      width: '80px',
+    },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      width: '200px',
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            style={{
+              backgroundColor: '#555555',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('imprimir', record)}
+          >
+            Imprimir
+          </Button>
+          <Button
+            style={{
+              backgroundColor: '#69276F',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('boleta', record)}
+          >
+            Boleta
+          </Button>
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('history', record)}
+          >
+            Historia
+          </Button>
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
     },
   ];
 
-  // const appointmentsData = AppointmentsMock[0].items;
+  const handleAction = (action, record) => {
+    // Implementa las acciones según el tipo
+    console.log(`${action} action for:`, record);
+    switch (action) {
+      case 'edit':
+        // Lógica para editar
+        break;
+      case 'imprimir':
+        // Lógica para más info
+        break;
+      case 'boleta':
+        // Lógica para historia
+        break;
+      case 'history':
+        // Lógica para eliminar
+        break;
+      case 'delete':
+        // Lógica para eliminar
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
+    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
@@ -80,13 +163,6 @@ export default function Appointments() {
     // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
-
-  // const handleTimeRangeChange = (dates, dateStrings) => {
-  //   // Filtrar datos según el rango de fechas (si aplica)
-  //   const selectedDate = dayjs(dateStrings[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //   console.log('📅 Fecha seleccionada (formateada):', selectedDate);
-  //   loadPaginatedAppointmentsByDate(selectedDate);
-  // };
 
   return (
     <div
@@ -124,11 +200,11 @@ export default function Appointments() {
       <ModeloTable
         columns={columns}
         data={appointments}
-        loading={loading} 
+        loading={loading}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />

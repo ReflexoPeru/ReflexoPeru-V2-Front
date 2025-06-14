@@ -1,124 +1,121 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background-color: #121212;
-}
-
-.header {
-  height: 60px;
-  background-color: #e9e7e7;
-}
-
-.content {
-  overflow: hidden;
-  display: flex;
-  flex: 1;
-}
-
-.sidebar {
-  width: 240px;
-  background-color: #ffffff;
-}
-
-.mainContent {
-  overflow-y: auto;
-  display: flex;
-  flex: 1;
-  justify-content: center;
-
-  padding: 20px;
-}
-
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.card {
-  margin-top: 50px;
-  padding: 16px;
-  border-radius: 8px;
-  background-color: #1E1E1E;
-}
-
-.cardHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.title {
-  margin: 20px;
-  font-size: 18px;
-  color: #ffffff;
-}
-
-.button {
-  cursor: pointer;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-
-  font-size: 14px;
-
-  transition: all 0.3s;
-}
-
-.button:hover {
-  opacity: 0.9;
-}
-
-.add {
-  color: white;
-  background-color: #1CB54A;
-}
-
-.edit {
-  color: white;
-  background-color: #0066FF;
-}
-
-.deactivate {
-  color: white;
-  background-color: #FFAA00;
-}
-
-.delete {
-  color: white;
-  background-color: #FF3333;
-}
-
-.actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.tableWrapper {
-  width: 100%;
-  height: auto !important;
-  max-height: 250px;
-  border-radius: 4px;
-}
-
 .statusEnabled {
   display: inline-block;
 
-  padding: 0px 12px;
+  padding: 4px 12px;
   border-radius: 16px;
 
   font-size: 12px;
   font-weight: 500;
   color: white;
-  text-align: center;
 
-  background-color: #14F58C3B;
+  background-color: rgba(20, 245, 140, 0.23);
+}
+
+
+/* Botones - Estilos base */
+.editButton {
+  border: none !important;
+  border-radius: 6px !important;
+
+  font-weight: 500 !important;
+  color: #fff !important;
+
+  background-color: #0066FF !important;
+}
+
+.deactivateButton {
+  border: none !important;
+  border-radius: 6px !important;
+
+  font-weight: 500 !important;
+  color: #fff !important;
+
+  background-color: #FFAA00 !important;
+}
+
+.deleteButton {
+  border: none !important;
+  border-radius: 6px !important;
+
+  font-weight: 500 !important;
+  color: #fff !important;
+
+  background-color: #FF3333 !important;
+}
+
+/* Botones - Hover */
+.editButton:hover {
+  color: #fff !important;
+  background-color: #0052CC !important;
+}
+
+.deactivateButton:hover {
+  color: #fff !important;
+  background-color: #E69500 !important;
+}
+
+.deleteButton:hover {
+  color: #fff !important;
+  background-color: #E61A1A !important;
+}
+
+.addButton {
+  height: 36px !important;
+  padding: 4px 16px !important;
+  border-color: #4CAF50 !important;
+  border-radius: 6px !important;
+
+  font-weight: 500 !important;
+  color: #fff !important;
+
+  background-color: #4CAF50 !important;
+}
+
+.addButton:hover {
+  border-color: #3d8b40 !important;
+  color: #fff !important;
+  background-color: #3d8b40 !important;
+}
+
+/* Layout */
+.container {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+  justify-content: center !important;
+
+  max-width: calc(100% - 200px) !important;
+  height: 100% !important;
+  margin: 0 auto !important;
+  padding-top: 20px !important;
+}
+
+.sectionHeader {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 16px !important;
+}
+
+.sectionTitle {
+  margin: 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* Formularios */
+.inputField {
+  border-radius: 6px !important;
+}
+
+.statusSwitch {
+  width: 110px !important;
+}
+
+/* Sobrescribir estilos de Ant Design */
+.ant-btn:not(.ant-btn-link):hover, 
+.ant-btn:not(.ant-btn-link):focus {
+  border-color: transparent !important;
+  color: #fff !important;
+  background: inherit !important;
 }

@@ -1,33 +1,59 @@
-import axios from 'axios';
-import { get } from '../../../services/api/Axios/MethodsGeneral'
+import { del, get, post } from '../../../services/api/Axios/MethodsGeneral';
 
-export const getStaff = async (page = 1, perPage = 100) => {
-    try {
-        const response = await get(`therapists?page=${page}&per_page=${perPage}`);
+export const createTherapist = async (data) => {
+  try {
+    const response = await post('therapists', data);
+    return response.data;
+  } catch (error) {
+    console.error('Error en createTherapist:', error);
+    throw error;
+  }
+};
 
-        const data = Array.isArray(response.data.data) ? response.data.data : [];
+export const getStaff = async (page = 1, perPage = 50) => {
+  try {
+    const response = await get(`therapists?page=${page}&per_page=${perPage}`);
 
-        return {
-            data,
-            total: response.data.total || data.length || 0,
-            status: response.status,
-        };
-    } catch (error) {
-        throw error;
+    let data = [];
+    if (response.data) {
+      if (Array.isArray(response.data)) {
+        data = response.data;
+      } else if (Array.isArray(response.data.data)) {
+        data = response.data.data;
+      } else if (Array.isArray(response.data.items)) {
+        data = response.data.items;
+      }
     }
+
+    return {
+      data,
+      total: response.data?.total || data.length || 0,
+    };
+  } catch (error) {
+    console.error('Error en getStaff:', error);
+    throw error;
+  }
 };
 
 export const searchStaff = async (term) => {
-    try {
-        const res = await get(`therapists/search?search=${term}&per_page=100`);
-        console.log("🔍 Resultado de búsqueda:", res.data);
+  try {
+    const res = await get(`therapists/search?search=${term}&per_page=100`);
+    return { 
+      data: Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [],
+      total: res.data?.total || 0
+    };
+  } catch (error) {
+    console.error('Error en searchStaff:', error);
+    throw error;
+  }
+};
 
-        const data = Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [];
-        const total = res.data.total || data.length;
-
-        return { data, total };
-    } catch (error) {
-        console.error("❌ Error en searchStaff:", error);
-        throw error;
-    }
+export const deleteTherapist = async (therapistId) => {
+  try {
+    const response = await del(`therapists/${therapistId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error en deleteTherapist:', error);
+    throw error;
+  }
 };

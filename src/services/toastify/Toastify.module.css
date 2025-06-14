@@ -13,8 +13,10 @@ body {
 .notifications {
   position: fixed;
   z-index: 9999;
-  top: 20px;
-  right: 20px;
+  top: 30px;
+  right: 0px;
+
+  margin-top: 50px;
 }
 
 .toast {
@@ -35,7 +37,7 @@ body {
   color: #fff;
 
   opacity: 1;
-  background-image: linear-gradient(to right, #0abf3055, #22242F 30%);
+  background-image: linear-gradient(to right, #0abf3055, #333333 30%);
 
   transition: all 0.3s ease;
   animation: slideIn 0.3s ease forwards;
@@ -126,28 +128,28 @@ body {
 .toast.error {
   --color: #f24d4c;
 
-  background-image: linear-gradient(to right, #f24d4c55, #22242F 30%);
+  background-image: linear-gradient(to right, #f24d4c55, #333333 30%);
 }
 
 /* warning */
 .toast.warning {
   --color: #e9bd0c;
 
-  background-image: linear-gradient(to right, #e9bd0c55, #22242F 30%);
+  background-image: linear-gradient(to right, #e9bd0c55, #333333 30%);
 }
 
 /* info */
 .toast.info {
   --color: #3498db;
 
-  background-image: linear-gradient(to right, #3498db55, #22242F 30%);
+  background-image: linear-gradient(to right, #3498db55, #333333 30%);
 }
 
 .toast.yape {
   --color: #5e0596; /* Morado */
 
   border-left: 4px solid #641a92;
-  background-image: linear-gradient(to right, #522e7493, #22242F 30%)
+  background-image: linear-gradient(to right, #522e7493, #333333 30%)
 }
 
 .toast.plin {
