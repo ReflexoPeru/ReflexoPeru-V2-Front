@@ -18,6 +18,8 @@ const FormComponent = ({
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
   onSubmit = () => {},
+  onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
+  onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
   form: externalForm,
 }) => {
   const [internalForm] = useForm();
@@ -30,7 +32,7 @@ const FormComponent = ({
       setLoading(true);
       console.log('Datos del formulario:', values);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await onSubmit(values); // ← AQUÍ el cambio importante
+      await onSubmit(values); // Solo muestra en consola, no abre modales
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
     } finally {
@@ -77,16 +79,16 @@ const FormComponent = ({
             showHourField={showHourField}
             isPaymentRequired={isPaymentRequired}
             patientType={patientType}
-            paymentOption={paymentOption} // Esta es importante
-            customAmount={customAmount} // Esta también
-            paymentOptions={field.props?.paymentOptions} // Añade esta línea
+            paymentOption={paymentOption}
+            customAmount={customAmount}
+            paymentOptions={field.props?.paymentOptions}
             onPatientTypeChange={onPatientTypeChange}
             onPaymentOptionChange={onPaymentOptionChange}
             onShowHourFieldChange={onShowHourFieldChange}
             onPaymentRequiredChange={onPaymentRequiredChange}
-            // Añade estas nuevas props
-            onOpenCreateModal={() => onSubmit({})} // Esto activará el modal de creación
-            onOpenSelectModal={() => onSubmit({})} // Esto activará el modal de selección
+            // Usamos las nuevas props para abrir modales
+            onOpenCreateModal={onOpenCreateModal}
+            onOpenSelectModal={onOpenSelectModal}
           />
         </Col>
       );

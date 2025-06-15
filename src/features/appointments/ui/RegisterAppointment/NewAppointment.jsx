@@ -11,6 +11,7 @@ const NewAppointment = () => {
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
   const [patientType, setPatientType] = useState('nuevo');
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [formValues, setFormValues] = useState(null);
 
   // Modal contribuidor
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -26,24 +27,34 @@ const NewAppointment = () => {
   };
 
   //============================================================
-  const handleSubmit = async (values) => {
-    console.log('Valores recibidos en handleSubmit:', values);
-
-    if (patientType === 'nuevo') {
-      setIsCreatePatientModalVisible(true);
-    } else if (patientType === 'continuador') {
-      setIsModalVisible(true);
-    }
+  // Función para manejar el envío del formulario principal
+  const handleSubmit = (values) => {
+    console.log('Valores del formulario:', values);
+    setFormValues(values);
   };
   //===============================================================
 
+    // Función para manejar el registro completo (se llamará después de seleccionar/crear paciente)
+  const handleCompleteRegistration = () => {
+    if (!selectedPatient) {
+      notification.error({
+        message: 'Error',
+        description: 'Debe seleccionar o crear un paciente primero'
+      });
+      return;
+    }
+
+    const completeData = {
+      ...formValues,
+      patient_id: selectedPatient.id
+    };
+
+    console.log('Datos completos para registro:', completeData);
+    // Aquí podrías llamar a submitNewAppointment(completeData) si quisieras enviar los datos
+  };
+
   const handleCreatePatient = async (patientData) => {
     try {
-      // Aquí deberías implementar la llamada a tu API para crear el paciente
-      // Ejemplo:
-      // const response = await api.createPatient(patientData);
-      // return response.data;
-      
       // Simulación de creación exitosa
       const mockResponse = { 
         id: `new-patient-${Date.now()}`,
@@ -243,10 +254,11 @@ const NewAppointment = () => {
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
           onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit} // Solo guarda los valores, no envía
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
-          submitButtonText={patientType === 'continuador' ? 'Elegir' : 'Crear'}
+          submitButtonText="Registrar"
+          onRegisterClick={handleCompleteRegistration} // Nueva prop para el botón de registro
         />
 
         {/* MODAL SELECCIONAR CONTRIBUIDOR */}

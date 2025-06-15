@@ -95,7 +95,7 @@ const InputField = ({
       return (
         <Form.Item
           label="Metodos de Pago:"
-          name="paymentstatus"
+          name="payment_type_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
           <SelectPaymentStatus />
@@ -109,7 +109,7 @@ const InputField = ({
       return (
         <Form.Item
           label="Opciones de Pago:"
-          name="prices"
+          name="payment"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
           <SelectPrices {...rest} />
@@ -240,33 +240,6 @@ const CitaComponents = ({ componentType, form, ...props }) => {
 
 // Componentes individuales
 // En Input.jsx
-const DateField = ({ form }) => (
-  <Form.Item
-    label="Fecha de cita"
-    name="fechaCita"
-    rules={[{ message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          DatePicker: {
-            panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
-            colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
-            colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
-            arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
-          },
-        },
-      }}
-    >
-      <DatePicker
-        style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
-        dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
-      />
-    </ConfigProvider>
-  </Form.Item>
-);
-
 const PatientField = ({
   form,
   patientType,
@@ -278,7 +251,7 @@ const PatientField = ({
 }) => {
   // Usa useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
-
+  
   // Actualizar el valor del campo cuando cambia el paciente seleccionado
   useEffect(() => {
     if (formInstance && selectedPatient) {
@@ -288,7 +261,7 @@ const PatientField = ({
       });
     }
   }, [selectedPatient, formInstance]);
-
+  
   return (
     <div className={styles.patientRow}>
       <div className={styles.patientContainer}>
@@ -296,7 +269,6 @@ const PatientField = ({
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
-            name="pacienteId"
             rules={[{ required: true, message: 'Este campo es requerido' }]}
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
@@ -334,10 +306,10 @@ const PatientField = ({
         <div className={styles.checkboxColumn}>
           {patientTypeOptions.map((option) => (
             <Checkbox
-              key={option.value}
-              checked={patientType === option.value}
-              onChange={() => onPatientTypeChange(option.value)}
-              className={`${styles.checkbox} ${styles.checkboxItem}`}
+            key={option.value}
+            checked={patientType === option.value}
+            onChange={() => onPatientTypeChange(option.value)}
+            className={`${styles.checkbox} ${styles.checkboxItem}`}
             >
               {option.label}
             </Checkbox>
@@ -348,11 +320,42 @@ const PatientField = ({
   );
 };
 
+const DateField = ({ form }) => (
+  <Form.Item
+    label="Fecha de cita"
+    name="appointment_date"
+    rules={[{ required: true, message: 'Este campo es requerido' }]}
+    className={styles.formItem}
+  >
+    <ConfigProvider
+      theme={{
+        components: {
+          DatePicker: {
+            panelColor: '#FFFFFFFF',
+            colorText: '#FFFFFFFF',
+            colorBgElevated: '#444444',
+            arrowColor: '#FFFFFFFF',
+          },
+        },
+      }}
+    >
+      <DatePicker
+        style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+        dropdownStyle={{ backgroundColor: '#000', color: '#444444' }}
+        onChange={(date, dateString) => {
+          console.log('Fecha seleccionada:', dateString);
+          form.setFieldsValue({ appointment_date: date });
+        }}
+      />
+    </ConfigProvider>
+  </Form.Item>
+);
+
 const TimeField = ({ form }) => (
   <Form.Item
     label="Hora de cita"
-    name="horaCita"
-    rules={[{ message: 'Este campo es requerido' }]}
+    name="appoinment_hour"
+    rules={[{ required: true, message: 'Este campo es requerido' }]}
     className={styles.formItem}
   >
     <ConfigProvider
@@ -380,6 +383,10 @@ const TimeField = ({ form }) => (
         format="HH:mm"
         className={styles.datePicker}
         style={{ width: '100%' }}
+        onChange={(time, timeString) => {
+          console.log('Hora seleccionada:', timeString);
+          form.setFieldsValue({ appoinment_hour: time });
+        }}
       />
     </ConfigProvider>
   </Form.Item>
