@@ -104,6 +104,7 @@ const NewAppointment = () => {
           name: 'patient_id',
           type: 'customComponent',
           componentType: 'patientField',
+          required: true,
           span: 21,
           props: {
             patientTypeOptions: [

@@ -320,77 +320,93 @@ const PatientField = ({
   );
 };
 
-const DateField = ({ form }) => (
-  <Form.Item
-    label="Fecha de cita"
-    name="appointment_date"
-    rules={[{ required: true, message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          DatePicker: {
-            panelColor: '#FFFFFFFF',
-            colorText: '#FFFFFFFF',
-            colorBgElevated: '#444444',
-            arrowColor: '#FFFFFFFF',
-          },
-        },
-      }}
-    >
-      <DatePicker
-        style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
-        dropdownStyle={{ backgroundColor: '#000', color: '#444444' }}
-        onChange={(date, dateString) => {
-          console.log('Fecha seleccionada:', dateString);
-          form.setFieldsValue({ appointment_date: date });
-        }}
-      />
-    </ConfigProvider>
-  </Form.Item>
-);
+const DateField = ({ form }) => {
+  // Usa Form.useFormInstance como fallback si form no está disponible
+  const formInstance = form || Form.useFormInstance();
 
-const TimeField = ({ form }) => (
-  <Form.Item
-    label="Hora de cita"
-    name="appoinment_hour"
-    rules={[{ required: true, message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-        components: {
-          TimePicker: {
-            colorTextPlaceholder: '#AAAAAA',
-            colorBgContainer: '#333333',
-            colorText: '#FFFFFF',
-            colorBorder: '#444444',
-            hoverBorderColor: '#555555',
-            activeBorderColor: '#00AA55',
-            colorIcon: '#FFFFFF',
-            colorIconHover: '#00AA55',
-            colorBgElevated: '#121212',
-            colorPrimary: '#00AA55',
-            colorTextDisabled: '#333333',
-            colorTextHeading: '#FFFFFF',
-          },
-        },
-      }}
+  const handleDateChange = (date, dateString) => {
+    console.log('Fecha seleccionada:', dateString);
+    formInstance.setFieldsValue({ 
+      appointment_date: dateString 
+    });
+  };
+
+  return (
+    <Form.Item
+      label="Fecha de cita"
+      name="appointment_date"
+      rules={[{ required: true, message: 'Este campo es requerido' }]}
+      className={styles.formItem}
     >
-      <TimePicker
-        format="HH:mm"
-        className={styles.datePicker}
-        style={{ width: '100%' }}
-        onChange={(time, timeString) => {
-          console.log('Hora seleccionada:', timeString);
-          form.setFieldsValue({ appoinment_hour: time });
+      <ConfigProvider
+        theme={{
+          components: {
+            DatePicker: {
+              panelColor: '#FFFFFFFF',
+              colorText: '#FFFFFFFF',
+              colorBgElevated: '#444444',
+              arrowColor: '#FFFFFFFF',
+            },
+          },
         }}
-      />
-    </ConfigProvider>
-  </Form.Item>
-);
+      >
+        <DatePicker
+          style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+          onChange={handleDateChange}
+        />
+      </ConfigProvider>
+    </Form.Item>
+  );
+};
+
+const TimeField = ({ form }) => {
+  // Usa Form.useFormInstance como fallback si form no está disponible
+  const formInstance = form || Form.useFormInstance();
+
+  const handleTimeChange = (time, timeString) => {
+    console.log('Hora seleccionada:', timeString);
+    formInstance.setFieldsValue({ 
+      appoinment_hour: timeString 
+    });
+  };
+
+  return (
+    <Form.Item
+      label="Hora de cita"
+      name="appoinment_hour"
+      rules={[{ required: true, message: 'Este campo es requerido' }]}
+      className={styles.formItem}
+    >
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+          components: {
+            TimePicker: {
+              colorTextPlaceholder: '#AAAAAA',
+              colorBgContainer: '#333333',
+              colorText: '#FFFFFF',
+              colorBorder: '#444444',
+              hoverBorderColor: '#555555',
+              activeBorderColor: '#00AA55',
+              colorIcon: '#FFFFFF',
+              colorIconHover: '#00AA55',
+              colorBgElevated: '#121212',
+              colorPrimary: '#00AA55',
+              colorTextDisabled: '#333333',
+              colorTextHeading: '#FFFFFF',
+            },
+          },
+        }}
+      >
+        <TimePicker
+          format="HH:mm"
+          style={{ width: '100%' }}
+          onChange={handleTimeChange}
+        />
+      </ConfigProvider>
+    </Form.Item>
+  );
+};
 
 const HourCheckbox = ({ showHourField, onShowHourFieldChange }) => (
   <Checkbox
