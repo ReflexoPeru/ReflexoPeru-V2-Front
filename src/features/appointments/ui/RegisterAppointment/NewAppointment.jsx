@@ -1,4 +1,5 @@
 import { Button, ConfigProvider, Modal, Radio, Table, notification } from 'antd';
+import dayjs from 'dayjs';
 import { useState } from 'react';
 import Form from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
@@ -12,8 +13,9 @@ const NewAppointment = () => {
   const [patientType, setPatientType] = useState('nuevo');
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [formValues, setFormValues] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal contribuidor
+  // Modal estados
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
@@ -23,19 +25,16 @@ const NewAppointment = () => {
 
   const handleServiceChange = (value) => {
     console.log('Servicio seleccionado:', value);
-    setSelectedService(value);
   };
 
-  //============================================================
-  // Función para manejar el envío del formulario principal
   const handleSubmit = (values) => {
     console.log('Valores del formulario:', values);
     setFormValues(values);
   };
-  //===============================================================
 
-    // Función para manejar el registro completo (se llamará después de seleccionar/crear paciente)
-  const handleCompleteRegistration = () => {
+  const handleCompleteRegistration = async () => {
+    if (isSubmitting) return;
+    
     if (!selectedPatient) {
       notification.error({
         message: 'Error',
@@ -44,13 +43,61 @@ const NewAppointment = () => {
       return;
     }
 
-    const completeData = {
-      ...formValues,
-      patient_id: selectedPatient.id
-    };
+    if (!formValues) {
+      notification.error({
+        message: 'Error',
+        description: 'Complete todos los campos del formulario'
+      });
+      return;
+    }
 
-    console.log('Datos completos para registro:', completeData);
-    // Aquí podrías llamar a submitNewAppointment(completeData) si quisieras enviar los datos
+    setIsSubmitting(true);
+    
+    try {
+      const completeData = {
+        ...formValues,
+        patient_id: selectedPatient.id,
+        appointment_date: dayjs(formValues.appointment_date).format('YYYY-MM-DD'),
+        appointment_time: formValues.appointment_hour || null,
+        payment_status: formValues.payment_status || 'pending',
+        notes: formValues.notes || '',
+      };
+
+      console.log('Enviando datos a la API:', completeData);
+      
+      await submitNewAppointment(completeData);
+      
+      notification.success({
+        message: 'Cita registrada',
+        description: 'La cita se ha registrado correctamente'
+      });
+
+      // Resetear el formulario
+      setFormValues(null);
+      setSelectedPatient(null);
+      setPatientType('nuevo');
+      setShowHourField(false);
+      setIsPaymentRequired(false);
+      
+    } catch (error) {
+      console.error('Error al registrar cita:', error);
+      let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
+      
+      if (error.response) {
+        if (error.response.status === 400) {
+          errorMessage = 'Datos inválidos: ' + (error.response.data.message || 'verifique los campos');
+        } else if (error.response.status === 409) {
+          errorMessage = 'Conflicto: ' + (error.response.data.message || 'la cita ya existe');
+        }
+      }
+      
+      notification.error({
+        message: 'Error',
+        description: errorMessage
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCreatePatient = async (patientData) => {
@@ -62,7 +109,6 @@ const NewAppointment = () => {
         full_name: `${patientData.first_name} ${patientData.last_name}`
       };
       
-      // Actualizar la lista de pacientes
       await fetchPatients();
       
       return mockResponse;
@@ -128,24 +174,24 @@ const NewAppointment = () => {
       fields: [
         {
           type: 'selectPrices',
+          name: 'service_id',
           required: true,
           span: 15,
           onChange: handleServiceChange,
         },
       ],
     },
-
     {
       type: 'customRow',
       fields: [
         {
           type: 'paymentStatus',
+          name: 'payment_status',
           span: 15,
           required: true,
         },
       ],
     },
-
     {
       type: 'customRow',
       fields: [
@@ -251,15 +297,16 @@ const NewAppointment = () => {
           patientType={patientType}
           onPatientTypeChange={(value) => {
             setPatientType(value);
-            setSelectedPatient(null); // Resetear paciente al cambiar tipo
+            setSelectedPatient(null);
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
           onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
-          onSubmit={handleSubmit} // Solo guarda los valores, no envía
+          onSubmit={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
           submitButtonText="Registrar"
-          onRegisterClick={handleCompleteRegistration} // Nueva prop para el botón de registro
+          onRegisterClick={handleCompleteRegistration}
+          isSubmitting={isSubmitting}
         />
 
         {/* MODAL SELECCIONAR CONTRIBUIDOR */}
@@ -347,7 +394,6 @@ const NewAppointment = () => {
                   description: 'El paciente se ha registrado correctamente'
                 });
                 
-                // Cambiar automáticamente a tipo "continuador" después de crear
                 setPatientType('continuador');
               } catch (error) {
                 console.error('Error al crear paciente:', error);
@@ -365,4 +411,3 @@ const NewAppointment = () => {
 };
 
 export default NewAppointment;
-
