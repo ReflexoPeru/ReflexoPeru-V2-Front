@@ -32,73 +32,88 @@ const NewAppointment = () => {
     setFormValues(values);
   };
 
-  const handleCompleteRegistration = async () => {
-    if (isSubmitting) return;
-    
-    if (!selectedPatient) {
-      notification.error({
-        message: 'Error',
-        description: 'Debe seleccionar o crear un paciente primero'
-      });
-      return;
-    }
+const handleCompleteRegistration = async () => {
+  if (isSubmitting) return;
+  
+  if (!selectedPatient) {
+    notification.error({
+      message: 'Error',
+      description: 'Debe seleccionar o crear un paciente primero'
+    });
+    return;
+  }
 
-    if (!formValues) {
-      notification.error({
-        message: 'Error',
-        description: 'Complete todos los campos del formulario'
-      });
-      return;
-    }
+  if (!formValues) {
+    notification.error({
+      message: 'Error',
+      description: 'Complete todos los campos del formulario'
+    });
+    return;
+  }
 
-    setIsSubmitting(true);
-    
-    try {
-      const completeData = {
+  setIsSubmitting(true);
+  
+  try {
+    const payload = {
+      data: {
         ...formValues,
+        appointment_date: formValues.appointment_date, // Ya está en formato correcto
+        appointment_hour: formValues.appointment_hour || null,
         patient_id: selectedPatient.id,
-        appointment_date: dayjs(formValues.appointment_date).format('YYYY-MM-DD'),
-        appointment_time: formValues.appointment_hour || null,
-        payment_status: formValues.payment_status || 'pending',
-        notes: formValues.notes || '',
-      };
-
-      console.log('Enviando datos a la API:', completeData);
-      
-      await submitNewAppointment(completeData);
-      
-      notification.success({
-        message: 'Cita registrada',
-        description: 'La cita se ha registrado correctamente'
-      });
-
-      // Resetear el formulario
-      setFormValues(null);
-      setSelectedPatient(null);
-      setPatientType('nuevo');
-      setShowHourField(false);
-      setIsPaymentRequired(false);
-      
-    } catch (error) {
-      console.error('Error al registrar cita:', error);
-      let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
-      
-      if (error.response) {
-        if (error.response.status === 400) {
-          errorMessage = 'Datos inválidos: ' + (error.response.data.message || 'verifique los campos');
-        } else if (error.response.status === 409) {
-          errorMessage = 'Conflicto: ' + (error.response.data.message || 'la cita ya existe');
-        }
+        // Campos con valores por defecto
+        ailments: "",
+        diagnosis: "",
+        surgeries: "",
+        reflexology_diagnostics: "",
+        medications: "",
+        observation: "",
+        initial_date: formValues.appointment_date, // Misma fecha de cita
+        final_date: formValues.appointment_date, // Misma fecha de cita
+        appointment_type: "Terapia individual", // Valor por defecto
+        social_benefit: false, // Valor por defecto
+        appointment_status_id: 1, // Valor por defecto (1 = pendiente?)
+        therapist_id: 1, // ID del terapeuta por defecto (ajustar)
+        room: 1, // Sala por defecto (ajustar)
+        ticket_number: 1, // Número de ticket por defecto (ajustar)
+        created_at: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'), // Formato ISO
+        updated_at: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ') // Formato ISO
       }
-      
-      notification.error({
-        message: 'Error',
-        description: errorMessage
-      });
-    } finally {
-      setIsSubmitting(false);
+    };
+
+    console.log('Payload a enviar:', payload);
+    
+    const result = await submitNewAppointment(payload);
+    
+    notification.success({
+      message: 'Cita registrada',
+      description: 'La cita se ha registrado correctamente'
+    });
+
+    // Resetear el formulario
+    setFormValues(null);
+    setSelectedPatient(null);
+    setPatientType('nuevo');
+    setShowHourField(false);
+    setIsPaymentRequired(false);
+    
+    return result;
+  } catch (error) {
+    console.error('Error al registrar cita:', error);
+    let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
+    
+    if (error.response) {
+      errorMessage = error.response.data?.message || errorMessage;
     }
-  };
+    
+    notification.error({
+      message: 'Error',
+      description: errorMessage
+    });
+    throw error;
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const handleCreatePatient = async (patientData) => {
     try {
@@ -174,7 +189,6 @@ const NewAppointment = () => {
       fields: [
         {
           type: 'selectPrices',
-          name: 'service_id',
           required: true,
           span: 15,
           onChange: handleServiceChange,
@@ -186,7 +200,6 @@ const NewAppointment = () => {
       fields: [
         {
           type: 'paymentStatus',
-          name: 'payment_status',
           span: 15,
           required: true,
         },
@@ -196,7 +209,6 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
-          name: 'appointment_hour',
           type: 'customComponent',
           componentType: 'timeField',
           span: 15,

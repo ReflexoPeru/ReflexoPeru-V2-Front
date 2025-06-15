@@ -366,14 +366,14 @@ const TimeField = ({ form }) => {
   const handleTimeChange = (time, timeString) => {
     console.log('Hora seleccionada:', timeString);
     formInstance.setFieldsValue({ 
-      appoinment_hour: timeString 
+      appointment_hour: timeString 
     });
   };
 
   return (
     <Form.Item
       label="Hora de cita"
-      name="appoinment_hour"
+      name="appointment_hour"
       rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
     >
