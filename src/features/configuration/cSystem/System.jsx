@@ -1,122 +1,142 @@
-import React, { useState } from 'react';
-import { Upload, Input, Button, ConfigProvider } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Upload, Input, Button, Spin, Image } from 'antd';
 import { UploadSimple } from '@phosphor-icons/react';
 import styles from './System.module.css';
+import { useSystemHook } from './hook/systemHook';
 
 const System = () => {
-  const [companyName, setCompanyName] = useState('Centro de Reflexoterapia');
-  const [logoUrl, setLogoUrl] = useState('/src/assets/Img/MiniLogoReflexo.webp');
+  const { companyInfo, logoInfo, loading, error } = useSystemHook();
+  const [companyName, setCompanyName] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoError, setLogoError] = useState(false);
+
+  // Manejo de datos de la API
+  useEffect(() => {
+    if (companyInfo) {
+      setCompanyName(companyInfo.company_name || '');
+    }
+
+    if (logoInfo?.logo_url) {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const cleanLogoPath = logoInfo.logo_url.replace(/^\/+/, '');
+      const fullLogoUrl = `${apiBaseUrl}/${cleanLogoPath}`;
+      
+      // Pre-cargar imagen para verificar si existe
+      const testImage = new Image();
+      testImage.src = fullLogoUrl;
+      testImage.onload = () => {
+        setLogoUrl(fullLogoUrl);
+        setLogoError(false);
+      };
+      testImage.onerror = () => {
+        console.error('Logo no encontrado en:', fullLogoUrl);
+        setLogoError(true);
+        setLogoUrl('/src/assets/Img/MiniLogoReflexo.webp');
+      };
+    }
+  }, [companyInfo, logoInfo]);
 
   const handleLogoChange = (info) => {
     const file = info.file.originFileObj;
-    if (
-      file &&
-      (info.file.status === 'done' || info.file.status === 'uploading')
-    ) {
+    if (file && (info.file.status === 'done' || info.file.status === 'uploading')) {
       const reader = new FileReader();
-      reader.onload = (e) => setLogoUrl(e.target.result);
+      reader.onload = (e) => {
+        setLogoUrl(e.target.result);
+        setLogoError(false);
+      };
       reader.readAsDataURL(file);
     }
   };
 
-  const theme = {
-    token: {
-      colorPrimary: '#4CAF50',
-      colorBgContainer: '#1e1e1e',
-      colorText: 'white',
-      colorTextPlaceholder: '#666',
-      colorBorder: '#444',
-      colorBgElevated: '#2a2a2a',
-      colorError: '#ff4d4f',
-    },
-    components: {
-      Button: {
-        defaultHoverBg: 'rgba(255, 255, 255, 0.08)',
-        defaultHoverColor: 'white',
-      },
-      Input: {
-        colorBgContainer: '#2a2a2a',
-        activeBorderColor: '#4CAF50',
-        hoverBorderColor: '#4CAF50',
-        activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
-      },
-    },
-  };
+  if (loading) {
+    return (
+      <div className={styles.layout}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.layout}>
+        <p>Error al cargar la información: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (!companyInfo || !logoInfo) {
+    return (
+      <div className={styles.layout}>
+        <p>No se encontraron datos de la empresa</p>
+      </div>
+    );
+  }
 
   return (
-    <ConfigProvider theme={theme}>
-      <div className={styles.body}>
-        <div className={styles.layout}>
-          <main className={styles.mainContent}>
-            <div className={styles.container}>
-              <div className={styles.card}>
-                <h2 className={styles.title}>CONFIGURACIÓN DEL SISTEMA</h2>
-
-                {/* Logo Section */}
-                <div className={styles.formRow}>
-                  <label className={styles.label}>Logo de la empresa:</label>
-                  <div className={styles.logoContainer}>
-                    <div className={styles.logoBlock}>
-                      <span className={styles.logoTitle}>Actual</span>
-                      <img
-                        src={logoUrl}
-                        alt="Logo actual de la empresa"
-                        className={styles.logoImage}
-                      />
-                    </div>
-                    <div className={styles.logoBlock}>
-                      <span className={styles.logoTitle}>Subir nuevo</span>
-                      <Upload
-                        showUploadList={false}
-                        beforeUpload={() => false}
-                        onChange={handleLogoChange}
-                        accept="image/*"
-                      >
-                        <button type="button" className={styles.uploadButton}>
-                          <UploadSimple size={24} weight="bold" color="#b0b0b0" />
-                          <span className={styles.uploadText}>Upload</span>
-                        </button>
-                      </Upload>
-                    </div>
-                  </div>
-                </div>
-
-                <div className={styles.divider}></div>
-
-                {/* Company Name Section */}
-                <div className={styles.formField}>
-                  <label className={styles.label} htmlFor="companyNameInput">
-                    Nombre de la empresa:
-                  </label>
-                  <div className={styles.nameContainer}>
-                    <Input
-                      id="companyNameInput"
-                      className={styles.input}
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Ingresa el nombre de la empresa"
+    <div className={styles.layout}>
+      <main className={styles.mainContent}>
+        <section className={styles.container}>
+          <div className={styles.box}>
+            {/* Sección del Logo */}
+            <div className={styles.section}>
+              <label className={styles.label}>Logo de la empresa:</label>
+              <div className={styles.logoRow}>
+                <div className={styles.logoBlock}>
+                  <span className={styles.logoTitle}>Actual</span>
+                  {logoInfo.logo_url && !logoError ? (
+                    <Image
+                      src={logoUrl}
+                      alt={`Logo de ${companyName}`}
+                      className={styles.logoImage}
+                      fallback="/src/assets/Img/MiniLogoReflexo.webp"
+                      preview={false}
                     />
-                    <Button className={styles.cambiarBtn}>
-                      Cambiar
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className={styles.noLogo}>
+                      {logoError ? 'Error al cargar el logo' : 'No hay logo disponible'}
+                    </div>
+                  )}
                 </div>
 
-                <div className={styles.saveButtonContainer}>
-                  <Button
-                    type="primary"
-                    className={styles.saveButton}
-                    size="large"
+                <div className={styles.logoBlock}>
+                  <span className={styles.logoTitle}>Subir nuevo</span>
+                  <Upload
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    accept="image/*"
+                    onChange={handleLogoChange}
                   >
-                    Guardar Cambios
-                  </Button>
+                    <button type="button" className={styles.uploadBtn}>
+                      <UploadSimple size={32} weight="bold" />
+                      <span className={styles.uploadText}>Upload</span>
+                    </button>
+                  </Upload>
                 </div>
               </div>
             </div>
-          </main>
-        </div>
-      </div>
-    </ConfigProvider>
+
+            {/* Sección del Nombre */}
+            <div className={styles.section}>
+              <label className={styles.label} htmlFor="companyNameInput">
+                Nombre de la empresa:
+              </label>
+              <div className={styles.nameRow}>
+                <Input
+                  id="companyNameInput"
+                  className={styles.input}
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Ingresa el nombre de la empresa"
+                />
+                <Button type="primary" className={styles.changeBtn}>
+                  Cambiar
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
   );
 };
 

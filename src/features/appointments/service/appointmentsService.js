@@ -10,7 +10,7 @@ export const createAppointment = async (data) => {
   }
 };
 
-export const getAppointments = async (page = 1, perPage = 100) => {
+export const getAppointments = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`appointments?page=${page}&per_page=${perPage}`);
 
@@ -65,6 +65,50 @@ export const getPaginatedAppointmentsByDate = async (date, perPage = 100) => {
     return { data, total };
   } catch (error) {
     console.error('❌ Error al obtener citas completadas:', error);
+    throw error;
+  }
+};
+
+export const getPatients = async (page = 1, perPage = 10) => {
+  try {
+    const response = await get(`patients?page=${page}&per_page=${perPage}`);
+
+    // Asegurar que siempre trabajamos con un array
+    let data = [];
+    if (response.data) {
+      if (Array.isArray(response.data)) {
+        data = response.data;
+      } else if (Array.isArray(response.data.data)) {
+        data = response.data.data;
+      } else if (Array.isArray(response.data.items)) {
+        data = response.data.items;
+      }
+    }
+
+    return {
+      data,
+      total: response.data?.total || data.length || 0,
+      status: response.status,
+    };
+  } catch (error) {
+    console.error('Error en getPatients:', error);
+    throw error;
+  }
+};
+
+export const searchPatients = async (term) => {
+  try {
+    const res = await get(`patients/search?search=${term}&per_page=50`);
+    console.log('🔍 Resultado de búsqueda:', res.data);
+
+    const data = Array.isArray(res.data)
+      ? res.data
+      : res.data.items || res.data.data || [];
+    const total = res.data.total || data.length;
+
+    return { data, total };
+  } catch (error) {
+    console.error('❌ Error en searchPatients:', error);
     throw error;
   }
 };

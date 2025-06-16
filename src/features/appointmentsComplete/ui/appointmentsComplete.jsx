@@ -55,7 +55,7 @@ export default function AppointmentsComplete() {
       title: 'Pago',
       dataIndex: 'payment',
       key: 'payment',
-      width: '60px',
+      width: '70px',
     },
     {
       title: 'Metodo Pago',
@@ -63,11 +63,73 @@ export default function AppointmentsComplete() {
       key: 'payment_type_id',
       width: '75px',
     },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button 
+            style={{ backgroundColor: '#555555', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('imprimir', record)}
+          >
+            Imprimir
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#69276F', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('boleta', record)}
+          >
+            Boleta
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('history', record)}
+          >
+            Historia
+          </Button>
+          <Button 
+            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    }
   ];
 
-  // const appointmentsData = AppointmentsMock[0].items;
+
+  const handleAction = (action, record) => {
+    // Implementa las acciones según el tipo
+    console.log(`${action} action for:`, record);
+    switch(action) {
+      case 'edit':
+        // Lógica para editar
+        break;
+      case 'imprimir':
+        // Lógica para más info
+        break;
+      case 'boleta':
+        // Lógica para historia
+        break;
+      case 'history':
+        // Lógica para eliminar
+        break;
+      case 'delete':
+        // Lógica para eliminar
+        break;
+      default:
+        break;
+    }
+  };
 
   const handleButton = () => {
+    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
@@ -76,12 +138,6 @@ export default function AppointmentsComplete() {
     setSearchTerm(value);
   };
 
-  // const handleTimeRangeChange = (dates, dateStrings) => {
-  //   // Filtrar datos según el rango de fechas (si aplica)
-  //   const selectedDate = dayjs(dateStrings[0], 'DD/MM/YYYY').format('YYYY-MM-DD');
-  //   console.log('📅 Fecha seleccionada (formateada):', selectedDate);
-  //   loadPaginatedAppointmentsByDate(selectedDate);
-  // };
 
   return (
     <div
@@ -121,7 +177,7 @@ export default function AppointmentsComplete() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />

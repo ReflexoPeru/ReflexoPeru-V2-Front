@@ -1,26 +1,47 @@
-import React from 'react';
-import estilo from './staff.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
+import { Button, Space } from 'antd';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
-// import StaffMock from '../../../mock/Staff';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
+import ModeloTable from '../../../components/Table/Tabla';
 import { useStaff } from '../hook/staffHook';
+import { useState } from 'react';
+import EditTherapist from './EditTherapist/EditTherapist';
 
 export default function Staff() {
   const navigate = useNavigate();
-
-  const { staff, loading, error, pagination, handlePageChange, setSearchTerm } =
-    useStaff();
-
-  // Debug (verifica en consola)
-  console.log('Datos:', {
+  const {
     staff,
     loading,
-    error,
     pagination,
-  });
+    handlePageChange,
+    setSearchTerm,
+    handleDeleteTherapist,
+  } = useStaff();
+  const [editingTherapist, setEditingTherapist] = useState(null);
+
+  const handleAction = (action, record) => {
+    switch (action) {
+      case 'edit':
+        setEditingTherapist(record);
+        break;
+      case 'info':
+        navigate(`info/${record.id}`);
+        break;
+      case 'delete':
+        handleDeleteTherapist(record.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleButton = () => {
+    navigate('registrar');
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
 
   const columns = [
     {
@@ -34,33 +55,45 @@ export default function Staff() {
       dataIndex: 'full_name',
       key: 'name',
     },
+    {
+      title: 'Acciones',
+      key: 'actions',
+      render: (_, record) => (
+        <Space size="small">
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('edit', record)}
+          >
+            Editar
+          </Button>
+          {/*           <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('info', record)}
+          >
+            Más Info
+          </Button> */}
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('delete', record)}
+          >
+            Eliminar
+          </Button>
+        </Space>
+      ),
+    },
   ];
-
-  // const staffData = StaffMock[0].items;
-
-  const handleButton = () => {
-    navigate('registrar');
-  };
-
-  const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
-    setSearchTerm(value);
-  };
-
-  // Botones personalizados
-  const customActionButtons = () => (
-    <Space size="small">
-      <Button style={{ backgroundColor: '#0066FF', color: '#fff' }}>
-        Editar
-      </Button>
-      <Button style={{ backgroundColor: '#00AA55', color: '#fff' }}>
-        Más Info
-      </Button>
-      <Button style={{ backgroundColor: '#FF3333', color: '#fff' }}>
-        Eliminar
-      </Button>
-    </Space>
-  );
 
   return (
     <div
@@ -91,14 +124,20 @@ export default function Staff() {
         columns={columns}
         data={staff}
         loading={loading}
-        customActions={customActionButtons}
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />
+
+      {editingTherapist && (
+        <EditTherapist
+          therapist={editingTherapist}
+          onClose={() => setEditingTherapist(null)}
+        />
+      )}
     </div>
   );
 }
