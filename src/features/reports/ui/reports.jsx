@@ -113,7 +113,96 @@ const Reporte = () => {
 
   const handleDownloadExcel = () => {
     if (!rangoData || !rangoData.appointments) return;
+
+    // Preparar los datos con encabezados personalizados
+    const headers = [
+      'ID Paciente',
+      'Documento',
+      'Nombre Completo',
+      'Teléfono',
+      'Fecha',
+      'Hora',
+    ];
+
+    // Crear la hoja de trabajo
     const ws = XLSX.utils.json_to_sheet(rangoData.appointments);
+
+    // Agregar encabezados personalizados en la primera fila
+    XLSX.utils.sheet_add_aoa(ws, [headers], { origin: 'A1' });
+
+    // Configurar estilos para el encabezado
+    if (!ws['!cols']) ws['!cols'] = [];
+    if (!ws['!rows']) ws['!rows'] = [];
+
+    // Configurar ancho de columnas
+    ws['!cols'] = [
+      { width: 12 }, // ID Paciente
+      { width: 15 }, // Documento
+      { width: 30 }, // Nombre Completo
+      { width: 15 }, // Teléfono
+      { width: 12 }, // Fecha
+      { width: 10 }, // Hora
+    ];
+
+    // Configurar altura de la fila del encabezado
+    ws['!rows'] = [{ hpt: 25 }]; // Altura del encabezado
+
+    // Aplicar estilos al encabezado
+    const headerRange = XLSX.utils.decode_range(ws['!ref']);
+    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+      if (!ws[cellAddress]) {
+        ws[cellAddress] = { v: headers[col] };
+      }
+
+      // Aplicar estilo al encabezado
+      if (!ws[cellAddress].s) ws[cellAddress].s = {};
+      ws[cellAddress].s = {
+        fill: {
+          fgColor: { rgb: '95E472' }, // Color verde pastel
+        },
+        font: {
+          bold: true,
+          color: { rgb: '2D5A3D' }, // Color verde oscuro
+          sz: 12,
+        },
+        alignment: {
+          horizontal: 'center',
+          vertical: 'center',
+        },
+        border: {
+          top: { style: 'thick', color: { rgb: '2D5A3D' } },
+          bottom: { style: 'thick', color: { rgb: '2D5A3D' } },
+          left: { style: 'thick', color: { rgb: '2D5A3D' } },
+          right: { style: 'thick', color: { rgb: '2D5A3D' } },
+        },
+      };
+    }
+
+    // Aplicar bordes a todas las celdas de datos
+    const dataRange = XLSX.utils.decode_range(ws['!ref']);
+    for (let row = dataRange.s.r + 1; row <= dataRange.e.r; row++) {
+      for (let col = dataRange.s.c; col <= dataRange.e.c; col++) {
+        const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+        if (ws[cellAddress]) {
+          if (!ws[cellAddress].s) ws[cellAddress].s = {};
+          ws[cellAddress].s.border = {
+            top: { style: 'thin', color: { rgb: 'D9D9D9' } },
+            bottom: { style: 'thin', color: { rgb: 'D9D9D9' } },
+            left: { style: 'thin', color: { rgb: 'D9D9D9' } },
+            right: { style: 'thin', color: { rgb: 'D9D9D9' } },
+          };
+
+          // Alternar colores de filas
+          if (row % 2 === 0) {
+            ws[cellAddress].s.fill = {
+              fgColor: { rgb: 'F8F8F8' },
+            };
+          }
+        }
+      }
+    }
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Citas');
     XLSX.writeFile(

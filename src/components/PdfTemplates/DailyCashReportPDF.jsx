@@ -8,7 +8,7 @@ import {
   Image,
 } from '@react-pdf/renderer';
 
-const logo = '/MiniLogoReflexo.png';
+const logo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
 const pastelGreen = '#95e472';
 const darkGreen = '#2d5a3d';
 const clinicName = 'Reflexo Perú';
@@ -16,121 +16,138 @@ const clinicName = 'Reflexo Perú';
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
-    padding: 8,
+    padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 11,
+    fontSize: 12,
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100%',
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 20,
     marginTop: 0,
   },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerCenter: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  headerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
   logo: {
-    width: 38,
-    height: 38,
-    marginBottom: 2,
+    width: 60,
+    height: 60,
   },
   title: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
     color: darkGreen,
-    marginBottom: 1,
+    marginBottom: 4,
     letterSpacing: 1,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: 16,
     color: '#444',
-    marginBottom: 1,
+    marginBottom: 4,
     textAlign: 'center',
   },
   date: {
-    fontSize: 10,
+    fontSize: 14,
     color: '#666',
-    marginBottom: 2,
+    marginBottom: 0,
     textAlign: 'center',
   },
   divider: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
     borderBottomColor: pastelGreen,
-    marginVertical: 4,
+    marginVertical: 15,
     marginHorizontal: 0,
   },
   content: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: 8,
+    gap: 15,
   },
   summary: {
-    padding: 6,
+    padding: 15,
     backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 10,
+    borderWidth: 2,
     borderColor: pastelGreen,
+    marginBottom: 10,
   },
   summaryTitle: {
-    fontSize: 11,
+    fontSize: 16,
     fontWeight: 'bold',
     color: darkGreen,
-    marginBottom: 4,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 1,
+    marginBottom: 8,
+    paddingHorizontal: 10,
   },
   summaryLabel: {
-    fontSize: 9,
+    fontSize: 14,
     color: '#444',
+    fontWeight: 'bold',
   },
   summaryValue: {
-    fontSize: 9,
+    fontSize: 14,
     fontWeight: 'bold',
     color: darkGreen,
   },
   table: {
-    borderWidth: 1.5,
+    borderWidth: 2,
     borderColor: pastelGreen,
-    borderRadius: 8,
+    borderRadius: 10,
     overflow: 'hidden',
+    marginTop: 5,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 22,
+    minHeight: 35,
   },
   tableHeader: {
     backgroundColor: pastelGreen,
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 10,
+    fontSize: 14,
     textAlign: 'center',
-    padding: 4,
+    padding: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#b6e6b0',
   },
   cellName: {
     flex: 1.6,
-    padding: 4,
-    fontSize: 9,
+    padding: 10,
+    fontSize: 12,
     color: '#222',
     textAlign: 'left',
   },
   cellCount: {
     flex: 0.7,
-    padding: 4,
-    fontSize: 9,
+    padding: 10,
+    fontSize: 12,
     color: '#222',
     textAlign: 'center',
   },
   cellMoney: {
     flex: 1,
-    padding: 4,
-    fontSize: 9,
+    padding: 10,
+    fontSize: 12,
     color: darkGreen,
     textAlign: 'center',
     fontWeight: 'bold',
@@ -144,34 +161,34 @@ const styles = StyleSheet.create({
   totalRow: {
     flexDirection: 'row',
     backgroundColor: '#eaffdf',
-    minHeight: 22,
-    borderTopWidth: 2,
+    minHeight: 40,
+    borderTopWidth: 3,
     borderTopColor: pastelGreen,
   },
   totalLabel: {
     flex: 2.3,
-    padding: 4,
+    padding: 10,
     fontWeight: 'bold',
     color: '#222',
     textAlign: 'right',
-    fontSize: 10,
+    fontSize: 14,
   },
   totalValue: {
     flex: 1,
-    padding: 4,
+    padding: 10,
     fontWeight: 'bold',
     color: pastelGreen,
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: 14,
   },
   footer: {
     marginTop: 'auto',
     textAlign: 'center',
-    fontSize: 8,
+    fontSize: 12,
     color: '#888',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingTop: 4,
+    paddingTop: 10,
   },
 });
 
@@ -191,10 +208,15 @@ const DailyCashReportPDF = ({ data, date }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image src={logo} style={styles.logo} />
-          <Text style={styles.title}>{clinicName}</Text>
-          <Text style={styles.subtitle}>Reporte de Caja Diaria</Text>
-          <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
+          <View style={styles.headerLeft}>
+            <Image src={logo} style={styles.logo} />
+          </View>
+          <View style={styles.headerCenter}>
+            <Text style={styles.title}>{clinicName}</Text>
+            <Text style={styles.subtitle}>Reporte de Caja Diaria</Text>
+            <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
+          </View>
+          <View style={styles.headerRight}></View>
         </View>
         <View style={styles.divider} />
 

@@ -1,6 +1,14 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from '@react-pdf/renderer';
 
+const logo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
 const pastelGreen = '#95e472';
 const darkGreen = '#2d5a3d';
 const clinicName = 'Reflexo Perú';
@@ -8,95 +16,112 @@ const clinicName = 'Reflexo Perú';
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
-    padding: 40,
+    padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 11,
+    fontSize: 12,
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100%',
   },
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 18,
+    marginBottom: 20,
     marginTop: 0,
   },
+  headerLeft: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  headerCenter: {
+    flex: 2,
+    alignItems: 'center',
+  },
+  headerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  logo: {
+    width: 60,
+    height: 60,
+  },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     color: darkGreen,
-    marginBottom: 2,
+    marginBottom: 4,
     letterSpacing: 1,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#444',
-    marginBottom: 2,
+    marginBottom: 4,
     textAlign: 'center',
   },
   date: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666',
-    marginBottom: 10,
+    marginBottom: 0,
     textAlign: 'center',
   },
   divider: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
     borderBottomColor: pastelGreen,
-    marginVertical: 12,
+    marginVertical: 15,
     marginHorizontal: 0,
   },
   therapistBlock: {
     marginBottom: 24,
   },
   therapistName: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: 'bold',
     color: darkGreen,
-    marginBottom: 6,
-    marginTop: 10,
+    marginBottom: 8,
+    marginTop: 15,
     textAlign: 'left',
   },
   table: {
-    marginTop: 2,
-    borderWidth: 1.5,
+    marginTop: 5,
+    borderWidth: 2,
     borderColor: pastelGreen,
-    borderRadius: 8,
+    borderRadius: 10,
     overflow: 'hidden',
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 28,
+    minHeight: 35,
   },
   tableHeader: {
     backgroundColor: pastelGreen,
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 13,
+    fontSize: 14,
     textAlign: 'center',
-    padding: 8,
+    padding: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#b6e6b0',
   },
   cell: {
     flex: 1,
-    padding: 8,
-    fontSize: 11,
+    padding: 10,
+    fontSize: 12,
     color: '#222',
     textAlign: 'center',
   },
   cellName: {
     flex: 3,
-    padding: 8,
-    fontSize: 11,
+    padding: 10,
+    fontSize: 12,
     color: '#222',
     textAlign: 'left',
   },
   cellCount: {
     flex: 1,
-    padding: 8,
-    fontSize: 11,
+    padding: 10,
+    fontSize: 12,
     color: '#222',
     textAlign: 'center',
   },
@@ -109,11 +134,11 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: 'auto',
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: 12,
     color: '#888',
     borderTopWidth: 1,
     borderTopColor: '#e0e0e0',
-    paddingTop: 8,
+    paddingTop: 10,
   },
 });
 
@@ -126,11 +151,17 @@ const PatientsByTherapistReportPDF = ({ data, date }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.title}>{clinicName}</Text>
-          <Text style={styles.subtitle}>
-            Reporte de Pacientes Atendidos x Terapeuta
-          </Text>
-          <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
+          <View style={styles.headerLeft}>
+            <Image src={logo} style={styles.logo} />
+          </View>
+          <View style={styles.headerCenter}>
+            <Text style={styles.title}>{clinicName}</Text>
+            <Text style={styles.subtitle}>
+              Reporte de Pacientes Atendidos x Terapeuta
+            </Text>
+            <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
+          </View>
+          <View style={styles.headerRight}></View>
         </View>
         <View style={styles.divider} />
         {therapists.map((therapist, idx) => (
