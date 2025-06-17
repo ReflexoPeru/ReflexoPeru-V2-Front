@@ -13,30 +13,20 @@ const FormComponent = ({
   patientType = '',
   paymentOption = '',
   customAmount = '',
+  onSubmit,
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
   onSubmit = () => {},
+  onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
+  onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
   form: externalForm,
 }) => {
   const [internalForm] = useForm();
   const form = externalForm || internalForm;
   const [loading, setLoading] = useState(false);
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
-
-  const handleFinish = async (values) => {
-    try {
-      setLoading(true);
-      console.log('Datos del formulario:', values);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await onSubmit(values); // ← AQUÍ el cambio importante
-    } catch (error) {
-      console.error('Error al enviar el formulario:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
@@ -77,16 +67,16 @@ const FormComponent = ({
             showHourField={showHourField}
             isPaymentRequired={isPaymentRequired}
             patientType={patientType}
-            paymentOption={paymentOption} // Esta es importante
-            customAmount={customAmount} // Esta también
-            paymentOptions={field.props?.paymentOptions} // Añade esta línea
+            paymentOption={paymentOption}
+            customAmount={customAmount}
+            paymentOptions={field.props?.paymentOptions}
             onPatientTypeChange={onPatientTypeChange}
             onPaymentOptionChange={onPaymentOptionChange}
             onShowHourFieldChange={onShowHourFieldChange}
             onPaymentRequiredChange={onPaymentRequiredChange}
-            // Añade estas nuevas props
-            onOpenCreateModal={() => onSubmit({})} // Esto activará el modal de creación
-            onOpenSelectModal={() => onSubmit({})} // Esto activará el modal de selección
+            // Usamos las nuevas props para abrir modales
+            onOpenCreateModal={onOpenCreateModal}
+            onOpenSelectModal={onOpenSelectModal}
           />
         </Col>
       );
@@ -154,7 +144,7 @@ const FormComponent = ({
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleFinish}
+          onFinish={onSubmit}
           className={styles.formContainer}
         >
           <Row gutter={[20, 0]}>
