@@ -1,5 +1,4 @@
 import { Button, ConfigProvider, Modal, Radio, Table, notification } from 'antd';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import Form from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
@@ -60,23 +59,6 @@ const handleCompleteRegistration = async () => {
         appointment_date: formValues.appointment_date, // Ya está en formato correcto
         appointment_hour: formValues.appointment_hour || null,
         patient_id: selectedPatient.id,
-        // Campos con valores por defecto
-        ailments: "",
-        diagnosis: "",
-        surgeries: "",
-        reflexology_diagnostics: "",
-        medications: "",
-        observation: "",
-        initial_date: formValues.appointment_date, // Misma fecha de cita
-        final_date: formValues.appointment_date, // Misma fecha de cita
-        appointment_type: "Terapia individual", // Valor por defecto
-        social_benefit: false, // Valor por defecto
-        appointment_status_id: 1, // Valor por defecto (1 = pendiente?)
-        therapist_id: 1, // ID del terapeuta por defecto (ajustar)
-        room: 1, // Sala por defecto (ajustar)
-        ticket_number: 1, // Número de ticket por defecto (ajustar)
-        created_at: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'), // Formato ISO
-        updated_at: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ') // Formato ISO
       }
     };
 
@@ -313,7 +295,7 @@ const handleCompleteRegistration = async () => {
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
           onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
-          onSubmit={handleSubmit}
+          xd={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
           submitButtonText="Registrar"

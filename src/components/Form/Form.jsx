@@ -13,6 +13,7 @@ const FormComponent = ({
   patientType = '',
   paymentOption = '',
   customAmount = '',
+  xd,
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
@@ -26,19 +27,6 @@ const FormComponent = ({
   const form = externalForm || internalForm;
   const [loading, setLoading] = useState(false);
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
-
-  const handleFinish = async (values) => {
-    try {
-      setLoading(true);
-      console.log('Datos del formulario:', values);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await onSubmit(values); // Solo muestra en consola, no abre modales
-    } catch (error) {
-      console.error('Error al enviar el formulario:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
@@ -156,7 +144,7 @@ const FormComponent = ({
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleFinish}
+          onFinish={xd}
           className={styles.formContainer}
         >
           <Row gutter={[20, 0]}>
