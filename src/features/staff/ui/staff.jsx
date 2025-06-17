@@ -63,12 +63,12 @@ export default function Staff() {
           >
             Editar
           </Button>
-          <Button 
+          {/* <Button 
             style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
             onClick={() => handleAction('info', record)}
           >
             Más Info
-          </Button>
+          </Button> */}
           <Button 
             style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
             onClick={() => handleAction('delete', record)}

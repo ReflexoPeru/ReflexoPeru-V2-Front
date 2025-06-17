@@ -6,6 +6,7 @@ import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import { useNavigate } from 'react-router';
 import { useAppointmentsComplete } from '../hook/appointmentsCompleteHook';
 import dayjs from 'dayjs';
+import { Space, Button } from 'antd';
 
 export default function AppointmentsComplete() {
   const navigate = useNavigate();
@@ -66,6 +67,7 @@ export default function AppointmentsComplete() {
     {
       title: 'Acciones',
       key: 'actions',
+      width: '200px',
       render: (_, record) => (
         <Space size="small">
           <Button 

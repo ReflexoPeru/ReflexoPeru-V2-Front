@@ -27,7 +27,7 @@ export default function Patients() {
         navigate(`info/${record.id}`);
         break;
       case 'history':
-        navigate(`historia/${record.id}`);
+        navigate(`historia/${record.id}?sexo=${record.sex}`);
         break;
       case 'delete':
         handleDeletePatient(record.id);
@@ -68,14 +68,14 @@ export default function Patients() {
           >
             Editar
           </Button>
-          <Button 
+          {/* <Button 
             style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
             onClick={() => handleAction('info', record)}
           >
             Más Info
-          </Button>
+          </Button> */}
           <Button 
-            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
+            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
             onClick={() => handleAction('history', record)}
           >
             Historia
