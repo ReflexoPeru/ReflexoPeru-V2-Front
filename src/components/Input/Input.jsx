@@ -116,6 +116,35 @@ const InputField = ({
         </Form.Item>
       );
 
+    case 'email':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          type="email"
+          onChange={(e) => {
+            const value = e.target.value;
+            if (rest.onChange) rest.onChange(value);
+          }}
+        />
+      );
+      break;
+
+    case 'text':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase();
+            if (rest.onChange) rest.onChange(value);
+            // Si el form está presente, actualiza el valor en el form también
+            if (form && rest.name) {
+              form.setFieldValue(rest.name, value);
+            }
+          }}
+        />
+      );
+      break;
+
     case 'select': // genérico
       return (
         <ConfigProvider

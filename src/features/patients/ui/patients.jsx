@@ -1,4 +1,4 @@
-import { Button, Space } from 'antd';
+import { Button, Space, notification } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
@@ -6,10 +6,12 @@ import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
 import { usePatients } from '../hook/patientsHook';
 import EditPatient from '../ui/EditPatient/EditPatient';
+import { getPatientById } from '../service/patientsService';
 
 export default function Patients() {
   const navigate = useNavigate();
   const [editingPatient, setEditingPatient] = useState(null);
+  const [loadingEditId, setLoadingEditId] = useState(null); // Para mostrar loading en el botón de editar
   const {
     patients,
     loading,
@@ -18,6 +20,22 @@ export default function Patients() {
     setSearchTerm,
     handleDeletePatient,
   } = usePatients();
+
+  // Nuevo handler para editar: hace GET antes de abrir el modal
+  const handleEdit = async (record) => {
+    setLoadingEditId(record.id);
+    try {
+      const freshPatient = await getPatientById(record.id);
+      setEditingPatient(freshPatient);
+    } catch (e) {
+      notification.error({
+        message: 'Error',
+        description: 'No se pudo obtener los datos actualizados.',
+      });
+    } finally {
+      setLoadingEditId(null);
+    }
+  };
 
   const handleAction = (action, record) => {
     switch (action) {
@@ -29,7 +47,8 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => setEditingPatient(record)}
+            loading={loadingEditId === record.id}
+            onClick={() => handleEdit(record)}
           >
             Editar
           </Button>
