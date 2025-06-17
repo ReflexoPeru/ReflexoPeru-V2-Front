@@ -13,7 +13,7 @@ const FormComponent = ({
   patientType = '',
   paymentOption = '',
   customAmount = '',
-  xd,
+  onSubmit,
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
@@ -144,7 +144,7 @@ const FormComponent = ({
         <Form
           form={form}
           layout="vertical"
-          onFinish={xd}
+          onFinish={onSubmit}
           className={styles.formContainer}
         >
           <Row gutter={[20, 0]}>

@@ -29,6 +29,7 @@ const NewAppointment = () => {
   const handleSubmit = (values) => {
     console.log('Valores del formulario:', values);
     setFormValues(values);
+    submitNewAppointment(values);
   };
 
 const handleCompleteRegistration = async () => {
@@ -295,7 +296,7 @@ const handleCompleteRegistration = async () => {
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
           onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
-          xd={handleSubmit}
+          onSubmit={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
           submitButtonText="Registrar"
