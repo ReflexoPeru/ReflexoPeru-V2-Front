@@ -103,7 +103,9 @@ const InputField = ({
       );
 
     case 'typeOfDocument':
-      return <SelectTypeOfDocument onChange={rest.onChange} />;
+      return (
+        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
+      );
 
     case 'selectPrices':
       return (
@@ -280,7 +282,7 @@ const PatientField = ({
 }) => {
   // Usa useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
-  
+
   // Actualizar el valor del campo cuando cambia el paciente seleccionado
   useEffect(() => {
     if (formInstance && selectedPatient) {
@@ -290,7 +292,7 @@ const PatientField = ({
       });
     }
   }, [selectedPatient, formInstance]);
-  
+
   return (
     <div className={styles.patientRow}>
       <div className={styles.patientContainer}>
@@ -335,10 +337,10 @@ const PatientField = ({
         <div className={styles.checkboxColumn}>
           {patientTypeOptions.map((option) => (
             <Checkbox
-            key={option.value}
-            checked={patientType === option.value}
-            onChange={() => onPatientTypeChange(option.value)}
-            className={`${styles.checkbox} ${styles.checkboxItem}`}
+              key={option.value}
+              checked={patientType === option.value}
+              onChange={() => onPatientTypeChange(option.value)}
+              className={`${styles.checkbox} ${styles.checkboxItem}`}
             >
               {option.label}
             </Checkbox>
@@ -355,8 +357,8 @@ const DateField = ({ form }) => {
 
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
-    formInstance.setFieldsValue({ 
-      appointment_date: dateString 
+    formInstance.setFieldsValue({
+      appointment_date: dateString,
     });
   };
 
@@ -394,8 +396,8 @@ const TimeField = ({ form }) => {
 
   const handleTimeChange = (time, timeString) => {
     console.log('Hora seleccionada:', timeString);
-    formInstance.setFieldsValue({ 
-      appointment_hour: timeString 
+    formInstance.setFieldsValue({
+      appointment_hour: timeString,
     });
   };
 

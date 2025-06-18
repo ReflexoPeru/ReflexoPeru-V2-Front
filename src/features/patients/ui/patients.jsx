@@ -47,7 +47,6 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
             }}
-            loading={loadingEditId === record.id}
             onClick={() => handleEdit(record)}
           >
             Editar

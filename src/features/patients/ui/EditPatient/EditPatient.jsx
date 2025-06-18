@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
-import { getPatientById } from '../../service/patientsService';
 
 // Reutilizamos los mismos campos del formulario de creación
 const fields = [
@@ -157,6 +156,8 @@ const EditPatient = ({ patient, onClose }) => {
   // Actualiza el formulario con los datos recibidos (sea de prop o del GET)
   const setFormWithPatient = (data) => {
     if (!data) return;
+    // Usar document_type_id si existe, sino usar document_type (que ahora es el id), y forzar a number
+    const documentTypeId = Number(data.document_type);
     const ubicacion = {
       region_id: data.region || data.region_id || null,
       province_id: data.province || data.province_id || null,
@@ -172,7 +173,7 @@ const EditPatient = ({ patient, onClose }) => {
       name: data.name || '',
       paternal_lastname: data.paternal_lastname || '',
       maternal_lastname: data.maternal_lastname || '',
-      document_type_id: data.document_type_id || '',
+      document_type_id: documentTypeId,
       document_number: data.document_number || '',
       personal_reference: data.personal_reference || '',
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
@@ -186,30 +187,12 @@ const EditPatient = ({ patient, onClose }) => {
       ubicacion,
     };
     form.setFieldsValue(formData);
+    console.log('Valores seteados en el form:', formData);
   };
 
   // Inicializa el formulario con los datos de la prop patient
   useEffect(() => {
     setFormWithPatient(patient);
-  }, [patient]);
-
-  // Cuando el modal se abre, hace un GET pero no bloquea la UI
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (patient && patient.id) {
-          const freshPatient = await getPatientById(patient.id);
-          setFormWithPatient(freshPatient);
-        }
-      } catch (error) {
-        notification.error({
-          message: 'Error',
-          description: 'No se pudo obtener los datos actualizados del paciente',
-        });
-      }
-    };
-    fetchData();
-    // eslint-disable-next-line
   }, [patient]);
 
   const handleSubmit = async (formData) => {
