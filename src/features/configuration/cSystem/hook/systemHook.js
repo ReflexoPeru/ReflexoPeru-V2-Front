@@ -1,49 +1,67 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSystemInfo, getCompanyLogo } from "../services/systemServices";
 
+//CONSIGUE EL LOGO
 export const useSystemHook = () => {
-    const [companyInfo, setCompanyInfo] = useState(null);
     const [logoInfo, setLogoInfo] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const abortControllerRef = useRef(null);
 
-    const fetchData = useCallback(async () => {
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
+    const fetchLogo = useCallback(async () => {
+    if (abortControllerRef.current) abortControllerRef.current.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
-        abortControllerRef.current = new AbortController();
-        const signal = abortControllerRef.current.signal;
+    setLoading(true);
+    setError(null);
 
-        setLoading(true);
-        setError(null);
-
-        try {
-            const [infoResponse, logoResponse] = await Promise.all([
-                getSystemInfo(signal),
-                getCompanyLogo(signal)
-            ]);
-
-            setCompanyInfo(infoResponse.data);
-            setLogoInfo(logoResponse.data);
+    try {
+        const logoBlob = await getCompanyLogo(controller.signal);
+        setLogoInfo(logoBlob);
         } catch (err) {
-            setError(err);
-            console.error('Error fetching company data:', err);
+        setError(err);
         } finally {
-            setLoading(false);
+        setLoading(false);
         }
     }, []);
 
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        fetchLogo();
+        return () => abortControllerRef.current?.abort();
+    }, [fetchLogo]);
 
-    return { 
+    return { logoInfo, loading, error, refetch: fetchLogo };
+};
+
+//CONSIGUE LOS DATOS DE LA EMPRESA
+export const useCompanyInfo = () => {
+    const [companyInfo, setCompanyInfo] = useState(null);
+    const [loadingInfo, setLoadingInfo] = useState(false);
+    const [errorInfo, setErrorInfo] = useState(null);
+
+    const fetchCompanyInfo = async () => {
+        setLoadingInfo(true);
+        setErrorInfo(null);
+
+        try {
+        const data = await getSystemInfo();
+        setCompanyInfo(data?.data); // <- Asegura que tomas la propiedad `data`
+        } catch (err) {
+        setErrorInfo(err);
+        } finally {
+        setLoadingInfo(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchCompanyInfo();
+    }, []);
+
+    return {
         companyInfo,
-        logoInfo,
-        loading, 
-        error, 
-        refetch: fetchData 
+        loadingInfo,
+        errorInfo,
+        refetchCompanyInfo: fetchCompanyInfo
     };
 };

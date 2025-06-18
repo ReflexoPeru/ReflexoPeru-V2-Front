@@ -1,103 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, Input, Button, Spin, Image } from 'antd';
 import { UploadSimple } from '@phosphor-icons/react';
 import styles from './System.module.css';
-import { useSystemHook } from './hook/systemHook';
+import { useSystemHook, useCompanyInfo } from './hook/systemHook';
 
 const System = () => {
-  const { companyInfo, logoInfo, loading, error } = useSystemHook();
+  const { logoInfo, loading, error } = useSystemHook();
+  const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
   const [companyName, setCompanyName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoError, setLogoError] = useState(false);
 
   // Manejo de datos de la API
   useEffect(() => {
-    if (companyInfo) {
-      setCompanyName(companyInfo.company_name || '');
+    let objectUrl; 
+
+    if (companyInfo?.company_name) setCompanyName(companyInfo.company_name);
+
+    if (logoInfo instanceof Blob) {
+      objectUrl = URL.createObjectURL(logoInfo);
+      setLogoUrl(objectUrl); // 👈 Cache-busting
+      setLogoError(false);
     }
 
-    if (logoInfo?.logo_url) {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-      const cleanLogoPath = logoInfo.logo_url.replace(/^\/+/, '');
-      const fullLogoUrl = `${apiBaseUrl}/${cleanLogoPath}`;
-      
-      // Pre-cargar imagen para verificar si existe
-      const testImage = new Image();
-      testImage.src = fullLogoUrl;
-      testImage.onload = () => {
-        setLogoUrl(fullLogoUrl);
-        setLogoError(false);
-      };
-      testImage.onerror = () => {
-        console.error('Logo no encontrado en:', fullLogoUrl);
-        setLogoError(true);
-        setLogoUrl('/src/assets/Img/MiniLogoReflexo.webp');
-      };
+    return () => {
+    if (objectUrl) {
+      URL.revokeObjectURL(objectUrl); // 👈 Limpieza
     }
+  };
   }, [companyInfo, logoInfo]);
 
-  const handleLogoChange = (info) => {
-    const file = info.file.originFileObj;
-    if (file && (info.file.status === 'done' || info.file.status === 'uploading')) {
+  const handleLogoChange = ({ file }) => {
+    const f = file.originFileObj;
+    if (f) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setLogoUrl(e.target.result);
-        setLogoError(false);
-      };
-      reader.readAsDataURL(file);
+      reader.onload = (e) => setLogoUrl(e.target.result);
+      reader.readAsDataURL(f);
+      setLogoError(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.layout}>
-        <Spin size="large" />
-      </div>
-    );
-  }
+  if (loading) return <div className={styles.layout}><Spin size="large" /></div>;
+  if (error) return <div className={styles.layout}><p>Error: {error.message}</p></div>;
 
-  if (error) {
-    return (
-      <div className={styles.layout}>
-        <p>Error al cargar la información: {error.message}</p>
-      </div>
-    );
-  }
 
-  if (!companyInfo || !logoInfo) {
-    return (
-      <div className={styles.layout}>
-        <p>No se encontraron datos de la empresa</p>
-      </div>
-    );
-  }
+  // if (!companyInfo || !logoInfo) {
+  //   return (
+  //     <div className={styles.layout}>
+  //       <p>No se encontraron datos de la empresa</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className={styles.layout}>
       <main className={styles.mainContent}>
         <section className={styles.container}>
           <div className={styles.box}>
-            {/* Sección del Logo */}
+
+            {/* Logo */}
             <div className={styles.section}>
               <label className={styles.label}>Logo de la empresa:</label>
               <div className={styles.logoRow}>
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Actual</span>
-                  {logoInfo.logo_url && !logoError ? (
+                  {logoUrl ? (
                     <Image
                       src={logoUrl}
                       alt={`Logo de ${companyName}`}
-                      className={styles.logoImage}
-                      fallback="/src/assets/Img/MiniLogoReflexo.webp"
                       preview={false}
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '2px solid #4CAF50',
+                        padding: '3px',
+                        backgroundColor: '#000'
+                      }}
                     />
                   ) : (
-                    <div className={styles.noLogo}>
-                      {logoError ? 'Error al cargar el logo' : 'No hay logo disponible'}
-                    </div>
+                    <div className={styles.noLogo}>No hay logo disponible</div>
                   )}
                 </div>
-
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Subir nuevo</span>
                   <Upload
@@ -105,6 +90,7 @@ const System = () => {
                     beforeUpload={() => false}
                     accept="image/*"
                     onChange={handleLogoChange}
+                    
                   >
                     <button type="button" className={styles.uploadBtn}>
                       <UploadSimple size={32} weight="bold" />
@@ -115,11 +101,9 @@ const System = () => {
               </div>
             </div>
 
-            {/* Sección del Nombre */}
+            {/* Nombre */}
             <div className={styles.section}>
-              <label className={styles.label} htmlFor="companyNameInput">
-                Nombre de la empresa:
-              </label>
+              <label className={styles.label} htmlFor="companyNameInput">Nombre de la empresa:</label>
               <div className={styles.nameRow}>
                 <Input
                   id="companyNameInput"
@@ -133,11 +117,13 @@ const System = () => {
                 </Button>
               </div>
             </div>
+
           </div>
         </section>
       </main>
     </div>
   );
 };
+
 
 export default System;
