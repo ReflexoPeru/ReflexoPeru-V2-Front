@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
+    "@react-pdf/renderer": "^4.3.0",
     "antd": "^5.25.1",
     "apexcharts": "^4.7.0",
     "axios": "^1.9.0",
@@ -26,7 +27,8 @@
     "react-dom": "^19.1.0",
     "react-router": "^7.6.0",
     "react-router-dom": "^7.6.2",
-    "reflexoperurefactor": "file:"
+    "reflexoperurefactor": "file:",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

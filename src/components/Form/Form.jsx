@@ -13,12 +13,11 @@ const FormComponent = ({
   patientType = '',
   paymentOption = '',
   customAmount = '',
-  onSubmit,
+  onSubmit = () => {},
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
-  onSubmit = () => {},
   onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
   onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
   form: externalForm,

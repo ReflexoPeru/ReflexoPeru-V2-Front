@@ -154,55 +154,63 @@ const EditPatient = ({ patient, onClose }) => {
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (patient) {
-      // Si no existen los campos individuales, los extraemos de full_name
-      let name = patient.name || '';
-      let paternal_lastname = patient.paternal_lastname || '';
-      let maternal_lastname = patient.maternal_lastname || '';
-      if (
-        (!name || !paternal_lastname || !maternal_lastname) &&
-        patient.full_name
-      ) {
-        const parts = patient.full_name.trim().split(' ');
-        if (parts.length >= 3) {
-          paternal_lastname = paternal_lastname || parts[0];
-          maternal_lastname = maternal_lastname || parts[1];
-          name = name || parts.slice(2).join(' ');
-        } else if (parts.length === 2) {
-          paternal_lastname = paternal_lastname || parts[0];
-          name = name || parts[1];
-        } else if (parts.length === 1) {
-          name = name || parts[0];
-        }
-      }
-      // Mapeo para el select en cascada: ids y nombres
-      const ubicacion = {
-        region_id: patient.region_id || null,
-        province_id: patient.province_id || null,
-        district_id: patient.district_id || null,
-      };
+  // Actualiza el formulario con los datos recibidos (sea de prop o del GET)
+  const setFormWithPatient = (data) => {
+    if (!data) return;
+    const ubicacion = {
+      region_id: data.region || data.region_id || null,
+      province_id: data.province || data.province_id || null,
+      district_id: data.district || data.district_id || null,
+    };
+    if (ubicacion.region_id !== null)
+      ubicacion.region_id = String(ubicacion.region_id);
+    if (ubicacion.province_id !== null)
+      ubicacion.province_id = String(ubicacion.province_id);
+    if (ubicacion.district_id !== null)
+      ubicacion.district_id = String(ubicacion.district_id);
+    const formData = {
+      name: data.name || '',
+      paternal_lastname: data.paternal_lastname || '',
+      maternal_lastname: data.maternal_lastname || '',
+      document_type_id: data.document_type_id || '',
+      document_number: data.document_number || '',
+      personal_reference: data.personal_reference || '',
+      birth_date: data.birth_date ? dayjs(data.birth_date) : null,
+      sex: data.sex || '',
+      primary_phone: data.primary_phone || '',
+      secondary_phone: data.secondary_phone || '',
+      email: data.email || '',
+      occupation: data.ocupation || data.occupation || '',
+      address: data.address || '',
+      country_id: data.country_id || '',
+      ubicacion,
+    };
+    form.setFieldsValue(formData);
+  };
 
-      const formData = {
-        name,
-        paternal_lastname,
-        maternal_lastname,
-        document_type_id: patient.document_type_id || '',
-        document_number: patient.document_number || '',
-        personal_reference: patient.personal_reference || '',
-        birth_date: patient.birth_date ? dayjs(patient.birth_date) : null,
-        sex: patient.sex || '',
-        primary_phone: patient.primary_phone || '',
-        secondary_phone: patient.secondary_phone || '',
-        email: patient.email || '',
-        occupation: patient.ocupation || patient.occupation || '',
-        address: patient.address || '',
-        country_id: patient.country_id || '',
-        ubicacion,
-      };
-      form.setFieldsValue(formData);
-    }
-  }, [patient, form]);
+  // Inicializa el formulario con los datos de la prop patient
+  useEffect(() => {
+    setFormWithPatient(patient);
+  }, [patient]);
+
+  // Cuando el modal se abre, hace un GET pero no bloquea la UI
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (patient && patient.id) {
+          const freshPatient = await getPatientById(patient.id);
+          setFormWithPatient(freshPatient);
+        }
+      } catch (error) {
+        notification.error({
+          message: 'Error',
+          description: 'No se pudo obtener los datos actualizados del paciente',
+        });
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line
+  }, [patient]);
 
   const handleSubmit = async (formData) => {
     try {
@@ -226,7 +234,6 @@ const EditPatient = ({ patient, onClose }) => {
 
   if (!patient) return null;
 
-  // Mostrar el nombre completo en el título
   const modalTitle =
     patient.full_name ||
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
