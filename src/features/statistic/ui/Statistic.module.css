@@ -348,3 +348,49 @@
   height: 100vh;
   margin-left: 16vw;       
 }
+
+.paymentChartContainer {
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 600px; 
+  margin: 0 auto;
+}
+
+.therapistsTableContainer {
+  overflow-x: hidden !important; 
+  width: 100%;
+}
+
+.tableHeader, .tableRow {
+  display: grid;
+  grid-template-columns: 2fr 80px 90px 70px; 
+  width: 100%;
+  min-width: 0; 
+}
+
+.tableHeader span, .tableRow span {
+  box-sizing: border-box;
+  padding: 0 8px;
+}
+
+.paymentChartContainer {
+  display: flex;
+  align-items: center;     
+  justify-content: center; 
+
+  width: 100%;
+  height: 100%;    
+  padding: 20px 0;      
+}
+
+.paymentSection {
+  display: flex;
+  flex-direction: column;
+  height: 100%;           
+}
+
+.paymentSection .apexcharts-canvas {
+  margin: 0 auto;        
+}
