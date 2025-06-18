@@ -12,8 +12,7 @@ const FormComponent = ({
   isPaymentRequired = true,
   patientType = '',
   paymentOption = '',
-  customAmount = '',
-  onSubmit,
+  customAmount = '', // se quito onSubmit, (debido a que aparecia error de doble parametro)
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},

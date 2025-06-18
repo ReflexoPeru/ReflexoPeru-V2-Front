@@ -308,6 +308,8 @@ const handleCompleteRegistration = async () => {
         <Modal
           title="Seleccionar Contribuidor"
           open={isModalVisible}
+          centered
+          width={800}
           onCancel={() => {
             setIsModalVisible(false);
             setSelectedRowKey(null);
@@ -322,9 +324,14 @@ const handleCompleteRegistration = async () => {
             <Button 
               key="submit" 
               type="primary"
-              disabled={!selectedRowKey}
               onClick={async () => {
-                if (!selectedRowKey) return;
+                if (!selectedRowKey) {
+                  notification.warning({
+                    message: 'Advertencia',
+                    description: 'Por favor seleccione un paciente primero'
+                  });
+                  return;
+                }
                 
                 const selectedPatient = processedPatients.find(p => p.key === selectedRowKey);
                 setSelectedPatient(selectedPatient);
@@ -341,6 +348,9 @@ const handleCompleteRegistration = async () => {
               Seleccionar
             </Button>
           ]}
+          bodyStyle={{
+            padding: '24px',
+          }}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -353,7 +363,7 @@ const handleCompleteRegistration = async () => {
             columns={columns}
             pagination={false}
             rowKey="key"
-            scroll={{ y: 200 }}
+            scroll={{ y: 400 }} // Aumenta la altura del scroll para mostrar más filas
             loading={loading}
             onRow={(record) => ({
               onClick: () => {
