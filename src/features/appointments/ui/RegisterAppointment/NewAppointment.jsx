@@ -381,25 +381,26 @@ const handleCompleteRegistration = async () => {
           footer={null}
           width={800}
           destroyOnClose
+          bodyStyle={{ overflow: 'hidden' }} // Elimina el scroll del modal
         >
           <NewPatient 
             onSubmit={async (patientData) => {
               try {
                 const newPatient = await handleCreatePatient(patientData);
                 
+                setIsCreatePatientModalVisible(false);
+                
                 setSelectedPatient({
                   id: newPatient.id,
                   full_name: newPatient.full_name
                 });
                 
-                setIsCreatePatientModalVisible(false);
+                setPatientType('continuador');
                 
                 notification.success({
                   message: 'Paciente creado',
                   description: 'El paciente se ha registrado correctamente'
                 });
-                
-                setPatientType('continuador');
               } catch (error) {
                 console.error('Error al crear paciente:', error);
                 notification.error({
