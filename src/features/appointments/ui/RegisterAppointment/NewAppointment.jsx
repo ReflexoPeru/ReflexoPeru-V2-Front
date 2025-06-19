@@ -323,7 +323,7 @@ const handleCompleteRegistration = async () => {
             </Button>,
             <Button 
               key="submit" 
-              type="primary"
+              type="primary" // Esto asegura que siempre sea verde
               onClick={async () => {
                 if (!selectedRowKey) {
                   notification.warning({
@@ -363,7 +363,7 @@ const handleCompleteRegistration = async () => {
             columns={columns}
             pagination={false}
             rowKey="key"
-            scroll={{ y: 400 }} // Aumenta la altura del scroll para mostrar más filas
+            /*scroll={{ y: 400 }} // Aumenta la altura del scroll para mostrar más filas*/
             loading={loading}
             onRow={(record) => ({
               onClick: () => {
