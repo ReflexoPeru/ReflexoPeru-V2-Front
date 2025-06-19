@@ -153,15 +153,15 @@ const EditPatient = ({ patient, onClose }) => {
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
 
-  // Actualiza el formulario con los datos recibidos (sea de prop o del GET)
+  // Actualiza el formulario con los datos recibidos
   const setFormWithPatient = (data) => {
     if (!data) return;
-    // Usar document_type_id si existe, sino usar document_type (que ahora es el id), y forzar a number
+    // Usar document_type
     const documentTypeId = Number(data.document_type);
     const ubicacion = {
-      region_id: data.region || data.region_id || null,
-      province_id: data.province || data.province_id || null,
-      district_id: data.district || data.district_id || null,
+      region_id: data.region,
+      province_id: data.province,
+      district_id: data.district,
     };
     if (ubicacion.region_id !== null)
       ubicacion.region_id = String(ubicacion.region_id);
@@ -171,19 +171,19 @@ const EditPatient = ({ patient, onClose }) => {
       ubicacion.district_id = String(ubicacion.district_id);
     const formData = {
       name: data.name || '',
-      paternal_lastname: data.paternal_lastname || '',
-      maternal_lastname: data.maternal_lastname || '',
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
       document_type_id: documentTypeId,
-      document_number: data.document_number || '',
-      personal_reference: data.personal_reference || '',
+      document_number: data.document_number,
+      personal_reference: data.personal_reference,
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
-      sex: data.sex || '',
-      primary_phone: data.primary_phone || '',
-      secondary_phone: data.secondary_phone || '',
-      email: data.email || '',
-      occupation: data.ocupation || data.occupation || '',
-      address: data.address || '',
-      country_id: data.country_id || '',
+      sex: data.sex,
+      primary_phone: data.primary_phone,
+      secondary_phone: data.secondary_phone,
+      email: data.email,
+      occupation: data.ocupation,
+      address: data.address,
+      country_id: data.country_id,
       ubicacion,
     };
     form.setFieldsValue(formData);

@@ -53,14 +53,24 @@ const columns = [
   },
 ];
 
-const ExcelPreviewTable = ({ data }) => {
-  const [pagination, setPagination] = useState({
+const ExcelPreviewTable = ({
+  data,
+  pagination: controlledPagination,
+  onPaginationChange,
+}) => {
+  const [localPagination, setLocalPagination] = useState({
     current: 1,
     pageSize: 20,
   });
 
+  // Usar paginación controlada si se pasa, si no usar local
+  const pagination = controlledPagination || localPagination;
   const handleTableChange = (newPagination) => {
-    setPagination(newPagination);
+    if (onPaginationChange) {
+      onPaginationChange(newPagination);
+    } else {
+      setLocalPagination(newPagination);
+    }
   };
 
   return (

@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card,
-  Select,
-  DatePicker,
-  Button,
-  ConfigProvider,
-  theme,
-  Spin,
-  Alert,
-  message,
-  Modal,
-} from 'antd';
-import {
-  FilePlus,
-  DownloadSimple,
-  XCircle,
-  ArrowLeft,
-  Warning,
-} from '@phosphor-icons/react';
+import { ConfigProvider, DatePicker, Button, theme } from 'antd';
+import ReportSelector from './ReportSelector';
+import ReportPreview from './ReportPreview';
+import styles from './reports.module.css';
 import dayjs from 'dayjs';
 import {
   useDailyTherapistReport,
@@ -25,19 +10,24 @@ import {
   useDailyCashReport,
   useAppointmentsBetweenDatesReport,
 } from '../hook/reportsHook';
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer';
 import DailyTherapistReportPDF from '../../../components/PdfTemplates/DailyTherapistReportPDF';
 import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/PatientsByTherapistReportPDF';
 import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
 import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
-import * as XLSX from 'xlsx';
-
-const { Option } = Select;
+import ExcelJS from 'exceljs';
 
 const Reporte = () => {
   const [reportType, setReportType] = useState('diariaTerapeuta');
   const [date, setDate] = useState(dayjs());
   const [range, setRange] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [excelPagination, setExcelPagination] = useState({
+    current: 1,
+    pageSize: 20,
+  });
+
   const {
     data: diariaData,
     loading: diariaLoading,
@@ -62,26 +52,13 @@ const Reporte = () => {
     error: rangoError,
     fetchReport: fetchRango,
   } = useAppointmentsBetweenDatesReport();
-  const [showPreview, setShowPreview] = useState(false);
-  const [generating, setGenerating] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorDetails, setErrorDetails] = useState(null);
 
   const safeDate = date || dayjs();
 
-  // Validar que la fecha no sea futura
-  const validateDate = (selectedDate) => {
-    if (!selectedDate) return false;
-    return selectedDate.isAfter(dayjs(), 'day') ? false : true;
-  };
-
-  // Validar que el rango de fechas sea válido
-  const validateDateRange = (dates) => {
-    if (!dates || !dates[0] || !dates[1]) return false;
-    if (dates[0].isAfter(dates[1], 'day')) return false;
-    if (dates[0].isAfter(dayjs(), 'day')) return false;
-    return true;
-  };
+  // Resetear paginación cuando cambian los datos de rango
+  useEffect(() => {
+    setExcelPagination((prev) => ({ current: 1, pageSize: prev.pageSize }));
+  }, [rangoData]);
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -111,111 +88,7 @@ const Reporte = () => {
     setRange(null);
   };
 
-  const handleDownloadExcel = () => {
-    if (!rangoData || !rangoData.appointments) return;
-
-    // Preparar los datos con encabezados personalizados
-    const headers = [
-      'ID Paciente',
-      'Documento',
-      'Nombre Completo',
-      'Teléfono',
-      'Fecha',
-      'Hora',
-    ];
-
-    // Crear la hoja de trabajo
-    const ws = XLSX.utils.json_to_sheet(rangoData.appointments);
-
-    // Agregar encabezados personalizados en la primera fila
-    XLSX.utils.sheet_add_aoa(ws, [headers], { origin: 'A1' });
-
-    // Configurar estilos para el encabezado
-    if (!ws['!cols']) ws['!cols'] = [];
-    if (!ws['!rows']) ws['!rows'] = [];
-
-    // Configurar ancho de columnas
-    ws['!cols'] = [
-      { width: 12 }, // ID Paciente
-      { width: 15 }, // Documento
-      { width: 30 }, // Nombre Completo
-      { width: 15 }, // Teléfono
-      { width: 12 }, // Fecha
-      { width: 10 }, // Hora
-    ];
-
-    // Configurar altura de la fila del encabezado
-    ws['!rows'] = [{ hpt: 25 }]; // Altura del encabezado
-
-    // Aplicar estilos al encabezado
-    const headerRange = XLSX.utils.decode_range(ws['!ref']);
-    for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-      if (!ws[cellAddress]) {
-        ws[cellAddress] = { v: headers[col] };
-      }
-
-      // Aplicar estilo al encabezado
-      if (!ws[cellAddress].s) ws[cellAddress].s = {};
-      ws[cellAddress].s = {
-        fill: {
-          fgColor: { rgb: '95E472' }, // Color verde pastel
-        },
-        font: {
-          bold: true,
-          color: { rgb: '2D5A3D' }, // Color verde oscuro
-          sz: 12,
-        },
-        alignment: {
-          horizontal: 'center',
-          vertical: 'center',
-        },
-        border: {
-          top: { style: 'thick', color: { rgb: '2D5A3D' } },
-          bottom: { style: 'thick', color: { rgb: '2D5A3D' } },
-          left: { style: 'thick', color: { rgb: '2D5A3D' } },
-          right: { style: 'thick', color: { rgb: '2D5A3D' } },
-        },
-      };
-    }
-
-    // Aplicar bordes a todas las celdas de datos
-    const dataRange = XLSX.utils.decode_range(ws['!ref']);
-    for (let row = dataRange.s.r + 1; row <= dataRange.e.r; row++) {
-      for (let col = dataRange.s.c; col <= dataRange.e.c; col++) {
-        const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
-        if (ws[cellAddress]) {
-          if (!ws[cellAddress].s) ws[cellAddress].s = {};
-          ws[cellAddress].s.border = {
-            top: { style: 'thin', color: { rgb: 'D9D9D9' } },
-            bottom: { style: 'thin', color: { rgb: 'D9D9D9' } },
-            left: { style: 'thin', color: { rgb: 'D9D9D9' } },
-            right: { style: 'thin', color: { rgb: 'D9D9D9' } },
-          };
-
-          // Alternar colores de filas
-          if (row % 2 === 0) {
-            ws[cellAddress].s.fill = {
-              fgColor: { rgb: 'F8F8F8' },
-            };
-          }
-        }
-      }
-    }
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Citas');
-    XLSX.writeFile(
-      wb,
-      `Reporte_Rango_Citas_${range && range[0] ? range[0].format('YYYY-MM-DD') : ''}_${range && range[1] ? range[1].format('YYYY-MM-DD') : ''}.xlsx`,
-    );
-  };
-
-  const handleErrorModalClose = () => {
-    setShowErrorModal(false);
-    setErrorDetails(null);
-  };
-
+  // Renderiza los inputs de fecha según el tipo de reporte
   const renderDateInputs = () => {
     if (reportType === 'rangoCitas') {
       return (
@@ -225,10 +98,7 @@ const Reporte = () => {
           onChange={(dates) => setRange(dates)}
         />
       );
-    } else if (
-      reportType === 'reporteCaja' ||
-      (reportType && reportType !== 'reporteCaja')
-    ) {
+    } else {
       return (
         <DatePicker
           style={{ width: '100%', marginBottom: 16 }}
@@ -238,15 +108,48 @@ const Reporte = () => {
         />
       );
     }
-    return null;
   };
 
-  // Vista de previsualización PDF/Excel
+  // Nueva función para exportar a Excel usando exceljs
+  const exportToExcel = async (data, fileName = 'Reporte_Rango_Citas.xlsx') => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Citas');
+    worksheet.columns = [
+      { header: 'ID Paciente', key: 'patient_id', width: 12 },
+      { header: 'Documento', key: 'document_number', width: 15 },
+      { header: 'Nombre Completo', key: 'full_name', width: 30 },
+      { header: 'Teléfono', key: 'primary_phone', width: 15 },
+      { header: 'Fecha', key: 'appointment_date', width: 12 },
+      { header: 'Hora', key: 'appointment_hour', width: 10 },
+    ];
+    data.forEach((item) => {
+      worksheet.addRow({
+        patient_id: item.patient_id,
+        document_number: item.document_number,
+        full_name: `${item.name} ${item.paternal_lastname} ${item.maternal_lastname}`,
+        primary_phone: item.primary_phone,
+        appointment_date: item.appointment_date,
+        appointment_hour: item.appointment_hour,
+      });
+    });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Lógica para la previsualización y descarga
+  let loading = false,
+    error = null,
+    content = null,
+    downloadBtn = null;
   if (showPreview) {
-    let loading = false,
-      error = null,
-      content = null,
-      downloadBtn = null;
     if (showPreview === 'diariaTerapeuta') {
       loading = diariaLoading;
       error = diariaError;
@@ -255,20 +158,16 @@ const Reporte = () => {
           width="100%"
           height="95%"
           style={{
-            marginTop: 30,
-            borderRadius: 14,
-            width: '100%',
-            height: '100%',
             minHeight: 500,
             maxHeight: 'calc(96vh - 180px)',
             margin: '0 auto',
             display: 'block',
+            borderRadius: 14,
           }}
         >
           <DailyTherapistReportPDF data={diariaData} date={safeDate} />
         </PDFViewer>
       );
-      downloadBtn = null;
     } else if (showPreview === 'pacientesTerapeuta') {
       loading = pacientesLoading;
       error = pacientesError;
@@ -278,13 +177,11 @@ const Reporte = () => {
             width="100%"
             height="95%"
             style={{
-              borderRadius: 14,
-              width: '100%',
-              height: '95%',
               minHeight: 500,
               maxHeight: 'calc(96vh - 180px)',
               margin: '0 auto',
               display: 'block',
+              borderRadius: 14,
             }}
           >
             <PatientsByTherapistReportPDF
@@ -293,22 +190,10 @@ const Reporte = () => {
             />
           </PDFViewer>
         ) : (
-          <div
-            style={{
-              color: '#e74c3c',
-              textAlign: 'center',
-              marginTop: 60,
-              fontSize: 22,
-              fontWeight: 500,
-              background: '#fff',
-              borderRadius: 14,
-              padding: 40,
-            }}
-          >
+          <div className={styles.errorMsg}>
             Error: No se pudo generar el archivo porque no hay datos.
           </div>
         );
-      downloadBtn = null;
     } else if (showPreview === 'reporteCaja') {
       loading = cajaLoading;
       error = cajaError;
@@ -318,33 +203,20 @@ const Reporte = () => {
             width="100%"
             height="95%"
             style={{
-              borderRadius: 14,
-              width: '100%',
-              height: '95%',
               minHeight: 500,
               maxHeight: 'calc(96vh - 180px)',
               margin: '0 auto',
               display: 'block',
+              borderRadius: 14,
             }}
           >
             <DailyCashReportPDF data={cajaData} date={safeDate} />
           </PDFViewer>
         ) : (
-          <div
-            style={{
-              color: '#e74c3c',
-              textAlign: 'center',
-              marginTop: 60,
-              fontSize: 22,
-              fontWeight: 500,
-              background: '#fff',
-              borderRadius: 14,
-            }}
-          >
+          <div className={styles.errorMsg}>
             No hay datos para mostrar en la fecha seleccionada.
           </div>
         );
-      downloadBtn = null;
     } else if (showPreview === 'rangoCitas') {
       loading = rangoLoading;
       error = rangoError;
@@ -352,29 +224,22 @@ const Reporte = () => {
         rangoData &&
         rangoData.appointments &&
         rangoData.appointments.length > 0 ? (
-          <ExcelPreviewTable data={rangoData} />
+          <ExcelPreviewTable
+            data={rangoData}
+            pagination={excelPagination}
+            onPaginationChange={setExcelPagination}
+          />
         ) : (
-          <div
-            style={{
-              color: '#888',
-              textAlign: 'center',
-              marginTop: 60,
-              fontSize: 22,
-              fontWeight: 500,
-              background: '#fff',
-              borderRadius: 14,
-              padding: 40,
-            }}
-          >
-            No hay datos para mostrar
-          </div>
+          <div className={styles.noDataMsg}>No hay datos para mostrar</div>
         );
-      downloadBtn = rangoData &&
+      if (
+        rangoData &&
         rangoData.appointments &&
-        rangoData.appointments.length > 0 && (
+        rangoData.appointments.length > 0
+      ) {
+        downloadBtn = (
           <Button
             type="primary"
-            icon={<DownloadSimple size={22} weight="bold" />}
             style={{
               marginTop: 10,
               background: '#4CAF50',
@@ -385,241 +250,111 @@ const Reporte = () => {
               height: 42,
               fontSize: 15,
             }}
-            onClick={handleDownloadExcel}
+            onClick={() =>
+              exportToExcel(
+                rangoData.appointments,
+                `Reporte_Rango_Citas_${range && range[0] ? range[0].format('YYYY-MM-DD') : ''}_${range && range[1] ? range[1].format('YYYY-MM-DD') : ''}.xlsx`,
+              )
+            }
           >
             Descargar Excel
           </Button>
         );
+      }
     }
-    return (
-      <div
-        style={{
-          width: '96vw',
-          maxWidth: 1300,
-          height: '94%',
-          background: '#2a2a2a',
-          borderRadius: 18,
-          boxShadow: '0 4px 32px rgba(0,0,0,0.13)',
-          padding: 32,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          alignItems: 'stretch',
-          position: 'relative',
-        }}
-      >
-        {/* Botones de acción en la parte superior, pegados a las esquinas */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            zIndex: 10,
-            padding: 18,
-            pointerEvents: 'none',
-          }}
-        >
-          {/* Botón volver */}
-          <div style={{ pointerEvents: 'auto' }}>
-            <Button
-              type="text"
-              icon={<ArrowLeft size={28} weight="bold" />}
-              onClick={handleCancel}
-              style={{
-                color: '#fff',
-                fontSize: 24,
-                padding: 0,
-                minWidth: 0,
-                height: 42,
-                width: 42,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 10,
-              }}
-            />
-          </div>
-          {/* Botón descargar Excel solo para Excel */}
-          <div style={{ pointerEvents: 'auto' }}>
-            {showPreview === 'rangoCitas' && downloadBtn}
-          </div>
-        </div>
-        {/* Spinner de carga */}
-        {(loading || generating) && (
-          <div
-            style={{ textAlign: 'center', margin: '40px 0', paddingTop: 56 }}
-          >
-            <Spin
-              size="large"
-              tip="Generando reporte..."
-              style={{ color: '#7ed957' }}
-            />
-          </div>
-        )}
-        {error && (
-          <Alert
-            message="Error al generar el reporte"
-            description={error.message || 'Intenta nuevamente.'}
-            type="error"
-            showIcon
-            style={{ marginBottom: 24, paddingTop: 56 }}
-          />
-        )}
-        {/* Contenido con espacio para no tapar los botones */}
-        <div
-          style={{
-            paddingTop: 45,
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          {!loading && !generating && !error && content}
-        </div>
-      </div>
-    );
   }
 
-  // Vista de selección de reportes
+  const themeConfig = {
+    algorithm: theme.darkAlgorithm,
+    components: {
+      Button: {
+        colorPrimary: '#00AA55',
+        colorTextLightSolid: '#ffffff',
+        colorPrimaryHover: '#00cc6a',
+        colorPrimaryActive: '#ffffff',
+      },
+      Select: {
+        colorPrimary: '#00AA55',
+        colorBgContainer: '#1f1f1f',
+        colorText: '#ffffff',
+        colorBorder: '#ffffff',
+        controlOutline: '#00AA55',
+        colorPrimaryHover: '#00cc6a',
+        optionSelectedBg: '#00AA55',
+      },
+      DatePicker: {
+        colorTextPlaceholder: '#AAAAAA',
+        colorBgContainer: '#333333',
+        colorText: '#FFFFFF',
+        colorBorder: '#444444',
+        borderRadius: 4,
+        hoverBorderColor: '#555555',
+        activeBorderColor: '#00AA55',
+        colorIcon: '#FFFFFF',
+        colorIconHover: '#00AA55',
+        colorBgElevated: '#121212',
+        colorPrimary: '#00AA55',
+        colorTextDisabled: '#333333',
+        colorTextHeading: '#FFFFFF',
+        cellHoverBg: '#00AA55',
+        colorSplit: '#444444',
+      },
+      Modal: {
+        colorBgElevated: '#1f1f1f',
+        colorText: '#fff',
+        borderRadius: 12,
+      },
+      Message: {
+        colorBgElevated: '#1f1f1f',
+        colorText: '#fff',
+        borderRadius: 8,
+      },
+    },
+  };
+
+  if (showPreview) {
+    if (showPreview === 'rangoCitas') {
+      return (
+        <ReportPreview
+          showPreview={showPreview}
+          loading={loading}
+          generating={generating}
+          error={error}
+          content={content}
+          downloadBtn={downloadBtn}
+          handleCancel={handleCancel}
+        />
+      );
+    } else {
+      return (
+        <ConfigProvider theme={themeConfig}>
+          <ReportPreview
+            showPreview={showPreview}
+            loading={loading}
+            generating={generating}
+            error={error}
+            content={content}
+            downloadBtn={downloadBtn}
+            handleCancel={handleCancel}
+          />
+        </ConfigProvider>
+      );
+    }
+  }
+
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-        components: {
-          Button: {
-            colorPrimary: '#00AA55',
-            colorTextLightSolid: '#ffffff',
-            colorPrimaryHover: '#00cc6a',
-            colorPrimaryActive: '#ffffff',
-          },
-          Select: {
-            colorPrimary: '#00AA55',
-            colorBgContainer: '#1f1f1f',
-            colorText: '#ffffff',
-            colorBorder: '#ffffff',
-            controlOutline: '#00AA55',
-            colorPrimaryHover: '#00cc6a',
-            optionSelectedBg: '#00AA55',
-          },
-          DatePicker: {
-            colorTextPlaceholder: '#AAAAAA',
-            colorBgContainer: '#333333',
-            colorText: '#FFFFFF',
-            colorBorder: '#444444',
-            borderRadius: 4,
-            hoverBorderColor: '#555555',
-            activeBorderColor: '#00AA55',
-            colorIcon: '#FFFFFF',
-            colorIconHover: '#00AA55',
-            colorBgElevated: '#121212',
-            colorPrimary: '#00AA55',
-            colorTextDisabled: '#333333',
-            colorTextHeading: '#FFFFFF',
-            cellHoverBg: '#00AA55',
-            colorSplit: '#444444',
-          },
-          Modal: {
-            colorBgElevated: '#1f1f1f',
-            colorText: '#fff',
-            borderRadius: 12,
-          },
-          Message: {
-            colorBgElevated: '#1f1f1f',
-            colorText: '#fff',
-            borderRadius: 8,
-          },
-        },
-      }}
-    >
-      <div style={{ width: 400, margin: 'auto', backgroundColor: '#121212' }}>
-        <Card
-          style={{
-            textAlign: 'center',
-            borderRadius: 12,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          }}
-        >
-          <h2
-            style={{
-              color: 'white',
-              fontSize: '25px',
-              paddingBottom: '10px',
-              marginBottom: 24,
-              fontWeight: 600,
-            }}
-          >
-            Generador de Reportes
-          </h2>
-
-          <Select
-            placeholder="Seleccione un tipo de reporte"
-            style={{
-              width: '100%',
-              marginBottom: 16,
-              borderRadius: 8,
-            }}
-            onChange={(value) => {
-              setReportType(value);
-              setDate(dayjs());
-              setRange(null);
-            }}
-            value={reportType}
-          >
-            <Option value="diariaTerapeuta">Atención Diaria x Terapeuta</Option>
-            <Option value="pacientesTerapeuta">
-              Reporte de pacientes por Terapeutas
-            </Option>
-            <Option value="reporteCaja">Reporte Caja</Option>
-            <Option value="rangoCitas">Reporte Rango de citas</Option>
-          </Select>
-
-          {renderDateInputs()}
-
-          {reportType && (
-            <Button
-              type="primary"
-              icon={<FilePlus size={20} weight="bold" />}
-              onClick={handleGenerate}
-              block
-              loading={generating}
-              style={{
-                height: 42,
-                fontSize: 15,
-                fontWeight: 600,
-                borderRadius: 8,
-                transition: 'all 0.3s ease',
-              }}
-            >
-              {generating ? 'Generando...' : 'Generar Reporte'}
-            </Button>
-          )}
-
-          {reportType === 'reporteCaja' && (
-            <Button
-              type="default"
-              style={{
-                marginTop: 10,
-                height: 42,
-                fontSize: 15,
-                fontWeight: 600,
-                borderRadius: 8,
-                borderColor: '#7ed957',
-                color: '#7ed957',
-                transition: 'all 0.3s ease',
-              }}
-              onClick={() => message.info('Función en desarrollo')}
-              block
-            >
-              Editar reporte
-            </Button>
-          )}
-        </Card>
-      </div>
+    <ConfigProvider theme={themeConfig}>
+      <ReportSelector
+        reportType={reportType}
+        setReportType={setReportType}
+        date={date}
+        setDate={setDate}
+        range={range}
+        setRange={setRange}
+        generating={generating}
+        handleGenerate={handleGenerate}
+        renderDateInputs={renderDateInputs}
+      />
     </ConfigProvider>
   );
 };
