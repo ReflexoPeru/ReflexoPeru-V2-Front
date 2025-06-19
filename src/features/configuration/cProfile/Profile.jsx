@@ -22,6 +22,8 @@ import {
   useSendVerifyCode,
   useProfile,
   useUpdateProfile,
+  useUserPhoto,
+  useUploadUserAvatar,
 } from './hook/profileHook';
 import { useToast } from '../../../services/toastify/ToastContext';
 import ModalBase from '../../../components/Modal/BaseModalProfile/BaseModalProfile';
@@ -74,6 +76,10 @@ const Profile = () => {
   } = useUpdateProfile();
   const { showToast } = useToast();
 
+  //HOOKS IMPORTADOR PARA IMAGEN
+  const { photoUrl, loadingPhoto } = useUserPhoto();
+  const { uploadAvatar, uploading, error, success } = useUploadUserAvatar();
+
   useEffect(() => {
     if (profile) {
       setNombre(profile.name || '');
@@ -82,51 +88,41 @@ const Profile = () => {
       setCorreo(profile.email || '');
       setGenero(profile.sex || null);
       setTelefono(profile.phone || '');
-
-      // ⬇️ Aquí actualizamos el avatar si photo_url existe
-      if (profile.photo_url) {
-        setAvatar(profile.photo_url);
-      }
     }
   }, [profile]);
 
-  const handleAvatarChange = async ({ file }) => {
-  const newFile = file.originFileObj;
-  if (!newFile) return;
-
-  // ✅ Validar tipo de imagen
-  const isImage = newFile.type.startsWith('image/');
-  if (!isImage) {
-    message.error('Solo puedes subir archivos de imagen');
-    return;
-  }
-
-  // ✅ Validar tamaño (< 2MB)
-  const isLt2M = newFile.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('La imagen debe ser menor a 2MB');
-    return;
-  }
-
-  // ✅ Vista previa inmediata
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const previewUrl = e.target.result;
-    setAvatar(previewUrl); // Vista previa
-
-    try {
-      const formData = new FormData();
-      formData.append('photo', newFile);
-      await uploadProfilePhoto(formData);
-      message.success('Avatar actualizado correctamente');
-      await refetch(); // Vuelve a cargar `photo_url` del perfil
-    } catch (error) {
-      message.error('Error al subir avatar');
-      console.error(error);
+  useEffect(() => {
+    if (photoUrl) {
+      setAvatar(photoUrl);
     }
-  };
+  }, [photoUrl]);
 
+  const handleAvatarChange = async ({ file }) => {
+    const newFile = file.originFileObj;
+    if (!newFile) return;
+
+    if (!newFile.type.startsWith('image/')) {
+      message.error('Solo imágenes permitidas');
+      return;
+    }
+    if (newFile.size / 1024 / 1024 > 2) {
+      message.error('Imagen debe ser <2 MB');
+      return;
+    }
+
+    // Vista previa
+    const reader = new FileReader();
+    reader.onload = (e) => setAvatar(e.target.result);
     reader.readAsDataURL(newFile);
+
+    // Subida
+    try {
+      await uploadAvatar(newFile);
+      message.success('Avatar actualizado');
+      refetch(); // recarga perfil
+    } catch {
+      message.error(uploadError?.message || 'Error al subir avatar');
+    }
   };
 
   const handleOpenEmailModal = () => {
@@ -330,8 +326,8 @@ const Profile = () => {
                           alt="Avatar del usuario"
                           preview={false}
                           style={{
-                            width: '120px',
-                            height: '120px',
+                            width: '110px',
+                            height: '110px',
                             borderRadius: '50%',
                             objectFit: 'cover',
                             border: '2px solid #4CAF50',
@@ -370,8 +366,8 @@ const Profile = () => {
                         style={{
                           borderRadius: '50%',
                           border: '2px dashed #4CAF50',
-                          width: 120,
-                          height: 120,
+                          width: 110,
+                          height: 110,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',

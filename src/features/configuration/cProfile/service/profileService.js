@@ -4,6 +4,7 @@ import {
   post,
   patch,
 } from '../../../../services/api/Axios/MethodsGeneral';
+import instance from '../../../../services/api/Axios/baseConfig';
 
 // Cache para peticiones
 const apiCache = new Map();
@@ -104,12 +105,39 @@ export const changePassword = async (data) => {
 };
 
 //CONSEGUIR LA FOTO DE PERFIL -> (GET)
-export const getProfilePhoto = async () => {
+export const getUserPhoto = async (signal) => {
   try {
-    const response = await get('profile');
+    const response = await instance.get('users/photo', {
+      responseType: 'blob',
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
+      signal
+    });
+
+    // Convertir blob a URL para mostrarla como imagen
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error('Error fetching user photo:', error);
+    throw error;
+  }
+}
+
+//ACTUALIZAR LA FOTO DE PERFIL -> (POST)
+export const uploadProfilePhoto = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    const response = await instance.post('users/photo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     return response.data;
   } catch (error) {
-    console.error('Error al obtener el perfil:', error);
+    console.error('Error subiendo avatar:', error.response?.data || error.message);
     throw error;
   }
 }

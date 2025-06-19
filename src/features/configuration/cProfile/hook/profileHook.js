@@ -7,7 +7,8 @@ import {
   updateAllProfile,
   validatePassword,
   changePassword,
-  getProfilePhoto,
+  getUserPhoto,
+  uploadProfilePhoto,
 } from '../service/profileService';
 import { useToast } from '../../../../services/toastify/ToastContext';
 
@@ -139,30 +140,6 @@ export const useProfile = () => {
   return { profile, loading, error, refetch: fetchProfile };
 };
 
-export const useProfilePhoto = () => {
-  const [photoUrl, setPhotoUrl] = useState('');
-  const [loadingPhoto, setLoadingPhoto] = useState(true);
-
-  useEffect(() => {
-    const fetchPhoto = async () => {
-      try {
-        const profile = await getProfile();
-        if (profile?.photo_url) {
-          setPhotoUrl(profile.photo_url);
-        }
-      } catch (error) {
-        console.error('No se pudo cargar la foto de perfil');
-      } finally {
-        setLoadingPhoto(false);
-      }
-    };
-
-    fetchPhoto();
-  }, []);
-
-  return { photoUrl, loadingPhoto};
-};
-
 export const useUpdateProfile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState(null);
@@ -235,3 +212,43 @@ export const useUpdateProfile = () => {
     error: updateError,
   };
 };
+
+//HOOK PARA CONSEGUIR LA IMAGEN DEL PERFIL
+export const useUserPhoto = () => {
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getUserPhoto(controller.signal)
+      .then(setPhotoUrl)
+      .catch(() => setPhotoUrl(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return {photoUrl, loading};
+}
+
+//HOOK PARA ACTUALIZAR LA IMAGEN DEL PERFIL
+export const useUploadUserAvatar = () => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const uploadAvatar = async (file) => {
+    setUploading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      await uploadProfilePhoto(file);
+      setSuccess(true);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return { uploadAvatar, uploading, error, success };
+
+}

@@ -322,9 +322,11 @@ input:-webkit-autofill {
 
 .logoRow {
   display: flex;
-  gap: 24px; /* espacio entre avatar y upload */
-  align-items: center; /* alinear verticalmente */
-  flex-wrap: wrap; /* opcional: que no se rompa si se reduce pantalla */
+  flex-wrap: wrap; 
+  gap: 24px; 
+  align-items: center; 
+  justify-content: center; 
+
 }
 
 .logoBlock {
