@@ -74,16 +74,19 @@ body {
   color: white;
 }
 
-.logoImage {
-  width: 85px;
-  height: 85px;
-  padding: 5px;
-  border: 2px solid green;
+/* .logoImage {
+  width: 60%;
+  height: 30%;
+
+  padding: 4px;
+  border: 2px solid #4CAF50;
   border-radius: 50%;
 
-  object-fit: contain;
+  object-fit: cover;
   background-color: #000;
-}
+
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+} */
 
 .uploadBtn {
   cursor: pointer;
@@ -127,6 +130,9 @@ body {
   background-color: #333;
 }
 
+.input:hover {
+  background-color: #444; /* Color de fondo al hacer hover */
+}
 .input:focus {
   background-color: #333;
   outline: none;

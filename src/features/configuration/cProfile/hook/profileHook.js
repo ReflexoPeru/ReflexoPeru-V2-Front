@@ -7,8 +7,8 @@ import {
   updateAllProfile,
   validatePassword,
   changePassword,
-  uploadPhoto,
-  getPhoto,
+  getUserPhoto,
+  uploadProfilePhoto,
 } from '../service/profileService';
 import { useToast } from '../../../../services/toastify/ToastContext';
 
@@ -89,7 +89,6 @@ export const useSendVerifyCode = () => {
 
 export const useProfile = () => {
   const [profile, setProfile] = useState(null);
-  const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { showToast } = useToast();
@@ -104,7 +103,6 @@ export const useProfile = () => {
         now - profileCache.lastFetch < profileCache.ttl
       ) {
         setProfile(profileCache.data.profile);
-        setPhoto(profileCache.data.photo);
         setLoading(false);
         return;
       }
@@ -113,25 +111,18 @@ export const useProfile = () => {
       try {
         const [profileData, photoData] = await Promise.allSettled([
           getProfile(),
-          getPhoto(),
         ]);
 
         const profileResult =
           profileData.status === 'fulfilled' ? profileData.value : null;
-        const photoResult =
-          photoData.status === 'fulfilled'
-            ? URL.createObjectURL(photoData.value)
-            : '/src/assets/Img/MiniLogoReflexo.webp';
 
         // Actualizar caché
         profileCache.data = {
           profile: profileResult,
-          photo: photoResult,
         };
         profileCache.lastFetch = now;
 
         setProfile(profileResult);
-        setPhoto(photoResult);
       } catch (error) {
         setError(error);
         showToast('error', 'Error al cargar el perfil');
@@ -146,7 +137,7 @@ export const useProfile = () => {
     fetchProfile();
   }, [fetchProfile]);
 
-  return { profile, photo, loading, error, refetch: fetchProfile };
+  return { profile, loading, error, refetch: fetchProfile };
 };
 
 export const useUpdateProfile = () => {
@@ -211,30 +202,53 @@ export const useUpdateProfile = () => {
     [showToast],
   );
 
-  const uploadProfilePhoto = useCallback(
-    async (file) => {
-      try {
-        const formData = new FormData();
-        formData.append('photo', file);
-        const response = await uploadPhoto(formData);
-        // Invalidar caché de foto
-        profileCache.lastFetch = 0;
-        showToast('exito', 'Foto de perfil actualizada');
-        return response;
-      } catch (error) {
-        showToast('error', 'Error al subir la foto de perfil');
-        throw error;
-      }
-    },
-    [showToast],
-  );
+  
 
   return {
     updateProfile,
     validateCurrentPassword,
     updatePassword,
-    uploadProfilePhoto,
     isUpdating,
     error: updateError,
   };
 };
+
+//HOOK PARA CONSEGUIR LA IMAGEN DEL PERFIL
+export const useUserPhoto = () => {
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getUserPhoto(controller.signal)
+      .then(setPhotoUrl)
+      .catch(() => setPhotoUrl(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return {photoUrl, loading};
+}
+
+//HOOK PARA ACTUALIZAR LA IMAGEN DEL PERFIL
+export const useUploadUserAvatar = () => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const uploadAvatar = async (file) => {
+    setUploading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      await uploadProfilePhoto(file);
+      setSuccess(true);
+    } catch (error) {
+      setError(error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return { uploadAvatar, uploading, error, success };
+
+}
