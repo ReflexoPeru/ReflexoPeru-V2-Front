@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  getPaginatedAppointmentsByDate,
-  searchAppointments,
   createAppointment,
+  getPaginatedAppointmentsByDate,
   getPatients,
+  searchAppointments,
   searchPatients,
 } from '../service/appointmentsService';
 
