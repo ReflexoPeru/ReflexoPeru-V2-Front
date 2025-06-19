@@ -74,3 +74,13 @@ export const updateTherapist = async (therapistId, data) => {
     throw error;
   }
 };
+
+export const getTherapistById = async (therapistId) => {
+  try {
+    const response = await get(`therapists/${therapistId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error obteniendo terapeuta por ID:', error);
+    throw error;
+  }
+};

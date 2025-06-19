@@ -11,7 +11,6 @@ import { getPatientById } from '../service/patientsService';
 export default function Patients() {
   const navigate = useNavigate();
   const [editingPatient, setEditingPatient] = useState(null);
-  const [loadingEditId, setLoadingEditId] = useState(null); // Para mostrar loading en el botón de editar
   const {
     patients,
     loading,
@@ -23,7 +22,6 @@ export default function Patients() {
 
   // Nuevo handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
-    setLoadingEditId(record.id);
     try {
       const freshPatient = await getPatientById(record.id);
       setEditingPatient(freshPatient);
@@ -32,8 +30,6 @@ export default function Patients() {
         message: 'Error',
         description: 'No se pudo obtener los datos actualizados.',
       });
-    } finally {
-      setLoadingEditId(null);
     }
   };
 
@@ -47,7 +43,6 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
             }}
-            loading={loadingEditId === record.id}
             onClick={() => handleEdit(record)}
           >
             Editar

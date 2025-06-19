@@ -2,7 +2,7 @@ import { Form, Modal, notification } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
-import { updateTherapist } from '../../service/staffService';
+import { useStaff } from '../../hook/staffHook';
 
 // Reutiliza los mismos fields que para crear
 const fields = [
@@ -81,7 +81,7 @@ const fields = [
         required: true,
       },
       {
-        name: 'referencia',
+        name: 'personal_reference',
         label: 'Referencia Personal',
         type: 'text',
         span: 8,
@@ -150,69 +150,66 @@ const fields = [
 
 const EditTherapist = ({ therapist, onClose }) => {
   const [form] = Form.useForm();
+  const { handleUpdateTherapist } = useStaff();
   const [loading, setLoading] = useState(false);
 
+  // Actualiza el formulario con los datos recibidos
+  const setFormWithTherapist = (data) => {
+    if (!data) return;
+
+    // document_type
+    const documentTypeId = Number(data.document_type);
+
+    const ubicacion = {
+      region_id: data.region,
+      province_id: data.province,
+      district_id: data.district,
+    };
+
+    // Convertir a string para el cascader
+    if (ubicacion.region_id !== null)
+      ubicacion.region_id = String(ubicacion.region_id);
+    if (ubicacion.province_id !== null)
+      ubicacion.province_id = String(ubicacion.province_id);
+    if (ubicacion.district_id !== null)
+      ubicacion.district_id = String(ubicacion.district_id);
+
+    const formData = {
+      name: data.name || '',
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
+      document_type_id: documentTypeId,
+      document_number: data.document_number,
+      personal_reference: data.personal_reference,
+      birth_date: data.birth_date ? dayjs(data.birth_date) : null,
+      sex: data.sex,
+      primary_phone: data.primary_phone,
+      secondary_phone: data.secondary_phone,
+      email: data.email,
+      address: data.address,
+      country_id: data.country_id,
+      ubicacion,
+    };
+
+    form.setFieldsValue(formData);
+    console.log('Valores seteados en el form:', formData);
+  };
+
+  // Inicializa el formulario con los datos de la prop therapist
   useEffect(() => {
-    if (therapist) {
-      // Mapeo igual que en pacientes
-      let name = therapist.name || '';
-      let paternal_lastname = therapist.paternal_lastname || '';
-      let maternal_lastname = therapist.maternal_lastname || '';
-      if (
-        (!name || !paternal_lastname || !maternal_lastname) &&
-        therapist.full_name
-      ) {
-        const parts = therapist.full_name.trim().split(' ');
-        if (parts.length >= 3) {
-          paternal_lastname = paternal_lastname || parts[0];
-          maternal_lastname = maternal_lastname || parts[1];
-          name = name || parts.slice(2).join(' ');
-        } else if (parts.length === 2) {
-          paternal_lastname = paternal_lastname || parts[0];
-          name = name || parts[1];
-        } else if (parts.length === 1) {
-          name = name || parts[0];
-        }
-      }
-      const ubicacion = {
-        region_id: therapist.region_id || null,
-        province_id: therapist.province_id || null,
-        district_id: therapist.district_id || null,
-      };
-      const formData = {
-        name,
-        paternal_lastname,
-        maternal_lastname,
-        document_type_id: therapist.document_type_id || '',
-        document_number: therapist.document_number || '',
-        referencia: therapist.personal_reference || '',
-        birth_date: therapist.birth_date ? dayjs(therapist.birth_date) : null,
-        sex: therapist.sex || '',
-        primary_phone: therapist.primary_phone || '',
-        secondary_phone: therapist.secondary_phone || '',
-        email: therapist.email || '',
-        address: therapist.address || '',
-        country_id: therapist.country_id || '',
-        ubicacion,
-      };
-      form.setFieldsValue(formData);
-    }
-  }, [therapist, form]);
+    setFormWithTherapist(therapist);
+  }, [therapist]);
 
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      // Mapear 'referencia' del formulario a 'personal_reference' para el API
-      const payload = {
-        ...formData,
-        personal_reference: formData.referencia,
-      };
-      delete payload.referencia;
-      await updateTherapist(therapist.id, payload);
+      await handleUpdateTherapist(therapist.id, formData);
+
       notification.success({
         message: 'Éxito',
         description: 'Terapeuta actualizado correctamente',
       });
+
       onClose();
     } catch (error) {
       notification.error({
