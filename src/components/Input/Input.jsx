@@ -298,7 +298,6 @@ const PatientField = ({
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
-            name="pacienteId"
             rules={[{ required: true, message: 'Este campo es requerido' }]}
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
@@ -351,7 +350,6 @@ const PatientField = ({
 };
 
 const DateField = ({ form }) => {
-  // Usa Form.useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
 
   const handleDateChange = (date, dateString) => {
@@ -372,17 +370,29 @@ const DateField = ({ form }) => {
         theme={{
           components: {
             DatePicker: {
-              panelColor: '#FFFFFFFF',
-              colorText: '#FFFFFFFF',
-              colorBgElevated: '#444444',
-              arrowColor: '#FFFFFFFF',
+              colorBgElevated: '#222222FF',      // Fondo del panel
+              colorText: '#ffffff',            // Texto general
+              colorTextHeading: '#ffffff',     // Mes y año arriba
+              colorIcon: '#ffffff',            // Flechas
+              colorPrimary: '#1cb54a',         // Color de selección
+              colorPrimaryHover: '#148235',
+              cellHoverBg: '#333333',          // Hover sobre celdas
             },
           },
         }}
       >
         <DatePicker
-          style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+          style={{
+            width: '100%',
+            color: '#ffffff',
+            backgroundColor: '#333333FF',
+            borderColor: '#444444',
+          }}
           onChange={handleDateChange}
+          dropdownStyle={{
+            backgroundColor: '#2C2C2CFF',
+            color: '#ffffff',
+          }}
         />
       </ConfigProvider>
     </Form.Item>
