@@ -1,0 +1,143 @@
+.mainContainer {
+  width: 400px;
+  margin: auto;
+  background-color: #121212;
+}
+
+.card {
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.title {
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+
+  font-size: 25px;
+  font-weight: 600;
+  color: white;
+}
+
+.select {
+  width: 100%;
+  margin-bottom: 16px;
+  border-radius: 8px;
+}
+
+.generateBtn {
+  height: 42px;
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  transition: all 0.3s ease;
+}
+
+.editBtn {
+  height: 42px;
+  margin-top: 10px;
+  border-color: #7ed957;
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 600;
+  color: #7ed957;
+
+  transition: all 0.3s ease;
+}
+
+.previewContainer {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  width: 96vw;
+  max-width: 1300px;
+  height: 94%;
+  padding: 32px;
+  border-radius: 18px;
+
+  background: #2a2a2a;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.13);
+}
+
+.topActions {
+  pointer-events: none;
+
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 18px;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  min-width: 0;
+  height: 42px;
+  padding: 0;
+  border-radius: 10px;
+
+  font-size: 24px;
+  color: #fff;
+}
+
+.spinner {
+  margin: 40px 0;
+  padding-top: 56px;
+  text-align: center;
+}
+
+.alert {
+  margin-bottom: 24px;
+  padding-top: 56px;
+}
+
+.previewContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-top: 45px;
+}
+
+.errorMsg {
+  margin-top: 60px;
+  padding: 40px;
+  border-radius: 14px;
+
+  font-size: 22px;
+  font-weight: 500;
+  color: #e74c3c;
+  text-align: center;
+
+  background: #fff;
+}
+
+.noDataMsg {
+  margin-top: 60px;
+  padding: 40px;
+  border-radius: 14px;
+
+  font-size: 22px;
+  font-weight: 500;
+  color: #888;
+  text-align: center;
+
+  background: #fff;
+}

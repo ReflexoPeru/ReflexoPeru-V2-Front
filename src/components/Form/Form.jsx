@@ -1,10 +1,4 @@
-import {
-  Button,
-  Col,
-  ConfigProvider,
-  Form,
-  Row
-} from 'antd';
+import { Button, Col, ConfigProvider, Form, Row } from 'antd';
 import { useState } from 'react';
 import styles from '../Form/Form.module.css';
 import InputField from '../Input/Input';
@@ -19,28 +13,19 @@ const FormComponent = ({
   patientType = '',
   paymentOption = '',
   customAmount = '',
+  onSubmit = () => {},
   onPaymentOptionChange = () => {},
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
-  onSubmit = () => {}
+  onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
+  onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
+  form: externalForm,
 }) => {
-  const [form] = useForm();
+  const [internalForm] = useForm();
+  const form = externalForm || internalForm;
   const [loading, setLoading] = useState(false);
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
-
-  const handleFinish = async (values) => {
-  try {
-    setLoading(true);
-    console.log('Datos del formulario:', values);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    await onSubmit(values); // ← AQUÍ el cambio importante
-  } catch (error) {
-    console.error('Error al enviar el formulario:', error);
-  } finally {
-    setLoading(false);
-  }
-};
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
@@ -61,7 +46,7 @@ const FormComponent = ({
         <Col span={24} key={index}>
           <Row gutter={[25, 0]}>
             {field.fields.map((subField, subIndex) =>
-              renderField(subField, `${index}-${subIndex}`)
+              renderField(subField, `${index}-${subIndex}`),
             )}
           </Row>
         </Col>
@@ -70,27 +55,27 @@ const FormComponent = ({
 
     if (field.type === 'customComponent') {
       if (field.show === 'showHourField' && !showHourField) return null;
-      
+
       return (
         <Col span={field.span || 24} key={index}>
-          <InputField 
-            type="cita" 
-            componentType={field.componentType} 
+          <InputField
+            type="cita"
+            componentType={field.componentType}
             form={form}
             {...field.props}
             showHourField={showHourField}
             isPaymentRequired={isPaymentRequired}
             patientType={patientType}
-            paymentOption={paymentOption}  // Esta es importante
-            customAmount={customAmount}    // Esta también
-            paymentOptions={field.props?.paymentOptions} // Añade esta línea
+            paymentOption={paymentOption}
+            customAmount={customAmount}
+            paymentOptions={field.props?.paymentOptions}
             onPatientTypeChange={onPatientTypeChange}
             onPaymentOptionChange={onPaymentOptionChange}
             onShowHourFieldChange={onShowHourFieldChange}
             onPaymentRequiredChange={onPaymentRequiredChange}
-            // Añade estas nuevas props
-            onOpenCreateModal={() => onSubmit({})} // Esto activará el modal de creación
-            onOpenSelectModal={() => onSubmit({})} // Esto activará el modal de selección
+            // Usamos las nuevas props para abrir modales
+            onOpenCreateModal={onOpenCreateModal}
+            onOpenSelectModal={onOpenSelectModal}
           />
         </Col>
       );
@@ -106,24 +91,28 @@ const FormComponent = ({
           rules={
             isPhoneField
               ? [
-                  ...(isPhoneRequired ? [
-                    { 
-                      required: true, 
-                      message: 'Por favor ingrese su teléfono' 
-                    }
-                  ] : []),
+                  ...(isPhoneRequired
+                    ? [
+                        {
+                          required: true,
+                          message: 'Por favor ingrese su teléfono',
+                        },
+                      ]
+                    : []),
                   () => ({
                     validator(_, value) {
                       if (!value || (value && value.length === 9)) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                      return Promise.reject(
+                        new Error('El teléfono debe tener 9 dígitos'),
+                      );
                     },
-                  })
+                  }),
                 ]
               : field.rules
-          }>
-
+          }
+        >
           <InputField
             type={isPhoneField ? 'phoneNumber' : field.type}
             label={field.label}
@@ -154,7 +143,7 @@ const FormComponent = ({
         <Form
           form={form}
           layout="vertical"
-          onFinish={handleFinish}
+          onFinish={onSubmit}
           className={styles.formContainer}
         >
           <Row gutter={[20, 0]}>
@@ -163,10 +152,7 @@ const FormComponent = ({
 
           <Form.Item className={styles.buttonGroup}>
             <div className={styles.buttonWrapper}>
-              <Button
-                htmlType="button"
-                className={styles.buttonCancel}
-              >
+              <Button htmlType="button" className={styles.buttonCancel}>
                 Cancelar
               </Button>
               <Button

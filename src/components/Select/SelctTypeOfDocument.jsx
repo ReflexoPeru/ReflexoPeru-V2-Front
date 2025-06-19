@@ -4,7 +4,9 @@ import { getDocumentTypes } from './SelectsApi';
 
 export function SelectTypeOfDocument({ value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
+  const [internalValue, setInternalValue] = useState(value);
 
+  // Cargar opciones
   useEffect(() => {
     const fetchDocumentTypes = async () => {
       try {
@@ -19,14 +21,24 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
         setOptions([]);
       }
     };
-
     fetchDocumentTypes();
   }, []);
 
-  const handleChange = (value) => {
-    if (onChange) {
-      onChange(value);
+  // Sincronizar value cuando cambian las opciones o el value externo
+  useEffect(() => {
+    if (
+      value !== undefined &&
+      value !== null &&
+      options.length > 0 &&
+      options.some((opt) => String(opt.value) === String(value))
+    ) {
+      setInternalValue(value);
     }
+  }, [value, options]);
+
+  const handleChange = (val) => {
+    setInternalValue(val);
+    if (onChange) onChange(val);
   };
 
   return (
@@ -50,7 +62,7 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
     >
       <Select
         {...rest}
-        value={value}
+        value={internalValue}
         onChange={handleChange}
         showSearch
         filterOption={(input, option) =>
