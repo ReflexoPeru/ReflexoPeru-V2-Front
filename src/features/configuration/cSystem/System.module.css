@@ -130,6 +130,9 @@ body {
   background-color: #333;
 }
 
+.input:hover {
+  background-color: #444; /* Color de fondo al hacer hover */
+}
 .input:focus {
   background-color: #333;
   outline: none;

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { getSystemInfo, getCompanyLogo } from "../services/systemServices";
+import { getSystemInfo, getCompanyLogo, updateSystemaInfo, updateCompanyLogo } from "../services/systemServices";
 
 //CONSIGUE EL LOGO
 export const useSystemHook = () => {
@@ -34,6 +34,31 @@ export const useSystemHook = () => {
     return { logoInfo, loading, error, refetch: fetchLogo };
 };
 
+//ACTUALIZA EL LOGO
+export const useUploadCompanyLogo = () => {
+    const [uploadingLogo, setUploadingLogo] = useState(false);
+    const [uploadError, setUploadError] = useState(null);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
+
+    const uploadLogo = async (file) => {
+        setUploadingLogo(true);
+        setUploadError(null);
+        setUploadSuccess(false);
+
+        try {
+        await updateCompanyLogo(file);
+        setUploadSuccess(true);
+        } catch (err) {
+        setUploadError(err);
+        } finally {
+        setUploadingLogo(false);
+        }
+    };
+
+    return { uploadLogo, uploadingLogo, uploadError, uploadSuccess };
+};
+
+
 //CONSIGUE LOS DATOS DE LA EMPRESA
 export const useCompanyInfo = () => {
     const [companyInfo, setCompanyInfo] = useState(null);
@@ -65,3 +90,32 @@ export const useCompanyInfo = () => {
         refetchCompanyInfo: fetchCompanyInfo
     };
 };
+
+//ACTUALIZA LOS DATOS DE LA EMPRESA
+export const useUpdateCompanyInfo = () => {
+    const [updating, setUpdating] = useState(false); 
+    const [updateError, setUpdateError] = useState(null);
+    const [updateSuccess, setUpdateSuccess] = useState(false);
+
+    const updateCompany = async (newData) => {
+        setUpdating(true);
+        setUpdateError(null);
+        setUpdateSuccess(false);
+
+        try {
+            await updateSystemaInfo(newData);
+            setUpdateSuccess(true);
+        } catch (error) {
+            setUpdateError(error);
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    return {
+        updateCompany,       // función para llamar desde tu componente
+        updating,            // estado booleano mientras actualiza
+        updateError,         // error si falla
+        updateSuccess        // booleano si fue exitoso
+    };
+}

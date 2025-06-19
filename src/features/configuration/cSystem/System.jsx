@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Upload, Input, Button, Spin, Image } from 'antd';
-import { UploadSimple } from '@phosphor-icons/react';
+import { Upload, Input, Button, Spin, Image, message } from 'antd';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './System.module.css';
-import { useSystemHook, useCompanyInfo } from './hook/systemHook';
+import { useSystemHook, useCompanyInfo, useUpdateCompanyInfo, useUploadCompanyLogo } from './hook/systemHook';
 
 const System = () => {
-  const { logoInfo, loading, error } = useSystemHook();
-  const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
+  const { logoInfo, loading, error, refetch } = useSystemHook();
+  const { companyInfo} = useCompanyInfo();
+  const { updateCompany, updating } = useUpdateCompanyInfo();
+  const { uploadLogo, uploadingLogo, uploadError, uploadSuccess } = useUploadCompanyLogo();
   const [companyName, setCompanyName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
-  const [logoError, setLogoError] = useState(false);
 
   // Manejo de datos de la API
   useEffect(() => {
@@ -20,7 +21,6 @@ const System = () => {
     if (logoInfo instanceof Blob) {
       objectUrl = URL.createObjectURL(logoInfo);
       setLogoUrl(objectUrl); // 👈 Cache-busting
-      setLogoError(false);
     }
 
     return () => {
@@ -30,27 +30,43 @@ const System = () => {
   };
   }, [companyInfo, logoInfo]);
 
-  const handleLogoChange = ({ file }) => {
-    const f = file.originFileObj;
-    if (f) {
+  //MOSTRAR MENSAJES DE EXITO/ERROR
+  useEffect(() => {
+    if (uploadSuccess) {
+      message.success('Logo actualizado correctamente');
+    }
+    if (uploadError) {
+      message.error(`Error al subir logo: ${uploadError.message}`);
+    }
+  }, [uploadSuccess, uploadError]);
+
+  //TRAER DATOS DE LA EMPRESA
+  const handleNameChange = () => {
+    if (!companyName.trim()) return;
+    updateCompany({ company_name: companyName });
+  };
+
+  //CAMBIAR EL LOGO
+  const handleLogoChange = async (info) => {
+
+    if (info.file.status === 'done') {
+      const file = info.file.originFileObj;
+      if (!file) return;
+
+      // Preview local
       const reader = new FileReader();
       reader.onload = (e) => setLogoUrl(e.target.result);
-      reader.readAsDataURL(f);
-      setLogoError(false);
+      reader.readAsDataURL(file);
+      try {
+        await uploadLogo(file);
+      } catch (err) {
+        console.error("Error al subir logo", err);
+      }
     }
   };
 
   if (loading) return <div className={styles.layout}><Spin size="large" /></div>;
   if (error) return <div className={styles.layout}><p>Error: {error.message}</p></div>;
-
-
-  // if (!companyInfo || !logoInfo) {
-  //   return (
-  //     <div className={styles.layout}>
-  //       <p>No se encontraron datos de la empresa</p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className={styles.layout}>
@@ -70,8 +86,8 @@ const System = () => {
                       alt={`Logo de ${companyName}`}
                       preview={false}
                       style={{
-                        width: '100px',
-                        height: '100px',
+                        width: '120px',
+                        height: '120px',
                         borderRadius: '50%',
                         objectFit: 'cover',
                         border: '2px solid #4CAF50',
@@ -86,20 +102,57 @@ const System = () => {
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Subir nuevo</span>
                   <Upload
+                    name="logo"
+                    listType="picture-circle"
+                    className="avatar-uploader"
                     showUploadList={false}
-                    beforeUpload={() => false}
                     accept="image/*"
+                    customRequest={({ file, onSuccess }) => {
+                      setTimeout(() => {
+                        onSuccess("ok");
+                      }, 0);
+                    }}
+                    beforeUpload={(file) => {
+                      const isImage = file.type.startsWith('image/');
+                      if (!isImage) {
+                        message.error('Solo puedes subir archivos de imagen!');
+                      }
+                      const isLt2M = file.size / 1024 / 1024 < 2;
+                      if (!isLt2M) {
+                        message.error('La imagen debe ser menor a 2MB!');
+                      }
+                      return isImage && isLt2M ? true : Upload.LIST_IGNORE;
+                    }}
                     onChange={handleLogoChange}
-                    
+                    style={{
+                      borderRadius: '50%',
+                      border: '2px dashed #4CAF50',
+                      width: 120,
+                      height: 120,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#1a1a1a', // si estás en modo oscuro
+                      cursor: 'pointer'
+                      
+                    }}
                   >
-                    <button type="button" className={styles.uploadBtn}>
-                      <UploadSimple size={32} weight="bold" />
-                      <span className={styles.uploadText}>Upload</span>
-                    </button>
+                    {uploadingLogo ? (
+                      <div style={{ color: '#fff', textAlign: 'center' }}>
+                        <LoadingOutlined />
+                        <div style={{ marginTop: 8 }}>Subiendo...</div>
+                      </div>
+                    ) : (
+                      <div style={{ color: '#fff', textAlign: 'center' }}>
+                        <UploadOutlined />
+                        <div style={{ marginTop: 8 }}>Subir logo</div>
+                      </div>
+                    )}
                   </Upload>
                 </div>
               </div>
             </div>
+            
 
             {/* Nombre */}
             <div className={styles.section}>
@@ -112,12 +165,19 @@ const System = () => {
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Ingresa el nombre de la empresa"
                 />
-                <Button type="primary" className={styles.changeBtn}>
-                  Cambiar
+                <Button 
+                  type="primary" 
+                  className={styles.changeBtn}
+                  onClick={handleNameChange}
+                  loading={updating}
+                >
+                  Cambiar Nombre
                 </Button>
               </div>
-            </div>
 
+            </div>
+            {/* {updateSuccess && <p className={styles.successMsg}>Nombre actualizado correctamente.</p>}
+            {updateError && <p className={styles.errorMsg}>Error al actualizar: {updateError.message}</p>} */}
           </div>
         </section>
       </main>

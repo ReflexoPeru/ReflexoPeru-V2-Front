@@ -4,7 +4,7 @@ import {
   Select,
   Button,
   Input,
-  Modal,
+  Image,
   message,
   Form,
   ConfigProvider,
@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   CheckCircle,
 } from '@phosphor-icons/react';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './Profile.module.css';
 import {
   useSendVerifyCode,
@@ -81,24 +82,51 @@ const Profile = () => {
       setCorreo(profile.email || '');
       setGenero(profile.sex || null);
       setTelefono(profile.phone || '');
+
+      // ⬇️ Aquí actualizamos el avatar si photo_url existe
+      if (profile.photo_url) {
+        setAvatar(profile.photo_url);
+      }
     }
   }, [profile]);
 
-  const handleAvatarChange = async (info) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('photo', file);
-        await uploadProfilePhoto(formData);
-        message.success('Avatar actualizado correctamente');
-        const reader = new FileReader();
-        reader.onload = (e) => setAvatar(e.target.result);
-        reader.readAsDataURL(file);
-      } catch (error) {
-        message.error('Error al actualizar el avatar');
-      }
+  const handleAvatarChange = async ({ file }) => {
+  const newFile = file.originFileObj;
+  if (!newFile) return;
+
+  // ✅ Validar tipo de imagen
+  const isImage = newFile.type.startsWith('image/');
+  if (!isImage) {
+    message.error('Solo puedes subir archivos de imagen');
+    return;
+  }
+
+  // ✅ Validar tamaño (< 2MB)
+  const isLt2M = newFile.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('La imagen debe ser menor a 2MB');
+    return;
+  }
+
+  // ✅ Vista previa inmediata
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const previewUrl = e.target.result;
+    setAvatar(previewUrl); // Vista previa
+
+    try {
+      const formData = new FormData();
+      formData.append('photo', newFile);
+      await uploadProfilePhoto(formData);
+      message.success('Avatar actualizado correctamente');
+      await refetch(); // Vuelve a cargar `photo_url` del perfil
+    } catch (error) {
+      message.error('Error al subir avatar');
+      console.error(error);
     }
+  };
+
+    reader.readAsDataURL(newFile);
   };
 
   const handleOpenEmailModal = () => {
@@ -291,28 +319,71 @@ const Profile = () => {
               <div className={styles.card}>
                 <h2 className={styles.title}>PERFIL</h2>
 
-                <div className={styles.formRow}>
+                {/* Avatar */}
+                <div className={styles.section}>
                   <label className={styles.label}>Avatar:</label>
-                  <div className={styles.avatarContainer}>
-                    <div className={styles.avatarBlock}>
-                      <span className={styles.avatarTitle}>Actual</span>
-                      <img
-                        src={avatar}
-                        alt="Avatar actual"
-                        className={styles.avatarImage}
-                      />
+                  <div className={styles.logoRow}>
+                    <div className={styles.logoBlock}>
+                      {avatar ? (
+                        <Image
+                          src={avatar}
+                          alt="Avatar del usuario"
+                          preview={false}
+                          style={{
+                            width: '120px',
+                            height: '120px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            border: '2px solid #4CAF50',
+                            padding: '3px',
+                            backgroundColor: '#000'
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.noLogo}>No hay avatar disponible</div>
+                      )}
                     </div>
-                    <div className={styles.avatarBlock}>
-                      <span className={styles.avatarTitle}>Subir</span>
+                    <div className={styles.logoBlock}>
                       <Upload
+                        name="logo"
+                        listType="picture-circle"
+                        className="avatar-uploader"
                         showUploadList={false}
-                        beforeUpload={() => false}
-                        onChange={handleAvatarChange}
                         accept="image/*"
+                        customRequest={({ file, onSuccess }) => {
+                          setTimeout(() => {
+                            onSuccess("ok");
+                          }, 0);
+                        }}
+                        beforeUpload={(file) => {
+                          const isImage = file.type.startsWith('image/');
+                          if (!isImage) {
+                            message.error('Solo puedes subir archivos de imagen!');
+                          }
+                          const isLt2M = file.size / 1024 / 1024 < 2;
+                          if (!isLt2M) {
+                            message.error('La imagen debe ser menor a 2MB!');
+                          }
+                          return isImage && isLt2M ? true : Upload.LIST_IGNORE;
+                        }}
+                        onChange={handleAvatarChange}
+                        style={{
+                          borderRadius: '50%',
+                          border: '2px dashed #4CAF50',
+                          width: 120,
+                          height: 120,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: '#1a1a1a', // si estás en modo oscuro
+                          cursor: 'pointer'
+                          
+                        }}
                       >
-                        <button type="button" className={styles.uploadButton}>
-                          <span className={styles.uploadText}>Upload</span>
-                        </button>
+                          <div style={{ color: '#fff', textAlign: 'center' }}>
+                            <UploadOutlined />
+                            <div style={{ marginTop: 8 }}>Subir avatar</div>
+                          </div>
                       </Upload>
                     </div>
                   </div>

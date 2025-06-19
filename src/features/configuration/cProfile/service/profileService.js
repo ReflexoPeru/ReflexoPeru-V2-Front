@@ -103,29 +103,13 @@ export const changePassword = async (data) => {
   }
 };
 
-export const uploadPhoto = async (formData) => {
+//CONSEGUIR LA FOTO DE PERFIL -> (GET)
+export const getProfilePhoto = async () => {
   try {
-    const res = await post('users/photo', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    // Invalidar caché de la foto
-    apiCache.delete('users/photo');
-    return res.data;
+    const response = await get('profile');
+    return response.data;
   } catch (error) {
-    console.error('Error in uploadPhoto:', error);
+    console.error('Error al obtener el perfil:', error);
     throw error;
   }
-};
-
-export const getPhoto = async () => {
-  try {
-    return await cachedRequest('users/photo', () =>
-      get('users/photo', { responseType: 'blob' }),
-    );
-  } catch (error) {
-    console.error('Error in getPhoto:', error);
-    throw error;
-  }
-};
+}

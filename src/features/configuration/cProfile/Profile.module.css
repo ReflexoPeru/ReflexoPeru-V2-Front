@@ -319,3 +319,17 @@ input:-webkit-autofill {
 
   -webkit-text-fill-color: white !important;
 }
+
+.logoRow {
+  display: flex;
+  gap: 24px; /* espacio entre avatar y upload */
+  align-items: center; /* alinear verticalmente */
+  flex-wrap: wrap; /* opcional: que no se rompa si se reduce pantalla */
+}
+
+.logoBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
