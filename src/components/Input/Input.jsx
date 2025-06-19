@@ -298,6 +298,7 @@ const PatientField = ({
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
+            name="pacienteId"
             rules={[{ required: true, message: 'Este campo es requerido' }]}
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
