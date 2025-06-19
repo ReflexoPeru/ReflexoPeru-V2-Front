@@ -184,28 +184,39 @@ const InputField = ({
         </ConfigProvider>
       );
 
-    case 'date':
+      case 'date':
       inputComponent = (
         <ConfigProvider
           theme={{
             components: {
               DatePicker: {
-                panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
-                colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
-                colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
-                arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
+                colorBgElevated: '#3B3B3BFF',      // Fondo del calendario
+                colorText: '#ffffff',            // Texto general
+                colorTextHeading: '#ffffff',     // Encabezados (mes y año)
+                colorIcon: '#ffffff',            // Flechas
+                colorPrimary: '#1cb54a',         // Día seleccionado
+                colorPrimaryHover: '#148235',    // Hover del color principal
+                cellHoverBg: '#333333',          // Hover en celdas
               },
             },
           }}
         >
           <DatePicker
             {...inputProps}
-            style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
-            dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
+            style={{
+              width: '100%',
+              color: '#ffffff',
+              backgroundColor: '#424242FF',
+              borderColor: '#444444',
+            }}
+            dropdownStyle={{
+              backgroundColor: '#000000',
+              color: '#ffffff',
+            }}
           />
         </ConfigProvider>
       );
-      break;
+    break;
 
     case 'cita':
       return <CitaComponents {...rest} />;
