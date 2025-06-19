@@ -100,16 +100,29 @@ const handleCompleteRegistration = async () => {
 
   const handleCreatePatient = async (patientData) => {
     try {
-      // Simulación de creación exitosa
-      const mockResponse = { 
-        id: `new-patient-${Date.now()}`,
-        ...patientData,
-        full_name: `${patientData.first_name} ${patientData.last_name}`
-      };
+      // Llamada real a la API para crear paciente
+      const response = await fetch('/api/patients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(patientData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al crear paciente');
+      }
+
+      const newPatient = await response.json();
       
+      // Actualizar la lista de pacientes
       await fetchPatients();
       
-      return mockResponse;
+      return {
+        id: newPatient.id,
+        full_name: `${newPatient.first_name} ${newPatient.last_name}`,
+        ...newPatient
+      };
     } catch (error) {
       console.error('Error al crear paciente:', error);
       throw error;
