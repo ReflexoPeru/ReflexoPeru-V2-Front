@@ -1,34 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Upload, Input, Button, Spin, Image, message } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import MiniLogo from '../../../assets/Img/Dashboard/MiniLogoReflexo.png';
 import styles from './System.module.css';
 import { useSystemHook, useCompanyInfo, useUpdateCompanyInfo, useUploadCompanyLogo } from './hook/systemHook';
 
 const System = () => {
-  const { logoInfo, loading, error, refetch } = useSystemHook();
+  const { logoUrl, loading, error } = useSystemHook();
   const { companyInfo} = useCompanyInfo();
   const { updateCompany, updating } = useUpdateCompanyInfo();
   const { uploadLogo, uploadingLogo, uploadError, uploadSuccess } = useUploadCompanyLogo();
   const [companyName, setCompanyName] = useState('');
-  const [logoUrl, setLogoUrl] = useState('');
+  const [logoPreview, setLogoPreview] = useState(null);
 
-  // Manejo de datos de la API
+  //Establecer nombre de la empresa desde la API
   useEffect(() => {
-    let objectUrl; 
-
-    if (companyInfo?.company_name) setCompanyName(companyInfo.company_name);
-
-    if (logoInfo instanceof Blob) {
-      objectUrl = URL.createObjectURL(logoInfo);
-      setLogoUrl(objectUrl); // 👈 Cache-busting
+    if (companyInfo?.company_name) {
+      setCompanyName(companyInfo.company_name);
     }
+  }, [companyInfo]);
 
-    return () => {
-    if (objectUrl) {
-      URL.revokeObjectURL(objectUrl); // 👈 Limpieza
+  //Sincronizar vista previa del logo con lo que viene de la API
+  useEffect(() => {
+    if (logoUrl) {
+      setLogoPreview(logoUrl);
     }
-  };
-  }, [companyInfo, logoInfo]);
+  }, [logoUrl]);
+  const img = MiniLogo;
 
   //MOSTRAR MENSAJES DE EXITO/ERROR
   useEffect(() => {
@@ -40,30 +38,41 @@ const System = () => {
     }
   }, [uploadSuccess, uploadError]);
 
-  //TRAER DATOS DE LA EMPRESA
-  const handleNameChange = () => {
+  //ACTUALIZA DATOS DE LA EMPRESA
+  const handleNameChange = async () => {
     if (!companyName.trim()) return;
-    updateCompany({ company_name: companyName });
+    try {
+      await updateCompany({ company_name: companyName });
+      await refetchCompanyInfo(); // 🔁 Refresca los datos luego de guardar
+      message.success('Nombre de empresa actualizado');
+    } catch (err) {
+      message.error('Error al actualizar el nombre');
+    }
   };
 
   //CAMBIAR EL LOGO
   const handleLogoChange = async (info) => {
+  if (info.file.status === 'done') {
+    const file = info.file.originFileObj;
+    if (!file) return;
 
-    if (info.file.status === 'done') {
-      const file = info.file.originFileObj;
-      if (!file) return;
+    // Vista previa local inmediata
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setLogoPreview(e.target.result); 
+    };
+    reader.readAsDataURL(file);
 
-      // Preview local
-      const reader = new FileReader();
-      reader.onload = (e) => setLogoUrl(e.target.result);
-      reader.readAsDataURL(file);
-      try {
-        await uploadLogo(file);
-      } catch (err) {
-        console.error("Error al subir logo", err);
-      }
+    await uploadLogo(file);
+    //await refetch();
+
+    try {
+      await uploadLogo(file);     
+    } catch (err) {
+      console.error("Error al subir logo", err);
     }
-  };
+  }
+};
 
   if (loading) return <div className={styles.layout}><Spin size="large" /></div>;
   if (error) return <div className={styles.layout}><p>Error: {error.message}</p></div>;
@@ -82,7 +91,7 @@ const System = () => {
                   <span className={styles.logoTitle}>Actual</span>
                   {logoUrl ? (
                     <Image
-                      src={logoUrl}
+                      src={logoPreview || img}
                       alt={`Logo de ${companyName}`}
                       preview={false}
                       style={{
@@ -176,8 +185,6 @@ const System = () => {
               </div>
 
             </div>
-            {/* {updateSuccess && <p className={styles.successMsg}>Nombre actualizado correctamente.</p>}
-            {updateError && <p className={styles.errorMsg}>Error al actualizar: {updateError.message}</p>} */}
           </div>
         </section>
       </main>

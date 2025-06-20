@@ -124,7 +124,7 @@ export default function MenuDashboard() {
         ...(userRole === 1
           ? [
               {
-                key: '12',
+                key: '17',
                 label: <Link to="configSistema">Sistema</Link>,
               },
               {

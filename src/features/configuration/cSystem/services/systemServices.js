@@ -15,6 +15,7 @@ export const getSystemInfo = async () => {
 // Actualizar datos de la empresa
 export const updateSystemaInfo = async (data) => {
     try {
+        console.log("Voy a enviar al backend:", data); // 🔍
         const response = await post(`company`, data); // <- aquí mandamos los datos
         return response.data;
     } catch (error) {
@@ -35,7 +36,7 @@ export const getCompanyLogo = async (signal) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error fetching company logo:", error);
+        console.error("Error actualizando la info del sistema:", error.response?.data || error.message);
         throw error;
     }
 };
