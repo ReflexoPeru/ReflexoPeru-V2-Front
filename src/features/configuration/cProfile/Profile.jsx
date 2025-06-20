@@ -20,17 +20,26 @@ import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './Profile.module.css';
 import {
   useSendVerifyCode,
-  useProfile,
   useUpdateProfile,
-  useUserPhoto,
   useUploadUserAvatar,
 } from './hook/profileHook';
 import { useToast } from '../../../services/toastify/ToastContext';
 import ModalBase from '../../../components/Modal/BaseModalProfile/BaseModalProfile';
+import { useUser } from '../../../context/UserContext';
+
 const { Password } = AntdInput;
 
 const Profile = () => {
-  const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
+  const {
+    profile,
+    photoUrl,
+    refetchUserData,
+    loading: profileLoading,
+  } = useUser();
+
+  const [avatar, setAvatar] = useState(
+    photoUrl || '/src/assets/Img/MiniLogoReflexo.webp',
+  );
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
@@ -66,19 +75,11 @@ const Profile = () => {
     loading: codeLoading,
     error: codeError,
   } = useSendVerifyCode();
-  const { profile, loading: profileLoading, refetch } = useProfile();
-  const {
-    updateProfile,
-    isUpdating,
-    validateCurrentPassword,
-    updatePassword,
-    uploadProfilePhoto,
-  } = useUpdateProfile();
+  const { updateProfile, isUpdating, validateCurrentPassword, updatePassword } =
+    useUpdateProfile();
   const { showToast } = useToast();
 
-  //HOOKS IMPORTADOR PARA IMAGEN
-  const { photoUrl, loadingPhoto } = useUserPhoto();
-  const { uploadAvatar, uploading, error, success } = useUploadUserAvatar();
+  const { uploadAvatar, uploading, error: uploadError } = useUploadUserAvatar();
 
   useEffect(() => {
     if (profile) {
@@ -98,30 +99,20 @@ const Profile = () => {
   }, [photoUrl]);
 
   const handleAvatarChange = async ({ file }) => {
+    if (file.status !== 'done') return;
+
     const newFile = file.originFileObj;
     if (!newFile) return;
 
-    if (!newFile.type.startsWith('image/')) {
-      message.error('Solo imágenes permitidas');
-      return;
-    }
-    if (newFile.size / 1024 / 1024 > 2) {
-      message.error('Imagen debe ser <2 MB');
-      return;
-    }
-
-    // Vista previa
     const reader = new FileReader();
     reader.onload = (e) => setAvatar(e.target.result);
     reader.readAsDataURL(newFile);
 
-    // Subida
     try {
       await uploadAvatar(newFile);
-      message.success('Avatar actualizado');
-      refetch(); // recarga perfil
-    } catch {
-      message.error(uploadError?.message || 'Error al subir avatar');
+      refetchUserData();
+    } catch (err) {
+      console.error('Error capturado en el componente:', err);
     }
   };
 
@@ -256,7 +247,7 @@ const Profile = () => {
 
       await updateProfile(updateData);
       message.success('Cambios guardados exitosamente');
-      refetch();
+      refetchUserData();
     } catch (error) {
       message.error(
         'Error al actualizar el perfil: ' +
@@ -332,11 +323,13 @@ const Profile = () => {
                             objectFit: 'cover',
                             border: '2px solid #4CAF50',
                             padding: '3px',
-                            backgroundColor: '#000'
+                            backgroundColor: '#000',
                           }}
                         />
                       ) : (
-                        <div className={styles.noLogo}>No hay avatar disponible</div>
+                        <div className={styles.noLogo}>
+                          No hay avatar disponible
+                        </div>
                       )}
                     </div>
                     <div className={styles.logoBlock}>
@@ -347,18 +340,18 @@ const Profile = () => {
                         showUploadList={false}
                         accept="image/*"
                         customRequest={({ file, onSuccess }) => {
-                          setTimeout(() => {
-                            onSuccess("ok");
-                          }, 0);
+                          onSuccess('ok');
                         }}
                         beforeUpload={(file) => {
                           const isImage = file.type.startsWith('image/');
                           if (!isImage) {
-                            message.error('Solo puedes subir archivos de imagen!');
+                            message.error(
+                              'Solo puedes subir archivos de imagen!',
+                            );
                           }
                           const isLt2M = file.size / 1024 / 1024 < 2;
                           if (!isLt2M) {
-                            message.error('La imagen debe ser menor a 2MB!');
+                            message.error('¡La imagen debe ser menor a 2MB!');
                           }
                           return isImage && isLt2M ? true : Upload.LIST_IGNORE;
                         }}
@@ -372,14 +365,13 @@ const Profile = () => {
                           alignItems: 'center',
                           justifyContent: 'center',
                           backgroundColor: '#1a1a1a', // si estás en modo oscuro
-                          cursor: 'pointer'
-                          
+                          cursor: 'pointer',
                         }}
                       >
-                          <div style={{ color: '#fff', textAlign: 'center' }}>
-                            <UploadOutlined />
-                            <div style={{ marginTop: 8 }}>Subir avatar</div>
-                          </div>
+                        <div style={{ color: '#fff', textAlign: 'center' }}>
+                          <UploadOutlined />
+                          <div style={{ marginTop: 8 }}>Subir avatar</div>
+                        </div>
                       </Upload>
                     </div>
                   </div>

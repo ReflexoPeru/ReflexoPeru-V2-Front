@@ -414,8 +414,8 @@ export const defaultConfig = {
   datoGuardado: {
     type: 'success',
     icon: 'fa-solid fa-floppy-disk',
-    title: 'Dato Guardado',
-    message: 'La información ha sido guardada',
+    title: 'Actualizado',
+    message: 'El nombrer de la empresa se actualizo',
     duration: 4000,
   },
 
@@ -692,6 +692,14 @@ export const defaultConfig = {
     icon: 'fa-solid fa-user-pen',
     title: 'Actualizado',
     message: 'Aquí hay información importante',
+    duration: 5000,
+  },
+
+  imageUploadSuccess: {
+    type: 'info',
+    icon: 'fa-solid fa-image',
+    title: 'Imagen subida',
+    message: 'Tu imagen se ha actualizado correctamente',
     duration: 5000,
   },
 };
