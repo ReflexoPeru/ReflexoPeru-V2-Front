@@ -326,8 +326,8 @@ const Profile = () => {
                           alt="Avatar del usuario"
                           preview={false}
                           style={{
-                            width: '110px',
-                            height: '110px',
+                            width: '100px',
+                            height: '100px',
                             borderRadius: '50%',
                             objectFit: 'cover',
                             border: '2px solid #4CAF50',
@@ -366,8 +366,8 @@ const Profile = () => {
                         style={{
                           borderRadius: '50%',
                           border: '2px dashed #4CAF50',
-                          width: 110,
-                          height: 110,
+                          width: 97,
+                          height: 97,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
