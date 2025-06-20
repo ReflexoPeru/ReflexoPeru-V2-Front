@@ -1,24 +1,27 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { getSystemInfo, getCompanyLogo, updateSystemaInfo, updateCompanyLogo } from "../services/systemServices";
+import { persistLocalStorage } from '../../../../utils/localStorageUtility';
 
 //CONSIGUE EL LOGO
 export const useSystemHook = () => {
-    const [logoInfo, setLogoInfo] = useState(null);
+    const [logoUrl, setLogoUrl] = useState(null);   // URL para mostrar
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const abortControllerRef = useRef(null);
 
     const fetchLogo = useCallback(async () => {
-    if (abortControllerRef.current) abortControllerRef.current.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+        if (abortControllerRef.current) abortControllerRef.current.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
 
-    setLoading(true);
-    setError(null);
+        setLoading(true);
+        setError(null);
 
-    try {
-        const logoBlob = await getCompanyLogo(controller.signal);
-        setLogoInfo(logoBlob);
+        try {
+        const blob = await getCompanyLogo(controller.signal);
+
+        const url = URL.createObjectURL(blob);
+        setLogoUrl(url);
         } catch (err) {
         setError(err);
         } finally {
@@ -28,10 +31,18 @@ export const useSystemHook = () => {
 
     useEffect(() => {
         fetchLogo();
-        return () => abortControllerRef.current?.abort();
+        return () => {
+        abortControllerRef.current?.abort();
+        if (logoUrl) URL.revokeObjectURL(logoUrl); // 🔁 Limpieza
+        };
     }, [fetchLogo]);
 
-    return { logoInfo, loading, error, refetch: fetchLogo };
+    return {
+        logoUrl,
+        loading,
+        error,
+        refetch: fetchLogo
+    };
 };
 
 //ACTUALIZA EL LOGO
@@ -72,6 +83,11 @@ export const useCompanyInfo = () => {
         try {
         const data = await getSystemInfo();
         setCompanyInfo(data?.data); // <- Asegura que tomas la propiedad `data`
+
+        // ✅ Guardamos también en localStorage
+        if (data?.data?.company_name) {
+            persistLocalStorage('company_name', data.data.company_name);
+        }
         } catch (err) {
         setErrorInfo(err);
         } finally {
@@ -105,6 +121,10 @@ export const useUpdateCompanyInfo = () => {
         try {
             await updateSystemaInfo(newData);
             setUpdateSuccess(true);
+            // ✅ Guardamos el nuevo nombre en localStorage si existe
+            if (newData?.company_name) {
+                persistLocalStorage('company_name', newData.company_name);
+            }
         } catch (error) {
             setUpdateError(error);
         } finally {

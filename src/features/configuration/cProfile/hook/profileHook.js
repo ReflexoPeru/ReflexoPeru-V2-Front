@@ -11,6 +11,7 @@ import {
   uploadProfilePhoto,
 } from '../service/profileService';
 import { useToast } from '../../../../services/toastify/ToastContext';
+import { persistLocalStorage } from '../../../../utils/localStorageUtility';
 
 // Cache para almacenar datos temporalmente
 const profileCache = {
@@ -109,8 +110,8 @@ export const useProfile = () => {
 
       setLoading(true);
       try {
-        const [profileData, photoData] = await Promise.allSettled([
-          getProfile(),
+          const [profileData, photoData] = await Promise.allSettled([
+            getProfile(),
         ]);
 
         const profileResult =
@@ -123,6 +124,7 @@ export const useProfile = () => {
         profileCache.lastFetch = now;
 
         setProfile(profileResult);
+        persistLocalStorage('user_full_name', profileResult?.full_name);
       } catch (error) {
         setError(error);
         showToast('error', 'Error al cargar el perfil');
