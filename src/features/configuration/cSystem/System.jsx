@@ -86,8 +86,8 @@ const System = () => {
                       alt={`Logo de ${companyName}`}
                       preview={false}
                       style={{
-                        width: '120px',
-                        height: '120px',
+                        width: '100px',
+                        height: '100px',
                         borderRadius: '50%',
                         objectFit: 'cover',
                         border: '2px solid #4CAF50',
@@ -127,8 +127,8 @@ const System = () => {
                     style={{
                       borderRadius: '50%',
                       border: '2px dashed #4CAF50',
-                      width: 120,
-                      height: 120,
+                      width: 100,
+                      height: 100,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
