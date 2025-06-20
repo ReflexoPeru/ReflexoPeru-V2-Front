@@ -12,7 +12,7 @@ const fields = [
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
-        required: true
+        required: true,
       },
       {
         name: 'document_number',
@@ -21,51 +21,51 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese el número de documento' 
+          {
+            required: true,
+            message: 'Por favor ingrese el número de documento',
           },
           {
             pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos'
-          }
-        ]
+            message: 'El documento debe tener 8 dígitos',
+          },
+        ],
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'paternal_lastname', 
-        label: 'Apellido Paterno', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'paternal_lastname',
+        label: 'Apellido Paterno',
+        type: 'text',
+        required: true,
+        span: 8,
       },
-      { 
-        name: 'maternal_lastname', 
-        label: 'Apellido Materno', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'maternal_lastname',
+        label: 'Apellido Materno',
+        type: 'text',
+        span: 8,
       },
-      { 
-        name: 'name', 
-        label: 'Nombre', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        span: 8,
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'birth_date', 
-        label: 'Fecha de Nacimiento', 
-        type: 'date', 
-        span: 8 
+      {
+        name: 'birth_date',
+        label: 'Fecha de Nacimiento',
+        type: 'date',
+        span: 8,
       },
       {
         name: 'sex',
@@ -76,13 +76,13 @@ const fields = [
           { value: 'F', label: 'Femenino' },
         ],
         span: 8,
-        required: true
+        required: true,
       },
-      { 
-        name: 'occupation', 
-        label: 'Ocupación', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'occupation',
+        label: 'Ocupación',
+        type: 'text',
+        span: 8,
       },
     ],
   },
@@ -97,31 +97,37 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese su número telefónico' 
+          {
+            required: true,
+            message: 'Por favor ingrese su número telefónico',
           },
           () => ({
             validator(_, value) {
               if (!value) {
-                return Promise.reject(new Error('Por favor ingrese su teléfono'));
+                return Promise.reject(
+                  new Error('Por favor ingrese su teléfono'),
+                );
               }
               if (value.length < 9) {
-                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener 9 dígitos'),
+                );
               }
               if (value.length > 9) {
-                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener exactamente 9 dígitos'),
+                );
               }
               return Promise.resolve();
             },
           }),
-        ]
+        ],
       },
-      { 
-        name: 'email', 
-        label: 'Correo Electrónico', 
-        type: 'email', 
-        span: 16 
+      {
+        name: 'email',
+        label: 'Correo Electrónico',
+        type: 'email',
+        span: 16,
       },
     ],
   },
@@ -136,20 +142,24 @@ const fields = [
     label: 'Dirección de Domicilio',
     type: 'text',
     span: 12,
-    required: true
+    required: true,
   },
 ];
 
-const NewPatient = () => {
+const NewPatient = ({ onSubmit, onCancel }) => {
   const { submitNewPatient } = usePatients();
 
   const handleSubmit = async (formData) => {
     try {
       // Validación básica de campos requeridos
-      if (!formData.document_number || !formData.name || !formData.primary_phone) {
+      if (
+        !formData.document_number ||
+        !formData.name ||
+        !formData.primary_phone
+      ) {
         notification.error({
           message: 'Error',
-          description: 'Documento, nombre y teléfono son campos obligatorios'
+          description: 'Documento, nombre y teléfono son campos obligatorios',
         });
         return;
       }
@@ -164,53 +174,56 @@ const NewPatient = () => {
         ...(formData.ubicacion && {
           region_id: formData.ubicacion.region_id,
           province_id: formData.ubicacion.province_id,
-          district_id: formData.ubicacion.district_id
-        })
+          district_id: formData.ubicacion.district_id,
+        }),
       };
 
       console.log('Datos a enviar:', apiData); // Para depuración
 
       const result = await submitNewPatient(apiData);
-      
+
       notification.success({
         message: 'Éxito',
-        description: 'Paciente creado correctamente'
+        description: 'Paciente creado correctamente',
       });
-      
+
+      onCancel();
+
       return result;
     } catch (error) {
       console.error('Error completo:', error);
-      
+
       // Mostrar errores de validación del API si existen
       if (error.response?.data?.errors) {
         const errorMessages = Object.entries(error.response.data.errors)
           .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
           .join('\n');
-        
+
         notification.error({
           message: 'Error de validación',
           description: errorMessages,
-          duration: 0 // Permite que el mensaje permanezca hasta que el usuario lo cierre
+          duration: 0, // Permite que el mensaje permanezca hasta que el usuario lo cierre
         });
       } else {
         notification.error({
           message: 'Error',
-          description: error.message || 'Error al crear el paciente'
+          description: error.message || 'Error al crear el paciente',
         });
       }
-      
+
       throw error;
     }
   };
 
   return (
-    <FormGenerator 
-      fields={fields} 
-      mode="create" 
+    <FormGenerator
+      fields={fields}
+      onCancel={onCancel}
+      mode="create"
       onSubmit={handleSubmit}
       initialValues={{
         document_type_id: 1, // Valor por defecto
-        country_id: 1 // Valor por defecto
+        country_id: 1, // Valor por defecto
       }}
     />
   );

@@ -18,8 +18,9 @@ const FormComponent = ({
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
-  onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
-  onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
+  onCancel = () => {},
+  onOpenCreateModal = () => {},
+  onOpenSelectModal = () => {},
   form: externalForm,
 }) => {
   const [internalForm] = useForm();
@@ -73,7 +74,6 @@ const FormComponent = ({
             onPaymentOptionChange={onPaymentOptionChange}
             onShowHourFieldChange={onShowHourFieldChange}
             onPaymentRequiredChange={onPaymentRequiredChange}
-            // Usamos las nuevas props para abrir modales
             onOpenCreateModal={onOpenCreateModal}
             onOpenSelectModal={onOpenSelectModal}
           />
@@ -152,7 +152,11 @@ const FormComponent = ({
 
           <Form.Item className={styles.buttonGroup}>
             <div className={styles.buttonWrapper}>
-              <Button htmlType="button" className={styles.buttonCancel}>
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                className={styles.buttonCancel}
+              >
                 Cancelar
               </Button>
               <Button
