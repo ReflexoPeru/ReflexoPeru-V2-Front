@@ -55,13 +55,22 @@ export const useSendVerifyCode = () => {
       setError(null);
       try {
         const response = await verifyCode(code);
+
+        if (response.valid === false) {
+          const err = new Error(
+            response.message || 'El código ingresado no coincide.',
+          );
+          err.response = { data: { message: response.message } };
+          throw err;
+        }
+
         showToast('codigoVerificado');
         return response;
       } catch (err) {
         setError(err);
         showToast(
           'codigoIncorrecto',
-          formatToastMessage(err.response?.data?.message),
+          formatToastMessage(err.response?.data?.message || err.message),
         );
         throw err;
       } finally {

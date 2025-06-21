@@ -152,13 +152,13 @@ const Profile = () => {
     setVerifyLoading(true);
     try {
       await verify(values.code);
-      await updateEmail(newEmail);
+      await updateEmail(newEmail, values.code);
       setCorreo(newEmail);
       setShowCodeModal(false);
-      message.success('¡Correo actualizado exitosamente!');
     } catch (error) {
-      message.error(
-        error.response?.data?.message || 'Error al actualizar el correo',
+      console.error(
+        'Error en el flujo de verificación y actualización:',
+        error,
       );
     } finally {
       setVerifyLoading(false);

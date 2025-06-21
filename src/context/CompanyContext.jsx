@@ -9,50 +9,60 @@ import {
   getSystemInfo,
   getCompanyLogo,
 } from '../features/configuration/cSystem/services/systemServices';
-import { persistLocalStorage } from '../utils/localStorageUtility';
+import {
+  persistLocalStorage,
+  getLocalStorage,
+} from '../utils/localStorageUtility';
 
 const CompanyContext = createContext();
 
 export const CompanyProvider = ({ children }) => {
   const [companyInfo, setCompanyInfo] = useState(null);
   const [logoUrl, setLogoUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchCompanyData = useCallback(async () => {
-    setLoading(true);
+  const refetchCompanyInfo = useCallback(async () => {
     try {
       const data = await getSystemInfo();
       setCompanyInfo(data?.data);
       if (data?.data?.company_name) {
         persistLocalStorage('company_name', data.data.company_name);
       }
-      try {
-        const logoBlob = await getCompanyLogo();
-        const url = URL.createObjectURL(logoBlob);
-        setLogoUrl(url);
-      } catch (logoError) {
-        setLogoUrl(null);
-      }
     } catch (error) {
       setCompanyInfo(null);
-    } finally {
-      setLoading(false);
+    }
+  }, []);
+
+  const refetchCompanyLogo = useCallback(async () => {
+    try {
+      const logoBlob = await getCompanyLogo();
+      const url = URL.createObjectURL(logoBlob);
+      setLogoUrl(url);
+    } catch (logoError) {
+      setLogoUrl(null);
     }
   }, []);
 
   useEffect(() => {
-    fetchCompanyData();
-    // Limpieza de URL de logo
+    const token = getLocalStorage('token');
+    if (token) {
+      setLoading(true);
+      Promise.all([refetchCompanyInfo(), refetchCompanyLogo()]).finally(() => {
+        setLoading(false);
+      });
+    }
+
     return () => {
       if (logoUrl) URL.revokeObjectURL(logoUrl);
     };
-  }, [fetchCompanyData]);
+  }, []);
 
   const value = {
     companyInfo,
     logoUrl,
     loading,
-    refetchCompanyData: fetchCompanyData,
+    refetchCompanyInfo,
+    refetchCompanyLogo,
   };
 
   return (

@@ -9,47 +9,56 @@ import {
   getProfile,
   getUserPhoto,
 } from '../features/configuration/cProfile/service/profileService';
-import { persistLocalStorage } from '../utils/localStorageUtility';
+import {
+  persistLocalStorage,
+  getLocalStorage,
+} from '../utils/localStorageUtility';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const fetchUserData = useCallback(async () => {
-    setLoading(true);
+  const refetchProfile = useCallback(async () => {
     try {
       const profileData = await getProfile();
       setProfile(profileData);
       persistLocalStorage('user_full_name', profileData?.full_name);
-
-      // Usamos una promesa separada para la foto para no bloquear el perfil si falla
-      try {
-        const photoDataUrl = await getUserPhoto();
-        setPhotoUrl(photoDataUrl);
-      } catch (photoError) {
-        console.error('Error fetching user photo for context', photoError);
-        setPhotoUrl(null); // O una imagen por defecto
-      }
+      persistLocalStorage('user_name', profileData?.name);
     } catch (error) {
-      console.error('Error fetching user data for context', error);
-    } finally {
-      setLoading(false);
+      console.error('Error fetching user profile for context', error);
+    }
+  }, []);
+
+  const refetchPhoto = useCallback(async () => {
+    try {
+      const photoDataUrl = await getUserPhoto();
+      setPhotoUrl(photoDataUrl);
+    } catch (photoError) {
+      console.error('Error fetching user photo for context', photoError);
+      setPhotoUrl(null);
     }
   }, []);
 
   useEffect(() => {
-    fetchUserData();
-  }, [fetchUserData]);
+    const token = getLocalStorage('token');
+    if (token) {
+      setLoading(true);
+      Promise.all([refetchProfile(), refetchPhoto()]).finally(() => {
+        setLoading(false);
+      });
+    }
+  }, []);
 
-  // El valor del contexto incluye los datos y la función para refrescar
   const value = {
     profile,
+    userName: profile?.name,
     photoUrl,
     loading,
-    refetchUserData: fetchUserData,
+    refetchProfile,
+    refetchPhoto,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

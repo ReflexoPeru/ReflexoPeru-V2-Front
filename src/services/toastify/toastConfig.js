@@ -22,7 +22,7 @@ export const defaultConfig = {
     duration: 5000,
   },
   codigoVerificado: {
-    type: 'success',
+    type: 'info',
     icon: 'fa-solid fa-circle-check',
     title: 'Codigo Verificado',
     message: 'El código ha sido verificado',

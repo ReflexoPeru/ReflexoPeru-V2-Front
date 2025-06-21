@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useToast } from '../../../services/toastify/ToastContext';
+import { formatToastMessage } from '../../../utils/messageFormatter';
 import {
   getAppointmentsforTherapist,
   getPatientsByTherapist,
@@ -10,6 +12,7 @@ export const useDailyTherapistReport = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchReport = async (date) => {
     setLoading(true);
@@ -19,8 +22,21 @@ export const useDailyTherapistReport = () => {
       const formattedDate = date.format('YYYY-MM-DD');
       const res = await getAppointmentsforTherapist(formattedDate);
       setData(res);
+
+      if (Array.isArray(res) && res.length === 0) {
+        showToast('error', 'No se encontraron datos para generar el reporte.');
+      } else {
+        showToast('reporteGenerado');
+      }
     } catch (err) {
       setError(err);
+      showToast(
+        'error',
+        formatToastMessage(
+          err.response?.data?.message,
+          'Error al generar el reporte.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -33,6 +49,7 @@ export const usePatientsByTherapistReport = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchReport = async (date) => {
     setLoading(true);
@@ -41,8 +58,21 @@ export const usePatientsByTherapistReport = () => {
       const formattedDate = date.format('YYYY-MM-DD');
       const res = await getPatientsByTherapist(formattedDate);
       setData(res);
+
+      if (Array.isArray(res) && res.length === 0) {
+        showToast('error', 'No se encontraron datos para generar el reporte.');
+      } else {
+        showToast('reporteGenerado');
+      }
     } catch (err) {
       setError(err);
+      showToast(
+        'error',
+        formatToastMessage(
+          err.response?.data?.message,
+          'Error al generar el reporte.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -55,6 +85,7 @@ export const useDailyCashReport = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchReport = async (date) => {
     setLoading(true);
@@ -63,8 +94,21 @@ export const useDailyCashReport = () => {
       const formattedDate = date.format('YYYY-MM-DD');
       const res = await getDailyCash(formattedDate);
       setData(res);
+
+      if (Array.isArray(res) && res.length === 0) {
+        showToast('error', 'No se encontraron datos para generar el reporte.');
+      } else {
+        showToast('reporteGenerado');
+      }
     } catch (err) {
       setError(err);
+      showToast(
+        'error',
+        formatToastMessage(
+          err.response?.data?.message,
+          'Error al generar el reporte.',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -77,6 +121,7 @@ export const useAppointmentsBetweenDatesReport = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchReport = async (startDate, endDate) => {
     setLoading(true);
@@ -84,8 +129,21 @@ export const useAppointmentsBetweenDatesReport = () => {
     try {
       const res = await getAppointmentsBetweenDates(startDate, endDate);
       setData(res);
+
+      if (Array.isArray(res) && res.length === 0) {
+        showToast('error', 'No se encontraron datos para generar el reporte.');
+      } else {
+        showToast('reporteGenerado');
+      }
     } catch (err) {
       setError(err);
+      showToast(
+        'error',
+        formatToastMessage(
+          err.response?.data?.message,
+          'Error al generar el reporte.',
+        ),
+      );
     } finally {
       setLoading(false);
     }

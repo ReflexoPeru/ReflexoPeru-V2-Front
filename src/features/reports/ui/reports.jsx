@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ConfigProvider, DatePicker, Button, theme } from 'antd';
+import { ConfigProvider, DatePicker, Button, theme, Card, Select } from 'antd';
 import ReportSelector from './ReportSelector';
 import ReportPreview from './ReportPreview';
 import styles from './reports.module.css';
@@ -16,9 +16,46 @@ import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/Patie
 import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
 import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
 import ExcelJS from 'exceljs';
+import {
+  FilePlus,
+  ChartPieSlice,
+  Users,
+  Wallet,
+  CalendarBlank,
+} from '@phosphor-icons/react';
+
+const reportOptions = [
+  {
+    key: 'diariaTerapeuta',
+    title: 'Reporte Diario de Terapeutas',
+    description:
+      'Resumen de citas y actividades por cada terapeuta en un día específico.',
+    icon: <Users size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'pacientesTerapeuta',
+    title: 'Pacientes por Terapeuta',
+    description:
+      'Lista de pacientes atendidos por cada terapeuta en una fecha determinada.',
+    icon: <ChartPieSlice size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'reporteCaja',
+    title: 'Reporte de Caja Diario',
+    description: 'Detalle de los ingresos y transacciones financieras del día.',
+    icon: <Wallet size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'rangoCitas',
+    title: 'Citas por Rango de Fechas',
+    description:
+      'Exporta un listado de todas las citas programadas entre dos fechas.',
+    icon: <CalendarBlank size={32} color="#4CAF50" />,
+  },
+];
 
 const Reporte = () => {
-  const [reportType, setReportType] = useState('diariaTerapeuta');
+  const [reportType, setReportType] = useState(null);
   const [date, setDate] = useState(dayjs());
   const [range, setRange] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -83,31 +120,9 @@ const Reporte = () => {
 
   const handleCancel = () => {
     setShowPreview(false);
-    setReportType('diariaTerapeuta');
+    setReportType(null);
     setDate(dayjs());
     setRange(null);
-  };
-
-  // Renderiza los inputs de fecha según el tipo de reporte
-  const renderDateInputs = () => {
-    if (reportType === 'rangoCitas') {
-      return (
-        <DatePicker.RangePicker
-          style={{ width: '100%', marginBottom: 16 }}
-          format="DD-MM-YYYY"
-          onChange={(dates) => setRange(dates)}
-        />
-      );
-    } else {
-      return (
-        <DatePicker
-          style={{ width: '100%', marginBottom: 16 }}
-          format="DD-MM-YYYY"
-          defaultValue={dayjs()}
-          onChange={(date) => setDate(date)}
-        />
-      );
-    }
   };
 
   // Nueva función para exportar a Excel usando exceljs
@@ -312,49 +327,76 @@ const Reporte = () => {
     },
   };
 
-  if (showPreview) {
-    if (showPreview === 'rangoCitas') {
-      return (
-        <ReportPreview
-          showPreview={showPreview}
-          loading={loading}
-          generating={generating}
-          error={error}
-          content={content}
-          downloadBtn={downloadBtn}
-          handleCancel={handleCancel}
-        />
-      );
-    } else {
-      return (
-        <ConfigProvider theme={themeConfig}>
-          <ReportPreview
-            showPreview={showPreview}
-            loading={loading}
-            generating={generating}
-            error={error}
-            content={content}
-            downloadBtn={downloadBtn}
-            handleCancel={handleCancel}
-          />
-        </ConfigProvider>
-      );
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Previene que la página se recargue
+    if (reportType && !generating) {
+      // Doble chequeo para seguridad
+      handleGenerate();
     }
+  };
+
+  if (showPreview) {
+    return (
+      <ReportPreview
+        showPreview={showPreview}
+        loading={loading}
+        generating={generating}
+        error={error}
+        content={content}
+        downloadBtn={downloadBtn}
+        handleCancel={handleCancel}
+      />
+    );
   }
 
   return (
     <ConfigProvider theme={themeConfig}>
-      <ReportSelector
-        reportType={reportType}
-        setReportType={setReportType}
-        date={date}
-        setDate={setDate}
-        range={range}
-        setRange={setRange}
-        generating={generating}
-        handleGenerate={handleGenerate}
-        renderDateInputs={renderDateInputs}
-      />
+      <div className={styles.mainContainer}>
+        <Card className={styles.card}>
+          <h2 className={styles.title}>Generador de Reportes</h2>
+
+          <form onSubmit={handleSubmit}>
+            <ReportSelector
+              options={reportOptions}
+              selectedReport={reportType}
+              onSelectReport={setReportType}
+            />
+
+            {reportType && (
+              <div className={styles.controlsWrapper}>
+                <div className={styles.datePickerContainer}>
+                  {reportType === 'rangoCitas' ? (
+                    <DatePicker.RangePicker
+                      style={{ width: '100%' }}
+                      format="DD-MM-YYYY"
+                      onChange={(dates) => setRange(dates)}
+                      value={range}
+                    />
+                  ) : (
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      format="DD-MM-YYYY"
+                      value={date}
+                      onChange={(d) => setDate(d)}
+                    />
+                  )}
+                </div>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<FilePlus size={20} weight="bold" />}
+                  onClick={handleGenerate}
+                  loading={generating}
+                  disabled={!reportType || generating}
+                  className={styles.generateBtn}
+                >
+                  Generar
+                </Button>
+              </div>
+            )}
+          </form>
+        </Card>
+      </div>
     </ConfigProvider>
   );
 };

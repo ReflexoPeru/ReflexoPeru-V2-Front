@@ -14,6 +14,8 @@ import {
   removeLocalStorage,
 } from '../../../utils/localStorageUtility';
 import { useAuth as useAuthentication } from '../../../routes/AuthContext';
+import { useUser } from '../../../context/UserContext';
+import { useCompany } from '../../../context/CompanyContext';
 import { get } from '../../../services/api/Axios/MethodsGeneral';
 
 export const useAuth = () => {
@@ -21,47 +23,53 @@ export const useAuth = () => {
   const { setIsAuthenticated, setUserRole } = useAuthentication();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { refetchPhoto, refetchProfile } = useUser();
+  const { refetchCompanyLogo, refetchCompanyInfo } = useCompany();
 
-  const fetchUserData = async () => {
+  const fetchUserRole = async () => {
     try {
       const res = await get('get-role');
       if (res.data) {
-        setIsAuthenticated(true);
         setUserRole(res.data.role_id);
+        persistLocalStorage('user_role', res.data.role_id);
         persistLocalStorage('name', res.data.name);
         persistLocalStorage('user_id', res.data.user_id);
         return true;
       }
+      return false;
     } catch (err) {
-      showToast('intentoFallido', err?.response?.data?.message);
+      showToast(
+        'intentoFallido',
+        'No se pudo obtener la información del usuario.',
+      );
       return false;
     }
   };
 
   const login = async (credentials) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const data = await LoginService(credentials);
-      if (data.status == '200') {
-        if (data.data.first_login) {
-          persistLocalStorage('user_id', data.data.user_id);
-          showToast('inicioSesionExitoso');
-          navigate('/primerInicio');
-        } else {
-          showToast('inicioSesionExitoso');
-          persistLocalStorage('token', data.data.token);
-          removeLocalStorage('user_id');
+      const loginData = await LoginService(credentials);
 
-          // Obtener los datos del usuario después del login
-          const userDataFetched = await fetchUserData();
-          if (userDataFetched) {
-            navigate('/Inicio');
-          } else {
-            removeLocalStorage('token');
-            setIsAuthenticated(false);
-            setUserRole(null);
-          }
+      if (loginData.status === 200 && loginData.data) {
+        persistLocalStorage('token', loginData.data.token);
+        setIsAuthenticated(true);
+
+        const roleFetched = await fetchUserRole();
+
+        if (roleFetched) {
+          navigate('/Inicio');
+          showToast('inicioSesionExitoso');
+
+          (async () => {
+            await refetchPhoto();
+            await refetchCompanyLogo();
+            await refetchProfile();
+            await refetchCompanyInfo();
+          })();
+        } else {
+          removeLocalStorage('token');
+          setIsAuthenticated(false);
         }
       }
     } catch (error) {
@@ -69,6 +77,23 @@ export const useAuth = () => {
       showToast('intentoFallido', backendMsg);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const logOut = async () => {
+    try {
+      await LogOutService();
+      showToast('cierreSesion');
+    } catch (error) {
+      console.error('Logout failed', error);
+    } finally {
+      removeLocalStorage('token');
+      removeLocalStorage('user_id');
+      removeLocalStorage('name');
+      removeLocalStorage('user_role');
+      setIsAuthenticated(false);
+      setUserRole(null);
+      navigate('/');
     }
   };
 
@@ -104,26 +129,6 @@ export const useAuth = () => {
     }
   };
 
-  const logOut = async () => {
-    try {
-      const response = await LogOutService();
-      if (response.status == '200') {
-        showToast('cierreSesion');
-        removeLocalStorage('token');
-        removeLocalStorage('user_id');
-        removeLocalStorage('name');
-        setIsAuthenticated(false);
-        setUserRole(null);
-        navigate('/');
-      } else {
-        showToast('intentoFallido');
-      }
-    } catch (error) {
-      const backendMsg = error?.response?.data?.message || null;
-      showToast('intentoFallido', backendMsg);
-    }
-  };
-
   const sendVerifyCode = async () => {
     try {
       const response = await sendVerifyCodeService(getLocalStorage('user_id'));
@@ -141,10 +146,9 @@ export const useAuth = () => {
   return {
     login,
     loading,
-    error,
+    logOut,
     validateCode,
     changePassword,
-    logOut,
     sendVerifyCode,
   };
 };
