@@ -7,7 +7,13 @@ import { useUpdateCompanyInfo, useUploadCompanyLogo } from './hook/systemHook';
 import { useCompany } from '../../../context/CompanyContext';
 
 const System = () => {
-  const { companyInfo, logoUrl, loading, refetchCompanyData } = useCompany();
+  const {
+    companyInfo,
+    logoUrl,
+    loading,
+    refetchCompanyInfo,
+    refetchCompanyLogo,
+  } = useCompany();
   const { updateCompany, updating } = useUpdateCompanyInfo();
   const { uploadLogo, uploadingLogo, uploadError, uploadSuccess } =
     useUploadCompanyLogo();
@@ -44,7 +50,7 @@ const System = () => {
     if (!companyName.trim()) return;
     try {
       await updateCompany({ company_name: companyName });
-      await refetchCompanyData(); // 🔁 Refresca los datos luego de guardar
+      await refetchCompanyInfo();
       message.success('Nombre de empresa actualizado');
     } catch (err) {
       message.error('Error al actualizar el nombre');
@@ -66,7 +72,7 @@ const System = () => {
 
       await uploadLogo(file);
       try {
-        await refetchCompanyData(); // Refresca el contexto global
+        await refetchCompanyLogo();
       } catch (err) {
         console.error('Error al refrescar datos de empresa', err);
       }

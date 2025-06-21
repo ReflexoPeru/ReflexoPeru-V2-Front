@@ -33,7 +33,8 @@ const Profile = () => {
   const {
     profile,
     photoUrl,
-    refetchUserData,
+    refetchProfile,
+    refetchPhoto,
     loading: profileLoading,
   } = useUser();
 
@@ -110,7 +111,7 @@ const Profile = () => {
 
     try {
       await uploadAvatar(newFile);
-      refetchUserData();
+      refetchPhoto();
     } catch (err) {
       console.error('Error capturado en el componente:', err);
     }
@@ -247,12 +248,9 @@ const Profile = () => {
 
       await updateProfile(updateData);
       message.success('Cambios guardados exitosamente');
-      refetchUserData();
+      refetchProfile();
     } catch (error) {
-      message.error(
-        'Error al actualizar el perfil: ' +
-          (error.response?.data?.message || error.message),
-      );
+      message.error('Error al guardar los cambios');
     }
   };
 
