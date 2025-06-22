@@ -6,7 +6,6 @@ import {
   Space,
   Form,
   Input,
-  Switch,
   message,
   Select,
   Row,
@@ -16,8 +15,19 @@ import {
 } from 'antd';
 import styles from './Users.module.css';
 import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
+import SelectTypeOfDocument from '../../../components/Select/SelctTypeOfDocument';
 
 const { Option } = Select;
+
+// Función para capitalizar la primera letra de cada palabra
+const capitalizeFirstLetter = (str) => {
+  if (!str) return str;
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const renderStatus = (status) => {
   return status === 'Habilitado' ? (
@@ -27,17 +37,103 @@ const renderStatus = (status) => {
   );
 };
 
+// Componente SelectRole con el mismo estilo que SelectTypeOfDocument
+const SelectRole = ({ value, onChange, ...rest }) => {
+  const [internalValue, setInternalValue] = useState(value);
+
+  const roles = [
+    { id: 1, name: 'Admin' },
+    { id: 2, name: 'Usuario' },
+  ];
+
+  const options = roles.map((role) => ({
+    label: <span style={{ color: '#fff' }}>{role.name}</span>,
+    value: role.id,
+  }));
+
+  // Sincronizar value cuando cambia el value externo
+  useEffect(() => {
+    if (value !== undefined && value !== null) {
+      setInternalValue(value);
+    } else {
+      setInternalValue(undefined);
+    }
+  }, [value]);
+
+  const handleChange = (val) => {
+    setInternalValue(val);
+    if (onChange) onChange(val);
+  };
+
+  return (
+    <Select
+      {...rest}
+      value={internalValue}
+      onChange={handleChange}
+      showSearch
+      filterOption={(input, option) =>
+        (option?.label?.props?.children ?? '')
+          .toLowerCase()
+          .includes(input.toLowerCase())
+      }
+      placeholder="Seleccionar rol"
+      options={options}
+      style={{
+        width: '100%',
+      }}
+    />
+  );
+};
+
+// Componente SelectSex con el mismo estilo
+const SelectSex = ({ value, onChange, ...rest }) => {
+  const [internalValue, setInternalValue] = useState(value);
+
+  const options = [
+    { label: <span style={{ color: '#fff' }}>Masculino</span>, value: 'M' },
+    { label: <span style={{ color: '#fff' }}>Femenino</span>, value: 'F' },
+  ];
+
+  // Sincronizar value cuando cambia el value externo
+  useEffect(() => {
+    if (value !== undefined && value !== null) {
+      setInternalValue(value);
+    } else {
+      setInternalValue(undefined);
+    }
+  }, [value]);
+
+  const handleChange = (val) => {
+    setInternalValue(val);
+    if (onChange) onChange(val);
+  };
+
+  return (
+    <Select
+      {...rest}
+      value={internalValue}
+      onChange={handleChange}
+      showSearch
+      filterOption={(input, option) =>
+        (option?.label?.props?.children ?? '')
+          .toLowerCase()
+          .includes(input.toLowerCase())
+      }
+      placeholder="Seleccionar sexo"
+      options={options}
+      style={{
+        width: '100%',
+      }}
+    />
+  );
+};
+
 const Users = () => {
   const { users, loading, addUser, editUser, removeUser } = useUsers();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
   const [action, setAction] = useState(''); // 'create' | 'edit'
-
-  const documentTypes = [
-    { id: 1, name: 'DNI' },
-    { id: 2, name: 'Carnet de Extranjería' },
-  ];
 
   const roles = [
     { id: 1, name: 'Admin' },
@@ -57,7 +153,8 @@ const Users = () => {
         user_name: currentRecord.user_name,
         sex: currentRecord.sex,
         account_statement: currentRecord.account_statement === 'Habilitado',
-        document_type_id: currentRecord.document_type?.id,
+        document_type_id:
+          currentRecord.document_type?.id || currentRecord.document_type_id,
         role_id: currentRecord.role?.id,
       };
     }
@@ -100,7 +197,7 @@ const Users = () => {
           user_name: record.user_name,
           sex: record.sex,
           account_statement: record.account_statement === 'Habilitado',
-          document_type_id: record.document_type?.id,
+          document_type_id: record.document_type?.id || record.document_type_id,
           role_id: record.role?.id,
         };
 
@@ -166,10 +263,14 @@ const Users = () => {
   const handleSubmit = async (values) => {
     try {
       const payload = {
-        document_number: values.document_number?.toUpperCase().trim(),
-        name: values.name?.toUpperCase().trim(),
-        paternal_lastname: values.paternal_lastname?.toUpperCase().trim(),
-        maternal_lastname: values.maternal_lastname?.toUpperCase().trim(),
+        document_number: values.document_number?.trim(),
+        name: capitalizeFirstLetter(values.name?.trim()),
+        paternal_lastname: capitalizeFirstLetter(
+          values.paternal_lastname?.trim(),
+        ),
+        maternal_lastname: capitalizeFirstLetter(
+          values.maternal_lastname?.trim(),
+        ),
         email: values.email?.toLowerCase().trim(),
         phone: values.phone?.trim(),
         user_name: values.user_name?.toLowerCase().trim(),
@@ -277,6 +378,13 @@ const Users = () => {
           Select: {
             controlHeight: 40,
             borderRadius: 6,
+            colorPrimary: '#FFFFFFFF',
+            optionSelectedBg: '#333333',
+            colorText: '#fff',
+            colorBgElevated: '#444444',
+            colorTextPlaceholder: '#aaa',
+            controlItemBgHover: '#1a1a1a',
+            selectorBg: '#444444',
           },
           Button: {
             controlHeight: 40,
@@ -299,6 +407,7 @@ const Users = () => {
         token: {
           colorPrimary: '#4CAF50',
           colorText: '#ffffff',
+          colorTextBase: '#fff',
         },
       }}
     >
@@ -339,16 +448,7 @@ const Users = () => {
                     { required: true, message: 'Este campo es requerido' },
                   ]}
                 >
-                  <Select
-                    className={styles.uniformInput}
-                    placeholder="Seleccionar tipo"
-                  >
-                    {documentTypes.map((type) => (
-                      <Option key={type.id} value={type.id}>
-                        {type.name}
-                      </Option>
-                    ))}
-                  </Select>
+                  <SelectTypeOfDocument className={styles.uniformInput} />
                 </Form.Item>
               </Col>
               <Col span={12}>
@@ -359,13 +459,7 @@ const Users = () => {
                     { required: true, message: 'Este campo es requerido' },
                   ]}
                 >
-                  <Input
-                    className={styles.uniformInput}
-                    onChange={(e) => {
-                      const value = e.target.value.toUpperCase();
-                      form.setFieldValue('document_number', value);
-                    }}
-                  />
+                  <Input className={styles.uniformInput} />
                 </Form.Item>
               </Col>
             </Row>
@@ -383,7 +477,7 @@ const Users = () => {
                   <Input
                     className={styles.uniformInput}
                     onChange={(e) => {
-                      const value = e.target.value.toUpperCase();
+                      const value = capitalizeFirstLetter(e.target.value);
                       form.setFieldValue('name', value);
                     }}
                   />
@@ -399,7 +493,7 @@ const Users = () => {
                   <Input
                     className={styles.uniformInput}
                     onChange={(e) => {
-                      const value = e.target.value.toUpperCase();
+                      const value = capitalizeFirstLetter(e.target.value);
                       form.setFieldValue('paternal_lastname', value);
                     }}
                   />
@@ -415,7 +509,7 @@ const Users = () => {
                   <Input
                     className={styles.uniformInput}
                     onChange={(e) => {
-                      const value = e.target.value.toUpperCase();
+                      const value = capitalizeFirstLetter(e.target.value);
                       form.setFieldValue('maternal_lastname', value);
                     }}
                   />
@@ -451,13 +545,7 @@ const Users = () => {
                   <Input className={styles.uniformInput} />
                 </Form.Item>
 
-                <Form.Item
-                  name="user_name"
-                  label="Nombre de usuario"
-                  rules={[
-                    { required: true, message: 'Este campo es requerido' },
-                  ]}
-                >
+                <Form.Item name="user_name" label="Nombre de usuario">
                   <Input
                     className={styles.uniformInput}
                     onChange={(e) => {
@@ -477,48 +565,34 @@ const Users = () => {
                   <Select
                     className={styles.uniformInput}
                     placeholder="Seleccionar rol"
-                  >
-                    {roles.map((role) => (
-                      <Option key={role.id} value={role.id}>
-                        {role.name}
-                      </Option>
-                    ))}
-                  </Select>
+                    options={roles.map((role) => ({
+                      label: <span style={{ color: '#fff' }}>{role.name}</span>,
+                      value: role.id,
+                    }))}
+                  />
                 </Form.Item>
 
-                <Form.Item
-                  name="sex"
-                  label="Sexo"
-                  rules={[
-                    { required: true, message: 'Este campo es requerido' },
-                  ]}
-                >
+                <Form.Item name="sex" label="Sexo">
                   <Select
                     className={styles.uniformInput}
                     placeholder="Seleccionar sexo"
-                  >
-                    <Option value="M">Masculino</Option>
-                    <Option value="F">Femenino</Option>
-                  </Select>
+                    options={[
+                      {
+                        label: <span style={{ color: '#fff' }}>Masculino</span>,
+                        value: 'M',
+                      },
+                      {
+                        label: <span style={{ color: '#fff' }}>Femenino</span>,
+                        value: 'F',
+                      },
+                    ]}
+                  />
                 </Form.Item>
               </Col>
             </Row>
 
             <Row>
-              <Col span={24}>
-                <Form.Item
-                  name="account_statement"
-                  label="Estado"
-                  valuePropName="checked"
-                  className={styles.switchContainer}
-                >
-                  <Switch
-                    checkedChildren="Habilitado"
-                    unCheckedChildren="Deshabilitado"
-                    className={styles.statusSwitch}
-                  />
-                </Form.Item>
-              </Col>
+              <Col span={24}></Col>
             </Row>
           </div>
         </BaseModal>

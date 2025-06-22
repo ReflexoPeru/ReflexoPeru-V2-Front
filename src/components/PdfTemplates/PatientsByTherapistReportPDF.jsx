@@ -208,4 +208,4 @@ const PatientsByTherapistReportPDF = ({ data, date }) => {
   );
 };
 
-export default PatientsByTherapistReportPDF;
+export default React.memo(PatientsByTherapistReportPDF);

@@ -223,4 +223,4 @@ const DailyTherapistReportPDF = ({ data, date }) => {
   );
 };
 
-export default DailyTherapistReportPDF;
+export default React.memo(DailyTherapistReportPDF);

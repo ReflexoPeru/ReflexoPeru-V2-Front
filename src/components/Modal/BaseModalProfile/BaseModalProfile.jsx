@@ -30,6 +30,35 @@ const ModalBase = ({
     }
   }, [isOpen, form]);
 
+  // Manejar eventos de teclado
+  React.useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!isOpen) return;
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (type === 'code') {
+          if (otp.length === 6) {
+            handleSubmit({ code: otp });
+          }
+        } else {
+          form.submit();
+        }
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, type, otp, form]);
+
   const handleClose = () => {
     form.resetFields();
     setOtp('');

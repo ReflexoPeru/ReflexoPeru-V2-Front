@@ -7,7 +7,6 @@ import {
   Space,
   Form,
   Input,
-  Switch,
   message,
   ConfigProvider,
   Popconfirm,
@@ -455,14 +454,6 @@ const Payments = () => {
               />
             </Form.Item>
           )}
-
-          <Form.Item name="status" label="Estado" valuePropName="checked">
-            <Switch
-              checkedChildren="Habilitado"
-              unCheckedChildren="Deshabilitado"
-              className={styles.statusSwitch}
-            />
-          </Form.Item>
         </BaseModal>
       </div>
     </ConfigProvider>

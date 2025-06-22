@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ConfigProvider, DatePicker, Button, theme, Card, Select } from 'antd';
 import ReportSelector from './ReportSelector';
 import ReportPreview from './ReportPreview';
@@ -90,7 +90,71 @@ const Reporte = () => {
     fetchReport: fetchRango,
   } = useAppointmentsBetweenDatesReport();
 
-  const safeDate = date || dayjs();
+  const safeDate = useMemo(() => date || dayjs(), [date]);
+
+  // Memoize PDF viewer styles to prevent re-renders
+  const pdfViewerStyle = useMemo(
+    () => ({
+      minHeight: 500,
+      maxHeight: 'calc(96vh - 180px)',
+      margin: '0 auto',
+      display: 'block',
+      borderRadius: 14,
+    }),
+    [],
+  );
+
+  // Memoize theme config to prevent re-renders
+  const themeConfig = useMemo(
+    () => ({
+      algorithm: theme.darkAlgorithm,
+      components: {
+        Button: {
+          colorPrimary: '#00AA55',
+          colorTextLightSolid: '#ffffff',
+          colorPrimaryHover: '#00cc6a',
+          colorPrimaryActive: '#ffffff',
+        },
+        Select: {
+          colorPrimary: '#00AA55',
+          colorBgContainer: '#1f1f1f',
+          colorText: '#ffffff',
+          colorBorder: '#ffffff',
+          controlOutline: '#00AA55',
+          colorPrimaryHover: '#00cc6a',
+          optionSelectedBg: '#00AA55',
+        },
+        DatePicker: {
+          colorTextPlaceholder: '#AAAAAA',
+          colorBgContainer: '#333333',
+          colorText: '#FFFFFF',
+          colorBorder: '#444444',
+          borderRadius: 4,
+          hoverBorderColor: '#555555',
+          activeBorderColor: '#00AA55',
+          colorIcon: '#FFFFFF',
+          colorIconHover: '#00AA55',
+          colorBgElevated: '#121212',
+          colorPrimary: '#00AA55',
+          colorTextDisabled: '#333333',
+          colorTextHeading: '#FFFFFF',
+          cellHoverBg: '#00AA55',
+          colorSplit: '#444444',
+        },
+        Modal: {
+          colorBgElevated: '#1f1f1f',
+          colorText: '#fff',
+          borderRadius: 12,
+        },
+        Message: {
+          colorBgElevated: '#1f1f1f',
+          colorText: '#fff',
+          borderRadius: 8,
+        },
+      },
+    }),
+    [],
+  );
 
   // Resetear paginación cuando cambian los datos de rango
   useEffect(() => {
@@ -170,15 +234,10 @@ const Reporte = () => {
       error = diariaError;
       content = diariaData && (
         <PDFViewer
+          key={`diaria-${safeDate.format('YYYY-MM-DD')}`}
           width="100%"
           height="95%"
-          style={{
-            minHeight: 500,
-            maxHeight: 'calc(96vh - 180px)',
-            margin: '0 auto',
-            display: 'block',
-            borderRadius: 14,
-          }}
+          style={pdfViewerStyle}
         >
           <DailyTherapistReportPDF data={diariaData} date={safeDate} />
         </PDFViewer>
@@ -189,15 +248,10 @@ const Reporte = () => {
       content =
         pacientesData && pacientesData.length > 0 ? (
           <PDFViewer
+            key={`pacientes-${safeDate.format('YYYY-MM-DD')}`}
             width="100%"
             height="95%"
-            style={{
-              minHeight: 500,
-              maxHeight: 'calc(96vh - 180px)',
-              margin: '0 auto',
-              display: 'block',
-              borderRadius: 14,
-            }}
+            style={pdfViewerStyle}
           >
             <PatientsByTherapistReportPDF
               data={pacientesData}
@@ -215,15 +269,10 @@ const Reporte = () => {
       content =
         cajaData && Object.keys(cajaData).length > 0 ? (
           <PDFViewer
+            key={`caja-${safeDate.format('YYYY-MM-DD')}`}
             width="100%"
             height="95%"
-            style={{
-              minHeight: 500,
-              maxHeight: 'calc(96vh - 180px)',
-              margin: '0 auto',
-              display: 'block',
-              borderRadius: 14,
-            }}
+            style={pdfViewerStyle}
           >
             <DailyCashReportPDF data={cajaData} date={safeDate} />
           </PDFViewer>
@@ -278,54 +327,6 @@ const Reporte = () => {
       }
     }
   }
-
-  const themeConfig = {
-    algorithm: theme.darkAlgorithm,
-    components: {
-      Button: {
-        colorPrimary: '#00AA55',
-        colorTextLightSolid: '#ffffff',
-        colorPrimaryHover: '#00cc6a',
-        colorPrimaryActive: '#ffffff',
-      },
-      Select: {
-        colorPrimary: '#00AA55',
-        colorBgContainer: '#1f1f1f',
-        colorText: '#ffffff',
-        colorBorder: '#ffffff',
-        controlOutline: '#00AA55',
-        colorPrimaryHover: '#00cc6a',
-        optionSelectedBg: '#00AA55',
-      },
-      DatePicker: {
-        colorTextPlaceholder: '#AAAAAA',
-        colorBgContainer: '#333333',
-        colorText: '#FFFFFF',
-        colorBorder: '#444444',
-        borderRadius: 4,
-        hoverBorderColor: '#555555',
-        activeBorderColor: '#00AA55',
-        colorIcon: '#FFFFFF',
-        colorIconHover: '#00AA55',
-        colorBgElevated: '#121212',
-        colorPrimary: '#00AA55',
-        colorTextDisabled: '#333333',
-        colorTextHeading: '#FFFFFF',
-        cellHoverBg: '#00AA55',
-        colorSplit: '#444444',
-      },
-      Modal: {
-        colorBgElevated: '#1f1f1f',
-        colorText: '#fff',
-        borderRadius: 12,
-      },
-      Message: {
-        colorBgElevated: '#1f1f1f',
-        colorText: '#fff',
-        borderRadius: 8,
-      },
-    },
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault(); // Previene que la página se recargue
