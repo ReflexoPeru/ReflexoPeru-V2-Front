@@ -52,24 +52,33 @@ export const useAuth = () => {
       const loginData = await LoginService(credentials);
 
       if (loginData.status === 200 && loginData.data) {
-        persistLocalStorage('token', loginData.data.token);
-        setIsAuthenticated(true);
-
-        const roleFetched = await fetchUserRole();
-
-        if (roleFetched) {
-          navigate('/Inicio');
+        // Verificar si es el primer inicio de sesión
+        if (loginData.data.first_login) {
+          // Es primer inicio - guardar user_id y redirigir a primer inicio
+          persistLocalStorage('user_id', loginData.data.user_id);
           showToast('inicioSesionExitoso');
-
-          (async () => {
-            await refetchPhoto();
-            await refetchCompanyLogo();
-            await refetchProfile();
-            await refetchCompanyInfo();
-          })();
+          navigate('/primerInicio');
         } else {
-          removeLocalStorage('token');
-          setIsAuthenticated(false);
+          // No es primer inicio - flujo normal
+          persistLocalStorage('token', loginData.data.token);
+          setIsAuthenticated(true);
+
+          const roleFetched = await fetchUserRole();
+
+          if (roleFetched) {
+            navigate('/Inicio');
+            showToast('inicioSesionExitoso');
+
+            (async () => {
+              await refetchPhoto();
+              await refetchCompanyLogo();
+              await refetchProfile();
+              await refetchCompanyInfo();
+            })();
+          } else {
+            removeLocalStorage('token');
+            setIsAuthenticated(false);
+          }
         }
       }
     } catch (error) {
@@ -119,7 +128,18 @@ export const useAuth = () => {
       const response = await changePasswordService(data);
       if (response.status == '200') {
         showToast('contraseñaCambiada');
-        navigate('/Inicio');
+        // Después de cambiar contraseña, obtener datos del usuario y redirigir
+        setIsAuthenticated(true);
+        const roleFetched = await fetchUserRole();
+        if (roleFetched) {
+          navigate('/Inicio');
+          (async () => {
+            await refetchPhoto();
+            await refetchCompanyLogo();
+            await refetchProfile();
+            await refetchCompanyInfo();
+          })();
+        }
       } else {
         showToast('intentoFallido');
       }
