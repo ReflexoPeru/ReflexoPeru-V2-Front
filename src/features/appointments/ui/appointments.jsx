@@ -65,9 +65,9 @@ export default function Appointments() {
     },
     {
       title: 'Metodo Pago',
-      dataIndex: 'payment_type_id',
-      key: 'payment_type_id',
-      width: '80px',
+      key: 'payment_type',
+      width: '100px',
+      render: (_, record) => record.payment_type?.name || 'Sin método',
     },
     {
       title: 'Acciones',

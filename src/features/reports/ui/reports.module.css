@@ -1,4 +1,3 @@
-
 /* Tarjeta principal de selección */
 .card {
   width: 100%;
@@ -205,4 +204,62 @@
   padding: 40px;
   color: #fff;
   text-align: center;
+}
+
+/* Estilos para el modal de edición */
+.editModal {
+  :global(.ant-modal-content) {
+    border-radius: 12px;
+    background-color: #1f1f1f;
+  }
+
+  :global(.ant-modal-header) {
+    border-bottom: 1px solid #333;
+    border-radius: 12px 12px 0 0;
+    background-color: #1f1f1f;
+  }
+
+  :global(.ant-modal-title) {
+    color: #fff;
+  }
+
+  :global(.ant-modal-body) {
+    color: #fff;
+    background-color: #1f1f1f;
+  }
+
+  :global(.ant-form-item-label > label) {
+    color: #fff;
+  }
+
+  :global(.ant-input-number) {
+    border-color: #444;
+    color: #fff;
+    background-color: #333;
+  }
+
+  :global(.ant-input-number:hover) {
+    border-color: #4CAF50;
+  }
+
+  :global(.ant-input-number:focus) {
+    border-color: #4CAF50;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+
+  :global(.ant-divider) {
+    border-color: #333;
+  }
+
+  :global(.ant-divider-inner-text) {
+    color: #fff;
+  }
+
+  :global(.ant-typography) {
+    color: #fff;
+  }
+
+  :global(.ant-typography h5) {
+    color: #4CAF50;
+  }
 }
