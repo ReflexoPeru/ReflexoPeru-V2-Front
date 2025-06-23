@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getStaff, searchStaff, getPatientHistoryById, getAppointmentsByPatientId, updatePatientHistoryById } from '../service/historyService';
+import { getStaff, searchStaff, getPatientHistoryById, getAppointmentsByPatientId, updatePatientHistoryById, updateAppointmentById } from '../service/historyService';
 import { message } from 'antd';
 
 //DATOS DEL PACIENTE -----------------------------
@@ -183,3 +183,23 @@ export const usePatientAppointments = (patientId) => {
         contextHolder
     };
 }
+
+// ACTUALIZAR DATOS DE LAS CITAS DEL PACIENTE -----------------------------
+export const useUpdateAppointment = () => {
+    const [loading, setLoading] = useState(false);
+
+    const updateAppointment = async (appointmentId, payload) => {
+        setLoading(true);
+        try {
+        const data = await updateAppointmentById(appointmentId, payload);
+        message.success('Cita actualizada correctamente.');
+        return data;
+        } catch (error) {
+        message.error('Error al actualizar la cita.');
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    return { updateAppointment, loading };
+};

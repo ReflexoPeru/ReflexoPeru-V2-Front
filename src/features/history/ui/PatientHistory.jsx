@@ -16,7 +16,7 @@ import {
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory }  from '../hook/historyHook';
+import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
 import { updateAppointmentById } from '../service/historyService';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -128,6 +128,7 @@ const PatientHistory = () => {
     contextHolder 
   } = usePatientAppointments(id);
   const { updateHistory, loading: updatingHistory, contextHolder: updateContext} = useUpdatePatientHistory();
+  const { updateAppointment } = useUpdateAppointment();
 
   // MEMORIZAR LAS FECHAS DE CITAS
   const appointmentDates = useMemo(() => {
@@ -256,13 +257,17 @@ const PatientHistory = () => {
 
   const onFinish = async (values) => {
     const historyId = patientHistory?.data?.id;
+    const selectedAppointment = appointments.find(
+      (a) => a.appointment_date === selectedAppointmentDate
+    );
+    const appointmentId = selectedAppointment?.id;
 
-    if (!historyId) {
-      message.error("No se pudo encontrar el ID del historial médico.");
+    if (!historyId || !appointmentId) {
+      message.error("Falta el ID del historial o la cita.");
       return;
     }
 
-    const payload = {
+    const historyPayload = {
       weight: values.pesoInicial,
       last_weight: values.ultimoPeso,
       height: values.talla,
@@ -281,34 +286,31 @@ const PatientHistory = () => {
       menstruation: values.menstruacion === 'Sí',
       diu_type: values.tipoDIU,
       therapist_id: selectedTherapistId,
-      patient_id: patientHistory?.data?.patient?.id, // ← AÑADE ESTO
+    };
+
+    const appointmentPayload = {
+      appointment_date: selectedAppointmentDate,
+      ailments: values.dolencias,
+      diagnosis: values.diagnosticosMedicos,
+      surgeries: values.operaciones,
+      reflexology_diagnostics: values.diagnosticosReflexologia,
+      medications: values.medicamentos,
+      observation: values.observacionesAdicionales,
+      initial_date: dayjs(values.fechaInicio).format('YYYY-MM-DD'),
+      final_date: dayjs(values.fechaInicio).add(5, 'day').format('YYYY-MM-DD'),
+      appointment_type: 'CC',
+      payment: '50.00',
+      appointment_status_id: 2,
+      payment_type_id: 2,
+      patient_id: patientHistory?.data?.patient?.id,
+      therapist_id: selectedTherapistId,
     };
 
     try {
-      await updateHistory(historyId, payload);
-      message.success("Historial actualizado correctamente.");
-
-      // 🔁 Ahora también actualizamos la cita seleccionada
-      const selectedAppointment = appointments.find(
-        (a) => a.appointment_date === selectedAppointmentDate
-      );
-
-      if (selectedAppointment?.id) {
-        const appointmentPayload = {
-          diagnosis: values.diagnosticosMedicos,
-          ailments: values.dolencias,
-          medications: values.medicamentos,
-          surgeries: values.operaciones,
-          observation: values.observacionesAdicionales,
-          reflexology_diagnostics: values.diagnosticosReflexologia,
-          therapist_id: selectedTherapistId,
-        };
-
-        await updateAppointmentById(selectedAppointment.id, appointmentPayload);
-        message.success("Cita actualizada correctamente.");
-      }
-    } catch (error) {
-      message.error("Ocurrió un error al guardar los cambios.");
+      await updateHistory(historyId, historyPayload);
+      await updateAppointment(appointmentId, appointmentPayload);
+    } catch (e) {
+      console.error('Error actualizando historial y cita:', e);
     }
   };
 

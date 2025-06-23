@@ -74,12 +74,12 @@ export const getAppointmentsByPatientId = async (patientId) => {
 }
 
 //ESTO ES PARA ACTUALIZAR INFORMACIÓN DE CITAS DE UN PACIENTE >:O-------------------------
-export const updateAppointmentById = async (appointmentId, data) => {
+export const updateAppointmentById = async (appointmentId, payload) => {
     try {
-        const response = await patch(`appointments/${appointmentId}`, data);
+        const response = await patch(`appointments/${appointmentId}`, payload);
         return response.data;
     } catch (error) {
-        console.error("Error al actualizar cita:", error);
+        console.error('Error actualizando la cita:', error);
         throw error;
     }
 };
