@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Spin, Alert } from 'antd';
-import { ArrowLeft } from '@phosphor-icons/react';
+import { ArrowLeftIcon } from '@phosphor-icons/react';
 import styles from './reports.module.css';
 
 const ReportPreview = ({
@@ -17,7 +17,7 @@ const ReportPreview = ({
       <div style={{ pointerEvents: 'auto' }}>
         <Button
           type="text"
-          icon={<ArrowLeft size={28} weight="bold" />}
+          icon={<ArrowLeftIcon size={28} weight="bold" />}
           onClick={handleCancel}
           className={styles.actionBtn}
         />

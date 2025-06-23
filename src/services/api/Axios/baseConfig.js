@@ -26,7 +26,7 @@ instance.interceptors.response.use(
   (error) => {
     if (
       (error.response?.status == 401 || error.response?.status == 403) &&
-      url.includes('/Inicio')
+      window.location.pathname.includes('/Inicio')
     ) {
       removeLocalStorage('token');
       removeLocalStorage('user_id');

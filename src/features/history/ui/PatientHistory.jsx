@@ -136,13 +136,6 @@ const PatientHistory = () => {
     return [...new Set(appointments?.map(a => a.appointment_date) || [])];
   }, [appointments]);
 
-  // // Memoize the selected appointment data
-  // const selectedAppointmentData = useMemo(() => {
-  //   if (!selectedAppointmentDate || !appointments) return null;
-  //   return appointments.find(a => a.appointment_date === selectedAppointmentDate);
-  // }, [selectedAppointmentDate, appointments]);
-
-  
   useEffect(() => {
   if (patientHistory && patientHistory.data && patientHistory.data.patient) {
     const { patient, ...historyData } = patientHistory.data;

@@ -277,4 +277,4 @@ const DailyCashReportPDF = ({ data, date }) => {
   );
 };
 
-export default DailyCashReportPDF;
+export default React.memo(DailyCashReportPDF);

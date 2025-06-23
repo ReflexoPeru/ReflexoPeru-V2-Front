@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, Button, Form, Input } from 'antd';
+import React, { useState } from 'react';
+import { Modal, Button, Form, Input, message } from 'antd';
 import {
   Envelope,
   ShieldCheck,
@@ -13,7 +13,7 @@ const ModalBase = ({
   onClose,
   title,
   description,
-  type, // 'email' | 'code' | 'currentPassword' | 'newPassword'
+  type,
   onSubmit,
   loading,
   email,
@@ -21,20 +21,56 @@ const ModalBase = ({
   onResend,
 }) => {
   const [form] = Form.useForm();
+  const [otp, setOtp] = useState('');
 
   React.useEffect(() => {
     if (isOpen) {
       form.resetFields();
+      setOtp('');
     }
   }, [isOpen, form]);
 
+  // Manejar eventos de teclado
+  React.useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!isOpen) return;
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        if (type === 'code') {
+          if (otp.length === 6) {
+            handleSubmit({ code: otp });
+          }
+        } else {
+          form.submit();
+        }
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, type, otp, form]);
+
   const handleClose = () => {
     form.resetFields();
+    setOtp('');
     onClose();
   };
 
   const handleSubmit = (values) => {
-    onSubmit(values);
+    if (type === 'code' && otp.length !== 6) {
+      message.error('El código debe tener exactamente 6 dígitos');
+      return;
+    }
+    onSubmit(type === 'code' ? { ...values, code: otp } : values);
     if (type !== 'code') {
       form.resetFields();
     }
@@ -82,17 +118,16 @@ const ModalBase = ({
               layout="vertical"
               className={styles.modalForm}
             >
-              <Form.Item
-                name="code"
-                rules={[
-                  { required: true, message: 'Por favor ingresa el código' },
-                  { len: 6, message: 'El código debe tener 6 dígitos' },
-                ]}
-              >
+              <Form.Item name="code" validateTrigger="onSubmit">
                 <div className={styles.otpContainer}>
                   <Input.OTP
                     size="large"
                     length={6}
+                    value={otp}
+                    onChange={(value) => {
+                      setOtp(value);
+                      form.setFieldsValue({ code: value });
+                    }}
                     className={styles.otpInput}
                     inputClassName={styles.otpSingleInput}
                   />
@@ -130,7 +165,6 @@ const ModalBase = ({
             </div>
           </>
         );
-
       case 'currentPassword':
         return (
           <Form
