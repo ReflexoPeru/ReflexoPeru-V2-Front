@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getStaff, searchStaff, getPatientHistoryById, getAppointmentsByPatientId } from '../service/historyService';
+import { getStaff, searchStaff, getPatientHistoryById, getAppointmentsByPatientId, updatePatientHistoryById } from '../service/historyService';
 import { message } from 'antd';
 
 //DATOS DEL PACIENTE -----------------------------
@@ -30,6 +30,34 @@ export const usePatientHistory = (patientId) => {
     return { data, loading, error };
 };
 
+//ACTUALIZAR DATOS DE HISTORIA DEL PACIENTE
+export const useUpdatePatientHistory = () => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const updateHistory = async (historyId, data) => {
+        setLoading(true);
+        try {
+            await updatePatientHistoryById(historyId, data);
+            messageApi.success('Historial actualizado correctamente');
+            setError(null);
+        } catch (err) {
+            console.error('Error actualizando historial:', err);
+            setError(err);
+            messageApi.error('Error al actualizar el historial');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return {
+        updateHistory,
+        loading,
+        error,
+        contextHolder
+    };
+};
 
 //DATOS DEL PERSONAL PARA EL MODAL------------------------------
 export const useStaff = () => {
@@ -95,7 +123,7 @@ export const useStaff = () => {
         } else {
             loadStaff(1);
         }
-        }, 1200);
+        }, 1000);
 
         return () => clearTimeout(delayDebounce);
     }, [searchTerm, initialLoad]);

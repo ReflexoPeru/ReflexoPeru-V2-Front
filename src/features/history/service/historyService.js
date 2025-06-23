@@ -1,4 +1,4 @@
-import { get } from '../../../services/api/Axios/MethodsGeneral';
+import { get, patch } from '../../../services/api/Axios/MethodsGeneral';
 
 //CONSEGUIR EL HISTORIAL DE UN PACIENTE POR ID
 export const getPatientHistoryById = async (patientId) => {
@@ -10,6 +10,17 @@ export const getPatientHistoryById = async (patientId) => {
         throw error;
     }
 };
+
+//ACTUALIZAR EL HISTORIAL DE UN PACIENTE POR ID
+export const updatePatientHistoryById = async (historyId, data) => {
+    try {
+        const response = await patch(`histories/${historyId}`, data);
+        return response.data;
+    } catch (error) {
+        console.error('Error en updatePatientHistoryById:', error);
+        throw error;
+    }
+}
 
 //ESTO FUE PARA LA INFORMACIÓN DE LA TABLA DEL MODAL Y EL BUSCADOR -------------------------
 export const getStaff = async (page = 1, perPage = 10) => {
@@ -61,3 +72,14 @@ export const getAppointmentsByPatientId = async (patientId) => {
         throw error;
     }
 }
+
+//ESTO ES PARA ACTUALIZAR INFORMACIÓN DE CITAS DE UN PACIENTE >:O-------------------------
+export const updateAppointmentById = async (appointmentId, data) => {
+    try {
+        const response = await patch(`appointments/${appointmentId}`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error al actualizar cita:", error);
+        throw error;
+    }
+};
