@@ -8,200 +8,194 @@ import {
   Image,
 } from '@react-pdf/renderer';
 
-const logo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const defaultLogo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const defaultClinicName = 'Reflexo Perú';
+
+// Paleta de colores pastel
 const pastelGreen = '#95e472';
 const darkGreen = '#2d5a3d';
-const clinicName = 'Reflexo Perú';
+const lightBackground = '#f8f9fa';
 
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
     padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 12,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100%',
+    fontSize: 9,
   },
+  // Cabecera
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 0,
-  },
-  headerLeft: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  headerCenter: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  headerRight: {
-    flex: 1,
-    alignItems: 'flex-end',
+    marginBottom: 25,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    borderWidth: 5,
+    borderColor: '#4CAF50',
+    borderStyle: 'solid',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+
+  headerTitles: {
+    marginLeft: 15,
+  },
+  clinicName: {
     color: darkGreen,
-    marginBottom: 4,
-    letterSpacing: 1,
-    textAlign: 'center',
+    fontSize: 22,
+    fontFamily: 'Helvetica-Bold',
   },
-  subtitle: {
-    fontSize: 16,
+  reportTitle: {
     color: '#444',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  date: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 0,
-    textAlign: 'center',
+  },
+  headerInfo: {
+    marginLeft: 'auto',
+    textAlign: 'right',
+  },
+  infoText: {
+    fontSize: 9,
+    color: '#555',
+    marginBottom: 2,
   },
   divider: {
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     borderBottomColor: pastelGreen,
     marginVertical: 15,
-    marginHorizontal: 0,
   },
+  // Bloque por terapeuta
   therapistBlock: {
-    marginBottom: 24,
+    marginBottom: 20,
+    breakInside: 'avoid', // Evita que el bloque se divida entre páginas
   },
   therapistName: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontFamily: 'Helvetica-Bold',
     color: darkGreen,
-    marginBottom: 8,
-    marginTop: 15,
-    textAlign: 'left',
+    backgroundColor: '#eaffdf',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
   },
+  // Estilos de la tabla
   table: {
-    marginTop: 5,
-    borderWidth: 2,
-    borderColor: pastelGreen,
-    borderRadius: 10,
+    border: `1px solid #e0e0e0`,
+    borderRadius: 8,
     overflow: 'hidden',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: pastelGreen,
+    padding: 10,
+  },
+  headerCell: {
+    color: '#fff',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 11,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 35,
-  },
-  tableHeader: {
-    backgroundColor: pastelGreen,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
     padding: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#b6e6b0',
-  },
-  cell: {
-    flex: 1,
-    padding: 10,
-    fontSize: 12,
-    color: '#222',
-    textAlign: 'center',
-  },
-  cellName: {
-    flex: 3,
-    padding: 10,
-    fontSize: 12,
-    color: '#222',
-    textAlign: 'left',
-  },
-  cellCount: {
-    flex: 1,
-    padding: 10,
-    fontSize: 12,
-    color: '#222',
-    textAlign: 'center',
-  },
-  rowEven: {
-    backgroundColor: '#f8f8f8',
+    borderBottom: `1px solid #e0e0e0`,
   },
   rowOdd: {
-    backgroundColor: '#fff',
+    backgroundColor: lightBackground,
   },
-  footer: {
-    marginTop: 'auto',
+  tableCell: {
+    fontSize: 10,
+  },
+  cellPatientId: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  cellPatientName: {
+    flex: 3,
+  },
+  cellAppointments: {
+    flex: 1,
     textAlign: 'center',
-    fontSize: 12,
-    color: '#888',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingTop: 10,
+  },
+  // Pie de página del documento
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 30,
+    right: 30,
+    textAlign: 'center',
+    fontSize: 8,
+    color: '#999',
+    borderTop: `1px solid #e0e0e0`,
+    paddingTop: 8,
   },
 });
 
-const PatientsByTherapistReportPDF = ({ data, date }) => {
+const PatientsByTherapistReportPDF = ({ data, date, logoUrl, companyInfo }) => {
   const therapists = data || [];
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
+  const clinicName = companyInfo?.company_name || defaultClinicName;
+  const logo = logoUrl || defaultLogo;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image src={logo} style={styles.logo} />
-          </View>
-          <View style={styles.headerCenter}>
-            <Text style={styles.title}>{clinicName}</Text>
-            <Text style={styles.subtitle}>
-              Reporte de Pacientes Atendidos x Terapeuta
+          <Image src={logo} style={styles.logo} />
+          <View style={styles.headerTitles}>
+            <Text style={styles.clinicName}>{clinicName}</Text>
+            <Text style={styles.reportTitle}>
+              Reporte de Pacientes por Terapeuta
             </Text>
-            <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
           </View>
-          <View style={styles.headerRight}></View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.infoText}>
+              Fecha del Reporte: {date.format('DD/MM/YYYY')}
+            </Text>
+            <Text style={styles.infoText}>Generado: {fechaHora}</Text>
+          </View>
         </View>
+
         <View style={styles.divider} />
+
         {therapists.map((therapist, idx) => (
-          <View
-            key={therapist.therapist_id || idx}
-            style={styles.therapistBlock}
-          >
+          <View key={idx} style={styles.therapistBlock}>
             <Text style={styles.therapistName}>{therapist.therapist}</Text>
             <View style={styles.table}>
-              <View style={styles.tableRow}>
-                <Text style={[styles.cell, styles.tableHeader, { flex: 1.2 }]}>
+              <View style={styles.tableHeader}>
+                <Text style={[styles.headerCell, styles.cellPatientId]}>
                   ID Paciente
                 </Text>
-                <Text style={[styles.cellName, styles.tableHeader]}>
-                  Nombre Paciente
+                <Text style={[styles.headerCell, styles.cellPatientName]}>
+                  Nombre del Paciente
                 </Text>
-                <Text style={[styles.cellCount, styles.tableHeader]}>
-                  Citas
+                <Text style={[styles.headerCell, styles.cellAppointments]}>
+                  N° Citas
                 </Text>
               </View>
               {therapist.patients.map((p, i) => (
                 <View
-                  style={[
-                    styles.tableRow,
-                    i % 2 === 0 ? styles.rowEven : styles.rowOdd,
-                  ]}
+                  style={[styles.tableRow, i % 2 !== 0 ? styles.rowOdd : {}]}
                   key={p.patient_id}
                 >
-                  <Text style={[styles.cell, { flex: 1.2 }]}>
+                  <Text style={[styles.tableCell, styles.cellPatientId]}>
                     {p.patient_id}
                   </Text>
-                  <Text style={styles.cellName}>{p.patient}</Text>
-                  <Text style={styles.cellCount}>{p.appointments}</Text>
+                  <Text style={[styles.tableCell, styles.cellPatientName]}>
+                    {p.patient}
+                  </Text>
+                  <Text style={[styles.tableCell, styles.cellAppointments]}>
+                    {p.appointments}
+                  </Text>
                 </View>
               ))}
             </View>
           </View>
         ))}
+
         <Text style={styles.footer}>
-          {clinicName} | Generado el {fechaHora}
+          {clinicName} - Documento generado automáticamente.
         </Text>
       </Page>
     </Document>
