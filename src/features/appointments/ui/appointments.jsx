@@ -144,7 +144,9 @@ export default function Appointments() {
         // Lógica para historia
         break;
       case 'history':
-        // Lógica para eliminar
+        navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
+          state: { appointment: record },
+        });
         break;
       case 'delete':
         // Lógica para eliminar
