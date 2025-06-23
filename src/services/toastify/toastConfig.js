@@ -22,7 +22,7 @@ export const defaultConfig = {
     duration: 5000,
   },
   codigoVerificado: {
-    type: 'success',
+    type: 'info',
     icon: 'fa-solid fa-circle-check',
     title: 'Codigo Verificado',
     message: 'El código ha sido verificado',
@@ -414,8 +414,8 @@ export const defaultConfig = {
   datoGuardado: {
     type: 'success',
     icon: 'fa-solid fa-floppy-disk',
-    title: 'Dato Guardado',
-    message: 'La información ha sido guardada',
+    title: 'Actualizado',
+    message: 'El nombrer de la empresa se actualizo',
     duration: 4000,
   },
 
@@ -525,21 +525,21 @@ export const defaultConfig = {
   nuevoTerapeuta: {
     type: 'success',
     icon: 'fa-solid fa-user-doctor',
-    title: 'Nuevo Médico',
+    title: 'Nuevo Terapeuta',
     message: 'Terapeuta registrado correctamente',
     duration: 5000,
   },
   actualizarTerapeuta: {
     type: 'success',
     icon: 'fa-solid fa-id-card-clip',
-    title: 'Actualizar Médico',
+    title: 'Datos Actualizados',
     message: 'Información del terapeuta actualizada',
     duration: 5000,
   },
   asignarTerapeuta: {
     type: 'info',
     icon: 'fa-solid fa-user-plus',
-    title: 'Asignar Médico',
+    title: 'Asignar Terapeuta',
     message: 'Terapeuta asignado al paciente',
     duration: 4000,
   },
@@ -692,6 +692,14 @@ export const defaultConfig = {
     icon: 'fa-solid fa-user-pen',
     title: 'Actualizado',
     message: 'Aquí hay información importante',
+    duration: 5000,
+  },
+
+  imageUploadSuccess: {
+    type: 'info',
+    icon: 'fa-solid fa-image',
+    title: 'Imagen subida',
+    message: 'Tu imagen se ha actualizado correctamente',
     duration: 5000,
   },
 };

@@ -113,7 +113,8 @@ const router = createBrowserRouter([
           },
           {
             path: 'configPagos',
-            element: <Payments />,
+            element: <ProtectedRoute allowedRoles={[1]} />,
+            children: [{ index: true, element: <Payments /> }],
           },
           {
             path: 'configPerfil',

@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router';
 import { useAuth } from './AuthContext';
 import Style from './ProtectedRoute.module.css';
 
-const ProtectedRoute = ({ allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles, children }) => {
   const { isAuthenticated, authChecked, userRole } = useAuth();
 
   if (!authChecked) {
@@ -31,7 +31,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/Inicio" replace />;
   }
 
-  return <Outlet />;
+  // Renderiza los hijos si se pasan, de lo contrario, el Outlet
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default ProtectedRoute;

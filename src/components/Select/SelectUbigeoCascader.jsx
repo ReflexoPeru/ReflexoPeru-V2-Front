@@ -1,5 +1,5 @@
 import { Cascader, ConfigProvider } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   getDepartaments,
   getDistricts,
@@ -8,126 +8,82 @@ import {
 
 const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
   const [options, setOptions] = useState([]);
-  const [loadingUbigeo, setLoadingUbigeo] = useState(false);
-  const [cascaderValue, setCascaderValue] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [internalValue, setInternalValue] = useState([]);
 
-  // Convertir el objeto `value` en un array para el Cascader
-  const getCascaderValueFromObject = (ubigeoObj) => {
-    if (!ubigeoObj) return [];
-    return [
-      ubigeoObj.region_id,
-      ubigeoObj.province_id,
-      ubigeoObj.district_id,
-    ].filter(Boolean);
-  };
-
-  // Convertir el array del Cascader en un objeto
-  const getUbigeoObjectFromValue = (cascaderValue) => {
-    return {
-      region_id: cascaderValue[0] || null,
-      province_id: cascaderValue[1] || null,
-      district_id: cascaderValue[2] || null,
-    };
-  };
-
-  // Cargar departamentos al montar (solo una vez)
+  // Carga los datos iniciales (departamentos) y reconstruye el árbol si hay un valor preseleccionado (modo edición)
   useEffect(() => {
-    const loadDepartments = async () => {
-      const departamentos = await getDepartaments();
-      setOptions(
-        departamentos.map((d) => ({
+    const initialize = async () => {
+      setLoading(true);
+      try {
+        const departments = await getDepartaments();
+        let initialOptions = departments.map((d) => ({
           label: d.name,
           value: String(d.id),
           isLeaf: false,
-        })),
-      );
-    };
-    loadDepartments();
-  }, []);
-
-  // Cargar y anidar todo el árbol de ubigeo según los IDs SOLO si el value está completo (modo edición)
-  useEffect(() => {
-    const loadFullUbigeoTree = async () => {
-      if (value && value.region_id && value.province_id && value.district_id) {
-        setLoadingUbigeo(true);
-        // 1. Cargar departamentos
-        const departamentos = await getDepartaments();
-        const regionOption = departamentos.find(
-          (d) => String(d.id) === String(value.region_id),
-        );
-        let regionNode = {
-          label: regionOption ? regionOption.name : value.region_id,
-          value: String(value.region_id),
-          isLeaf: false,
-        };
-        // 2. Cargar provincias
-        const provincias = await getProvinces(value.region_id);
-        const provinceOption = provincias.find(
-          (p) => String(p.id) === String(value.province_id),
-        );
-        let provinceNode = {
-          label: provinceOption ? provinceOption.name : value.province_id,
-          value: String(value.province_id),
-          isLeaf: false,
-        };
-        // 3. Cargar distritos
-        const distritos = await getDistricts(value.province_id);
-        const districtOption = distritos.find(
-          (d) => String(d.id) === String(value.district_id),
-        );
-        let districtNode = {
-          label: districtOption ? districtOption.name : value.district_id,
-          value: String(value.district_id),
-          isLeaf: true,
-        };
-        // Anidar
-        provinceNode.children = [districtNode];
-        regionNode.children = [provinceNode];
-        // Armar el árbol completo
-        const optionsTree = departamentos.map((d) => ({
-          label: d.name,
-          value: String(d.id),
-          isLeaf: false,
-          children:
-            String(d.id) === String(value.region_id)
-              ? [provinceNode]
-              : undefined,
         }));
-        setOptions(optionsTree);
-        setCascaderValue([
-          String(value.region_id),
-          String(value.province_id),
-          String(value.district_id),
-        ]);
-        setLoadingUbigeo(false);
+
+        if (
+          value &&
+          value.region_id &&
+          value.province_id &&
+          value.district_id
+        ) {
+          const [provinces, districts] = await Promise.all([
+            getProvinces(value.region_id),
+            getDistricts(value.province_id),
+          ]);
+
+          const regionName =
+            departments.find((r) => String(r.id) === String(value.region_id))
+              ?.name || '';
+          const provinceName =
+            provinces.find((p) => String(p.id) === String(value.province_id))
+              ?.name || '';
+          const districtName =
+            districts.find((d) => String(d.id) === String(value.district_id))
+              ?.name || '';
+
+          // Reconstruir el nodo seleccionado para mostrarlo
+          const regionNode = initialOptions.find(
+            (o) => o.value === String(value.region_id),
+          );
+          if (regionNode) {
+            regionNode.children = [
+              {
+                label: provinceName,
+                value: String(value.province_id),
+                isLeaf: false,
+                children: [
+                  {
+                    label: districtName,
+                    value: String(value.district_id),
+                    isLeaf: true,
+                  },
+                ],
+              },
+            ];
+          }
+          setInternalValue([
+            String(value.region_id),
+            String(value.province_id),
+            String(value.district_id),
+          ]);
+        }
+        setOptions(initialOptions);
+      } catch (error) {
+        console.error('Error initializing Ubigeo Cascader:', error);
+      } finally {
+        setLoading(false);
       }
     };
-    // Solo ejecutar si el value está completo (modo edición)
-    if (value && value.region_id && value.province_id && value.district_id) {
-      loadFullUbigeoTree();
-    }
+    initialize();
   }, [value]);
 
-  // Sincronizar cascaderValue con value (solo si value es incompleto o vacío)
-  useEffect(() => {
-    if (
-      !value ||
-      (!value.region_id && !value.province_id && !value.district_id)
-    ) {
-      setCascaderValue([]);
-    } else if (
-      (!value.province_id || !value.district_id) &&
-      (!cascaderValue.length || cascaderValue[0] !== value.region_id)
-    ) {
-      // Si el usuario selecciona solo departamento, actualizar cascaderValue
-      setCascaderValue(getCascaderValueFromObject(value));
-    }
-  }, [value]);
-
-  // Cuando el usuario selecciona, cargar hijos normalmente
-  const loadData = async (selectedOptions) => {
+  const loadData = useCallback(async (selectedOptions) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
     targetOption.loading = true;
+
     try {
       if (selectedOptions.length === 1) {
         const provinces = await getProvinces(targetOption.value);
@@ -144,25 +100,36 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
           isLeaf: true,
         }));
       }
-      setOptions([...options]);
+      setOptions((prevOptions) => [...prevOptions]);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading dynamic data for Cascader:', error);
     } finally {
       targetOption.loading = false;
     }
-  };
+  }, []);
 
-  const handleChange = (newCascaderValue, selectedOptions) => {
-    setCascaderValue(newCascaderValue);
-    if (onChange) {
-      onChange(getUbigeoObjectFromValue(newCascaderValue), selectedOptions);
-    }
-  };
+  const handleChange = useCallback(
+    (val) => {
+      setInternalValue(val);
+      if (onChange) {
+        const ubigeoObject = {
+          region_id: val[0] || null,
+          province_id: val[1] || null,
+          district_id: val[2] || null,
+        };
+        onChange(ubigeoObject);
+      }
+    },
+    [onChange],
+  );
 
-  const filter = (inputValue, path) =>
-    path.some((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase()),
-    );
+  const filter = useCallback(
+    (inputValue, path) =>
+      path.some((option) =>
+        option.label.toLowerCase().includes(inputValue.toLowerCase()),
+      ),
+    [],
+  );
 
   return (
     <ConfigProvider
@@ -187,9 +154,7 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
             zIndexPopup: 2000,
           },
         },
-        token: {
-          colorTextBase: '#fff',
-        },
+        token: { colorTextBase: '#fff' },
       }}
     >
       <Cascader
@@ -212,35 +177,17 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
           borderRadius: 10,
           border: '1px solid #444',
         }}
-        value={cascaderValue}
-        disabled={loadingUbigeo}
+        value={internalValue}
+        disabled={loading}
         {...rest}
       />
       <style>{`
-        .ant-cascader-menu {
-          background: #232323 !important;
-          color: #fff !important;
-          border-radius: 10px !important;
-        }
-        .ant-cascader-menu-item {
-          color: #fff !important;
-          border-radius: 6px !important;
-        }
-        .ant-cascader-menu-item-active, .ant-cascader-menu-item:hover {
-          background: #333 !important;
-          color: #fff !important;
-        }
-        .ant-cascader-menu-item-disabled {
-          color: #888 !important;
-        }
-        .ant-cascader-menu::-webkit-scrollbar {
-          width: 8px;
-          background: #232323;
-        }
-        .ant-cascader-menu::-webkit-scrollbar-thumb {
-          background: #444;
-          border-radius: 4px;
-        }
+        .ant-cascader-menu { background: #232323 !important; color: #fff !important; border-radius: 10px !important; }
+        .ant-cascader-menu-item { color: #fff !important; border-radius: 6px !important; }
+        .ant-cascader-menu-item-active, .ant-cascader-menu-item:hover { background: #333 !important; color: #fff !important; }
+        .ant-cascader-menu-item-disabled { color: #888 !important; }
+        .ant-cascader-menu::-webkit-scrollbar { width: 8px; background: #232323; }
+        .ant-cascader-menu::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
       `}</style>
     </ConfigProvider>
   );

@@ -111,12 +111,15 @@ export default function MenuDashboard() {
           <Nut />
         </div>
       ),
-
       children: [
-        {
-          key: '33',
-          label: <Link to="configPagos">Pagos</Link>,
-        },
+        ...(userRole === 1
+          ? [
+              {
+                key: '33',
+                label: <Link to="configPagos">Pagos</Link>,
+              },
+            ]
+          : []),
         {
           key: '16',
           label: <Link to="configPerfil">Perfil</Link>,

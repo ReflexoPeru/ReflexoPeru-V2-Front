@@ -3,24 +3,31 @@ import { Upload, Input, Button, Spin, Image, message } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import MiniLogo from '../../../assets/Img/Dashboard/MiniLogoReflexo.png';
 import styles from './System.module.css';
-import { useSystemHook, useCompanyInfo, useUpdateCompanyInfo, useUploadCompanyLogo } from './hook/systemHook';
+import { useUpdateCompanyInfo, useUploadCompanyLogo } from './hook/systemHook';
+import { useCompany } from '../../../context/CompanyContext';
 
 const System = () => {
-  const { logoUrl, loading, error } = useSystemHook();
-  const { companyInfo} = useCompanyInfo();
+  const {
+    companyInfo,
+    logoUrl,
+    loading,
+    refetchCompanyInfo,
+    refetchCompanyLogo,
+  } = useCompany();
   const { updateCompany, updating } = useUpdateCompanyInfo();
-  const { uploadLogo, uploadingLogo, uploadError, uploadSuccess } = useUploadCompanyLogo();
+  const { uploadLogo, uploadingLogo, uploadError, uploadSuccess } =
+    useUploadCompanyLogo();
   const [companyName, setCompanyName] = useState('');
   const [logoPreview, setLogoPreview] = useState(null);
 
-  //Establecer nombre de la empresa desde la API
+  //Establecer nombre de la empresa desde el contexto
   useEffect(() => {
     if (companyInfo?.company_name) {
       setCompanyName(companyInfo.company_name);
     }
   }, [companyInfo]);
 
-  //Sincronizar vista previa del logo con lo que viene de la API
+  //Sincronizar vista previa del logo con lo que viene del contexto
   useEffect(() => {
     if (logoUrl) {
       setLogoPreview(logoUrl);
@@ -43,7 +50,7 @@ const System = () => {
     if (!companyName.trim()) return;
     try {
       await updateCompany({ company_name: companyName });
-      await refetchCompanyInfo(); // 🔁 Refresca los datos luego de guardar
+      await refetchCompanyInfo();
       message.success('Nombre de empresa actualizado');
     } catch (err) {
       message.error('Error al actualizar el nombre');
@@ -52,37 +59,38 @@ const System = () => {
 
   //CAMBIAR EL LOGO
   const handleLogoChange = async (info) => {
-  if (info.file.status === 'done') {
-    const file = info.file.originFileObj;
-    if (!file) return;
+    if (info.file.status === 'done') {
+      const file = info.file.originFileObj;
+      if (!file) return;
 
-    // Vista previa local inmediata
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setLogoPreview(e.target.result); 
-    };
-    reader.readAsDataURL(file);
+      // Vista previa local inmediata
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoPreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
 
-    await uploadLogo(file);
-    //await refetch();
-
-    try {
-      await uploadLogo(file);     
-    } catch (err) {
-      console.error("Error al subir logo", err);
+      await uploadLogo(file);
+      try {
+        await refetchCompanyLogo();
+      } catch (err) {
+        console.error('Error al refrescar datos de empresa', err);
+      }
     }
-  }
-};
+  };
 
-  if (loading) return <div className={styles.layout}><Spin size="large" /></div>;
-  if (error) return <div className={styles.layout}><p>Error: {error.message}</p></div>;
+  if (loading)
+    return (
+      <div className={styles.layout}>
+        <Spin size="large" />
+      </div>
+    );
 
   return (
     <div className={styles.layout}>
       <main className={styles.mainContent}>
         <section className={styles.container}>
           <div className={styles.box}>
-
             {/* Logo */}
             <div className={styles.section}>
               <label className={styles.label}>Logo de la empresa:</label>
@@ -95,13 +103,12 @@ const System = () => {
                       alt={`Logo de ${companyName}`}
                       preview={false}
                       style={{
-                        width: '120px',
-                        height: '120px',
+                        width: '100px',
+                        height: '100px',
                         borderRadius: '50%',
                         objectFit: 'cover',
                         border: '2px solid #4CAF50',
                         padding: '3px',
-                        backgroundColor: '#000'
                       }}
                     />
                   ) : (
@@ -118,7 +125,7 @@ const System = () => {
                     accept="image/*"
                     customRequest={({ file, onSuccess }) => {
                       setTimeout(() => {
-                        onSuccess("ok");
+                        onSuccess('ok');
                       }, 0);
                     }}
                     beforeUpload={(file) => {
@@ -136,14 +143,13 @@ const System = () => {
                     style={{
                       borderRadius: '50%',
                       border: '2px dashed #4CAF50',
-                      width: 120,
-                      height: 120,
+                      width: 100,
+                      height: 100,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: '#1a1a1a', // si estás en modo oscuro
-                      cursor: 'pointer'
-                      
+                      backgroundColor: '#1a1a1a',
+                      cursor: 'pointer',
                     }}
                   >
                     {uploadingLogo ? (
@@ -161,11 +167,12 @@ const System = () => {
                 </div>
               </div>
             </div>
-            
 
             {/* Nombre */}
             <div className={styles.section}>
-              <label className={styles.label} htmlFor="companyNameInput">Nombre de la empresa:</label>
+              <label className={styles.label} htmlFor="companyNameInput">
+                Nombre de la empresa:
+              </label>
               <div className={styles.nameRow}>
                 <Input
                   id="companyNameInput"
@@ -174,8 +181,8 @@ const System = () => {
                   onChange={(e) => setCompanyName(e.target.value)}
                   placeholder="Ingresa el nombre de la empresa"
                 />
-                <Button 
-                  type="primary" 
+                <Button
+                  type="primary"
                   className={styles.changeBtn}
                   onClick={handleNameChange}
                   loading={updating}
@@ -183,7 +190,6 @@ const System = () => {
                   Cambiar Nombre
                 </Button>
               </div>
-
             </div>
           </div>
         </section>
@@ -191,6 +197,5 @@ const System = () => {
     </div>
   );
 };
-
 
 export default System;

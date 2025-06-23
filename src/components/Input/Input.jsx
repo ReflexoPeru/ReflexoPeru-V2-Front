@@ -20,6 +20,7 @@ import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
 import SelectPrices from '../Select/SelectPrices'; // Ajusta la ruta según donde esté
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
+import SelectTherapist from '../Select/SelectTherapist';
 
 // ... importar los demás componentes Select
 const { Option } = Select;
@@ -211,6 +212,23 @@ const InputField = ({
 
     case 'cita':
       return <CitaComponents {...rest} />;
+
+    case 'therapist':
+      return (
+        <Form.Item
+          name="therapist_id"
+          label="Terapeuta"
+          rules={[{ required: true, message: 'Seleccione un terapeuta' }]}
+        >
+          <SelectTherapist
+            value={rest.value === 0 ? null : rest.value}
+            onChange={(value) => {
+              rest.onChange(value);
+              form.setFieldValue('therapist_id', value);
+            }}
+          />
+        </Form.Item>
+      );
 
     default:
       inputComponent = <Input {...inputProps} />;

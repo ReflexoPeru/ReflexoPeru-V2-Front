@@ -30,14 +30,37 @@ const BaseModal = ({
     }
   }, [visible, initialValues, form]);
 
-  const handleOk = async () => {
+  const handleOk = React.useCallback(async () => {
     try {
       const values = await form.validateFields();
       onOk(values);
     } catch (error) {
       console.error('Validation failed:', error);
     }
-  };
+  }, [form, onOk]);
+
+  // Manejar eventos de teclado
+  React.useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!visible) return;
+
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        handleOk();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        onCancel();
+      }
+    };
+
+    if (visible) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [visible, onCancel, handleOk]);
 
   return (
     <ConfigProvider

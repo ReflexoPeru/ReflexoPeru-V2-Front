@@ -9,32 +9,32 @@ body {
 }
 
 .layout {
+  overflow: hidden;
   display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 100%;
-  height: 90vh;
+  height: 100%;
+
   background-color: transparent;
 }
-
 
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
 }
-
 
 .container {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
 }
 
 .box {
   width: 65%;
   max-width: 650px;
-  height: 60%;
   padding: 30px;
   border-radius: 8px;
 
@@ -161,13 +161,4 @@ body {
 .changeBtn:hover {
   color: white;
   background-color: #20c55f; 
-}
-
-.layout {
-  display: flex;
-  align-items: center;      
-  justify-content: center;  
-
-  width: 100%;              
-  height: 100vh;            
 }

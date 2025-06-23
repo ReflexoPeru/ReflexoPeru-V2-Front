@@ -1,43 +1,45 @@
 import Style from './Dashboard.module.css';
 import { img } from '../../utils/vars';
-import { Avatar, Divider } from 'antd';
+import { Avatar, Divider, Spin, ConfigProvider } from 'antd';
 import MenuDashboard from './Menu/Menu';
 import BtnLogOut from './ButtonLogOut/btnLogOut';
-import { getLocalStorage } from '../../utils/localStorageUtility';
-import { useSystemHook } from '../../features/configuration/cSystem/hook/systemHook';
-import { useProfile } from '../../features/configuration/cProfile/hook/profileHook';
 import { useAuth } from '../../routes/AuthContext';
-import { useCompanyInfo } from '../../features/configuration/cSystem/hook/systemHook';
-import { useUserPhoto } from '../../features/configuration/cProfile/hook/profileHook';
+import { useUser } from '../../context/UserContext';
+import { useCompany } from '../../context/CompanyContext';
 
 export default function Dashboard() {
-  const { logoUrl } = useSystemHook();
-  const { companyInfo } = useCompanyInfo();
   const { userRole } = useAuth();
-  const { photoUrl } = useUserPhoto();
 
-  const companyName = companyInfo?.company_name || getLocalStorage('company_name') || 'Empresa';
-  
-  const { profile, loading } = useProfile();
-  const cachedFullName = getLocalStorage('user_full_name');
-  const fullName = profile?.full_name || cachedFullName || 'Usuario';
+  const { profile, photoUrl, loading: userLoading } = useUser();
+  const { companyInfo, logoUrl, loading: companyLoading } = useCompany();
 
-  const role = userRole === 1 ? 'Administrador' : userRole === 2 ? 'Usuario' : 'Invitado';
-
-
-
+  const companyName = companyInfo?.company_name || 'Empresa';
+  const fullName = profile?.full_name || 'Usuario';
+  const role =
+    userRole === 1 ? 'Administrador' : userRole === 2 ? 'Usuario' : 'Invitado';
 
   return (
     <div className={Style.dashboardContainer}>
       <div className={Style.dashboardHeader}>
-        <img alt="Logo de reflexo" src={logoUrl || img} style={{
-      width: '90px',
-      height: '90px',
-      borderRadius: '50%', 
-      objectFit: 'cover',
-      border: '2px solid #4CAF50', 
-      backgroundColor: '#000', 
-    }} />
+        {companyLoading ? (
+          <ConfigProvider theme={{ token: { colorPrimary: '#4CAF50' } }}>
+            <Spin />
+          </ConfigProvider>
+        ) : (
+          <img
+            alt="Logo de reflexo"
+            src={logoUrl || img}
+            style={{
+              width: 'clamp(50px, 8vw, 90px)',
+              aspectRatio: '1 / 1',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '2px solid #4CAF50',
+              maxWidth: '100%',
+              height: 'auto',
+            }}
+          />
+        )}
         <p>{companyName}</p>
       </div>
       <Divider
@@ -48,15 +50,33 @@ export default function Dashboard() {
         }}
       />
       <div className={Style.dashboardUser}>
-        <Avatar alt="Logo de avatar" src={photoUrl || img} size={45} />
-        <div className={Style.dashboardUserName}>
-          <div>
-            <h1>{loading ? cachedFullName : fullName}</h1>
-          </div>
-          <div>
-            <p>{role}</p>
-          </div>
-        </div>
+        {userLoading ? (
+          <ConfigProvider theme={{ token: { colorPrimary: '#4CAF50' } }}>
+            <Spin />
+          </ConfigProvider>
+        ) : (
+          <>
+            <Avatar
+              alt="Logo de avatar"
+              src={photoUrl || img}
+              style={{
+                width: 'clamp(35px, 4vw, 45px)',
+                height: 'auto',
+                aspectRatio: '1 / 1',
+                borderRadius: '50%',
+                objectFit: 'cover',
+              }}
+            />
+            <div className={Style.dashboardUserName}>
+              <div>
+                <h1>{fullName}</h1>
+              </div>
+              <div>
+                <p>{role}</p>
+              </div>
+            </div>
+          </>
+        )}
       </div>
       <Divider
         style={{

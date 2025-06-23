@@ -8,6 +8,7 @@ import {
 } from '../service/staffService';
 import dayjs from 'dayjs';
 import { useToast } from '../../../services/toastify/ToastContext';
+import { formatToastMessage } from '../../../utils/messageFormatter';
 
 export const useStaff = () => {
   const [staff, setStaff] = useState([]);
@@ -33,7 +34,13 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      showToast('error', 'Error al cargar terapeutas');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al cargar terapeutas',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -51,7 +58,13 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      showToast('error', 'Error al buscar terapeutas');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al buscar terapeutas',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -60,8 +73,11 @@ export const useStaff = () => {
   const handleDeleteTherapist = async (id) => {
     try {
       setLoading(true);
-      await deleteTherapist(id);
-      showToast('success', 'Terapeuta eliminado correctamente');
+      const response = await deleteTherapist(id);
+      showToast(
+        'exito',
+        response.message || 'Terapeuta eliminado correctamente',
+      );
 
       // Actualización optimista
       setStaff((prevStaff) =>
@@ -79,7 +95,13 @@ export const useStaff = () => {
         await loadStaff(pagination.currentPage);
       }
     } catch (error) {
-      showToast('error', 'Error al eliminar terapeuta');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al eliminar terapeuta',
+        ),
+      );
       console.error('Error deleting therapist:', error);
     } finally {
       setLoading(false);
@@ -115,6 +137,7 @@ export const useStaff = () => {
       };
 
       await updateTherapist(therapistId, payload);
+      showToast('actualizarTerapeuta');
 
       // Recargar los datos actualizados
       if (searchTerm.trim()) {
@@ -124,6 +147,13 @@ export const useStaff = () => {
       }
     } catch (error) {
       console.error('Error actualizando terapeuta:', error);
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al actualizar terapeuta',
+        ),
+      );
       throw error;
     }
   };
@@ -155,10 +185,16 @@ export const useStaff = () => {
 
     try {
       const result = await createTherapist(payload);
-      showToast('success', 'Terapeuta registrado correctamente');
+      showToast('nuevoTerapeuta');
       return result;
     } catch (error) {
-      showToast('error', 'No se pudo crear el terapeuta');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'No se pudo crear el terapeuta',
+        ),
+      );
       throw error;
     }
   };
