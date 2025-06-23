@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   Modal,
@@ -11,21 +11,19 @@ import {
   DatePicker,
   Typography,
   ConfigProvider,
+  message
 } from 'antd';
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import { useStaff, usePatientHistory, usePatientAppointments }  from '../hook/historyHook';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
+import { updateAppointmentById } from '../service/historyService';
+import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-
-
 
 const { Title } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
-
-
 
 const theme = {
   token: {
@@ -117,12 +115,11 @@ const PatientHistory = () => {
   const [selectedAppointmentDate, setSelectedAppointmentDate] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
-  const { staff, loading, setSearchTerm } = useStaff();
-
+  
   const { id } = useParams()
+  const { staff, loading, setSearchTerm } = useStaff();
   const { data: patientHistory } = usePatientHistory(id)
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
-
   const { 
     appointments, 
     lastAppointment,
@@ -130,88 +127,99 @@ const PatientHistory = () => {
     appointmentsError, 
     contextHolder 
   } = usePatientAppointments(id);
+  const { updateHistory, loading: updatingHistory, contextHolder: updateContext} = useUpdatePatientHistory();
+  const { updateAppointment } = useUpdateAppointment();
 
-  // Memoize appointment dates to prevent unnecessary recalculations
+  // MEMORIZAR LAS FECHAS DE CITAS
   const appointmentDates = useMemo(() => {
     return [...new Set(appointments?.map(a => a.appointment_date) || [])];
   }, [appointments]);
 
   useEffect(() => {
-  if (patientHistory && patientHistory.data && patientHistory.data.patient) {
-    const { patient, ...historyData } = patientHistory.data;
-    const isFemale = patient?.sex === 'F'; 
-    
-    form.setFieldsValue({
-      // Información del paciente con verificación segura
-      patientName: `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
+    if (patientHistory && patientHistory.data && patientHistory.data.patient) {
+      const { patient, ...historyData } = patientHistory.data;
       
-      // Observaciones
-      observationPrivate: historyData?.private_observation || '',
-      observation: historyData?.observation || '',
-      
-      // Información física
-      talla: historyData?.height || '',
-      pesoInicial: historyData?.weight || '',
-      ultimoPeso: historyData?.last_weight || '',
-      
-      // Información médica
-      testimonio: historyData?.testimony ? 'Sí' : 'No',
-      gestacion: isFemale ? (historyData?.gestation ? 'Sí' : 'No') : undefined,
-      menstruacion: isFemale ? (historyData?.menstruation ? 'Sí' : 'No') : undefined,
-      tipoDIU: isFemale ? historyData?.diu_type || '' : undefined,
-      
-      // Campos adicionales
-      diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
-      operaciones: historyData?.operaciones || '',
-      medicamentos: historyData?.medicamentos || '',
-      dolencias: historyData?.dolencias || '',
-      diagnosticosReflexologia: historyData?.diagnosticos_reflexologia || '',
-      observacionesAdicionales: historyData?.observaciones_adicionales || '',
-      antecedentesFamiliares: historyData?.antecedentes_familiares || '',
-      alergias: historyData?.alergias || '',
-      
-      // Fechas
-      fechaInicio: dayjs(),
-    });
+      form.setFieldsValue({
+        // Información del paciente con verificación segura
+        patientName: `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
+        
+        // Observaciones
+        observationPrivate: historyData?.private_observation || '',
+        observation: historyData?.observation || '',
+        
+        // Información física
+        talla: historyData?.height || '',
+        pesoInicial: historyData?.weight || '',
+        ultimoPeso: historyData?.last_weight || '',
+        
+        // Información médica
+        testimonio: historyData?.testimony ? 'Sí' : 'No',
+        gestacion: isFemale ? (historyData?.gestation ? 'Sí' : 'No') : undefined,
+        menstruacion: isFemale ? (historyData?.menstruation ? 'Sí' : 'No') : undefined,
+        tipoDIU: isFemale ? historyData?.diu_type || '' : undefined,
+        
+        // Campos adicionales
+        diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
+        operaciones: historyData?.operaciones || '',
+        medicamentos: historyData?.medicamentos || '',
+        dolencias: historyData?.dolencias || '',
+        diagnosticosReflexologia: historyData?.diagnosticos_reflexologia || '',
+        observacionesAdicionales: historyData?.observaciones_adicionales || '',
+        antecedentesFamiliares: historyData?.antecedentes_familiares || '',
+        alergias: historyData?.alergias || '',
+        
+        // Fechas
+        fechaInicio: dayjs(),
+      });
 
-    // Manejo del terapeuta con verificación segura
-    if (historyData?.therapist) {
-      setTherapist(historyData.therapist.full_name || '');
-      setSelectedTherapistId(historyData.therapist.id || null);
+      // Manejo del terapeuta con verificación segura
+      if (historyData?.therapist) {
+        setTherapist(historyData.therapist.full_name || '');
+        setSelectedTherapistId(historyData.therapist.id || null);
+      } else {
+        setTherapist(null);
+        setSelectedTherapistId(null);
+      }
     } else {
+      // Resetear el formulario si no hay datos válidos
+      form.resetFields();
       setTherapist(null);
       setSelectedTherapistId(null);
     }
-  } else {
-    // Resetear el formulario si no hay datos válidos
-    form.resetFields();
-    setTherapist(null);
-    setSelectedTherapistId(null);
-  }
-}, [patientHistory, form]);
+  }, [patientHistory, form]);
 
-useEffect(() => {
-  if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
+  useEffect(() => {
+    if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
 
-  const selectedAppointment = appointments.find(
-    (a) => a.appointment_date === selectedAppointmentDate
-  );
+    const selectedAppointment = appointments.find(
+      (a) => a.appointment_date === selectedAppointmentDate
+    );
 
-  if (selectedAppointment) {
-    form.setFieldsValue({
-      diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
-      dolencias: selectedAppointment.ailments ?? '',
-      medicamentos: selectedAppointment.medications ?? '',
-      operaciones: selectedAppointment.surgeries ?? '',
-      observacionesAdicionales: selectedAppointment.observation ?? '',
-      diagnosticosReflexologia: selectedAppointment.reflexology_diagnostics ?? '',
-      therapist: selectedAppointment.therapist?.full_name ?? '',
-    });
+    if (selectedAppointment) {
+      const therapistObj = selectedAppointment.therapist;
+      const fullName = therapistObj
+        ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
+        : '';
+      form.setFieldsValue({
+        diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
+        dolencias: selectedAppointment.ailments ?? '',
+        medicamentos: selectedAppointment.medications ?? '',
+        operaciones: selectedAppointment.surgeries ?? '',
+        observacionesAdicionales: selectedAppointment.observation ?? '',
+        diagnosticosReflexologia: selectedAppointment.reflexology_diagnostics ?? '',
+        therapist: fullName,
+      });
 
-    setTherapist(selectedAppointment.therapist?.full_name ?? null);
-    setSelectedTherapistId(selectedAppointment.therapist?.id ?? null);
-  }
-}, [selectedAppointmentDate, appointments]);
+      setTherapist(fullName || null);
+      setSelectedTherapistId(therapistObj?.id ?? null);
+    }
+  }, [selectedAppointmentDate, appointments]);
+
+  useEffect(() => {
+    if (lastAppointment?.appointment_date) {
+      setSelectedAppointmentDate(lastAppointment.appointment_date);
+    }
+  }, [lastAppointment]);
 
   // Función para abrir el modal
   const showTherapistModal = () => {
@@ -247,8 +255,63 @@ useEffect(() => {
     form.setFieldsValue({ therapist: '' });
   };
 
-  const onFinish = (values) => {
-    console.log('Valores del formulario:', values);
+  const onFinish = async (values) => {
+    const historyId = patientHistory?.data?.id;
+    const selectedAppointment = appointments.find(
+      (a) => a.appointment_date === selectedAppointmentDate
+    );
+    const appointmentId = selectedAppointment?.id;
+
+    if (!historyId || !appointmentId) {
+      message.error("Falta el ID del historial o la cita.");
+      return;
+    }
+
+    const historyPayload = {
+      weight: values.pesoInicial,
+      last_weight: values.ultimoPeso,
+      height: values.talla,
+      observation: values.observation,
+      private_observation: values.observationPrivate,
+      diagnosticos_medicos: values.diagnosticosMedicos,
+      operaciones: values.operaciones,
+      medicamentos: values.medicamentos,
+      dolencias: values.dolencias,
+      diagnosticos_reflexologia: values.diagnosticosReflexologia,
+      observaciones_adicionales: values.observacionesAdicionales,
+      antecedentes_familiares: values.antecedentesFamiliares,
+      alergias: values.alergias,
+      testimony: values.testimonio === 'Sí',
+      gestation: values.gestacion === 'Sí',
+      menstruation: values.menstruacion === 'Sí',
+      diu_type: values.tipoDIU,
+      therapist_id: selectedTherapistId,
+    };
+
+    const appointmentPayload = {
+      appointment_date: selectedAppointmentDate,
+      ailments: values.dolencias,
+      diagnosis: values.diagnosticosMedicos,
+      surgeries: values.operaciones,
+      reflexology_diagnostics: values.diagnosticosReflexologia,
+      medications: values.medicamentos,
+      observation: values.observacionesAdicionales,
+      initial_date: dayjs(values.fechaInicio).format('YYYY-MM-DD'),
+      final_date: dayjs(values.fechaInicio).add(5, 'day').format('YYYY-MM-DD'),
+      appointment_type: 'CC',
+      payment: '50.00',
+      appointment_status_id: 2,
+      payment_type_id: 2,
+      patient_id: patientHistory?.data?.patient?.id,
+      therapist_id: selectedTherapistId,
+    };
+
+    try {
+      await updateHistory(historyId, historyPayload);
+      await updateAppointment(appointmentId, appointmentPayload);
+    } catch (e) {
+      console.error('Error actualizando historial y cita:', e);
+    }
   };
 
   // Columnas para la tabla de terapeutas
@@ -298,7 +361,7 @@ useEffect(() => {
             </Form.Item>
 
             <Form.Item
-              name="observationPrivate"
+              name="observation"
               label="Observación"
               className={styles.formItem}
             >
@@ -344,7 +407,7 @@ useEffect(() => {
                   >
                     Seleccionar
                   </Button>
-                  {therapist && (
+                  {form.getFieldValue('therapist') && (
                     <Button
                       danger
                       onClick={handleRemoveTherapist}
@@ -356,7 +419,7 @@ useEffect(() => {
                 </div>
                 {showTherapistDropdown && (
                   <div className={styles.therapistDropdown}>
-                    {therapists.map((t) => (
+                    {therapist.map((t) => (
                       <div
                         key={t.id}
                         className={styles.dropdownItem}
