@@ -1,24 +1,29 @@
 import { ConfigProvider, Select } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getDocumentTypes } from './SelectsApi';
 
 export function SelectTypeOfDocument({ value, onChange, ...rest }) {
   const [options, setOptions] = useState([]);
   const [internalValue, setInternalValue] = useState(value);
+  const [loading, setLoading] = useState(false);
 
-  // Cargar opciones
+  // Cargar opciones con caché
   useEffect(() => {
     const fetchDocumentTypes = async () => {
+      setLoading(true);
       try {
         const data = await getDocumentTypes();
         const formattedOptions = data.map((item) => ({
           label: <span style={{ color: '#fff' }}>{item.label}</span>, // texto blanco en opciones
           value: item.value,
         }));
+
         setOptions(formattedOptions);
       } catch (error) {
         console.error('Error al obtener tipos de documento:', error);
         setOptions([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDocumentTypes();
@@ -36,10 +41,21 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
     }
   }, [value, options]);
 
-  const handleChange = (val) => {
-    setInternalValue(val);
-    if (onChange) onChange(val);
-  };
+  const handleChange = useCallback(
+    (val) => {
+      setInternalValue(val);
+      if (onChange) onChange(val);
+    },
+    [onChange],
+  );
+
+  const filterOption = useCallback(
+    (input, option) =>
+      (option?.label?.props?.children ?? '')
+        .toLowerCase()
+        .includes(input.toLowerCase()),
+    [],
+  );
 
   return (
     <ConfigProvider
@@ -65,13 +81,10 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
         value={internalValue}
         onChange={handleChange}
         showSearch
-        filterOption={(input, option) =>
-          (option?.label?.props?.children ?? '')
-            .toLowerCase()
-            .includes(input.toLowerCase())
-        }
+        filterOption={filterOption}
         placeholder="Tipo de documento"
         options={options}
+        loading={loading}
         style={{
           width: '100%',
         }}

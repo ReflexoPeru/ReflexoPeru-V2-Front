@@ -23,6 +23,10 @@ import {
   Wallet,
   CalendarBlank,
 } from '@phosphor-icons/react';
+import {
+  useCompanyInfo,
+  useSystemHook,
+} from '../../configuration/cSystem/hook/systemHook';
 
 const reportOptions = [
   {
@@ -64,6 +68,9 @@ const Reporte = () => {
     current: 1,
     pageSize: 20,
   });
+
+  const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
+  const { logoUrl, loading: logoLoading, error: logoError } = useSystemHook();
 
   const {
     data: diariaData,
@@ -230,8 +237,8 @@ const Reporte = () => {
     downloadBtn = null;
   if (showPreview) {
     if (showPreview === 'diariaTerapeuta') {
-      loading = diariaLoading;
-      error = diariaError;
+      loading = diariaLoading || logoLoading || loadingInfo;
+      error = diariaError || logoError || errorInfo;
       content = diariaData && (
         <PDFViewer
           key={`diaria-${safeDate.format('YYYY-MM-DD')}`}
@@ -239,12 +246,17 @@ const Reporte = () => {
           height="95%"
           style={pdfViewerStyle}
         >
-          <DailyTherapistReportPDF data={diariaData} date={safeDate} />
+          <DailyTherapistReportPDF
+            data={diariaData}
+            date={safeDate}
+            logoUrl={logoUrl}
+            companyInfo={companyInfo}
+          />
         </PDFViewer>
       );
     } else if (showPreview === 'pacientesTerapeuta') {
-      loading = pacientesLoading;
-      error = pacientesError;
+      loading = pacientesLoading || logoLoading || loadingInfo;
+      error = pacientesError || logoError || errorInfo;
       content =
         pacientesData && pacientesData.length > 0 ? (
           <PDFViewer
@@ -256,6 +268,8 @@ const Reporte = () => {
             <PatientsByTherapistReportPDF
               data={pacientesData}
               date={safeDate}
+              logoUrl={logoUrl}
+              companyInfo={companyInfo}
             />
           </PDFViewer>
         ) : (
@@ -264,8 +278,8 @@ const Reporte = () => {
           </div>
         );
     } else if (showPreview === 'reporteCaja') {
-      loading = cajaLoading;
-      error = cajaError;
+      loading = cajaLoading || logoLoading || loadingInfo;
+      error = cajaError || logoError || errorInfo;
       content =
         cajaData && Object.keys(cajaData).length > 0 ? (
           <PDFViewer
@@ -274,7 +288,12 @@ const Reporte = () => {
             height="95%"
             style={pdfViewerStyle}
           >
-            <DailyCashReportPDF data={cajaData} date={safeDate} />
+            <DailyCashReportPDF
+              data={cajaData}
+              date={safeDate}
+              logoUrl={logoUrl}
+              companyInfo={companyInfo}
+            />
           </PDFViewer>
         ) : (
           <div className={styles.errorMsg}>

@@ -4,7 +4,7 @@ import ModeloTable from '../../../components/Table/Tabla';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
-import AppointmentsMock from '../../../mock/Appointments';
+
 import { useNavigate } from 'react-router';
 import { useAppointments } from '../hook/appointmentsHook';
 import { Space, Button } from 'antd';
