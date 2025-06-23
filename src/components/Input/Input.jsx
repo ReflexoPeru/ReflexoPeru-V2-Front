@@ -299,6 +299,12 @@ const PatientField = ({
         pacienteId: selectedPatient.full_name,
         patient_id: selectedPatient.id,
       });
+    } else if (formInstance && !selectedPatient) {
+      // Limpiar los campos si no hay paciente seleccionado
+      formInstance.setFieldsValue({
+        pacienteId: undefined,
+        patient_id: undefined,
+      });
     }
   }, [selectedPatient, formInstance]);
   
