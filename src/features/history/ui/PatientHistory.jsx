@@ -18,7 +18,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
 import { updateAppointmentById } from '../service/historyService';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
@@ -117,6 +117,8 @@ const PatientHistory = () => {
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
   
   const { id } = useParams()
+  const location = useLocation();
+  const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm } = useStaff();
   const { data: patientHistory } = usePatientHistory(id)
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
@@ -216,10 +218,13 @@ const PatientHistory = () => {
   }, [selectedAppointmentDate, appointments]);
 
   useEffect(() => {
-    if (lastAppointment?.appointment_date) {
+    if (appointmentFromState?.appointment_date) {
+      setSelectedAppointmentDate(appointmentFromState.appointment_date);
+    } else if (lastAppointment?.appointment_date) {
       setSelectedAppointmentDate(lastAppointment.appointment_date);
     }
-  }, [lastAppointment]);
+  }, [appointmentFromState, lastAppointment]);
+
 
   // Función para abrir el modal
   const showTherapistModal = () => {
