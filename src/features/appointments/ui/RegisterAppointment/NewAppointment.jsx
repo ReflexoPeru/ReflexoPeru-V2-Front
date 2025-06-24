@@ -145,6 +145,7 @@ const NewAppointment = () => {
         description: 'La cita se ha registrado correctamente',
       });
 
+      form.resetFields();
       setFormValues(null);
       setSelectedPatient(null);
       setPatientType('nuevo');

@@ -438,7 +438,7 @@ const TimeField = ({ form }) => {
         }}
       >
         <TimePicker
-          format="H:mm"
+          format="HH:mm"
           style={{ width: '100%' }}
           onChange={handleTimeChange}
         />
