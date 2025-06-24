@@ -72,53 +72,13 @@ export default function AppointmentsComplete() {
         <Space size="small">
           <Button
             style={{
-              backgroundColor: '#555555',
-              color: '#fff',
-              border: 'none',
-            }}
-            onClick={() => handleAction('edit', record)}
-          >
-            Editar
-          </Button>
-          <Button
-            style={{
-              backgroundColor: '#0066FF',
-              color: '#fff',
-              border: 'none',
-            }}
-            onClick={() => handleAction('imprimir', record)}
-          >
-            Imprimir
-          </Button>
-          <Button
-            style={{
-              backgroundColor: '#69276F',
-              color: '#fff',
-              border: 'none',
-            }}
-            onClick={() => handleAction('boleta', record)}
-          >
-            Boleta
-          </Button>
-          <Button
-            style={{
               backgroundColor: '#00AA55',
               color: '#fff',
               border: 'none',
             }}
             onClick={() => handleAction('history', record)}
           >
-            Historia
-          </Button>
-          <Button
-            style={{
-              backgroundColor: '#FF3333',
-              color: '#fff',
-              border: 'none',
-            }}
-            onClick={() => handleAction('delete', record)}
-          >
-            Eliminar
+            Editar Historia
           </Button>
         </Space>
       ),
@@ -128,21 +88,13 @@ export default function AppointmentsComplete() {
   const handleAction = (action, record) => {
     // Implementa las acciones según el tipo
     console.log(`${action} action for:`, record);
+
     switch (action) {
-      case 'edit':
-        // Lógica para editar
-        break;
-      case 'imprimir':
-        // Lógica para más info
-        break;
-      case 'boleta':
-        // Lógica para historia
-        break;
       case 'history':
         // Lógica para eliminar
-        break;
-      case 'delete':
-        // Lógica para eliminar
+        navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
+          state: { appointment: record },
+        });
         break;
       default:
         break;
