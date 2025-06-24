@@ -1,6 +1,13 @@
-import { Button, ConfigProvider, Modal, Radio, Table, notification } from 'antd';
-import { useState } from 'react';
-import Form from '../../../../components/Form/Form';
+import {
+  Button,
+  ConfigProvider,
+  Modal,
+  Radio,
+  Table,
+  notification,
+} from 'antd';
+import { useState, useRef } from 'react';
+import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
 import { useAppointments, usePatients } from '../../hook/appointmentsHook';
@@ -10,11 +17,9 @@ const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
   const [patientType, setPatientType] = useState('nuevo');
-  const [selectedPatient, setSelectedPatient] = useState(null);
   const [formValues, setFormValues] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Modal estados
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
@@ -27,92 +32,75 @@ const NewAppointment = () => {
   };
 
   const handleSubmit = (values) => {
-    console.log('Valores del formulario:', values);
     setFormValues(values);
     submitNewAppointment(values);
   };
 
-const handleCompleteRegistration = async () => {
-  if (isSubmitting) return;
-  
-  if (!selectedPatient) {
-    notification.error({
-      message: 'Error',
-      description: 'Debe seleccionar o crear un paciente primero'
-    });
-    return;
-  }
+  const handleCancel = () => {
+    setIsCreatePatientModalVisible(false);
+    setIsModalVisible(false);
+  };
 
-  if (!formValues) {
-    notification.error({
-      message: 'Error',
-      description: 'Complete todos los campos del formulario'
-    });
-    return;
-  }
+  const handleCompleteRegistration = async () => {
+    if (isSubmitting) return;
 
-  setIsSubmitting(true);
-  
-  try {
-    const payload = {
-      data: {
-        ...formValues,
-        appointment_date: formValues.appointment_date, // Ya está en formato correcto
-        appointment_hour: formValues.appointment_hour || null,
-        patient_id: selectedPatient.id,
-      }
-    };
-
-    console.log('Payload a enviar:', payload);
-    
-    const result = await submitNewAppointment(payload);
-    
-    notification.success({
-      message: 'Cita registrada',
-      description: 'La cita se ha registrado correctamente'
-    });
-
-    // Resetear el formulario
-    setFormValues(null);
-    setSelectedPatient(null);
-    setPatientType('nuevo');
-    setShowHourField(false);
-    setIsPaymentRequired(false);
-    
-    return result;
-  } catch (error) {
-    console.error('Error al registrar cita:', error);
-    let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
-    
-    if (error.response) {
-      errorMessage = error.response.data?.message || errorMessage;
+    if (!selectedPatient) {
+      notification.error({
+        message: 'Error',
+        description: 'Debe seleccionar o crear un paciente primero',
+      });
+      return;
     }
-    
-    notification.error({
-      message: 'Error',
-      description: errorMessage
-    });
-    throw error;
-  } finally {
-    setIsSubmitting(false);
-  }
-};
 
-  const handleCreatePatient = async (patientData) => {
+    if (!formValues) {
+      notification.error({
+        message: 'Error',
+        description: 'Complete todos los campos del formulario',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-      // Simulación de creación exitosa
-      const mockResponse = { 
-        id: `new-patient-${Date.now()}`,
-        ...patientData,
-        full_name: `${patientData.first_name} ${patientData.last_name}`
+      const payload = {
+        data: {
+          ...formValues,
+          appointment_date: formValues.appointment_date,
+          appointment_hour: formValues.appointment_hour || null,
+          patient_id: selectedPatient.id,
+        },
       };
-      
-      await fetchPatients();
-      
-      return mockResponse;
+
+      const result = await submitNewAppointment(payload);
+
+      notification.success({
+        message: 'Cita registrada',
+        description: 'La cita se ha registrado correctamente',
+      });
+
+      setFormValues(null);
+      setSelectedPatient(null);
+      setPatientType('nuevo');
+      setShowHourField(false);
+      setIsPaymentRequired(false);
+
+      return result;
     } catch (error) {
-      console.error('Error al crear paciente:', error);
+      console.error('Error al registrar cita:', error);
+      let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
+
+      if (error.response) {
+        errorMessage = error.response.data?.message || errorMessage;
+      }
+
+      notification.error({
+        message: 'Error',
+        description: errorMessage,
+      });
       throw error;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -124,6 +112,29 @@ const handleCompleteRegistration = async () => {
     setIsModalVisible(true);
   };
 
+  const handleChangeSelectedPatient = (newText) => {
+    setSelectedPatient(newText);
+  };
+
+  const handleLogServerResponse = (result) => {
+    if (result && typeof result === 'object') {
+      // Concatenar el nombre completo
+      const concatenatedName = `${result.name} ${result.paternal_lastname} ${result.maternal_lastname}`.trim();
+  
+      // Convertir todo el objeto a string
+      const stringified = JSON.stringify(result);
+  
+      // Guardar en estado
+      setSelectedPatient({
+        ...result,
+        full_name: concatenatedName,
+        stringifiedData: stringified
+      });
+    } else {
+      console.error('El resultado no es un objeto válido:', result);
+    }
+  };
+  
   const appointmentFields = [
     {
       type: 'customRow',
@@ -148,6 +159,7 @@ const handleCompleteRegistration = async () => {
           name: 'patient_id',
           type: 'customComponent',
           componentType: 'patientField',
+          label: 'Paciente',
           required: true,
           span: 21,
           props: {
@@ -156,6 +168,7 @@ const handleCompleteRegistration = async () => {
               { label: 'Continuador', value: 'continuador' },
             ],
             selectedPatient,
+            onChangeSelectedPatient: handleChangeSelectedPatient,
             patientType,
             onPatientTypeChange: (value) => {
               setPatientType(value);
@@ -255,36 +268,36 @@ const handleCompleteRegistration = async () => {
       theme={{
         components: {
           Button: {
-            colorPrimary: '#1cb54a',                 
-            colorPrimaryHover: '#148235',             
-            colorPrimaryActive: '#148235',       
-            borderRadius: 6,                         
-            fontWeight: 500,                         
+            colorPrimary: '#1cb54a',
+            colorPrimaryHover: '#148235',
+            colorPrimaryActive: '#148235',
+            borderRadius: 6,
+            fontWeight: 500,
             paddingContentHorizontal: 16,
-            defaultBg: '#ff3333',   
-            defaultColor: '#ffffff',    
+            defaultBg: '#ff3333',
+            defaultColor: '#ffffff',
             defaultBorderColor: 'none',
-            defaultHoverColor: '#ffffff',   
-            defaultActiveBg: '#b22525', 
-            defaultActiveColor: '#ffffff', 
+            defaultHoverColor: '#ffffff',
+            defaultActiveBg: '#b22525',
+            defaultActiveColor: '#ffffff',
           },
           Table: {
-            headerBg: '#272727', 
+            headerBg: '#272727',
             headerColor: 'rgba(199,26,26,0.88)',
-            colorBgContainer: '#272727',                 
-            borderColor: '#555555',                  
-            rowHoverBg: '#555555',                    
-            cellPaddingBlock: 12,                     
-            cellPaddingInline: 16, 
+            colorBgContainer: '#272727',
+            borderColor: '#555555',
+            rowHoverBg: '#555555',
+            cellPaddingBlock: 12,
+            cellPaddingInline: 16,
           },
           Radio: {
-            colorPrimary: '#1cb54a',                
-          }
+            colorPrimary: '#1cb54a',
+          },
         },
       }}
     >
       <div className={styles.container}>
-        <Form
+        <FormComponent
           fields={appointmentFields}
           mode="create"
           showHourField={showHourField}
@@ -299,6 +312,7 @@ const handleCompleteRegistration = async () => {
           onSubmit={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
+          onCancel={handleCancel}
           submitButtonText="Registrar"
           onRegisterClick={handleCompleteRegistration}
           isSubmitting={isSubmitting}
@@ -308,39 +322,43 @@ const handleCompleteRegistration = async () => {
         <Modal
           title="Seleccionar Contribuidor"
           open={isModalVisible}
-          onCancel={() => {
-            setIsModalVisible(false);
-            setSelectedRowKey(null);
-          }}
+          centered
+          width={800}
+          onCancel={handleCancel}
           footer={[
-            <Button key="cancel" onClick={() => {
-              setIsModalVisible(false);
-              setSelectedRowKey(null);
-            }}>
+            <Button key="cancel" onClick={handleCancel}>
               Cancelar
             </Button>,
-            <Button 
-              key="submit" 
+            <Button
+              key="submit"
               type="primary"
-              disabled={!selectedRowKey}
               onClick={async () => {
-                if (!selectedRowKey) return;
-                
-                const selectedPatient = processedPatients.find(p => p.key === selectedRowKey);
+                if (!selectedRowKey) {
+                  notification.warning({
+                    message: 'Advertencia',
+                    description: 'Por favor seleccione un paciente primero',
+                  });
+                  return;
+                }
+
+                const selectedPatient = processedPatients.find(
+                  (p) => p.key === selectedRowKey,
+                );
                 setSelectedPatient(selectedPatient);
-                
+
                 setIsModalVisible(false);
                 setSelectedRowKey(null);
-                
+
                 notification.success({
                   message: 'Paciente seleccionado',
-                  description: `Se ha seleccionado a ${selectedPatient.full_name}`
+                  description: `Se ha seleccionado a ${selectedPatient.full_name}`,
                 });
               }}
             >
               Seleccionar
-            </Button>
+            </Button>,
           ]}
+          bodyStyle={{ padding: '24px' }}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -353,7 +371,6 @@ const handleCompleteRegistration = async () => {
             columns={columns}
             pagination={false}
             rowKey="key"
-            scroll={{ y: 200 }}
             loading={loading}
             onRow={(record) => ({
               onClick: () => {
@@ -367,37 +384,15 @@ const handleCompleteRegistration = async () => {
         <Modal
           title="Crear nuevo paciente"
           open={isCreatePatientModalVisible}
-          onCancel={() => setIsCreatePatientModalVisible(false)}
+          onCancel={handleCancel}
           footer={null}
           width={800}
           destroyOnClose
+          bodyStyle={{ overflow: 'hidden' }}
         >
-          <NewPatient 
-            onSubmit={async (patientData) => {
-              try {
-                const newPatient = await handleCreatePatient(patientData);
-                
-                setSelectedPatient({
-                  id: newPatient.id,
-                  full_name: newPatient.full_name
-                });
-                
-                setIsCreatePatientModalVisible(false);
-                
-                notification.success({
-                  message: 'Paciente creado',
-                  description: 'El paciente se ha registrado correctamente'
-                });
-                
-                setPatientType('continuador');
-              } catch (error) {
-                console.error('Error al crear paciente:', error);
-                notification.error({
-                  message: 'Error',
-                  description: 'No se pudo crear el paciente'
-                });
-              }
-            }}
+          <NewPatient
+            onCancel={handleCancel}
+            onSubmit={handleLogServerResponse}
           />
         </Modal>
       </div>

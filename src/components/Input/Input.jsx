@@ -10,7 +10,7 @@ import {
   TimePicker,
   theme,
 } from 'antd';
-import { useEffect } from 'react'; // 👈 Añadir esta importación
+import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -18,11 +18,9 @@ import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
 import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
-import SelectPrices from '../Select/SelectPrices'; // Ajusta la ruta según donde esté
+import SelectPrices from '../Select/SelectPrices';
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
-import SelectTherapist from '../Select/SelectTherapist';
 
-// ... importar los demás componentes Select
 const { Option } = Select;
 
 // Componente principal
@@ -104,9 +102,7 @@ const InputField = ({
       );
 
     case 'typeOfDocument':
-      return (
-        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
-      );
+      return <SelectTypeOfDocument onChange={rest.onChange} />;
 
     case 'selectPrices':
       return (
@@ -139,7 +135,6 @@ const InputField = ({
           onChange={(e) => {
             const value = e.target.value.toUpperCase();
             if (rest.onChange) rest.onChange(value);
-            // Si el form está presente, actualiza el valor en el form también
             if (form && rest.name) {
               form.setFieldValue(rest.name, value);
             }
@@ -148,7 +143,7 @@ const InputField = ({
       );
       break;
 
-    case 'select': // genérico
+    case 'select':
       return (
         <ConfigProvider
           theme={{
@@ -157,10 +152,10 @@ const InputField = ({
                 colorPrimary: '#1677ff',
                 optionSelectedBg: '#333333',
                 colorText: '#fff',
-                colorBgElevated: '#444444', // fondo del dropdown
+                colorBgElevated: '#444444',
                 colorTextPlaceholder: '#aaa',
                 controlItemBgHover: '#444444',
-                selectorBg: '#444444', // fondo del input
+                selectorBg: '#444444',
               },
             },
             token: {
@@ -193,18 +188,29 @@ const InputField = ({
           theme={{
             components: {
               DatePicker: {
-                panelColor: '#FFFFFFFF', // texto dentro del dropdown (se pone negro en tu pedido)
-                colorText: '#FFFFFFFF', // texto del input seleccionado (blanco)
-                colorBgElevated: '#444444', // fondo del input seleccionado (oscuro)
-                arrowColor: '#FFFFFFFF', // Esto depende de la versión de antd
+                colorBgElevated: '#3B3B3BFF',
+                colorText: '#ffffff',
+                colorTextHeading: '#ffffff',
+                colorIcon: '#ffffff',
+                colorPrimary: '#1cb54a',
+                colorPrimaryHover: '#148235',
+                cellHoverBg: '#333333',
               },
             },
           }}
         >
           <DatePicker
             {...inputProps}
-            style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
-            dropdownStyle={{ backgroundColor: '#000', color: '#444444' }} // opcional, para asegurar
+            style={{
+              width: '100%',
+              color: '#ffffff',
+              backgroundColor: '#424242FF',
+              borderColor: '#444444',
+            }}
+            dropdownStyle={{
+              backgroundColor: '#000000',
+              color: '#ffffff',
+            }}
           />
         </ConfigProvider>
       );
@@ -212,23 +218,6 @@ const InputField = ({
 
     case 'cita':
       return <CitaComponents {...rest} />;
-
-    case 'therapist':
-      return (
-        <Form.Item
-          name="therapist_id"
-          label="Terapeuta"
-          rules={[{ required: true, message: 'Seleccione un terapeuta' }]}
-        >
-          <SelectTherapist
-            value={rest.value === 0 ? null : rest.value}
-            onChange={(value) => {
-              rest.onChange(value);
-              form.setFieldValue('therapist_id', value);
-            }}
-          />
-        </Form.Item>
-      );
 
     default:
       inputComponent = <Input {...inputProps} />;
@@ -275,7 +264,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
     case 'dateField':
       return <DateField form={form} />;
     case 'patientField':
-      return <PatientField form={form} {...props} />;
+      return <PatientField form={form}  {...props} />;
     case 'timeField':
       return <TimeField form={form} />;
     case 'hourCheckbox':
@@ -288,33 +277,24 @@ const CitaComponents = ({ componentType, form, ...props }) => {
 };
 
 // Componentes individuales
-// En Input.jsx
 const PatientField = ({
   form,
   patientType,
   onPatientTypeChange,
   patientTypeOptions,
   onOpenCreateModal,
-  onOpenSelectModal,
   selectedPatient,
+  changeSelectedPatient,
+  onOpenSelectModal,
 }) => {
-  // Usa useFormInstance como fallback si form no está disponible
+
   const formInstance = form || Form.useFormInstance();
 
-  // Actualizar el valor del campo cuando cambia el paciente seleccionado
-  useEffect(() => {
-    if (formInstance && selectedPatient) {
-      formInstance.setFieldsValue({
-        pacienteId: selectedPatient.full_name,
-        patient_id: selectedPatient.id,
-      });
-    }
-  }, [selectedPatient, formInstance]);
+  // Función para cambiar el texto del paciente
 
   return (
     <div className={styles.patientRow}>
       <div className={styles.patientContainer}>
-        {/* Input de paciente */}
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
@@ -322,19 +302,18 @@ const PatientField = ({
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
-            <Input
-              className={styles.inputStyle}
-              value={selectedPatient ? selectedPatient.full_name : ''}
-              readOnly
+            <InputField
+            readonly = {true}
+           type= "text"
+           value={  selectedPatient?.concatenatedName||selectedPatient?.full_name || ''}
+            onChange={(e) => changeSelectedPatient(e.target.value)}
             />
           </Form.Item>
-          {/* Campo oculto para el ID del paciente */}
           <Form.Item name="patient_id" hidden>
             <Input />
           </Form.Item>
         </div>
 
-        {/* Botón Crear/Elegir */}
         <div className={styles.patientButtonContainer}>
           <Button
             type="primary"
@@ -351,7 +330,6 @@ const PatientField = ({
           </Button>
         </div>
 
-        {/* Checkboxes en columna */}
         <div className={styles.checkboxColumn}>
           {patientTypeOptions.map((option) => (
             <Checkbox
@@ -370,13 +348,12 @@ const PatientField = ({
 };
 
 const DateField = ({ form }) => {
-  // Usa Form.useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
 
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
     formInstance.setFieldsValue({
-      appointment_date: dateString,
+      appointment_date: dateString
     });
   };
 
@@ -391,17 +368,29 @@ const DateField = ({ form }) => {
         theme={{
           components: {
             DatePicker: {
-              panelColor: '#FFFFFFFF',
-              colorText: '#FFFFFFFF',
-              colorBgElevated: '#444444',
-              arrowColor: '#FFFFFFFF',
+              colorBgElevated: '#222222FF',
+              colorText: '#ffffff',
+              colorTextHeading: '#ffffff',
+              colorIcon: '#ffffff',
+              colorPrimary: '#1cb54a',
+              colorPrimaryHover: '#148235',
+              cellHoverBg: '#333333',
             },
           },
         }}
       >
         <DatePicker
-          style={{ width: '100%', color: '#fff', backgroundColor: '#444444' }}
+          style={{
+            width: '100%',
+            color: '#ffffff',
+            backgroundColor: '#333333FF',
+            borderColor: '#444444',
+          }}
           onChange={handleDateChange}
+          dropdownStyle={{
+            backgroundColor: '#2C2C2CFF',
+            color: '#ffffff',
+          }}
         />
       </ConfigProvider>
     </Form.Item>
@@ -409,13 +398,12 @@ const DateField = ({ form }) => {
 };
 
 const TimeField = ({ form }) => {
-  // Usa Form.useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
 
   const handleTimeChange = (time, timeString) => {
     console.log('Hora seleccionada:', timeString);
     formInstance.setFieldsValue({
-      appointment_hour: timeString,
+      appointment_hour: timeString
     });
   };
 

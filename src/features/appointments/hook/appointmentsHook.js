@@ -1,10 +1,10 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  getPaginatedAppointmentsByDate,
-  searchAppointments,
   createAppointment,
+  getPaginatedAppointmentsByDate,
   getPatients,
+  searchAppointments,
   searchPatients,
 } from '../service/appointmentsService';
 
@@ -186,6 +186,21 @@ export const usePatients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [initialLoad, setInitialLoad] = useState(false);
 
+  // nuevo
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/patients?search=${searchTerm}`);
+      if (!response.ok) throw new Error('Error al obtener pacientes');
+      const data = await response.json();
+      setPatients(data);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Función para cargar pacientes paginados
   const loadPatients = async (page) => {
     if (loading) return; // Evitar llamadas duplicadas
@@ -229,8 +244,9 @@ export const usePatients = () => {
     if (!initialLoad) {
       loadPatients(1);
       setInitialLoad(true);
+      fetchPatients();
     }
-  }, [initialLoad]);
+  }, [searchTerm, initialLoad]);
 
   // Búsqueda con debounce
   useEffect(() => {
@@ -253,6 +269,7 @@ export const usePatients = () => {
     error,         // Mensaje de error (si existe)
     pagination,    // Información de paginación
     setSearchTerm, // Función para establecer término de búsqueda
+    fetchPatients,
     handlePageChange: loadPatients, // Función para cambiar de página
   };
 };
