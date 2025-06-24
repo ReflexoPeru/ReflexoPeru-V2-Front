@@ -162,7 +162,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const DailyCashReportPDF = ({ data, date, logoUrl, companyInfo }) => {
+const DailyCashReportPDF = ({
+  data,
+  date,
+  logoUrl,
+  companyInfo,
+  isEdited = false,
+}) => {
   const rows = Object.values(data || {});
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
@@ -184,13 +190,25 @@ const DailyCashReportPDF = ({ data, date, logoUrl, companyInfo }) => {
           <Image src={logo} style={styles.logo} />
           <View style={styles.headerTitles}>
             <Text style={styles.clinicName}>{clinicName}</Text>
-            <Text style={styles.reportTitle}>Reporte de Caja Diaria</Text>
+            <Text style={styles.reportTitle}>
+              Reporte de Caja Diaria
+              {isEdited && (
+                <Text style={{ fontSize: 10, color: '#ff6b35', marginLeft: 8 }}>
+                  (Datos Simulados)
+                </Text>
+              )}
+            </Text>
           </View>
           <View style={styles.headerInfo}>
             <Text style={styles.infoText}>
               Fecha del Reporte: {date.format('DD/MM/YYYY')}
             </Text>
             <Text style={styles.infoText}>Generado: {fechaHora}</Text>
+            {isEdited && (
+              <Text style={{ fontSize: 8, color: '#ff6b35', marginTop: 2 }}>
+                * Datos modificados para simulación
+              </Text>
+            )}
           </View>
         </View>
 
@@ -253,6 +271,12 @@ const DailyCashReportPDF = ({ data, date, logoUrl, companyInfo }) => {
 
         <Text style={styles.footer}>
           {clinicName} - Documento generado automáticamente.
+          {isEdited && (
+            <Text style={{ color: '#ff6b35' }}>
+              {' '}
+              Datos modificados para simulación.
+            </Text>
+          )}
         </Text>
       </Page>
     </Document>

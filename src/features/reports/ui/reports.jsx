@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ConfigProvider, DatePicker, Button, theme, Card, Select } from 'antd';
 import ReportSelector from './ReportSelector';
 import ReportPreview from './ReportPreview';
+import EditCashReportModal from './EditCashReportModal';
 import styles from './reports.module.css';
 import dayjs from 'dayjs';
 import {
@@ -68,6 +69,10 @@ const Reporte = () => {
     current: 1,
     pageSize: 20,
   });
+
+  // Nuevos estados para el modal de edición
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedCajaData, setEditedCajaData] = useState(null);
 
   const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
   const { logoUrl, loading: logoLoading, error: logoError } = useSystemHook();
@@ -194,6 +199,28 @@ const Reporte = () => {
     setReportType(null);
     setDate(dayjs());
     setRange(null);
+    setEditedCajaData(null); // Resetear datos editados
+  };
+
+  // Nueva función para manejar la edición
+  const handleEditCashReport = () => {
+    setShowEditModal(true);
+  };
+
+  // Nueva función para guardar los cambios editados
+  const handleSaveEditedData = (updatedData) => {
+    setEditedCajaData(updatedData);
+    setShowEditModal(false);
+  };
+
+  // Nueva función para cancelar la edición
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+  };
+
+  // Nueva función para resetear los datos editados
+  const handleResetData = () => {
+    setEditedCajaData(null);
   };
 
   // Nueva función para exportar a Excel usando exceljs
@@ -280,19 +307,24 @@ const Reporte = () => {
     } else if (showPreview === 'reporteCaja') {
       loading = cajaLoading || logoLoading || loadingInfo;
       error = cajaError || logoError || errorInfo;
+
+      // Usar datos editados si están disponibles, sino usar los datos originales
+      const dataToShow = editedCajaData || cajaData;
+
       content =
-        cajaData && Object.keys(cajaData).length > 0 ? (
+        dataToShow && Object.keys(dataToShow).length > 0 ? (
           <PDFViewer
-            key={`caja-${safeDate.format('YYYY-MM-DD')}`}
+            key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
             width="100%"
             height="95%"
             style={pdfViewerStyle}
           >
             <DailyCashReportPDF
-              data={cajaData}
+              data={dataToShow}
               date={safeDate}
               logoUrl={logoUrl}
               companyInfo={companyInfo}
+              isEdited={!!editedCajaData}
             />
           </PDFViewer>
         ) : (
@@ -357,15 +389,34 @@ const Reporte = () => {
 
   if (showPreview) {
     return (
-      <ReportPreview
-        showPreview={showPreview}
-        loading={loading}
-        generating={generating}
-        error={error}
-        content={content}
-        downloadBtn={downloadBtn}
-        handleCancel={handleCancel}
-      />
+      <>
+        <ReportPreview
+          showPreview={showPreview}
+          loading={loading}
+          generating={generating}
+          error={error}
+          content={content}
+          downloadBtn={downloadBtn}
+          handleCancel={handleCancel}
+          onEdit={
+            showPreview === 'reporteCaja' ? handleEditCashReport : undefined
+          }
+          showEditButton={showPreview === 'reporteCaja'}
+          onReset={showPreview === 'reporteCaja' ? handleResetData : undefined}
+          showResetButton={showPreview === 'reporteCaja' && !!editedCajaData}
+        />
+
+        {/* Modal de edición para reporte de caja */}
+        {showPreview === 'reporteCaja' && (
+          <EditCashReportModal
+            visible={showEditModal}
+            onCancel={handleCancelEdit}
+            onSave={handleSaveEditedData}
+            data={cajaData}
+            date={safeDate}
+          />
+        )}
+      </>
     );
   }
 

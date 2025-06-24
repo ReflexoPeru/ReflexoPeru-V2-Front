@@ -60,9 +60,9 @@ export default function AppointmentsComplete() {
     },
     {
       title: 'Metodo Pago',
-      dataIndex: 'payment_type_id',
-      key: 'payment_type_id',
-      width: '75px',
+      key: 'payment_type',
+      width: '100px',
+      render: (_, record) => record.payment_type?.name || 'Sin método',
     },
     {
       title: 'Acciones',
@@ -70,60 +70,31 @@ export default function AppointmentsComplete() {
       width: '200px',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#555555', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('edit', record)}
-          >
-            Editar
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('imprimir', record)}
-          >
-            Imprimir
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#69276F', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('boleta', record)}
-          >
-            Boleta
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('history', record)}
           >
-            Historia
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('delete', record)}
-          >
-            Eliminar
+            Editar Historia
           </Button>
         </Space>
       ),
-    }
+    },
   ];
-
 
   const handleAction = (action, record) => {
     // Implementa las acciones según el tipo
     console.log(`${action} action for:`, record);
-    switch(action) {
-      case 'edit':
-        // Lógica para editar
-        break;
-      case 'imprimir':
-        // Lógica para más info
-        break;
-      case 'boleta':
-        // Lógica para historia
-        break;
+
+    switch (action) {
       case 'history':
         // Lógica para eliminar
-        break;
-      case 'delete':
-        // Lógica para eliminar
+        navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
+          state: { appointment: record },
+        });
         break;
       default:
         break;
@@ -139,7 +110,6 @@ export default function AppointmentsComplete() {
     // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
-
 
   return (
     <div

@@ -346,14 +346,15 @@ const Users = () => {
           >
             Editar
           </Button>
-          <Button
+          {/* <Button
             className={styles.deactivateButton}
             onClick={() => handleAction('deactivate', record)}
           >
-            {record.account_statement === 'Habilitado'
+            {record.account_+
+            statement === 'Habilitado'
               ? 'Desactivar'
               : 'Activar'}
-          </Button>
+          </Button> */}
           <Popconfirm
             title="¿Estás seguro de eliminar este usuario?"
             onConfirm={() => handleDelete(record.id)}

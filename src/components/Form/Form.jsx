@@ -18,9 +18,9 @@ const FormComponent = ({
   onPatientTypeChange = () => {},
   onShowHourFieldChange = () => {},
   onPaymentRequiredChange = () => {},
+  onOpenCreateModal = () => {}, // Nueva prop para abrir modal de creación
+  onOpenSelectModal = () => {}, // Nueva prop para abrir modal de selección
   onCancel = () => {},
-  onOpenCreateModal = () => {},
-  onOpenSelectModal = () => {},
   form: externalForm,
 }) => {
   const [internalForm] = useForm();
@@ -134,6 +134,8 @@ const FormComponent = ({
     );
   };
 
+  
+
   return (
     <ConfigProvider
       theme={{
@@ -160,11 +162,7 @@ const FormComponent = ({
 
           <Form.Item className={styles.buttonGroup}>
             <div className={styles.buttonWrapper}>
-              <Button
-                htmlType="button"
-                onClick={onCancel}
-                className={styles.buttonCancel}
-              >
+              <Button htmlType="button" className={styles.buttonCancel} onClick={onCancel}>
                 Cancelar
               </Button>
               <Button
