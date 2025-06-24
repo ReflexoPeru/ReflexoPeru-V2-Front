@@ -19,7 +19,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
 import { updateAppointmentById } from '../service/historyService';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -123,6 +123,7 @@ const PatientHistory = () => {
   
   const { id } = useParams()
   const location = useLocation();
+  const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm } = useStaff();
   const { data: patientHistory } = usePatientHistory(id)
@@ -616,7 +617,12 @@ const PatientHistory = () => {
                 >
                   Guardar Cambios
                 </Button>
-                <Button className={styles.cancelButton}>Cancelar</Button>
+                <Button 
+                  className={styles.cancelButton}
+                  onClick={() => navigate(-1)}
+                >
+                  Cancelar
+                </Button>
               </div>
             </div>
           </Form>
