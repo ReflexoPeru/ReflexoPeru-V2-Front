@@ -10,7 +10,7 @@ import {
   TimePicker,
   theme,
 } from 'antd';
-import { useEffect } from 'react'; // 👈 Añadir esta importación
+import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -18,10 +18,9 @@ import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
 import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
-import SelectPrices from '../Select/SelectPrices'; // Ajusta la ruta según donde esté
+import SelectPrices from '../Select/SelectPrices';
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
 
-// ... importar los demás componentes Select
 const { Option } = Select;
 
 // Componente principal
@@ -136,7 +135,6 @@ const InputField = ({
           onChange={(e) => {
             const value = e.target.value.toUpperCase();
             if (rest.onChange) rest.onChange(value);
-            // Si el form está presente, actualiza el valor en el form también
             if (form && rest.name) {
               form.setFieldValue(rest.name, value);
             }
@@ -145,7 +143,7 @@ const InputField = ({
       );
       break;
 
-    case 'select': // genérico
+    case 'select':
       return (
         <ConfigProvider
           theme={{
@@ -154,10 +152,10 @@ const InputField = ({
                 colorPrimary: '#1677ff',
                 optionSelectedBg: '#333333',
                 colorText: '#fff',
-                colorBgElevated: '#444444', // fondo del dropdown
+                colorBgElevated: '#444444',
                 colorTextPlaceholder: '#aaa',
                 controlItemBgHover: '#444444',
-                selectorBg: '#444444', // fondo del input
+                selectorBg: '#444444',
               },
             },
             token: {
@@ -184,19 +182,19 @@ const InputField = ({
         </ConfigProvider>
       );
 
-      case 'date':
+    case 'date':
       inputComponent = (
         <ConfigProvider
           theme={{
             components: {
               DatePicker: {
-                colorBgElevated: '#3B3B3BFF',      // Fondo del calendario
-                colorText: '#ffffff',            // Texto general
-                colorTextHeading: '#ffffff',     // Encabezados (mes y año)
-                colorIcon: '#ffffff',            // Flechas
-                colorPrimary: '#1cb54a',         // Día seleccionado
-                colorPrimaryHover: '#148235',    // Hover del color principal
-                cellHoverBg: '#333333',          // Hover en celdas
+                colorBgElevated: '#3B3B3BFF',
+                colorText: '#ffffff',
+                colorTextHeading: '#ffffff',
+                colorIcon: '#ffffff',
+                colorPrimary: '#1cb54a',
+                colorPrimaryHover: '#148235',
+                cellHoverBg: '#333333',
               },
             },
           }}
@@ -216,7 +214,7 @@ const InputField = ({
           />
         </ConfigProvider>
       );
-    break;
+      break;
 
     case 'cita':
       return <CitaComponents {...rest} />;
@@ -266,7 +264,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
     case 'dateField':
       return <DateField form={form} />;
     case 'patientField':
-      return <PatientField form={form} {...props} />;
+      return <PatientField form={form}  {...props} />;
     case 'timeField':
       return <TimeField form={form} />;
     case 'hourCheckbox':
@@ -279,39 +277,24 @@ const CitaComponents = ({ componentType, form, ...props }) => {
 };
 
 // Componentes individuales
-// En Input.jsx
 const PatientField = ({
   form,
   patientType,
   onPatientTypeChange,
   patientTypeOptions,
   onOpenCreateModal,
-  onOpenSelectModal,
   selectedPatient,
+  changeSelectedPatient,
+  onOpenSelectModal,
 }) => {
-  // Usa useFormInstance como fallback si form no está disponible
+
   const formInstance = form || Form.useFormInstance();
-  
-  // Actualizar el valor del campo cuando cambia el paciente seleccionado
-  useEffect(() => {
-    if (formInstance && selectedPatient) {
-      formInstance.setFieldsValue({
-        pacienteId: selectedPatient.full_name,
-        patient_id: selectedPatient.id,
-      });
-    } else if (formInstance && !selectedPatient) {
-      // Limpiar los campos si no hay paciente seleccionado
-      formInstance.setFieldsValue({
-        pacienteId: undefined,
-        patient_id: undefined,
-      });
-    }
-  }, [selectedPatient, formInstance]);
-  
+
+  // Función para cambiar el texto del paciente
+
   return (
     <div className={styles.patientRow}>
       <div className={styles.patientContainer}>
-        {/* Input de paciente */}
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
@@ -319,19 +302,18 @@ const PatientField = ({
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
-            <Input
-              className={styles.inputStyle}
-              value={selectedPatient ? selectedPatient.full_name : ''}
-              readOnly
+            <InputField
+            readonly = {true}
+           type= "text"
+           value={  selectedPatient?.concatenatedName||selectedPatient?.full_name || ''}
+            onChange={(e) => changeSelectedPatient(e.target.value)}
             />
           </Form.Item>
-          {/* Campo oculto para el ID del paciente */}
           <Form.Item name="patient_id" hidden>
             <Input />
           </Form.Item>
         </div>
 
-        {/* Botón Crear/Elegir */}
         <div className={styles.patientButtonContainer}>
           <Button
             type="primary"
@@ -348,14 +330,13 @@ const PatientField = ({
           </Button>
         </div>
 
-        {/* Checkboxes en columna */}
         <div className={styles.checkboxColumn}>
           {patientTypeOptions.map((option) => (
             <Checkbox
-            key={option.value}
-            checked={patientType === option.value}
-            onChange={() => onPatientTypeChange(option.value)}
-            className={`${styles.checkbox} ${styles.checkboxItem}`}
+              key={option.value}
+              checked={patientType === option.value}
+              onChange={() => onPatientTypeChange(option.value)}
+              className={`${styles.checkbox} ${styles.checkboxItem}`}
             >
               {option.label}
             </Checkbox>
@@ -371,8 +352,8 @@ const DateField = ({ form }) => {
 
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
-    formInstance.setFieldsValue({ 
-      appointment_date: dateString 
+    formInstance.setFieldsValue({
+      appointment_date: dateString
     });
   };
 
@@ -387,13 +368,13 @@ const DateField = ({ form }) => {
         theme={{
           components: {
             DatePicker: {
-              colorBgElevated: '#222222FF',      // Fondo del panel
-              colorText: '#ffffff',            // Texto general
-              colorTextHeading: '#ffffff',     // Mes y año arriba
-              colorIcon: '#ffffff',            // Flechas
-              colorPrimary: '#1cb54a',         // Color de selección
+              colorBgElevated: '#222222FF',
+              colorText: '#ffffff',
+              colorTextHeading: '#ffffff',
+              colorIcon: '#ffffff',
+              colorPrimary: '#1cb54a',
               colorPrimaryHover: '#148235',
-              cellHoverBg: '#333333',          // Hover sobre celdas
+              cellHoverBg: '#333333',
             },
           },
         }}
@@ -417,13 +398,12 @@ const DateField = ({ form }) => {
 };
 
 const TimeField = ({ form }) => {
-  // Usa Form.useFormInstance como fallback si form no está disponible
   const formInstance = form || Form.useFormInstance();
 
   const handleTimeChange = (time, timeString) => {
     console.log('Hora seleccionada:', timeString);
-    formInstance.setFieldsValue({ 
-      appointment_hour: timeString 
+    formInstance.setFieldsValue({
+      appointment_hour: timeString
     });
   };
 

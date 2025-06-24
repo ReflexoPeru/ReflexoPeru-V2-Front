@@ -27,10 +27,15 @@ const FormComponent = ({
   const form = externalForm || internalForm;
   const [loading, setLoading] = useState(false);
   const [isPhoneRequired, setIsPhoneRequired] = useState(true);
+  const [selectedPatient, setSelectedPatient] = useState('XD');
 
   const togglePhoneRequired = () => {
     setIsPhoneRequired((prev) => !prev);
     form.validateFields(['primary_phone']);
+  };
+
+  const handleSelectedPatientChange = (newText) => {
+    setSelectedPatient(newText);
   };
 
   const renderField = (field, index) => {
@@ -47,8 +52,8 @@ const FormComponent = ({
         <Col span={24} key={index}>
           <Row gutter={[25, 0]}>
             {field.fields.map((subField, subIndex) =>
-              renderField(subField, `${index}-${subIndex}`),
-            )}
+              renderField(subField, `${index}-${subIndex}`))
+            }
           </Row>
         </Col>
       );
@@ -60,6 +65,8 @@ const FormComponent = ({
       return (
         <Col span={field.span || 24} key={index}>
           <InputField
+               selectedPatient={selectedPatient}
+               changeSelectedPatient={handleSelectedPatientChange}
             type="cita"
             componentType={field.componentType}
             form={form}
@@ -105,7 +112,7 @@ const FormComponent = ({
                         return Promise.resolve();
                       }
                       return Promise.reject(
-                        new Error('El teléfono debe tener 9 dígitos'),
+                        new Error('El teléfono debe tener 9 dígitos')
                       );
                     },
                   }),
@@ -115,6 +122,7 @@ const FormComponent = ({
         >
           <InputField
             type={isPhoneField ? 'phoneNumber' : field.type}
+            selectedPatient={selectedPatient}
             label={field.label}
             options={field.options || []}
             isPhoneField={isPhoneField}

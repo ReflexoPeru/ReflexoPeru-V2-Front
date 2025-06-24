@@ -17,7 +17,7 @@ const fields = [
       {
         name: 'document_number',
         label: 'Nro Documento',
-        type: 'documentNumber', // Usamos nuestro tipo personalizado
+        type: 'documentNumber',
         required: true,
         span: 8,
         rules: [
@@ -93,7 +93,7 @@ const fields = [
       {
         name: 'primary_phone',
         label: 'Teléfono',
-        type: 'phoneNumber', // Usamos nuestro tipo personalizado
+        type: 'phoneNumber',
         required: true,
         span: 8,
         rules: [
@@ -104,19 +104,13 @@ const fields = [
           () => ({
             validator(_, value) {
               if (!value) {
-                return Promise.reject(
-                  new Error('Por favor ingrese su teléfono'),
-                );
+                return Promise.reject(new Error('Por favor ingrese su teléfono'));
               }
               if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
+                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
               }
               if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
+                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
               }
               return Promise.resolve();
             },
@@ -151,12 +145,7 @@ const NewPatient = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = async (formData) => {
     try {
-      // Validación básica de campos requeridos
-      if (
-        !formData.document_number ||
-        !formData.name ||
-        !formData.primary_phone
-      ) {
+      if (!formData.document_number || !formData.name || !formData.primary_phone) {
         notification.error({
           message: 'Error',
           description: 'Documento, nombre y teléfono son campos obligatorios',
@@ -164,21 +153,16 @@ const NewPatient = ({ onSubmit, onCancel }) => {
         return;
       }
 
-      // Transformación de datos para el API
       const apiData = {
         ...formData,
-        // Asegurar nombres de campos consistentes
         paternal_lastname: formData.paternal_lastname,
         maternal_lastname: formData.maternal_lastname,
-        // Extraer ubicación si existe
         ...(formData.ubicacion && {
           region_id: formData.ubicacion.region_id,
           province_id: formData.ubicacion.province_id,
           district_id: formData.ubicacion.district_id,
         }),
       };
-
-      console.log('Datos a enviar:', apiData); // Para depuración
 
       const result = await submitNewPatient(apiData);
 
@@ -187,13 +171,13 @@ const NewPatient = ({ onSubmit, onCancel }) => {
         description: 'Paciente creado correctamente',
       });
 
+      onSubmit(result);
       onCancel();
 
       return result;
     } catch (error) {
       console.error('Error completo:', error);
 
-      // Mostrar errores de validación del API si existen
       if (error.response?.data?.errors) {
         const errorMessages = Object.entries(error.response.data.errors)
           .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
@@ -202,7 +186,7 @@ const NewPatient = ({ onSubmit, onCancel }) => {
         notification.error({
           message: 'Error de validación',
           description: errorMessages,
-          duration: 0, // Permite que el mensaje permanezca hasta que el usuario lo cierre
+          duration: 0,
         });
       } else {
         notification.error({
@@ -222,8 +206,8 @@ const NewPatient = ({ onSubmit, onCancel }) => {
       mode="create"
       onSubmit={handleSubmit}
       initialValues={{
-        document_type_id: 1, // Valor por defecto
-        country_id: 1, // Valor por defecto
+        document_type_id: 1,
+        country_id: 1,
       }}
     />
   );

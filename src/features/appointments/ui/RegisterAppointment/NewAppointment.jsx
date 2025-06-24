@@ -6,7 +6,7 @@ import {
   Table,
   notification,
 } from 'antd';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -17,14 +17,11 @@ const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
   const [patientType, setPatientType] = useState('nuevo');
-  const [selectedPatient, setSelectedPatient] = useState(null);
   const [formValues, setFormValues] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Modal estados
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] =
-    useState(false);
+  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const { submitNewAppointment } = useAppointments();
@@ -35,7 +32,6 @@ const NewAppointment = () => {
   };
 
   const handleSubmit = (values) => {
-    console.log('Valores del formulario:', values);
     setFormValues(values);
     submitNewAppointment(values);
   };
@@ -43,7 +39,6 @@ const NewAppointment = () => {
   const handleCancel = () => {
     setIsCreatePatientModalVisible(false);
     setIsModalVisible(false);
-    console.log('Modal cerrado');
   };
 
   const handleCompleteRegistration = async () => {
@@ -77,8 +72,6 @@ const NewAppointment = () => {
         },
       };
 
-      console.log('Payload a enviar:', payload);
-
       const result = await submitNewAppointment(payload);
 
       notification.success({
@@ -95,8 +88,7 @@ const NewAppointment = () => {
       return result;
     } catch (error) {
       console.error('Error al registrar cita:', error);
-      let errorMessage =
-        'No se pudo registrar la cita. Por favor intente nuevamente.';
+      let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
 
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
@@ -112,40 +104,6 @@ const NewAppointment = () => {
     }
   };
 
-  const handleCreatePatient = async (patientData) => {
-    try {
-      const response = await fetch('/api/patients', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(patientData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al crear paciente');
-      }
-
-      const newPatient = await response.json();
-
-      await fetchPatients();
-      handleCancel();
-
-      // Actualiza el estado con los datos del nuevo paciente
-      setSelectedPatient({
-        full_name: `${newPatient.first_name} ${newPatient.paternal_lastname} ${newPatient.maternal_lastname}`,
-      });
-
-      return {
-        id: newPatient.id,
-        full_name: `${newPatient.first_name} ${newPatient.paternal_lastname} ${newPatient.maternal_lastname}`,
-      };
-    } catch (error) {
-      console.error('Error al crear paciente:', error);
-      throw error;
-    }
-  };
-
   const handleOpenCreateModal = () => {
     setIsCreatePatientModalVisible(true);
   };
@@ -154,6 +112,29 @@ const NewAppointment = () => {
     setIsModalVisible(true);
   };
 
+  const handleChangeSelectedPatient = (newText) => {
+    setSelectedPatient(newText);
+  };
+
+  const handleLogServerResponse = (result) => {
+    if (result && typeof result === 'object') {
+      // Concatenar el nombre completo
+      const concatenatedName = `${result.name} ${result.paternal_lastname} ${result.maternal_lastname}`.trim();
+  
+      // Convertir todo el objeto a string
+      const stringified = JSON.stringify(result);
+  
+      // Guardar en estado
+      setSelectedPatient({
+        ...result,
+        full_name: concatenatedName,
+        stringifiedData: stringified
+      });
+    } else {
+      console.error('El resultado no es un objeto válido:', result);
+    }
+  };
+  
   const appointmentFields = [
     {
       type: 'customRow',
@@ -178,6 +159,7 @@ const NewAppointment = () => {
           name: 'patient_id',
           type: 'customComponent',
           componentType: 'patientField',
+          label: 'Paciente',
           required: true,
           span: 21,
           props: {
@@ -186,6 +168,7 @@ const NewAppointment = () => {
               { label: 'Continuador', value: 'continuador' },
             ],
             selectedPatient,
+            onChangeSelectedPatient: handleChangeSelectedPatient,
             patientType,
             onPatientTypeChange: (value) => {
               setPatientType(value);
@@ -325,9 +308,7 @@ const NewAppointment = () => {
             setSelectedPatient(null);
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
-          onPaymentRequiredChange={(e) =>
-            setIsPaymentRequired(e.target.checked)
-          }
+          onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
           onSubmit={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
@@ -377,9 +358,7 @@ const NewAppointment = () => {
               Seleccionar
             </Button>,
           ]}
-          bodyStyle={{
-            padding: '24px',
-          }}
+          bodyStyle={{ padding: '24px' }}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -413,32 +392,7 @@ const NewAppointment = () => {
         >
           <NewPatient
             onCancel={handleCancel}
-            onSubmit={async (patientData) => {
-              try {
-                const newPatient = await handleCreatePatient(patientData);
-
-                onCancel();
-                handleCancel();
-
-                setSelectedPatient({
-                  id: newPatient.id,
-                  full_name: newPatient.full_name,
-                });
-
-                setPatientType('continuador');
-
-                notification.success({
-                  message: 'Paciente creado',
-                  description: 'El paciente se ha registrado correctamente',
-                });
-              } catch (error) {
-                console.error('Error al crear paciente:', error);
-                notification.error({
-                  message: 'Error',
-                  description: 'No se pudo crear el paciente',
-                });
-              }
-            }}
+            onSubmit={handleLogServerResponse}
           />
         </Modal>
       </div>
