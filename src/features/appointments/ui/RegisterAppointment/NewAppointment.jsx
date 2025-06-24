@@ -5,8 +5,10 @@ import {
   Radio,
   Table,
   notification,
+  Form,
 } from 'antd';
 import { useState, useRef } from 'react';
+import dayjs from 'dayjs';
 import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -21,19 +23,24 @@ const NewAppointment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
+  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] =
+    useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const { submitNewAppointment } = useAppointments();
   const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
 
-  const handleServiceChange = (value) => {
-    console.log('Servicio seleccionado:', value);
+  // Usar form de Ant Design
+  const [form] = Form.useForm();
+
+  // Callback para actualizar el monto
+  const handlePriceChange = (price) => {
+    form.setFieldsValue({ payment: price });
   };
 
   const handleSubmit = (values) => {
     setFormValues(values);
-    submitNewAppointment(values);
+    handleCompleteRegistration();
   };
 
   const handleCancel = () => {
@@ -60,17 +67,76 @@ const NewAppointment = () => {
       return;
     }
 
+    // Validar campos requeridos
+    if (!formValues.appointment_date) {
+      notification.error({
+        message: 'Error',
+        description: 'La fecha de la cita es requerida',
+      });
+      return;
+    }
+
+    if (!formValues.payment_type_id) {
+      notification.error({
+        message: 'Error',
+        description: 'El tipo de pago es requerido',
+      });
+      return;
+    }
+
+    if (!formValues.payment) {
+      notification.error({
+        message: 'Error',
+        description: 'El monto de pago es requerido',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Debug: Verificar que tenemos el patient_id
+      console.log('🔍 Debug - selectedPatient:', selectedPatient);
+      console.log('🔍 Debug - patient_id a enviar:', selectedPatient?.id);
+      console.log('🔍 Debug - formValues:', formValues);
+      console.log('🔍 Debug - hora original:', formValues.appointment_hour);
+
+      // Lógica para determinar appointment_status_id basada en la fecha
+      const appointmentDate = dayjs(formValues.appointment_date);
+      const currentDate = dayjs();
+
+      let appointment_status_id;
+      if (appointmentDate.isBefore(currentDate, 'day')) {
+        // Si la fecha es anterior al día actual
+        appointment_status_id = 2;
+      } else {
+        // Si es fecha presente o futura
+        appointment_status_id = 1;
+      }
+
+      // Limpiar el valor de payment
+      let paymentValue = formValues.payment;
+      if (typeof paymentValue === 'string') {
+        paymentValue = paymentValue.replace(/[^\d.]/g, ''); // Quita S/ y espacios
+        paymentValue = parseFloat(paymentValue);
+      }
+
+      const { appointment_hour, ...formDataWithoutHour } = formValues;
       const payload = {
-        data: {
-          ...formValues,
-          appointment_date: formValues.appointment_date,
-          appointment_hour: formValues.appointment_hour || null,
-          patient_id: selectedPatient.id,
-        },
+        ...formDataWithoutHour,
+        ...(showHourField && formValues.appointment_hour
+          ? { appointment_hour: formValues.appointment_hour }
+          : {}),
+        appointment_status_id: appointment_status_id,
+        patient_id: selectedPatient.id,
       };
+
+      console.log('🔍 Debug - payload completo:', payload);
+      console.log(
+        '🔍 Debug - appointment_status_id calculado:',
+        appointment_status_id,
+      );
+      console.log('🔍 Debug - showHourField:', showHourField);
 
       const result = await submitNewAppointment(payload);
 
@@ -88,7 +154,8 @@ const NewAppointment = () => {
       return result;
     } catch (error) {
       console.error('Error al registrar cita:', error);
-      let errorMessage = 'No se pudo registrar la cita. Por favor intente nuevamente.';
+      let errorMessage =
+        'No se pudo registrar la cita. Por favor intente nuevamente.';
 
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
@@ -119,22 +186,23 @@ const NewAppointment = () => {
   const handleLogServerResponse = (result) => {
     if (result && typeof result === 'object') {
       // Concatenar el nombre completo
-      const concatenatedName = `${result.name} ${result.paternal_lastname} ${result.maternal_lastname}`.trim();
-  
+      const concatenatedName =
+        `${result.name} ${result.paternal_lastname} ${result.maternal_lastname}`.trim();
+
       // Convertir todo el objeto a string
       const stringified = JSON.stringify(result);
-  
+
       // Guardar en estado
       setSelectedPatient({
         ...result,
         full_name: concatenatedName,
-        stringifiedData: stringified
+        stringifiedData: stringified,
       });
     } else {
       console.error('El resultado no es un objeto válido:', result);
     }
   };
-  
+
   const appointmentFields = [
     {
       type: 'customRow',
@@ -184,10 +252,11 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'payment_type_id',
           type: 'selectPrices',
           required: true,
           span: 15,
-          onChange: handleServiceChange,
+          onChange: handlePriceChange,
         },
       ],
     },
@@ -195,6 +264,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'payment',
           type: 'paymentStatus',
           span: 15,
           required: true,
@@ -205,6 +275,7 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
+          name: 'appointment_hour',
           type: 'customComponent',
           componentType: 'timeField',
           span: 15,
@@ -298,6 +369,7 @@ const NewAppointment = () => {
     >
       <div className={styles.container}>
         <FormComponent
+          form={form}
           fields={appointmentFields}
           mode="create"
           showHourField={showHourField}
@@ -308,7 +380,9 @@ const NewAppointment = () => {
             setSelectedPatient(null);
           }}
           onShowHourFieldChange={(e) => setShowHourField(e.target.checked)}
-          onPaymentRequiredChange={(e) => setIsPaymentRequired(e.target.checked)}
+          onPaymentRequiredChange={(e) =>
+            setIsPaymentRequired(e.target.checked)
+          }
           onSubmit={handleSubmit}
           onOpenCreateModal={handleOpenCreateModal}
           onOpenSelectModal={handleOpenSelectModal}
@@ -316,6 +390,7 @@ const NewAppointment = () => {
           submitButtonText="Registrar"
           onRegisterClick={handleCompleteRegistration}
           isSubmitting={isSubmitting}
+          onPriceChange={handlePriceChange}
         />
 
         {/* MODAL SELECCIONAR CONTRIBUIDOR */}

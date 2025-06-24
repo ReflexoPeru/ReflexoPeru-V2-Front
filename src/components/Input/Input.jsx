@@ -108,10 +108,10 @@ const InputField = ({
       return (
         <Form.Item
           label="Opciones de Pago:"
-          name="payment"
+          name="payment_type_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
-          <SelectPrices {...rest} />
+          <SelectPrices {...rest} onPriceChange={rest.onPriceChange} />
         </Form.Item>
       );
 
@@ -264,7 +264,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
     case 'dateField':
       return <DateField form={form} />;
     case 'patientField':
-      return <PatientField form={form}  {...props} />;
+      return <PatientField form={form} {...props} />;
     case 'timeField':
       return <TimeField form={form} />;
     case 'hourCheckbox':
@@ -287,7 +287,6 @@ const PatientField = ({
   changeSelectedPatient,
   onOpenSelectModal,
 }) => {
-
   const formInstance = form || Form.useFormInstance();
 
   // Función para cambiar el texto del paciente
@@ -303,10 +302,14 @@ const PatientField = ({
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
             <InputField
-            readonly = {true}
-           type= "text"
-           value={  selectedPatient?.concatenatedName||selectedPatient?.full_name || ''}
-            onChange={(e) => changeSelectedPatient(e.target.value)}
+              readonly={true}
+              type="text"
+              value={
+                selectedPatient?.concatenatedName ||
+                selectedPatient?.full_name ||
+                ''
+              }
+              onChange={(e) => changeSelectedPatient(e.target.value)}
             />
           </Form.Item>
           <Form.Item name="patient_id" hidden>
@@ -353,7 +356,7 @@ const DateField = ({ form }) => {
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
     formInstance.setFieldsValue({
-      appointment_date: dateString
+      appointment_date: dateString,
     });
   };
 
@@ -401,9 +404,8 @@ const TimeField = ({ form }) => {
   const formInstance = form || Form.useFormInstance();
 
   const handleTimeChange = (time, timeString) => {
-    console.log('Hora seleccionada:', timeString);
     formInstance.setFieldsValue({
-      appointment_hour: timeString
+      appointment_hour: timeString,
     });
   };
 
@@ -436,7 +438,7 @@ const TimeField = ({ form }) => {
         }}
       >
         <TimePicker
-          format="HH:mm"
+          format="H:mm"
           style={{ width: '100%' }}
           onChange={handleTimeChange}
         />
