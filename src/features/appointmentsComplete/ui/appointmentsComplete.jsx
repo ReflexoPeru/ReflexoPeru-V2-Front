@@ -60,9 +60,9 @@ export default function AppointmentsComplete() {
     },
     {
       title: 'Metodo Pago',
-      dataIndex: 'payment_type_id',
-      key: 'payment_type_id',
-      width: '75px',
+      key: 'payment_type',
+      width: '100px',
+      render: (_, record) => record.payment_type?.name || 'Sin método',
     },
     {
       title: 'Acciones',
@@ -70,22 +70,26 @@ export default function AppointmentsComplete() {
       width: '200px',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
             onClick={() => handleAction('history', record)}
           >
-            Ver Historia
+            Editar Historia
           </Button>
         </Space>
       ),
-    }
+    },
   ];
-
 
   const handleAction = (action, record) => {
     // Implementa las acciones según el tipo
     console.log(`${action} action for:`, record);
-    switch(action) {
+
+    switch (action) {
       case 'history':
         // Lógica para eliminar
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
@@ -106,7 +110,6 @@ export default function AppointmentsComplete() {
     // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
-
 
   return (
     <div

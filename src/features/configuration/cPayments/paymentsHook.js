@@ -39,12 +39,12 @@ export const usePaymentTypes = () => {
     try {
       await createPaymentType(newPayment);
       await fetchPaymentTypes();
-      showToast('exito', 'Tipo de pago creado correctamente');
+      showToast('exito', 'Tipo de pago activado correctamente');
     } catch (error) {
       console.error('Error al crear tipo de pago:', error);
       showToast(
         'error',
-        error.response?.data?.message || 'Error al crear el tipo de pago',
+        error.response?.data?.message || 'Error al activar el tipo de pago',
       );
       throw error;
     }
@@ -69,12 +69,12 @@ export const usePaymentTypes = () => {
     try {
       await deletePaymentType(id);
       await fetchPaymentTypes();
-      showToast('pagoelminado', 'Tipo de pago eliminado correctamente');
+      showToast('pagoelminado', 'Tipo de pago desactivado correctamente');
     } catch (error) {
       console.error('Error al eliminar tipo de pago:', error);
       showToast(
         'error',
-        error.response?.data?.message || 'Error al eliminar el tipo de pago',
+        error.response?.data?.message || 'Error al desactivar el tipo de pago',
       );
       throw error;
     }
@@ -124,12 +124,12 @@ export const usePrices = () => {
     try {
       await createPrice(newPrice);
       await fetchPrices();
-      showToast('exito', 'Precio creado correctamente');
+      showToast('exito', 'Precio activado correctamente');
     } catch (error) {
       console.error('Error al crear precio:', error);
       showToast(
         'error',
-        error.response?.data?.message || 'Error al crear el precio',
+        error.response?.data?.message || 'Error al activar el precio',
       );
       throw error;
     }
@@ -154,12 +154,12 @@ export const usePrices = () => {
     try {
       await deletePrice(id);
       await fetchPrices();
-      showToast('pagoelminado', 'Precio eliminado correctamente');
+      showToast('pagoelminado', 'Precio desactivado correctamente');
     } catch (error) {
       console.error('Error al eliminar precio:', error);
       showToast(
         'error',
-        error.response?.data?.message || 'Error al eliminar el precio',
+        error.response?.data?.message || 'Error al desactivar el precio',
       );
       throw error;
     }

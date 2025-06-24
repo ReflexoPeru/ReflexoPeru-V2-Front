@@ -11,7 +11,8 @@ import {
   DatePicker,
   Typography,
   ConfigProvider,
-  message
+  message,
+  Spin
 } from 'antd';
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -20,6 +21,8 @@ import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHi
 import { updateAppointmentById } from '../service/historyService';
 import { useParams, useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import { PDFViewer } from '@react-pdf/renderer';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -115,6 +118,8 @@ const PatientHistory = () => {
   const [selectedAppointmentDate, setSelectedAppointmentDate] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [loadingTicket, setLoadingTicket] = useState(false);
   
   const { id } = useParams()
   const location = useLocation();
@@ -136,6 +141,10 @@ const PatientHistory = () => {
   const appointmentDates = useMemo(() => {
     return [...new Set(appointments?.map(a => a.appointment_date) || [])];
   }, [appointments]);
+
+  const selectedAppointment = useMemo(() => {
+    return appointments?.find((a) => a.appointment_date === selectedAppointmentDate) || null;
+  }, [appointments, selectedAppointmentDate]);
 
   useEffect(() => {
     if (patientHistory && patientHistory.data && patientHistory.data.patient) {
@@ -341,6 +350,21 @@ const PatientHistory = () => {
     },
   ];
 
+  if (loadingAppointments || !patientHistory) {
+    return (
+      <ConfigProvider
+        theme={{
+          token: { colorPrimary: '#4caf50' },
+        }}
+      >
+        <Spin
+          size="large"
+          tip="Cargando historial..."
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}
+        />
+      </ConfigProvider>
+    );
+  }
 
   return (
     <ConfigProvider theme={theme}>
@@ -357,54 +381,56 @@ const PatientHistory = () => {
             layout="vertical"
             className={styles.form}
           >
-            <Form.Item
-              name="patientName"
-              label="Paciente"
-              className={styles.formItem}
-            >
-              <Input disabled className={styles.input} />
-            </Form.Item>
-
-            <Form.Item
-              name="observation"
-              label="Observación"
-              className={styles.formItem}
-            >
-              <TextArea rows={2} className={styles.textarea} />
-            </Form.Item>
+            {/* Fila: Paciente y Observación */}
+            <div className={styles.flexRow}>
+              <Form.Item
+                name="patientName"
+                label="Paciente"
+                className={styles.flexItem}
+              >
+                <Input disabled className={styles.input} />
+              </Form.Item>
+              <Form.Item
+                name="observation"
+                label="Observación"
+                className={styles.flexItem}
+              >
+                <TextArea rows={1} className={styles.textarea} />
+              </Form.Item>
+            </div>
 
             <Title level={3} className={styles.sectionTitle}>
               Citas
             </Title>
 
-            <Form.Item label="Fecha de la Cita" className={styles.formItem}>
-              <Select
-                value={selectedAppointmentDate}
-                onChange={setSelectedAppointmentDate}
-                className={styles.select}
-                placeholder="Seleccione una fecha"
-                loading={loadingAppointments}
+            {/* Fila: Fecha de la Cita y Terapeuta */}
+            <div className={styles.flexRow}>
+              <Form.Item label="Fecha de la Cita" className={styles.flexItem}>
+                <Select
+                  value={selectedAppointmentDate}
+                  onChange={setSelectedAppointmentDate}
+                  className={styles.select}
+                  placeholder="Seleccione una fecha"
+                  loading={loadingAppointments}
+                >
+                  {appointmentDates.map(date => (
+                    <Option key={date} value={date}>
+                      {dayjs(date).format('DD/MM/YYYY')}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="therapist"
+                label="Terapeuta"
+                className={styles.flexItem}
               >
-                {appointmentDates.map(date => (
-                  <Option key={date} value={date}>
-                    {dayjs(date).format('DD/MM/YYYY')}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              name="therapist"
-              label="Terapeuta"
-              className={styles.formItem}
-            >
-              <div className={styles.therapistContainer}>
-                <Input
-                  disabled
-                  value={therapist || 'No se ha seleccionado terapeuta'}
-                  className={styles.input}
-                />
-                <div className={styles.therapistButtons}>
+                <div className={styles.therapistRow}>
+                  <Input
+                    disabled
+                    value={therapist || 'No se ha seleccionado terapeuta'}
+                    className={styles.input}
+                  />
                   <Button
                     type="primary"
                     onClick={showTherapistModal}
@@ -422,21 +448,8 @@ const PatientHistory = () => {
                     </Button>
                   )}
                 </div>
-                {showTherapistDropdown && (
-                  <div className={styles.therapistDropdown}>
-                    {therapist.map((t) => (
-                      <div
-                        key={t.id}
-                        className={styles.dropdownItem}
-                        onClick={() => handleTherapistChoose(t)}
-                      >
-                        {t.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Form.Item>
+              </Form.Item>
+            </div>
 
             <div className={styles.threeColumnLayout}>
               <div className={styles.column}>
@@ -587,7 +600,15 @@ const PatientHistory = () => {
               </Form.Item>
 
               <div className={styles.actionButtons}>
-                <Button className={styles.printButton}>Imprimir Ticket</Button>
+                <Button
+                  className={styles.printButton}
+                  onClick={() => {
+                    setShowTicketModal(true);
+                  }}
+                  disabled={!selectedAppointment}
+                >
+                  Generar Ticket
+                </Button>
                 <Button
                   type="primary"
                   htmlType="submit"
@@ -635,6 +656,37 @@ const PatientHistory = () => {
             pagination={false}
             rowClassName={() => styles.tableRow}
           />
+        </Modal>
+        <Modal
+          open={showTicketModal}
+          onCancel={() => setShowTicketModal(false)}
+          footer={null}
+          width={420}
+          bodyStyle={{ padding: 0 }}
+        >
+          {selectedAppointment && (
+            <PDFViewer width="100%" height={600} showToolbar={true}>
+              <TicketPDF
+                company={{
+                  name: 'REFLEXOPERU',
+                  address: 'Calle Las Golondrinas N° 153 - Urb. Los Nogales',
+                  phone: '01-503-8416',
+                  email: 'reflexoperu@reflexoperu.com',
+                  city: 'LIMA - PERU',
+                  exonerated: 'EXONERADO DE TRIBUTOS',
+                  di: 'D.I. 626-D.I.23211',
+                }}
+                ticket={{
+                  number: selectedAppointment.ticket_number,
+                  date: dayjs(selectedAppointment.appointment_date).format('DD/MM/YYYY'),
+                  patient: `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
+                  service: 'Consulta',
+                  unit: 1,
+                  amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
+                }}
+              />
+            </PDFViewer>
+          )}
         </Modal>
       </div>
     </ConfigProvider>
