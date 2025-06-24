@@ -4,11 +4,12 @@ import ModeloTable from '../../../components/Table/Tabla';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
-
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAppointments } from '../hook/appointmentsHook';
-import { Space, Button } from 'antd';
+import { Space, Button, Modal } from 'antd';
 import dayjs from 'dayjs';
+import { PDFViewer, pdf } from '@react-pdf/renderer';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -23,6 +24,9 @@ export default function Appointments() {
   } = useAppointments();
 
   const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
   }, [selectDate]);
@@ -87,6 +91,16 @@ export default function Appointments() {
           </Button>
           <Button
             style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => handleAction('history', record)}
+          >
+            Rellenar Historia
+          </Button>
+          <Button
+            style={{
               backgroundColor: '#0066FF',
               color: '#fff',
               border: 'none',
@@ -101,20 +115,14 @@ export default function Appointments() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => handleAction('boleta', record)}
-          >
-            Boleta
-          </Button>
-          <Button
-            style={{
-              backgroundColor: '#00AA55',
-              color: '#fff',
-              border: 'none',
+            onClick={() => {
+              setSelectedAppointment(record);
+              setShowTicketModal(true);
             }}
-            onClick={() => handleAction('history', record)}
           >
-            Historia
+            Imprimir Boleta
           </Button>
+
           <Button
             style={{
               backgroundColor: '#FF3333',
@@ -141,7 +149,8 @@ export default function Appointments() {
         // Lógica para más info
         break;
       case 'boleta':
-        // Lógica para historia
+        setSelectedAppointment(record);
+        setShowTicketModal(true);
         break;
       case 'history':
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
@@ -210,6 +219,42 @@ export default function Appointments() {
           onChange: handlePageChange,
         }}
       />
+
+      {/* Modal para mostrar el ticket */}
+      <Modal
+        open={showTicketModal}
+        onCancel={() => setShowTicketModal(false)}
+        footer={null}
+        width={420}
+        bodyStyle={{ padding: 0 }}
+      >
+        {selectedAppointment && (
+          <PDFViewer width="100%" height={600} showToolbar={true}>
+            <TicketPDF
+              company={{
+                name: 'REFLEXOPERU',
+                address: 'Calle Las Golondrinas N° 153 - Urb. Los Nogales',
+                phone: '01-503-8416',
+                email: 'reflexoperu@reflexoperu.com',
+                city: 'LIMA - PERU',
+                exonerated: 'EXONERADO DE TRIBUTOS',
+                di: 'D.I. 626-D.I.23211',
+              }}
+              ticket={{
+                number: selectedAppointment.ticket_number,
+                date: dayjs(selectedAppointment.appointment_date).format(
+                  'DD/MM/YYYY',
+                ),
+                patient:
+                  `${selectedAppointment.patient?.paternal_lastname || ''} ${selectedAppointment.patient?.maternal_lastname || ''} ${selectedAppointment.patient?.name || ''}`.trim(),
+                service: 'Consulta',
+                unit: 1,
+                amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
+              }}
+            />
+          </PDFViewer>
+        )}
+      </Modal>
     </div>
   );
 }
