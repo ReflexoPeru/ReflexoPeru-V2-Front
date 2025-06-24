@@ -10,6 +10,8 @@ import { Space, Button, Modal } from 'antd';
 import dayjs from 'dayjs';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import { getAppointmentsByPatientId } from '../../history/service/historyService';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -26,6 +28,9 @@ export default function Appointments() {
   const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [showFichaModal, setShowFichaModal] = useState(false);
+  const [selectedFicha, setSelectedFicha] = useState(null);
+  const [visitasFicha, setVisitasFicha] = useState(0);
 
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
@@ -105,10 +110,11 @@ export default function Appointments() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => handleAction('imprimir', record)}
+            onClick={() => handlePrintFicha(record)}
           >
             Imprimir
           </Button>
+
           <Button
             style={{
               backgroundColor: '#69276F',
@@ -173,6 +179,56 @@ export default function Appointments() {
   const handleSearch = (value) => {
     // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
+  };
+
+  const handlePrintFicha = async (record) => {
+    try {
+      const res = await getAppointmentsByPatientId(record.patient.id);
+      const visitas = Array.isArray(res.data) ? res.data.length : 0;
+      await printFichaPDF(record, visitas);
+    } catch (e) {
+      await printFichaPDF(record, 0);
+    }
+  };
+
+  const printFichaPDF = async (record, visitas) => {
+    const doc = (
+      <FichaPDF cita={record} paciente={record.patient} visitas={visitas} />
+    );
+    const asPdf = pdf([]);
+    asPdf.updateContainer(doc);
+    const blob = await asPdf.toBlob();
+    const url = URL.createObjectURL(blob);
+
+    // Crear un iframe oculto
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+
+    // Manejar afterprint para limpiar el iframe solo después de imprimir
+    const cleanUp = () => {
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(url);
+      }, 100);
+      // Quitar el listener para evitar fugas de memoria
+      iframe.contentWindow.removeEventListener('afterprint', cleanUp);
+    };
+
+    iframe.onload = function () {
+      setTimeout(() => {
+        // Agregar el listener de afterprint
+        iframe.contentWindow.addEventListener('afterprint', cleanUp);
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      }, 500);
+    };
   };
 
   return (
