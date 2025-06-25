@@ -23,41 +23,94 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] = useState(false);
+  const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] =
+    useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
-  const { getAppointmentDetails, updateExistingAppointment } = useAppointments();
+  const { getAppointmentDetails, updateExistingAppointment } =
+    useAppointments();
   const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
 
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (appointmentId) {
+    if (appointmentId && patients && patients.length > 0) {
       loadAppointmentData();
     }
-  }, [appointmentId]);
+    // eslint-disable-next-line
+  }, [appointmentId, patients]);
+
+  // Función utilitaria para preseleccionar campos y disparar lógica asociada
+  const preselectField = (field, value) => {
+    form.setFieldsValue({ [field]: value });
+    // Si el campo es payment_type_id, dispara la lógica de precio
+    if (field === 'payment_type_id') {
+      handlePriceChange(value);
+    }
+    // Puedes agregar más lógica para otros campos si lo necesitas
+  };
 
   const loadAppointmentData = async () => {
     try {
       const data = await getAppointmentDetails(appointmentId);
-      
-      // Formatear los datos para el formulario
-      const formattedData = {
-        ...data,
-        appointment_date: data.appointment_date ? dayjs(data.appointment_date) : null,
-        appointment_hour: data.appointment_hour ? dayjs(data.appointment_hour, 'HH:mm:ss') : null,
-      };
 
-      if (data.patient) {
-        setSelectedPatient({
-          id: data.patient.id,
-          full_name: `${data.patient.paternal_lastname || ''} ${data.patient.maternal_lastname || ''} ${data.patient.name || ''}`.trim(),
-        });
+      // Buscar paciente en la lista local si no viene en el detalle
+      let patientObj = null;
+      if (patients && patients.length > 0) {
+        const found = patients.find((p) => p.id === data.patient_id);
+        if (found) {
+          patientObj = {
+            id: found.id,
+            full_name:
+              found.full_name ||
+              `${found.paternal_lastname || ''} ${found.maternal_lastname || ''} ${found.name || ''}`.trim(),
+          };
+        }
+      }
+      if (patientObj) {
+        setSelectedPatient(patientObj);
         setPatientType('continuador');
       }
 
+      // Hora
+      let appointmentHour = data.appointment_hour
+        ? dayjs(data.appointment_hour, 'HH:mm:ss')
+        : null;
+      let showHour = !!appointmentHour;
+
+      // Monto
+      let paymentValue = data.payment ? String(data.payment) : '';
+
+      const formattedData = {
+        appointment_date: data.appointment_date
+          ? dayjs(data.appointment_date)
+          : null,
+        appointment_hour: appointmentHour,
+        diagnosis: data.diagnosis || '',
+        observation: data.observation || '',
+        payment: paymentValue,
+        payment_type_id: data.payment_type_id || '',
+        patient_id: data.patient_id || '',
+        ailments: data.ailments || '',
+        surgeries: data.surgeries || '',
+        reflexology_diagnostics: data.reflexology_diagnostics || '',
+        medications: data.medications || '',
+        initial_date: data.initial_date ? dayjs(data.initial_date) : null,
+        final_date: data.final_date ? dayjs(data.final_date) : null,
+        appointment_type: data.appointment_type || '',
+        room: data.room || '',
+        // ...otros campos
+      };
+
+      console.log('VALORES QUE SE SETEAN EN EL FORMULARIO:', formattedData);
+
       form.setFieldsValue(formattedData);
+      // Preselecciona el tipo de pago y dispara la lógica de precio
+      if (data.payment_type_id) {
+        preselectField('payment_type_id', data.payment_type_id);
+      }
+      setShowHourField(showHour);
       setInitialDataLoaded(true);
     } catch (error) {
       notification.error({
@@ -69,6 +122,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   };
 
   const handlePriceChange = (price) => {
+    console.log('handlePriceChange - nuevo precio:', price);
     form.setFieldsValue({ payment: price });
   };
 
@@ -155,7 +209,8 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       }
     } catch (error) {
       console.error('Error updating appointment:', error);
-      let errorMessage = 'No se pudo actualizar la cita. Por favor intente nuevamente.';
+      let errorMessage =
+        'No se pudo actualizar la cita. Por favor intente nuevamente.';
 
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
@@ -372,6 +427,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       <div className={styles.container}>
         {initialDataLoaded && (
           <FormComponent
+            key={initialDataLoaded ? 'loaded' : 'loading'}
             form={form}
             fields={appointmentFields}
             mode="edit"

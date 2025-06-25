@@ -1,4 +1,4 @@
-import { get, post } from '../../../services/api/Axios/MethodsGeneral';
+import { get, post, patch } from '../../../services/api/Axios/MethodsGeneral';
 
 export const createAppointment = async (data) => {
   try {
