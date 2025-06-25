@@ -69,6 +69,28 @@ export const getPaginatedAppointmentsByDate = async (date, perPage = 100) => {
   }
 };
 
+// Nueva función para obtener una cita por ID
+export const getAppointmentById = async (id) => {
+  try {
+    const response = await get(`appointments/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error en getAppointmentById para ID ${id}:`, error);
+    throw error;
+  }
+};
+// Nueva función para actualizar una cita
+export const updateAppointment = async (id, data) => {
+  try {
+    const response = await patch(`appointments/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error en updateAppointment para ID ${id}:`, error);
+    throw error;
+  }
+};
+//==============================================================================
+
 export const getPatients = async (page = 1, perPage = 10) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);

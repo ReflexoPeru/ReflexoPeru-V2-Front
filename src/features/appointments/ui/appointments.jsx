@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import estilo from './appointments.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
-import CustomButton from '../../../components/Button/CustomButtom';
-import CustomSearch from '../../../components/Search/CustomSearch';
-import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
-import { useNavigate } from 'react-router-dom';
-import { useAppointments } from '../hook/appointmentsHook';
-import { Space, Button, Modal } from 'antd';
-import dayjs from 'dayjs';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import { Button, Modal, Space } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CustomButton from '../../../components/Button/CustomButtom';
+import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import CustomSearch from '../../../components/Search/CustomSearch';
+import ModeloTable from '../../../components/Table/Tabla';
 import { getAppointmentsByPatientId } from '../../history/service/historyService';
+import { useAppointments } from '../hook/appointmentsHook';
+import EditAppointment from '../ui/EditAppointment/EditAppointment'; // Importar el componente de edición
 
 export default function Appointments() {
   const navigate = useNavigate();
   const {
     appointments,
     loading,
-    error,
     pagination,
     handlePageChange,
     setSearchTerm,
@@ -31,6 +30,10 @@ export default function Appointments() {
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [selectedFicha, setSelectedFicha] = useState(null);
   const [visitasFicha, setVisitasFicha] = useState(0);
+  
+  // Estado para manejar el modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [appointmentIdToEdit, setAppointmentIdToEdit] = useState(null);
 
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
@@ -53,7 +56,6 @@ export default function Appointments() {
         return `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
       },
     },
-
     {
       title: 'Sala',
       dataIndex: 'room',
@@ -90,7 +92,7 @@ export default function Appointments() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => handleAction('edit', record)}
+            onClick={() => handleAction('edit', record)} // Llamar a la función de editar
           >
             Editar
           </Button>
@@ -145,11 +147,11 @@ export default function Appointments() {
   ];
 
   const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
     console.log(`${action} action for:`, record);
     switch (action) {
       case 'edit':
-        // Lógica para editar
+        setAppointmentIdToEdit(record.id); // Guardar el ID de la cita a editar
+        setIsEditModalOpen(true); // Abrir el modal de edición
         break;
       case 'imprimir':
         // Lógica para más info
@@ -172,12 +174,10 @@ export default function Appointments() {
   };
 
   const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
 
@@ -200,7 +200,6 @@ export default function Appointments() {
     const blob = await asPdf.toBlob();
     const url = URL.createObjectURL(blob);
 
-    // Crear un iframe oculto
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -211,19 +210,16 @@ export default function Appointments() {
     iframe.src = url;
     document.body.appendChild(iframe);
 
-    // Manejar afterprint para limpiar el iframe solo después de imprimir
     const cleanUp = () => {
       setTimeout(() => {
         document.body.removeChild(iframe);
         URL.revokeObjectURL(url);
       }, 100);
-      // Quitar el listener para evitar fugas de memoria
       iframe.contentWindow.removeEventListener('afterprint', cleanUp);
     };
 
     iframe.onload = function () {
       setTimeout(() => {
-        // Agregar el listener de afterprint
         iframe.contentWindow.addEventListener('afterprint', cleanUp);
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
@@ -257,10 +253,9 @@ export default function Appointments() {
 
         <CustomTimeFilter
           onDateChange={setSelectDate}
-          // onTimeRangeChange={handleTimeRangeChange}
           width="250px"
-          showTime={false} // Ocultar hora si no es necesaria
-          format="YYYY-MM-DD" // Formato día/mes/año
+          showTime={false}
+          format="YYYY-MM-DD"
         />
       </div>
 
@@ -309,6 +304,25 @@ export default function Appointments() {
               }}
             />
           </PDFViewer>
+        )}
+      </Modal>
+
+      {/* Modal para editar cita */}
+      <Modal
+        title="Editar Cita"
+        open={isEditModalOpen}
+        onCancel={() => setIsEditModalOpen(false)}
+        footer={null}
+        width="70%"
+      >
+        {appointmentIdToEdit && (
+          <EditAppointment
+            appointmentId={appointmentIdToEdit}
+            onEditSuccess={() => {
+              setIsEditModalOpen(false);
+              loadPaginatedAppointmentsByDate(selectDate); // Recargar citas después de editar
+            }}
+          />
         )}
       </Modal>
     </div>
