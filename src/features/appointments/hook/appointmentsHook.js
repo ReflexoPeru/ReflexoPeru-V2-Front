@@ -2,10 +2,12 @@ import dayjs from 'dayjs';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createAppointment,
+  getAppointmentById, // Importar nueva función
   getPaginatedAppointmentsByDate,
   getPatients,
   searchAppointments,
   searchPatients,
+  updateAppointment, // Importar nueva función
 } from '../service/appointmentsService';
 
 export const useAppointments = () => {
@@ -138,6 +140,51 @@ export const useAppointments = () => {
     },
     [loadAppointments],
   );
+
+  // Nueva función para obtener detalles de una cita
+  const getAppointmentDetails = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getAppointmentById(id);
+      return data;
+    } catch (err) {
+      console.error(`Error fetching appointment ${id}:`, err);
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+ // Nueva función para actualizar una cita existente
+  const updateExistingAppointment = useCallback(
+    async (id, appointmentData) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const payload = {
+          ...appointmentData,
+          appointment_date: dayjs(appointmentData.appointment_date).format(
+            'YYYY-MM-DD',
+          ),
+          // No actualizar created_at en una edición, si existe
+          // created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        };
+        const result = await updateAppointment(id, payload);
+        await loadAppointments(); // Recargar lista después de actualizar
+        return result;
+      } catch (err) {
+        console.error(`Error updating appointment ${id}:`, err);
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadAppointments],
+  );
+
   const loadPaginatedAppointmentsByDate = useCallback(
     (date) => {
       const formattedDate = dayjs(date).isValid()
@@ -152,6 +199,7 @@ export const useAppointments = () => {
     },
     [selectedDate, searchTerm],
   );
+
   return {
     // Estados
     appointments,
@@ -168,6 +216,8 @@ export const useAppointments = () => {
     handlePageChange,
     submitNewAppointment,
     loadPaginatedAppointmentsByDate,
+    getAppointmentDetails, // Exponer nueva función
+    updateExistingAppointment, // Exponer nueva función
     // Setters
     setSearchTerm,
     setSelectedDate,

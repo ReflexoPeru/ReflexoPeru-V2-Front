@@ -1,14 +1,14 @@
 import {
   Button,
   ConfigProvider,
+  Form,
   Modal,
   Radio,
   Table,
   notification,
-  Form,
 } from 'antd';
-import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -145,7 +145,6 @@ const NewAppointment = () => {
         description: 'La cita se ha registrado correctamente',
       });
 
-      form.resetFields();
       setFormValues(null);
       setSelectedPatient(null);
       setPatientType('nuevo');
