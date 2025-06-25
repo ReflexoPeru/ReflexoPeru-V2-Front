@@ -102,7 +102,9 @@ const InputField = ({
       );
 
     case 'typeOfDocument':
-      return <SelectTypeOfDocument onChange={rest.onChange} />;
+      return (
+        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
+      );
 
     case 'selectPrices':
       return (

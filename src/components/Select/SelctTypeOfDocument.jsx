@@ -14,8 +14,10 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
       try {
         const data = await getDocumentTypes();
         const formattedOptions = data.map((item) => ({
-          label: <span style={{ color: '#fff' }}>{item.label}</span>, // texto blanco en opciones
-          value: item.value,
+          label: (
+            <span style={{ color: '#fff' }}>{item.label || item.name}</span>
+          ),
+          value: String(item.value),
         }));
 
         setOptions(formattedOptions);
@@ -31,13 +33,19 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
 
   // Sincronizar value cuando cambian las opciones o el value externo
   useEffect(() => {
-    if (
-      value !== undefined &&
-      value !== null &&
-      options.length > 0 &&
-      options.some((opt) => String(opt.value) === String(value))
-    ) {
-      setInternalValue(value);
+    if (value !== undefined && value !== null) {
+      // Si las opciones ya están cargadas y el value existe en ellas, sincroniza
+      if (
+        options.length > 0 &&
+        options.some((opt) => String(opt.value) === String(value))
+      ) {
+        setInternalValue(String(value));
+      } else if (options.length === 0) {
+        // Si aún no hay opciones, guarda el value para sincronizarlo después
+        setInternalValue(String(value));
+      }
+    } else {
+      setInternalValue(undefined);
     }
   }, [value, options]);
 

@@ -10,7 +10,7 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'document_type_id',
+        name: 'document_type',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -157,16 +157,12 @@ const EditTherapist = ({ therapist, onClose }) => {
   const setFormWithTherapist = (data) => {
     if (!data) return;
 
-    // document_type
-    const documentTypeId = Number(data.document_type);
-
     const ubicacion = {
       region_id: data.region,
       province_id: data.province,
       district_id: data.district,
     };
 
-    // Convertir a string para el cascader
     if (ubicacion.region_id !== null)
       ubicacion.region_id = String(ubicacion.region_id);
     if (ubicacion.province_id !== null)
@@ -178,7 +174,10 @@ const EditTherapist = ({ therapist, onClose }) => {
       name: data.name || '',
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
-      document_type_id: documentTypeId,
+      document_type:
+        data.document_type !== undefined && data.document_type !== null
+          ? String(data.document_type)
+          : undefined,
       document_number: data.document_number,
       personal_reference: data.personal_reference,
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
@@ -203,7 +202,14 @@ const EditTherapist = ({ therapist, onClose }) => {
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      await handleUpdateTherapist(therapist.id, formData);
+      // Convertir el tipo de documento a número y renombrar el campo
+      const dataToSend = {
+        ...formData,
+        document_type_id: Number(formData.document_type),
+      };
+      delete dataToSend.document_type;
+
+      await handleUpdateTherapist(therapist.id, dataToSend);
 
       notification.success({
         message: 'Éxito',
