@@ -109,13 +109,14 @@ export const useAuth = () => {
   const validateCode = async (code) => {
     try {
       const data = await validateCodeService(code, getLocalStorage('user_id'));
-      console.log(data);
-      if (data.status == '200') {
+      // El backend responde con { valid: true/false, message: ... }
+      if (data.data?.valid) {
         showToast('codigoVerificado');
         persistLocalStorage('token', data.data.token);
         navigate('/cambiarContraseña');
       } else {
-        showToast('codigoIncorrecto');
+        showToast('intentoFallido', data.data?.message || 'Código incorrecto');
+        // No navega ni permite avanzar
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
