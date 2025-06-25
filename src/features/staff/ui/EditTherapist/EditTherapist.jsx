@@ -148,7 +148,7 @@ const fields = [
   },
 ];
 
-const EditTherapist = ({ therapist, onClose }) => {
+const EditTherapist = ({ therapist, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdateTherapist } = useStaff();
   const [loading, setLoading] = useState(false);
@@ -215,7 +215,7 @@ const EditTherapist = ({ therapist, onClose }) => {
         message: 'Éxito',
         description: 'Terapeuta actualizado correctamente',
       });
-
+      if (onSave) onSave();
       onClose();
     } catch (error) {
       notification.error({

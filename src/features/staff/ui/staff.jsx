@@ -1,4 +1,4 @@
-import { Button, Space, notification } from 'antd';
+import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
@@ -7,6 +7,11 @@ import { useStaff } from '../hook/staffHook';
 import { useState } from 'react';
 import EditTherapist from './EditTherapist/EditTherapist';
 import { getTherapistById } from '../service/staffService';
+import { LoadingOutlined } from '@ant-design/icons';
+
+const whiteSpinIndicator = (
+  <LoadingOutlined style={{ fontSize: 20, color: '#fff' }} spin />
+);
 
 export default function Staff() {
   const navigate = useNavigate();
@@ -19,9 +24,13 @@ export default function Staff() {
     handleDeleteTherapist,
   } = useStaff();
   const [editingTherapist, setEditingTherapist] = useState(null);
+  const [loadingEditId, setLoadingEditId] = useState(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
 
   // Nuevo handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
+    setLoadingEditId(record.id);
+    setEditingTherapist(record);
     try {
       const freshTherapist = await getTherapistById(record.id);
       setEditingTherapist(freshTherapist);
@@ -30,6 +39,17 @@ export default function Staff() {
         message: 'Error',
         description: 'No se pudo obtener los datos actualizados.',
       });
+    } finally {
+      setLoadingEditId(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setLoadingDeleteId(id);
+    try {
+      await handleDeleteTherapist(id);
+    } finally {
+      setLoadingDeleteId(null);
     }
   };
 
@@ -42,10 +62,21 @@ export default function Staff() {
               backgroundColor: '#0066FF',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => handleEdit(record)}
+            disabled={loadingEditId === record.id}
           >
-            Editar
+            {loadingEditId === record.id ? (
+              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
+                <Spin />
+              </ConfigProvider>
+            ) : (
+              'Editar'
+            )}
           </Button>
         );
       case 'info':
@@ -68,10 +99,21 @@ export default function Staff() {
               backgroundColor: '#FF3333',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            onClick={() => handleDeleteTherapist(record.id)}
+            onClick={() => handleDelete(record.id)}
+            disabled={loadingDeleteId === record.id}
           >
-            Eliminar
+            {loadingDeleteId === record.id ? (
+              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
+                <Spin />
+              </ConfigProvider>
+            ) : (
+              'Eliminar'
+            )}
           </Button>
         );
       default:
@@ -153,6 +195,7 @@ export default function Staff() {
         <EditTherapist
           therapist={editingTherapist}
           onClose={() => setEditingTherapist(null)}
+          onSave={() => handlePageChange(pagination.currentPage)}
         />
       )}
     </div>

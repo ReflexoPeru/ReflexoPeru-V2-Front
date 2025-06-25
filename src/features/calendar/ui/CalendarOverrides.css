@@ -257,7 +257,9 @@
 }
 
 /* === Eventos === */
-.rbc-event {
+.rbc-event,
+.pending-event,
+.confirmed-event {
   position: relative;
 
   overflow: hidden;
@@ -267,39 +269,16 @@
   border-radius: var(--radius-sm);
 
   font-size: 0.85em;
-  font-weight: 500;
-  color: white !important;
+  font-weight: bold;
+  color: #fff !important;
 
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)) !important;
+  background: #4CAF50 !important;
   box-shadow: var(--shadow-soft);
 
   transition: all var(--transition-normal);
 }
 
-.rbc-event::before {
-  content: '';
-
-  position: absolute;
-  top: 0;
-  left: -100%;
-
-  width: 100%;
-  height: 100%;
-
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-
-  transition: left var(--transition-slow);
-}
-
-.rbc-event:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow-glow);
-}
-
-.rbc-event:hover::before {
-  left: 100%;
-}
-
+.rbc-event::before,
 .rbc-event-content {
   position: relative;
   z-index: 1;
@@ -695,4 +674,43 @@
 
   opacity: 0.8;
   background: var(--bg-primary);
+}
+
+.pending-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+  border: none;
+  border-radius: 4px;
+
+  font-weight: bold;
+  color: #fff !important;
+
+  background-color: #FFA500 !important;
+}
+
+.confirmed-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+  border: none;
+  border-radius: 4px;
+
+  font-weight: bold;
+  color: #fff !important;
+
+  background-color: #4CAF50 !important;
+}
+
+/* Colores personalizados para eventos en la vista Agenda */
+.rbc-agenda-event-cell.pending-event,
+.rbc-agenda-event-cell.confirmed-event {
+  border-radius: 4px;
+  font-weight: bold;
+  color: #fff !important;
+  background-color: #4CAF50 !important;
 }

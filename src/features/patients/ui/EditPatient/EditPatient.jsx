@@ -148,7 +148,7 @@ const fields = [
   },
 ];
 
-const EditPatient = ({ patient, onClose }) => {
+const EditPatient = ({ patient, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
@@ -212,6 +212,7 @@ const EditPatient = ({ patient, onClose }) => {
         message: 'Éxito',
         description: 'Paciente actualizado correctamente',
       });
+      if (onSave) onSave();
       onClose();
     } catch (error) {
       notification.error({
