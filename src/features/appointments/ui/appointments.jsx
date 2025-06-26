@@ -214,7 +214,7 @@ export default function Appointments() {
   const handlePrintFicha = async (record) => {
     try {
       const res = await getAppointmentsByPatientId(record.patient.id);
-      const visitas = Array.isArray(res.data) ? res.data.length : 0;
+      const visitas = Array.isArray(res) ? res.length : 0;
       await printFichaPDF(record, visitas);
     } catch (e) {
       await printFichaPDF(record, 0);
@@ -331,6 +331,8 @@ export default function Appointments() {
                 service: 'Consulta',
                 unit: 1,
                 amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
+                paymentType:
+                  selectedAppointment.payment_type?.name || 'Sin especificar',
               }}
             />
           </PDFViewer>
