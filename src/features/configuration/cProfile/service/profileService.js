@@ -129,6 +129,8 @@ export const uploadProfilePhoto = async (file) => {
     const formData = new FormData();
     formData.append('photo', file);
 
+    console.log("Pipippipipippipippipip:", formData);
+
     const response = await instance.post('users/photo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',

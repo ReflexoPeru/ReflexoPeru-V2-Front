@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   Modal,
@@ -11,21 +11,22 @@ import {
   DatePicker,
   Typography,
   ConfigProvider,
+  message,
+  Spin
 } from 'antd';
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import { useStaff, usePatientHistory, usePatientAppointments }  from '../hook/historyHook';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
+import { updateAppointmentById } from '../service/historyService';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-
-
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import { PDFViewer } from '@react-pdf/renderer';
 
 const { Title } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
-
-
 
 const theme = {
   token: {
@@ -117,12 +118,16 @@ const PatientHistory = () => {
   const [selectedAppointmentDate, setSelectedAppointmentDate] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
-  const { staff, loading, setSearchTerm } = useStaff();
-
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [loadingTicket, setLoadingTicket] = useState(false);
+  
   const { id } = useParams()
+  const location = useLocation();
+  const navigate = useNavigate(); //Para el boton de cancelar
+  const appointmentFromState = location.state?.appointment;
+  const { staff, loading, setSearchTerm } = useStaff();
   const { data: patientHistory } = usePatientHistory(id)
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
-
   const { 
     appointments, 
     lastAppointment,
@@ -130,88 +135,106 @@ const PatientHistory = () => {
     appointmentsError, 
     contextHolder 
   } = usePatientAppointments(id);
+  const { updateHistory, loading: updatingHistory, contextHolder: updateContext} = useUpdatePatientHistory();
+  const { updateAppointment } = useUpdateAppointment();
 
-  // Memoize appointment dates to prevent unnecessary recalculations
+  // MEMORIZAR LAS FECHAS DE CITAS
   const appointmentDates = useMemo(() => {
     return [...new Set(appointments?.map(a => a.appointment_date) || [])];
   }, [appointments]);
 
-  useEffect(() => {
-  if (patientHistory && patientHistory.data && patientHistory.data.patient) {
-    const { patient, ...historyData } = patientHistory.data;
-    const isFemale = patient?.sex === 'F'; 
-    
-    form.setFieldsValue({
-      // Información del paciente con verificación segura
-      patientName: `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
-      
-      // Observaciones
-      observationPrivate: historyData?.private_observation || '',
-      observation: historyData?.observation || '',
-      
-      // Información física
-      talla: historyData?.height || '',
-      pesoInicial: historyData?.weight || '',
-      ultimoPeso: historyData?.last_weight || '',
-      
-      // Información médica
-      testimonio: historyData?.testimony ? 'Sí' : 'No',
-      gestacion: isFemale ? (historyData?.gestation ? 'Sí' : 'No') : undefined,
-      menstruacion: isFemale ? (historyData?.menstruation ? 'Sí' : 'No') : undefined,
-      tipoDIU: isFemale ? historyData?.diu_type || '' : undefined,
-      
-      // Campos adicionales
-      diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
-      operaciones: historyData?.operaciones || '',
-      medicamentos: historyData?.medicamentos || '',
-      dolencias: historyData?.dolencias || '',
-      diagnosticosReflexologia: historyData?.diagnosticos_reflexologia || '',
-      observacionesAdicionales: historyData?.observaciones_adicionales || '',
-      antecedentesFamiliares: historyData?.antecedentes_familiares || '',
-      alergias: historyData?.alergias || '',
-      
-      // Fechas
-      fechaInicio: dayjs(),
-    });
+  const selectedAppointment = useMemo(() => {
+    return appointments?.find((a) => a.appointment_date === selectedAppointmentDate) || null;
+  }, [appointments, selectedAppointmentDate]);
 
-    // Manejo del terapeuta con verificación segura
-    if (historyData?.therapist) {
-      setTherapist(historyData.therapist.full_name || '');
-      setSelectedTherapistId(historyData.therapist.id || null);
+  useEffect(() => {
+    if (patientHistory && patientHistory.data && patientHistory.data.patient) {
+      const { patient, ...historyData } = patientHistory.data;
+      
+      form.setFieldsValue({
+        // Información del paciente con verificación segura
+        patientName: `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
+        
+        // Observaciones
+        observationPrivate: historyData?.private_observation || '',
+        observation: historyData?.observation || '',
+        
+        // Información física
+        talla: historyData?.height || '',
+        pesoInicial: historyData?.weight || '',
+        ultimoPeso: historyData?.last_weight || '',
+        
+        // Información médica
+        testimonio: historyData?.testimony ? 'Sí' : 'No',
+        gestacion: isFemale ? (historyData?.gestation ? 'Sí' : 'No') : undefined,
+        menstruacion: isFemale ? (historyData?.menstruation ? 'Sí' : 'No') : undefined,
+        tipoDIU: isFemale ? historyData?.diu_type || '' : undefined,
+        
+        // Campos adicionales
+        diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
+        operaciones: historyData?.operaciones || '',
+        medicamentos: historyData?.medicamentos || '',
+        dolencias: historyData?.dolencias || '',
+        diagnosticosReflexologia: historyData?.diagnosticos_reflexologia || '',
+        observacionesAdicionales: historyData?.observaciones_adicionales || '',
+        antecedentesFamiliares: historyData?.antecedentes_familiares || '',
+        alergias: historyData?.alergias || '',
+        
+        // Fechas
+        fechaInicio: dayjs(),
+      });
+
+      // Manejo del terapeuta con verificación segura
+      if (historyData?.therapist) {
+        setTherapist(historyData.therapist.full_name || '');
+        setSelectedTherapistId(historyData.therapist.id || null);
+      } else {
+        setTherapist(null);
+        setSelectedTherapistId(null);
+      }
     } else {
+      // Resetear el formulario si no hay datos válidos
+      form.resetFields();
       setTherapist(null);
       setSelectedTherapistId(null);
     }
-  } else {
-    // Resetear el formulario si no hay datos válidos
-    form.resetFields();
-    setTherapist(null);
-    setSelectedTherapistId(null);
-  }
-}, [patientHistory, form]);
+  }, [patientHistory, form]);
 
-useEffect(() => {
-  if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
+  useEffect(() => {
+    if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
 
-  const selectedAppointment = appointments.find(
-    (a) => a.appointment_date === selectedAppointmentDate
-  );
+    const selectedAppointment = appointments.find(
+      (a) => a.appointment_date === selectedAppointmentDate
+    );
 
-  if (selectedAppointment) {
-    form.setFieldsValue({
-      diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
-      dolencias: selectedAppointment.ailments ?? '',
-      medicamentos: selectedAppointment.medications ?? '',
-      operaciones: selectedAppointment.surgeries ?? '',
-      observacionesAdicionales: selectedAppointment.observation ?? '',
-      diagnosticosReflexologia: selectedAppointment.reflexology_diagnostics ?? '',
-      therapist: selectedAppointment.therapist?.full_name ?? '',
-    });
+    if (selectedAppointment) {
+      const therapistObj = selectedAppointment.therapist;
+      const fullName = therapistObj
+        ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
+        : '';
+      form.setFieldsValue({
+        diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
+        dolencias: selectedAppointment.ailments ?? '',
+        medicamentos: selectedAppointment.medications ?? '',
+        operaciones: selectedAppointment.surgeries ?? '',
+        observacionesAdicionales: selectedAppointment.observation ?? '',
+        diagnosticosReflexologia: selectedAppointment.reflexology_diagnostics ?? '',
+        therapist: fullName,
+      });
 
-    setTherapist(selectedAppointment.therapist?.full_name ?? null);
-    setSelectedTherapistId(selectedAppointment.therapist?.id ?? null);
-  }
-}, [selectedAppointmentDate, appointments]);
+      setTherapist(fullName || null);
+      setSelectedTherapistId(therapistObj?.id ?? null);
+    }
+  }, [selectedAppointmentDate, appointments]);
+
+  useEffect(() => {
+    if (appointmentFromState?.appointment_date) {
+      setSelectedAppointmentDate(appointmentFromState.appointment_date);
+    } else if (lastAppointment?.appointment_date) {
+      setSelectedAppointmentDate(lastAppointment.appointment_date);
+    }
+  }, [appointmentFromState, lastAppointment]);
+
 
   // Función para abrir el modal
   const showTherapistModal = () => {
@@ -247,8 +270,63 @@ useEffect(() => {
     form.setFieldsValue({ therapist: '' });
   };
 
-  const onFinish = (values) => {
-    console.log('Valores del formulario:', values);
+  const onFinish = async (values) => {
+    const historyId = patientHistory?.data?.id;
+    const selectedAppointment = appointments.find(
+      (a) => a.appointment_date === selectedAppointmentDate
+    );
+    const appointmentId = selectedAppointment?.id;
+
+    if (!historyId || !appointmentId) {
+      message.error("Falta el ID del historial o la cita.");
+      return;
+    }
+
+    const historyPayload = {
+      weight: values.pesoInicial,
+      last_weight: values.ultimoPeso,
+      height: values.talla,
+      observation: values.observation,
+      private_observation: values.observationPrivate,
+      diagnosticos_medicos: values.diagnosticosMedicos,
+      operaciones: values.operaciones,
+      medicamentos: values.medicamentos,
+      dolencias: values.dolencias,
+      diagnosticos_reflexologia: values.diagnosticosReflexologia,
+      observaciones_adicionales: values.observacionesAdicionales,
+      antecedentes_familiares: values.antecedentesFamiliares,
+      alergias: values.alergias,
+      testimony: values.testimonio === 'Sí',
+      gestation: values.gestacion === 'Sí',
+      menstruation: values.menstruacion === 'Sí',
+      diu_type: values.tipoDIU,
+      therapist_id: selectedTherapistId,
+    };
+
+    const appointmentPayload = {
+      appointment_date: selectedAppointmentDate,
+      ailments: values.dolencias,
+      diagnosis: values.diagnosticosMedicos,
+      surgeries: values.operaciones,
+      reflexology_diagnostics: values.diagnosticosReflexologia,
+      medications: values.medicamentos,
+      observation: values.observacionesAdicionales,
+      initial_date: dayjs(values.fechaInicio).format('YYYY-MM-DD'),
+      final_date: dayjs(values.fechaInicio).add(5, 'day').format('YYYY-MM-DD'),
+      appointment_type: 'CC',
+      payment: '50.00',
+      appointment_status_id: 2,
+      payment_type_id: 2,
+      patient_id: patientHistory?.data?.patient?.id,
+      therapist_id: selectedTherapistId,
+    };
+
+    try {
+      await updateHistory(historyId, historyPayload);
+      await updateAppointment(appointmentId, appointmentPayload);
+    } catch (e) {
+      console.error('Error actualizando historial y cita:', e);
+    }
   };
 
   // Columnas para la tabla de terapeutas
@@ -273,6 +351,21 @@ useEffect(() => {
     },
   ];
 
+  if (loadingAppointments || !patientHistory) {
+    return (
+      <ConfigProvider
+        theme={{
+          token: { colorPrimary: '#4caf50' },
+        }}
+      >
+        <Spin
+          size="large"
+          tip="Cargando historial..."
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}
+        />
+      </ConfigProvider>
+    );
+  }
 
   return (
     <ConfigProvider theme={theme}>
@@ -289,54 +382,56 @@ useEffect(() => {
             layout="vertical"
             className={styles.form}
           >
-            <Form.Item
-              name="patientName"
-              label="Paciente"
-              className={styles.formItem}
-            >
-              <Input disabled className={styles.input} />
-            </Form.Item>
-
-            <Form.Item
-              name="observationPrivate"
-              label="Observación"
-              className={styles.formItem}
-            >
-              <TextArea rows={2} className={styles.textarea} />
-            </Form.Item>
+            {/* Fila: Paciente y Observación */}
+            <div className={styles.flexRow}>
+              <Form.Item
+                name="patientName"
+                label="Paciente"
+                className={styles.flexItem}
+              >
+                <Input disabled className={styles.input} />
+              </Form.Item>
+              <Form.Item
+                name="observation"
+                label="Observación"
+                className={styles.flexItem}
+              >
+                <TextArea rows={1} className={styles.textarea} />
+              </Form.Item>
+            </div>
 
             <Title level={3} className={styles.sectionTitle}>
               Citas
             </Title>
 
-            <Form.Item label="Fecha de la Cita" className={styles.formItem}>
-              <Select
-                value={selectedAppointmentDate}
-                onChange={setSelectedAppointmentDate}
-                className={styles.select}
-                placeholder="Seleccione una fecha"
-                loading={loadingAppointments}
+            {/* Fila: Fecha de la Cita y Terapeuta */}
+            <div className={styles.flexRow}>
+              <Form.Item label="Fecha de la Cita" className={styles.flexItem}>
+                <Select
+                  value={selectedAppointmentDate}
+                  onChange={setSelectedAppointmentDate}
+                  className={styles.select}
+                  placeholder="Seleccione una fecha"
+                  loading={loadingAppointments}
+                >
+                  {appointmentDates.map(date => (
+                    <Option key={date} value={date}>
+                      {dayjs(date).format('DD/MM/YYYY')}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="therapist"
+                label="Terapeuta"
+                className={styles.flexItem}
               >
-                {appointmentDates.map(date => (
-                  <Option key={date} value={date}>
-                    {dayjs(date).format('DD/MM/YYYY')}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item
-              name="therapist"
-              label="Terapeuta"
-              className={styles.formItem}
-            >
-              <div className={styles.therapistContainer}>
-                <Input
-                  disabled
-                  value={therapist || 'No se ha seleccionado terapeuta'}
-                  className={styles.input}
-                />
-                <div className={styles.therapistButtons}>
+                <div className={styles.therapistRow}>
+                  <Input
+                    disabled
+                    value={therapist || 'No se ha seleccionado terapeuta'}
+                    className={styles.input}
+                  />
                   <Button
                     type="primary"
                     onClick={showTherapistModal}
@@ -344,7 +439,7 @@ useEffect(() => {
                   >
                     Seleccionar
                   </Button>
-                  {therapist && (
+                  {form.getFieldValue('therapist') && (
                     <Button
                       danger
                       onClick={handleRemoveTherapist}
@@ -354,21 +449,8 @@ useEffect(() => {
                     </Button>
                   )}
                 </div>
-                {showTherapistDropdown && (
-                  <div className={styles.therapistDropdown}>
-                    {therapists.map((t) => (
-                      <div
-                        key={t.id}
-                        className={styles.dropdownItem}
-                        onClick={() => handleTherapistChoose(t)}
-                      >
-                        {t.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </Form.Item>
+              </Form.Item>
+            </div>
 
             <div className={styles.threeColumnLayout}>
               <div className={styles.column}>
@@ -519,7 +601,15 @@ useEffect(() => {
               </Form.Item>
 
               <div className={styles.actionButtons}>
-                <Button className={styles.printButton}>Imprimir Ticket</Button>
+                <Button
+                  className={styles.printButton}
+                  onClick={() => {
+                    setShowTicketModal(true);
+                  }}
+                  disabled={!selectedAppointment}
+                >
+                  Generar Ticket
+                </Button>
                 <Button
                   type="primary"
                   htmlType="submit"
@@ -527,7 +617,12 @@ useEffect(() => {
                 >
                   Guardar Cambios
                 </Button>
-                <Button className={styles.cancelButton}>Cancelar</Button>
+                <Button 
+                  className={styles.cancelButton}
+                  onClick={() => navigate(-1)}
+                >
+                  Cancelar
+                </Button>
               </div>
             </div>
           </Form>
@@ -567,6 +662,37 @@ useEffect(() => {
             pagination={false}
             rowClassName={() => styles.tableRow}
           />
+        </Modal>
+        <Modal
+          open={showTicketModal}
+          onCancel={() => setShowTicketModal(false)}
+          footer={null}
+          width={420}
+          bodyStyle={{ padding: 0 }}
+        >
+          {selectedAppointment && (
+            <PDFViewer width="100%" height={600} showToolbar={true}>
+              <TicketPDF
+                company={{
+                  name: 'REFLEXOPERU',
+                  address: 'Calle Las Golondrinas N° 153 - Urb. Los Nogales',
+                  phone: '01-503-8416',
+                  email: 'reflexoperu@reflexoperu.com',
+                  city: 'LIMA - PERU',
+                  exonerated: 'EXONERADO DE TRIBUTOS',
+                  di: 'D.I. 626-D.I.23211',
+                }}
+                ticket={{
+                  number: selectedAppointment.ticket_number,
+                  date: dayjs(selectedAppointment.appointment_date).format('DD/MM/YYYY'),
+                  patient: `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
+                  service: 'Consulta',
+                  unit: 1,
+                  amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
+                }}
+              />
+            </PDFViewer>
+          )}
         </Modal>
       </div>
     </ConfigProvider>

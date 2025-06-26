@@ -67,8 +67,8 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
         );
         let provinceNode = {
           label: provinceOption ? provinceOption.name : value.province_id,
-          value: String(value.province_id),
-          isLeaf: false,
+                value: String(value.province_id),
+                isLeaf: false,
         };
         // 3. Cargar distritos
         const distritos = await getDistricts(value.province_id);
@@ -77,8 +77,8 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
         );
         let districtNode = {
           label: districtOption ? districtOption.name : value.district_id,
-          value: String(value.district_id),
-          isLeaf: true,
+                    value: String(value.district_id),
+                    isLeaf: true,
         };
         // Anidar
         provinceNode.children = [districtNode];
@@ -95,10 +95,10 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
         }));
         setOptions(optionsTree);
         setCascaderValue([
-          String(value.region_id),
-          String(value.province_id),
-          String(value.district_id),
-        ]);
+            String(value.region_id),
+            String(value.province_id),
+            String(value.district_id),
+          ]);
         setLoadingUbigeo(false);
       }
     };
@@ -144,7 +144,7 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
           isLeaf: true,
         }));
       }
-      setOptions([...options]);
+      setOptions([...options]); // SHALLOW COPY para forzar re-render
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -154,15 +154,15 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
 
   const handleChange = (newCascaderValue, selectedOptions) => {
     setCascaderValue(newCascaderValue);
-    if (onChange) {
+      if (onChange) {
       onChange(getUbigeoObjectFromValue(newCascaderValue), selectedOptions);
     }
   };
 
   const filter = (inputValue, path) =>
-    path.some((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase()),
-    );
+      path.some((option) =>
+        option.label.toLowerCase().includes(inputValue.toLowerCase()),
+  );
 
   return (
     <ConfigProvider

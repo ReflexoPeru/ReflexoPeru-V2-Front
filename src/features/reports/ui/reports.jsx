@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { ConfigProvider, DatePicker, Button, theme } from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ConfigProvider, DatePicker, Button, theme, Card, Select } from 'antd';
 import ReportSelector from './ReportSelector';
 import ReportPreview from './ReportPreview';
+import EditCashReportModal from './EditCashReportModal';
 import styles from './reports.module.css';
 import dayjs from 'dayjs';
 import {
@@ -16,9 +17,50 @@ import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/Patie
 import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
 import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
 import ExcelJS from 'exceljs';
+import {
+  FilePlus,
+  ChartPieSlice,
+  Users,
+  Wallet,
+  CalendarBlank,
+} from '@phosphor-icons/react';
+import {
+  useCompanyInfo,
+  useSystemHook,
+} from '../../configuration/cSystem/hook/systemHook';
+
+const reportOptions = [
+  {
+    key: 'diariaTerapeuta',
+    title: 'Reporte Diario de Terapeutas',
+    description:
+      'Resumen de citas y actividades por cada terapeuta en un día específico.',
+    icon: <Users size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'pacientesTerapeuta',
+    title: 'Pacientes por Terapeuta',
+    description:
+      'Lista de pacientes atendidos por cada terapeuta en una fecha determinada.',
+    icon: <ChartPieSlice size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'reporteCaja',
+    title: 'Reporte de Caja Diario',
+    description: 'Detalle de los ingresos y transacciones financieras del día.',
+    icon: <Wallet size={32} color="#4CAF50" />,
+  },
+  {
+    key: 'rangoCitas',
+    title: 'Citas por Rango de Fechas',
+    description:
+      'Exporta un listado de todas las citas programadas entre dos fechas.',
+    icon: <CalendarBlank size={32} color="#4CAF50" />,
+  },
+];
 
 const Reporte = () => {
-  const [reportType, setReportType] = useState('diariaTerapeuta');
+  const [reportType, setReportType] = useState(null);
   const [date, setDate] = useState(dayjs());
   const [range, setRange] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
@@ -27,6 +69,13 @@ const Reporte = () => {
     current: 1,
     pageSize: 20,
   });
+
+  // Nuevos estados para el modal de edición
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedCajaData, setEditedCajaData] = useState(null);
+
+  const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
+  const { logoUrl, loading: logoLoading, error: logoError } = useSystemHook();
 
   const {
     data: diariaData,
@@ -53,7 +102,71 @@ const Reporte = () => {
     fetchReport: fetchRango,
   } = useAppointmentsBetweenDatesReport();
 
-  const safeDate = date || dayjs();
+  const safeDate = useMemo(() => date || dayjs(), [date]);
+
+  // Memoize PDF viewer styles to prevent re-renders
+  const pdfViewerStyle = useMemo(
+    () => ({
+      minHeight: 500,
+      maxHeight: 'calc(96vh - 180px)',
+      margin: '0 auto',
+      display: 'block',
+      borderRadius: 14,
+    }),
+    [],
+  );
+
+  // Memoize theme config to prevent re-renders
+  const themeConfig = useMemo(
+    () => ({
+      algorithm: theme.darkAlgorithm,
+      components: {
+        Button: {
+          colorPrimary: '#00AA55',
+          colorTextLightSolid: '#ffffff',
+          colorPrimaryHover: '#00cc6a',
+          colorPrimaryActive: '#ffffff',
+        },
+        Select: {
+          colorPrimary: '#00AA55',
+          colorBgContainer: '#1f1f1f',
+          colorText: '#ffffff',
+          colorBorder: '#ffffff',
+          controlOutline: '#00AA55',
+          colorPrimaryHover: '#00cc6a',
+          optionSelectedBg: '#00AA55',
+        },
+        DatePicker: {
+          colorTextPlaceholder: '#AAAAAA',
+          colorBgContainer: '#333333',
+          colorText: '#FFFFFF',
+          colorBorder: '#444444',
+          borderRadius: 4,
+          hoverBorderColor: '#555555',
+          activeBorderColor: '#00AA55',
+          colorIcon: '#FFFFFF',
+          colorIconHover: '#00AA55',
+          colorBgElevated: '#121212',
+          colorPrimary: '#00AA55',
+          colorTextDisabled: '#333333',
+          colorTextHeading: '#FFFFFF',
+          cellHoverBg: '#00AA55',
+          colorSplit: '#444444',
+        },
+        Modal: {
+          colorBgElevated: '#1f1f1f',
+          colorText: '#fff',
+          borderRadius: 12,
+        },
+        Message: {
+          colorBgElevated: '#1f1f1f',
+          colorText: '#fff',
+          borderRadius: 8,
+        },
+      },
+    }),
+    [],
+  );
 
   // Resetear paginación cuando cambian los datos de rango
   useEffect(() => {
@@ -83,31 +196,31 @@ const Reporte = () => {
 
   const handleCancel = () => {
     setShowPreview(false);
-    setReportType('diariaTerapeuta');
+    setReportType(null);
     setDate(dayjs());
     setRange(null);
+    setEditedCajaData(null); // Resetear datos editados
   };
 
-  // Renderiza los inputs de fecha según el tipo de reporte
-  const renderDateInputs = () => {
-    if (reportType === 'rangoCitas') {
-      return (
-        <DatePicker.RangePicker
-          style={{ width: '100%', marginBottom: 16 }}
-          format="DD-MM-YYYY"
-          onChange={(dates) => setRange(dates)}
-        />
-      );
-    } else {
-      return (
-        <DatePicker
-          style={{ width: '100%', marginBottom: 16 }}
-          format="DD-MM-YYYY"
-          defaultValue={dayjs()}
-          onChange={(date) => setDate(date)}
-        />
-      );
-    }
+  // Nueva función para manejar la edición
+  const handleEditCashReport = () => {
+    setShowEditModal(true);
+  };
+
+  // Nueva función para guardar los cambios editados
+  const handleSaveEditedData = (updatedData) => {
+    setEditedCajaData(updatedData);
+    setShowEditModal(false);
+  };
+
+  // Nueva función para cancelar la edición
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+  };
+
+  // Nueva función para resetear los datos editados
+  const handleResetData = () => {
+    setEditedCajaData(null);
   };
 
   // Nueva función para exportar a Excel usando exceljs
@@ -151,42 +264,39 @@ const Reporte = () => {
     downloadBtn = null;
   if (showPreview) {
     if (showPreview === 'diariaTerapeuta') {
-      loading = diariaLoading;
-      error = diariaError;
+      loading = diariaLoading || logoLoading || loadingInfo;
+      error = diariaError || logoError || errorInfo;
       content = diariaData && (
         <PDFViewer
+          key={`diaria-${safeDate.format('YYYY-MM-DD')}`}
           width="100%"
           height="95%"
-          style={{
-            minHeight: 500,
-            maxHeight: 'calc(96vh - 180px)',
-            margin: '0 auto',
-            display: 'block',
-            borderRadius: 14,
-          }}
+          style={pdfViewerStyle}
         >
-          <DailyTherapistReportPDF data={diariaData} date={safeDate} />
+          <DailyTherapistReportPDF
+            data={diariaData}
+            date={safeDate}
+            logoUrl={logoUrl}
+            companyInfo={companyInfo}
+          />
         </PDFViewer>
       );
     } else if (showPreview === 'pacientesTerapeuta') {
-      loading = pacientesLoading;
-      error = pacientesError;
+      loading = pacientesLoading || logoLoading || loadingInfo;
+      error = pacientesError || logoError || errorInfo;
       content =
         pacientesData && pacientesData.length > 0 ? (
           <PDFViewer
+            key={`pacientes-${safeDate.format('YYYY-MM-DD')}`}
             width="100%"
             height="95%"
-            style={{
-              minHeight: 500,
-              maxHeight: 'calc(96vh - 180px)',
-              margin: '0 auto',
-              display: 'block',
-              borderRadius: 14,
-            }}
+            style={pdfViewerStyle}
           >
             <PatientsByTherapistReportPDF
               data={pacientesData}
               date={safeDate}
+              logoUrl={logoUrl}
+              companyInfo={companyInfo}
             />
           </PDFViewer>
         ) : (
@@ -195,22 +305,27 @@ const Reporte = () => {
           </div>
         );
     } else if (showPreview === 'reporteCaja') {
-      loading = cajaLoading;
-      error = cajaError;
+      loading = cajaLoading || logoLoading || loadingInfo;
+      error = cajaError || logoError || errorInfo;
+
+      // Usar datos editados si están disponibles, sino usar los datos originales
+      const dataToShow = editedCajaData || cajaData;
+
       content =
-        cajaData && Object.keys(cajaData).length > 0 ? (
+        dataToShow && Object.keys(dataToShow).length > 0 ? (
           <PDFViewer
+            key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
             width="100%"
             height="95%"
-            style={{
-              minHeight: 500,
-              maxHeight: 'calc(96vh - 180px)',
-              margin: '0 auto',
-              display: 'block',
-              borderRadius: 14,
-            }}
+            style={pdfViewerStyle}
           >
-            <DailyCashReportPDF data={cajaData} date={safeDate} />
+            <DailyCashReportPDF
+              data={dataToShow}
+              date={safeDate}
+              logoUrl={logoUrl}
+              companyInfo={companyInfo}
+              isEdited={!!editedCajaData}
+            />
           </PDFViewer>
         ) : (
           <div className={styles.errorMsg}>
@@ -264,57 +379,17 @@ const Reporte = () => {
     }
   }
 
-  const themeConfig = {
-    algorithm: theme.darkAlgorithm,
-    components: {
-      Button: {
-        colorPrimary: '#00AA55',
-        colorTextLightSolid: '#ffffff',
-        colorPrimaryHover: '#00cc6a',
-        colorPrimaryActive: '#ffffff',
-      },
-      Select: {
-        colorPrimary: '#00AA55',
-        colorBgContainer: '#1f1f1f',
-        colorText: '#ffffff',
-        colorBorder: '#ffffff',
-        controlOutline: '#00AA55',
-        colorPrimaryHover: '#00cc6a',
-        optionSelectedBg: '#00AA55',
-      },
-      DatePicker: {
-        colorTextPlaceholder: '#AAAAAA',
-        colorBgContainer: '#333333',
-        colorText: '#FFFFFF',
-        colorBorder: '#444444',
-        borderRadius: 4,
-        hoverBorderColor: '#555555',
-        activeBorderColor: '#00AA55',
-        colorIcon: '#FFFFFF',
-        colorIconHover: '#00AA55',
-        colorBgElevated: '#121212',
-        colorPrimary: '#00AA55',
-        colorTextDisabled: '#333333',
-        colorTextHeading: '#FFFFFF',
-        cellHoverBg: '#00AA55',
-        colorSplit: '#444444',
-      },
-      Modal: {
-        colorBgElevated: '#1f1f1f',
-        colorText: '#fff',
-        borderRadius: 12,
-      },
-      Message: {
-        colorBgElevated: '#1f1f1f',
-        colorText: '#fff',
-        borderRadius: 8,
-      },
-    },
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Previene que la página se recargue
+    if (reportType && !generating) {
+      // Doble chequeo para seguridad
+      handleGenerate();
+    }
   };
 
   if (showPreview) {
-    if (showPreview === 'rangoCitas') {
-      return (
+    return (
+      <>
         <ReportPreview
           showPreview={showPreview}
           loading={loading}
@@ -323,38 +398,76 @@ const Reporte = () => {
           content={content}
           downloadBtn={downloadBtn}
           handleCancel={handleCancel}
+          onEdit={
+            showPreview === 'reporteCaja' ? handleEditCashReport : undefined
+          }
+          showEditButton={showPreview === 'reporteCaja'}
+          onReset={showPreview === 'reporteCaja' ? handleResetData : undefined}
+          showResetButton={showPreview === 'reporteCaja' && !!editedCajaData}
         />
-      );
-    } else {
-      return (
-        <ConfigProvider theme={themeConfig}>
-          <ReportPreview
-            showPreview={showPreview}
-            loading={loading}
-            generating={generating}
-            error={error}
-            content={content}
-            downloadBtn={downloadBtn}
-            handleCancel={handleCancel}
+
+        {/* Modal de edición para reporte de caja */}
+        {showPreview === 'reporteCaja' && (
+          <EditCashReportModal
+            visible={showEditModal}
+            onCancel={handleCancelEdit}
+            onSave={handleSaveEditedData}
+            data={cajaData}
+            date={safeDate}
           />
-        </ConfigProvider>
-      );
-    }
+        )}
+      </>
+    );
   }
 
   return (
     <ConfigProvider theme={themeConfig}>
-      <ReportSelector
-        reportType={reportType}
-        setReportType={setReportType}
-        date={date}
-        setDate={setDate}
-        range={range}
-        setRange={setRange}
-        generating={generating}
-        handleGenerate={handleGenerate}
-        renderDateInputs={renderDateInputs}
-      />
+      <div className={styles.mainContainer}>
+        <Card className={styles.card}>
+          <h2 className={styles.title}>Generador de Reportes</h2>
+
+          <form onSubmit={handleSubmit}>
+            <ReportSelector
+              options={reportOptions}
+              selectedReport={reportType}
+              onSelectReport={setReportType}
+            />
+
+            {reportType && (
+              <div className={styles.controlsWrapper}>
+                <div className={styles.datePickerContainer}>
+                  {reportType === 'rangoCitas' ? (
+                    <DatePicker.RangePicker
+                      style={{ width: '100%' }}
+                      format="DD-MM-YYYY"
+                      onChange={(dates) => setRange(dates)}
+                      value={range}
+                    />
+                  ) : (
+                    <DatePicker
+                      style={{ width: '100%' }}
+                      format="DD-MM-YYYY"
+                      value={date}
+                      onChange={(d) => setDate(d)}
+                    />
+                  )}
+                </div>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<FilePlus size={20} weight="bold" />}
+                  onClick={handleGenerate}
+                  loading={generating}
+                  disabled={!reportType || generating}
+                  className={styles.generateBtn}
+                >
+                  Generar
+                </Button>
+              </div>
+            )}
+          </form>
+        </Card>
+      </div>
     </ConfigProvider>
   );
 };

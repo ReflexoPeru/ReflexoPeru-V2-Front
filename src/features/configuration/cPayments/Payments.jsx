@@ -7,7 +7,6 @@ import {
   Space,
   Form,
   Input,
-  Switch,
   message,
   ConfigProvider,
   Popconfirm,
@@ -165,41 +164,40 @@ const Payments = () => {
     }
   };
 
-  const handleDelete = async (id, type) => {
+  const handleDeactivate = async (record) => {
     try {
-      if (type === 'payment') {
-        await removePaymentType(id);
-        refreshPaymentTypes();
-      } else {
-        await removePrice(id);
+      if (record.price !== undefined) {
+        await removePrice(record.id);
         refreshPrices();
+        message.success('Precio desactivado exitosamente');
+      } else {
+        await removePaymentType(record.id);
+        refreshPaymentTypes();
+        message.success('Tipo de pago desactivado exitosamente');
       }
-      message.success('Registro eliminado exitosamente');
     } catch (error) {
-      message.error('Ocurrió un error al eliminar el registro');
+      message.error('Ocurrió un error al desactivar el registro');
       console.error(error);
     }
   };
 
-  const handleDeactivate = async (record) => {
+  const handleActivate = async (record, type) => {
     try {
-      const newStatus = record.status === 'Habilitado' ? 'inactive' : 'active';
-
-      if (record.price !== undefined) {
-        await editPrice(record.id, { status: newStatus });
-        refreshPrices();
-      } else {
-        await editPaymentType(record.id, { status: newStatus });
+      if (type === 'payment') {
+        await addPaymentType({ name: record.name, status: 'active' });
         refreshPaymentTypes();
+        message.success('Tipo de pago activado correctamente');
+      } else {
+        await addPrice({
+          name: record.name,
+          price: record.price,
+          status: 'active',
+        });
+        refreshPrices();
+        message.success('Precio activado correctamente');
       }
-
-      message.success(
-        record.status === 'Habilitado'
-          ? 'Registro desactivado exitosamente'
-          : 'Registro activado exitosamente',
-      );
     } catch (error) {
-      message.error('Ocurrió un error al cambiar el estado del registro');
+      message.error('Ocurrió un error al activar el registro');
       console.error(error);
     }
   };
@@ -246,18 +244,14 @@ const Payments = () => {
           </Button>
           <Button
             className={styles.deactivateButton}
-            onClick={() => handleDeactivate(record)}
+            onClick={() =>
+              record.deleted_at
+                ? handleActivate(record, 'payment')
+                : handleDeactivate(record)
+            }
           >
-            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
+            {record.deleted_at ? 'Restaurar' : 'Desactivar'}
           </Button>
-          <Popconfirm
-            title="¿Estás seguro de eliminar este tipo de pago?"
-            onConfirm={() => handleDelete(record.id, 'payment')}
-            okText="Sí"
-            cancelText="No"
-          >
-            <Button className={styles.deleteButton}>Eliminar</Button>
-          </Popconfirm>
         </Space>
       ),
     },
@@ -294,18 +288,14 @@ const Payments = () => {
           </Button>
           <Button
             className={styles.deactivateButton}
-            onClick={() => handleDeactivate(record)}
+            onClick={() =>
+              record.deleted_at
+                ? handleActivate(record, 'price')
+                : handleDeactivate(record)
+            }
           >
-            {record.status === 'Habilitado' ? 'Desactivar' : 'Activar'}
+            {record.deleted_at ? 'Restaurar' : 'Desactivar'}
           </Button>
-          <Popconfirm
-            title="¿Estás seguro de eliminar este precio?"
-            onConfirm={() => handleDelete(record.id, 'price')}
-            okText="Sí"
-            cancelText="No"
-          >
-            <Button className={styles.deleteButton}>Eliminar</Button>
-          </Popconfirm>
         </Space>
       ),
     },
@@ -455,14 +445,6 @@ const Payments = () => {
               />
             </Form.Item>
           )}
-
-          <Form.Item name="status" label="Estado" valuePropName="checked">
-            <Switch
-              checkedChildren="Habilitado"
-              unCheckedChildren="Deshabilitado"
-              className={styles.statusSwitch}
-            />
-          </Form.Item>
         </BaseModal>
       </div>
     </ConfigProvider>

@@ -10,7 +10,7 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'document_type_id',
+        name: 'document_type',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -148,7 +148,7 @@ const fields = [
   },
 ];
 
-const EditPatient = ({ patient, onClose }) => {
+const EditPatient = ({ patient, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
@@ -157,7 +157,6 @@ const EditPatient = ({ patient, onClose }) => {
   const setFormWithPatient = (data) => {
     if (!data) return;
     // Usar document_type
-    const documentTypeId = Number(data.document_type);
     const ubicacion = {
       region_id: data.region,
       province_id: data.province,
@@ -173,7 +172,10 @@ const EditPatient = ({ patient, onClose }) => {
       name: data.name || '',
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
-      document_type_id: documentTypeId,
+      document_type:
+        data.document_type !== undefined && data.document_type !== null
+          ? String(data.document_type)
+          : undefined,
       document_number: data.document_number,
       personal_reference: data.personal_reference,
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
@@ -198,11 +200,19 @@ const EditPatient = ({ patient, onClose }) => {
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      await handleUpdatePatient(patient.id, formData);
+      // Convertir el tipo de documento a número y renombrar el campo
+      const dataToSend = {
+        ...formData,
+        document_type_id: Number(formData.document_type),
+      };
+      delete dataToSend.document_type;
+
+      await handleUpdatePatient(patient.id, dataToSend);
       notification.success({
         message: 'Éxito',
         description: 'Paciente actualizado correctamente',
       });
+      if (onSave) onSave();
       onClose();
     } catch (error) {
       notification.error({
