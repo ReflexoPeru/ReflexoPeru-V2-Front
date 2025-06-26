@@ -10,7 +10,6 @@ import {
   TimePicker,
   theme,
 } from 'antd';
-import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -94,7 +93,7 @@ const InputField = ({
       return (
         <Form.Item
           label="Metodos de Pago:"
-          name="payment_type_id"
+          name="payment"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
           <SelectPaymentStatus />
@@ -113,7 +112,7 @@ const InputField = ({
           name="payment_type_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
-          <SelectPrices {...rest} />
+          <SelectPrices hidePriceInput={rest.hidePriceInput} {...rest} />
         </Form.Item>
       );
 
@@ -131,6 +130,9 @@ const InputField = ({
       break;
 
     case 'text':
+      if (rest.name === 'payment' && rest.hidePaymentInput) {
+        return <input type="hidden" name="payment" value={rest.value || ''} />;
+      }
       inputComponent = (
         <Input
           {...inputProps}
@@ -258,6 +260,9 @@ const InputField = ({
         </Form.Item>
       );
 
+    case 'hidden':
+      return <input type="hidden" name={rest.name} value={rest.value || ''} />;
+
     default:
       inputComponent = <Input {...inputProps} />;
       break;
@@ -310,6 +315,21 @@ const CitaComponents = ({ componentType, form, ...props }) => {
       return <HourCheckbox {...props} />;
     case 'paymentCheckbox':
       return <PaymentCheckbox {...props} />;
+    case 'paymentMethodField':
+      // Renderiza el componente personalizado pasado por props
+      const PaymentComponent = props.component;
+      return (
+        <Form.Item
+          label="Método de Pago"
+          name="payment_method_id"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <PaymentComponent />
+        </Form.Item>
+      );
+    case 'spacer':
+      // Espacio visual en blanco
+      return <div style={{ height: props.height || 32 }} />;
     default:
       return null;
   }

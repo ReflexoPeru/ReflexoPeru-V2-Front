@@ -100,7 +100,7 @@ const FormComponent = forwardRef(
           <Form.Item
             name={field.name}
             label={<span className={styles.label}>{field.label}</span>}
-            className={styles.formItem}
+            className={`${styles.formItem} ${field.className || ''}`}
             rules={
               isPhoneField
                 ? [
@@ -176,9 +176,10 @@ const FormComponent = forwardRef(
                   Cancelar
                 </Button>
                 <Button
-                  htmlType="submit"
+                  type="primary"
                   className={styles.buttonSubmit}
                   loading={loading}
+                  onClick={() => form.submit()}
                 >
                   {mode === 'edit' ? 'Actualizar' : 'Registrar'}
                 </Button>
