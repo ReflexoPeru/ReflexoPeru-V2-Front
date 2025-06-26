@@ -145,6 +145,7 @@ const NewAppointment = () => {
         description: 'La cita se ha registrado correctamente',
       });
 
+      form.resetFields();
       setFormValues(null);
       setSelectedPatient(null);
       setPatientType('nuevo');
@@ -446,6 +447,7 @@ const NewAppointment = () => {
             columns={columns}
             pagination={false}
             rowKey="key"
+            scroll={{ y: 400 }} // Aumenta la altura del scroll para mostrar más filas
             loading={loading}
             onRow={(record) => ({
               onClick: () => {

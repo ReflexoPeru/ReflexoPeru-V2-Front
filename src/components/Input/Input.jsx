@@ -10,7 +10,6 @@ import {
   TimePicker,
   theme,
 } from 'antd';
-import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -94,7 +93,7 @@ const InputField = ({
       return (
         <Form.Item
           label="Metodos de Pago:"
-          name="payment_type_id"
+          name="payment"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
           <SelectPaymentStatus />
