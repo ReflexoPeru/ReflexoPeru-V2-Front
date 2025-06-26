@@ -112,10 +112,14 @@ export default function MenuDashboard() {
         </div>
       ),
       children: [
-        {
-          key: '33',
-          label: <Link to="configPagos">Pagos</Link>,
-        },
+        ...(userRole === 1
+          ? [
+              {
+                key: '33',
+                label: <Link to="configPagos">Pagos</Link>,
+              },
+            ]
+          : []),
         {
           key: '16',
           label: <Link to="configPerfil">Perfil</Link>,
@@ -123,7 +127,7 @@ export default function MenuDashboard() {
         ...(userRole === 1
           ? [
               {
-                key: '12',
+                key: '17',
                 label: <Link to="configSistema">Sistema</Link>,
               },
               {

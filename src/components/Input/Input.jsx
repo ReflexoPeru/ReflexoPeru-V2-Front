@@ -2,22 +2,30 @@ import { CheckCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
+  ConfigProvider,
   DatePicker,
   Form,
   Input,
-  InputNumber,
   Select,
   TimePicker,
-  ConfigProvider,
+  theme,
 } from 'antd';
-import { useEffect } from 'react';
 import styles from '../Input/Input.module.css';
+
+// Importaciones corregidas
+import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import { SelectCountries } from '../Select/SelectCountry';
+import { SelectDiagnoses } from '../Select/SelectDiagnoses';
+import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
+import SelectPrices from '../Select/SelectPrices';
+import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
 
 const { Option } = Select;
 
 // Componente principal
 const InputField = ({
   type,
+  form,
   label,
   options = [],
   isPhoneField = false,
@@ -33,27 +41,227 @@ const InputField = ({
   };
 
   switch (type) {
-    case 'select':
-      inputComponent = (
-        <Select
-          {...inputProps}
-          dropdownStyle={{ backgroundColor: '#444444', color: '#FFFFFF' }}
+    case 'selestCountry':
+      return <SelectCountries />;
+
+    case 'ubigeo':
+      return (
+        <Form.Item
+          name="ubicacion"
+          rules={[
+            { required: true, message: 'Por favor seleccione la ubicación' },
+          ]}
         >
-          {options.map((opt) => (
-            <Option key={opt.value} value={opt.value} style={{ color: '#fff' }}>
-              {opt.label}
-            </Option>
-          ))}
-        </Select>
+          <SelectUbigeoCascader value={rest.value} onChange={rest.onChange} />
+        </Form.Item>
+      );
+
+    case 'documentNumber':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
       );
       break;
 
+    case 'phoneNumber':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+          onChange={(e) => {
+            const cleanValue = e.target.value.replace(/\D/g, '');
+            e.target.value = cleanValue;
+            if (rest.onChange) rest.onChange(cleanValue);
+          }}
+          maxLength={9}
+        />
+      );
+      break;
+
+    case 'diagnoses':
+      return <SelectDiagnoses />;
+
+    case 'paymentStatus':
+      return (
+        <Form.Item
+          label="Metodos de Pago:"
+          name="payment"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <SelectPaymentStatus />
+        </Form.Item>
+      );
+
+    case 'typeOfDocument':
+      return (
+        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
+      );
+
+    case 'selectPrices':
+      return (
+        <Form.Item
+          label="Opciones de Pago:"
+          name="payment_type_id"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <SelectPrices hidePriceInput={rest.hidePriceInput} {...rest} />
+        </Form.Item>
+      );
+
+    case 'email':
+      inputComponent = (
+        <Input
+          {...inputProps}
+          type="email"
+          onChange={(e) => {
+            const value = e.target.value;
+            if (rest.onChange) rest.onChange(value);
+          }}
+        />
+      );
+      break;
+
+    case 'text':
+      if (rest.name === 'payment' && rest.hidePaymentInput) {
+        return <input type="hidden" name="payment" value={rest.value || ''} />;
+      }
+      inputComponent = (
+        <Input
+          {...inputProps}
+          onChange={(e) => {
+            const value = e.target.value.toUpperCase();
+            if (rest.onChange) rest.onChange(value);
+            if (form && rest.name) {
+              form.setFieldValue(rest.name, value);
+            }
+          }}
+        />
+      );
+      break;
+
+    case 'select':
+      return (
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                colorPrimary: '#1677ff',
+                optionSelectedBg: '#333333',
+                colorText: '#fff',
+                colorBgElevated: '#444444',
+                colorTextPlaceholder: '#aaa',
+                controlItemBgHover: '#444444',
+                selectorBg: '#444444',
+              },
+            },
+            token: {
+              colorTextBase: '#fff',
+            },
+          }}
+        >
+          <Select
+            className={styles.inputStyle}
+            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
+            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
+            {...rest}
+          >
+            {options.map((opt) => (
+              <Option
+                key={opt.value}
+                value={opt.value}
+                style={{ color: '#fff' }}
+              >
+                {opt.label}
+              </Option>
+            ))}
+          </Select>
+        </ConfigProvider>
+      );
+
     case 'date':
-      inputComponent = <DatePicker {...inputProps} />;
+      inputComponent = (
+        <ConfigProvider
+          theme={{
+            components: {
+              DatePicker: {
+                colorBgElevated: '#3B3B3BFF',
+                colorText: '#ffffff',
+                colorTextHeading: '#ffffff',
+                colorIcon: '#ffffff',
+                colorPrimary: '#1cb54a',
+                colorPrimaryHover: '#148235',
+                cellHoverBg: '#333333',
+              },
+            },
+          }}
+        >
+          <DatePicker
+            {...inputProps}
+            style={{
+              width: '100%',
+              color: '#ffffff',
+              backgroundColor: '#424242FF',
+              borderColor: '#444444',
+            }}
+            dropdownStyle={{
+              backgroundColor: '#000000',
+              color: '#ffffff',
+            }}
+          />
+        </ConfigProvider>
+      );
       break;
 
     case 'cita':
       return <CitaComponents {...rest} />;
+
+    case 'manualPayment':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Monto"
+          rules={[{ required: true, message: 'El monto es requerido' }]}
+        >
+          <Input
+            value={rest.value}
+            onChange={(e) =>
+              rest.form.setFieldsValue({ [rest.name]: e.target.value })
+            }
+            prefix="S/"
+            placeholder="S/ 0.00"
+          />
+        </Form.Item>
+      );
+
+    case 'paymentMethod':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Método de Pago"
+          rules={[
+            { required: true, message: 'El método de pago es requerido' },
+          ]}
+        >
+          <SelectPaymentStatus
+            value={rest.value}
+            onChange={(value) =>
+              rest.form.setFieldsValue({ [rest.name]: value })
+            }
+            placeholder="Selecciona método de pago"
+          />
+        </Form.Item>
+      );
+
+    case 'hidden':
+      return <input type="hidden" name={rest.name} value={rest.value || ''} />;
 
     default:
       inputComponent = <Input {...inputProps} />;
@@ -61,9 +269,22 @@ const InputField = ({
   }
 
   if (isPhoneField) {
+    const phoneInput = (
+      <Input
+        {...inputProps}
+        onKeyPress={(e) => !/[0-9]/.test(e.key) && e.preventDefault()}
+        onChange={(e) => {
+          const cleanValue = e.target.value.replace(/\D/g, '');
+          e.target.value = cleanValue;
+          if (rest.onChange) rest.onChange(cleanValue);
+        }}
+        maxLength={9}
+      />
+    );
+
     return (
       <div className={styles.inputWrapper}>
-        {inputComponent}
+        {phoneInput}
         <CheckCircleFilled
           onClick={togglePhoneRequired}
           title={
@@ -88,308 +309,202 @@ const CitaComponents = ({ componentType, form, ...props }) => {
       return <DateField form={form} />;
     case 'patientField':
       return <PatientField form={form} {...props} />;
-    case 'paymentOptions':
-      return <PaymentOptionsField form={form} {...props} />;
-    case 'paymentMethod':
-      return <PaymentMethodField form={form} {...props} />;
-    case 'amountField':
-      return <AmountField form={form} {...props} />;
     case 'timeField':
       return <TimeField form={form} />;
     case 'hourCheckbox':
       return <HourCheckbox {...props} />;
     case 'paymentCheckbox':
       return <PaymentCheckbox {...props} />;
+    case 'paymentMethodField':
+      // Renderiza el componente personalizado pasado por props
+      const PaymentComponent = props.component;
+      return (
+        <Form.Item
+          label="Método de Pago"
+          name="payment_method_id"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <PaymentComponent />
+        </Form.Item>
+      );
+    case 'spacer':
+      // Espacio visual en blanco
+      return <div style={{ height: props.height || 32 }} />;
     default:
       return null;
   }
 };
 
 // Componentes individuales
-// En Input.jsx
-const DateField = ({ form }) => (
-  <Form.Item
-    label="Fecha de cita"
-    name="fechaCita"
-    rules={[{ required: true, message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          DatePicker: {
-            colorTextPlaceholder: "#AAAAAA",
-            colorBgContainer: "#333333",
-            colorText: "#FFFFFF",
-            colorBorder: "#444444",
-            hoverBorderColor: "#555555",
-            activeBorderColor: "#00AA55",
-            colorIcon: "#FFFFFF",
-            colorIconHover:'#00AA55',
-            colorBgElevated: '#121212',
-            colorPrimary: '#00AA55',
-            colorTextDisabled: '#333333',
-            colorTextHeading:'#FFFFFF',
-            cellHoverBg:'#00AA55',
-            colorSplit:'#444444',
-          }
-        }
-      }}
-    >
-      <DatePicker className={styles.datePicker} style={{ width: '100%' }} />
-    </ConfigProvider>
-  </Form.Item>
-);
-
 const PatientField = ({
   form,
   patientType,
   onPatientTypeChange,
   patientTypeOptions,
-}) => (
-  <div className={styles.patientRow}>
-    <div className={styles.patientContainer}>
-      {/* Input de paciente */}
-      <div className={styles.patientInputContainer}>
-        <Form.Item
-          label="Paciente"
-          name="pacienteId"
-          rules={[{ required: true, message: 'Este campo es requerido' }]}
-          className={styles.formItem}
-          style={{ marginBottom: 0 }}
-        >
-          <Input className={styles.inputStyle} disabled />
-        </Form.Item>
-      </div>
+  onOpenCreateModal,
+  selectedPatient,
+  changeSelectedPatient,
+  onOpenSelectModal,
+}) => {
+  const formInstance = form || Form.useFormInstance();
 
-      {/* Botón Crear/Elegir */}
-      <div className={styles.patientButtonContainer}>
-        <Button type="primary" className={styles.patientButton}>
-          {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
-        </Button>
-      </div>
+  // Función para cambiar el texto del paciente
 
-      {/* Checkboxes en columna */}
-      <div className={styles.checkboxColumn}>
-        {patientTypeOptions.map((option) => (
-          <Checkbox
-            key={option.value}
-            checked={patientType === option.value}
-            onChange={() => onPatientTypeChange(option.value)}
-            className={`${styles.checkbox} ${styles.checkboxItem}`}
+  return (
+    <div className={styles.patientRow}>
+      <div className={styles.patientContainer}>
+        <div className={styles.patientInputContainer}>
+          <Form.Item
+            label="Paciente"
+            rules={[{ required: true, message: 'Este campo es requerido' }]}
+            className={styles.formItem}
+            style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
-            {option.label}
-          </Checkbox>
-        ))}
+            <InputField
+              readonly={true}
+              type="text"
+              value={
+                selectedPatient?.concatenatedName ||
+                selectedPatient?.full_name ||
+                ''
+              }
+              onChange={(e) => changeSelectedPatient(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item name="patient_id" hidden>
+            <Input />
+          </Form.Item>
+        </div>
+
+        <div className={styles.patientButtonContainer}>
+          <Button
+            type="primary"
+            className={styles.patientButton}
+            onClick={() => {
+              if (patientType === 'nuevo') {
+                onOpenCreateModal();
+              } else {
+                onOpenSelectModal();
+              }
+            }}
+          >
+            {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
+          </Button>
+        </div>
+
+        <div className={styles.checkboxColumn}>
+          {patientTypeOptions.map((option) => (
+            <Checkbox
+              key={option.value}
+              checked={patientType === option.value}
+              onChange={() => onPatientTypeChange(option.value)}
+              className={`${styles.checkbox} ${styles.checkboxItem}`}
+            >
+              {option.label}
+            </Checkbox>
+          ))}
+        </div>
       </div>
     </div>
-  </div>
-);
-// En el PaymentOptionsField
-const PaymentOptionsField = ({
-  form,
-  isPaymentRequired,
-  paymentOptions,
-  onPaymentOptionChange,
-}) => (
-  <Form.Item
-    label="Opciones de pago"
-    name="opcionesPago"
-    rules={[
-      { required: isPaymentRequired, message: 'Este campo es requerido' },
-    ]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            activeBorderColor: '#1cb54a',
-            hoverBorderColor: '#1cb54a',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBgElevated: '#121212',
-            optionSelectedBg: '#1cb54a',
-            colorTextPlaceholder: '#AAAAAA',
-            optionActiveBg: '#333333',
-            colorTextQuaternary: '#AAAAAA',
-          }
-        }
-      }}
-    >
-      <Select
-        onChange={onPaymentOptionChange}
-        placeholder="Seleccione una opción"
-        style={{ width: '100%' }}
-        dropdownClassName={styles.selectDropdown}
-      >
-        {paymentOptions.map((option) => (
-          <Option
-            key={option.value}
-            value={option.value}
-            className={styles.selectOption}
-          >
-            {option.label}
-          </Option>
-        ))}
-      </Select>
-    </ConfigProvider>
-  </Form.Item>
-);
+  );
+};
 
-const PaymentMethodField = ({ form, isPaymentRequired, paymentMethods }) => (
-  <Form.Item
-    label="Método de pago"
-    name="metodoPago"
-    rules={[
-      { required: isPaymentRequired, message: 'Este campo es requerido' },
-    ]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            activeBorderColor: '#1cb54a',
-            hoverBorderColor: '#1cb54a',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBgElevated: '#121212',
-            optionSelectedBg: '#1cb54a',
-            colorTextPlaceholder: '#AAAAAA',
-            optionActiveBg: '#333333',
-            colorTextQuaternary: '#AAAAAA',
-          }
-        }
-      }}
-    >
-      <Select 
-        placeholder="Seleccione un método" 
-        style={{ width: '100%' }}
-      >
-        {paymentMethods.map((method) => (
-          <Option key={method.value} value={method.value}>
-            {method.label}
-          </Option>
-        ))}
-      </Select>
-    </ConfigProvider>
-  </Form.Item>
-);
+const DateField = ({ form }) => {
+  const formInstance = form || Form.useFormInstance();
 
-const AmountField = ({
-  form,
-  isPaymentRequired,
-  customAmount,
-  paymentOption,
-  paymentOptions,
-}) => {
-  useEffect(() => {
-    if (!paymentOption) return;
-
-    const selectedOption = paymentOptions?.find(
-      (opt) => opt.value === paymentOption,
-    );
-
-    if (
-      selectedOption &&
-      !customAmount &&
-      (selectedOption.amount === 0 || selectedOption.amount)
-    ) {
-      form.setFieldsValue({ montoPago: selectedOption.amount });
-    } else if (paymentOption === 'custom') {
-      form.setFieldsValue({ montoPago: undefined });
-    }
-  }, [paymentOption, customAmount, form, paymentOptions]);
+  const handleDateChange = (date, dateString) => {
+    console.log('Fecha seleccionada:', dateString);
+    formInstance.setFieldsValue({
+      appointment_date: dateString,
+    });
+  };
 
   return (
     <Form.Item
-      label="Monto a pagar"
-      name="montoPago"
-      rules={[
-        {
-          required: isPaymentRequired,
-          message: 'Este campo es requerido',
-        },
-      ]}
+      label="Fecha de cita"
+      name="appointment_date"
+      rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
     >
       <ConfigProvider
         theme={{
           components: {
-            InputNumber: {
-              colorPrimary: '#1cb54a',
+            DatePicker: {
+              colorBgElevated: '#222222FF',
               colorText: '#ffffff',
-              colorBgContainer: '#333333',
-              colorBorder: '#555555',
-              colorPrimaryHover: '#1cb54a',
-              colorPrimaryActive: '#1cb54a',
-              colorIcon: '#AAAAAA',
-            }
-          }
+              colorTextHeading: '#ffffff',
+              colorIcon: '#ffffff',
+              colorPrimary: '#1cb54a',
+              colorPrimaryHover: '#148235',
+              cellHoverBg: '#333333',
+            },
+          },
         }}
       >
-        <InputNumber
-          className={styles.inputNumber}
-          disabled={!customAmount}
-          min={0}
-          step={10}
-          formatter={(value) =>
-            `S/ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-          }
-          parser={(value) => value.replace(/S\/\s?|(,*)/g, '')}
-          style={{ width: '100%' }}
+        <DatePicker
+          style={{
+            width: '100%',
+            color: '#ffffff',
+            backgroundColor: '#333333FF',
+            borderColor: '#444444',
+          }}
+          onChange={handleDateChange}
+          dropdownStyle={{
+            backgroundColor: '#2C2C2CFF',
+            color: '#ffffff',
+          }}
         />
       </ConfigProvider>
     </Form.Item>
   );
 };
 
-const TimeField = ({ form }) => (
-  <Form.Item
-    label="Hora de cita"
-    name="horaCita"
-    rules={[{ required: true, message: 'Este campo es requerido' }]}
-    className={styles.formItem}
-  >
-    <ConfigProvider
-      theme={{
-        components: {
-          TimePicker: {
-            colorTextPlaceholder: "#AAAAAA",
-            colorBgContainer: "#333333",
-            colorText: "#FFFFFF",
-            colorBorder: "#444444",
-            borderRadius: 4,
-            hoverBorderColor: "#555555",
-            activeBorderColor: "#00AA55",
-            colorIcon: "#FFFFFF",
-            colorIconHover:'#00AA55',
-            colorBgElevated: '#121212',
-            colorPrimary: '#00AA55',
-            colorTextDisabled: '#333333',
-            colorTextHeading:'#FFFFFF',
-            cellHoverBg:'#00AA55',
-            colorSplit:'#444444',
-          },
-          // Personalización adicional para el panel de tiempo
-          TimePanel: {
-            cellHoverBg: '#444444',
-            cellActiveBg: '#1a3a1a',
-            cellHeight: 32,
-            cellWidth: 56,
-          }
-        }
-      }}
+const TimeField = ({ form }) => {
+  const formInstance = form || Form.useFormInstance();
+
+  const handleTimeChange = (time, timeString) => {
+    formInstance.setFieldsValue({
+      appointment_hour: timeString,
+    });
+  };
+
+  return (
+    <Form.Item
+      label="Hora de cita"
+      name="appointment_hour"
+      rules={[{ required: true, message: 'Este campo es requerido' }]}
+      className={styles.formItem}
     >
-      <TimePicker
-        format="HH:mm"
-        className={styles.datePicker}
-        style={{ width: '100%' }}
-      />
-    </ConfigProvider>
-  </Form.Item>
-);
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+          components: {
+            TimePicker: {
+              colorTextPlaceholder: '#AAAAAA',
+              colorBgContainer: '#333333',
+              colorText: '#FFFFFF',
+              colorBorder: '#444444',
+              hoverBorderColor: '#555555',
+              activeBorderColor: '#00AA55',
+              colorIcon: '#FFFFFF',
+              colorIconHover: '#00AA55',
+              colorBgElevated: '#121212',
+              colorPrimary: '#00AA55',
+              colorTextDisabled: '#333333',
+              colorTextHeading: '#FFFFFF',
+            },
+          },
+        }}
+      >
+        <TimePicker
+          format="HH:mm"
+          style={{ width: '100%' }}
+          onChange={handleTimeChange}
+        />
+      </ConfigProvider>
+    </Form.Item>
+  );
+};
 
 const HourCheckbox = ({ showHourField, onShowHourFieldChange }) => (
   <Checkbox

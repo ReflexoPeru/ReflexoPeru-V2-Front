@@ -1,31 +1,148 @@
-import React from 'react';
-import estilo from './patients.module.css';
+import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { Space, Button } from 'antd';
-import { useNavigate } from 'react-router';
 import { usePatients } from '../hook/patientsHook';
+import EditPatient from '../ui/EditPatient/EditPatient';
+import { getPatientById } from '../service/patientsService';
 
 export default function Patients() {
   const navigate = useNavigate();
-
+  const [editingPatient, setEditingPatient] = useState(null);
+  const [loadingEditId, setLoadingEditId] = useState(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const {
     patients,
     loading,
-    error,
     pagination,
     handlePageChange,
     setSearchTerm,
+    handleDeletePatient,
   } = usePatients();
 
-  // Debug (verifica en consola)
-  console.log('Datos:', {
-    patients,
-    loading,
-    error,
-    pagination,
-  });
+  // Nuevo handler para editar: hace GET antes de abrir el modal
+  const handleEdit = async (record) => {
+    setLoadingEditId(record.id);
+    setEditingPatient(record);
+    try {
+      const freshPatient = await getPatientById(record.id);
+      setEditingPatient(freshPatient);
+    } catch (e) {
+      notification.error({
+        message: 'Error',
+        description: 'No se pudo obtener los datos actualizados.',
+      });
+    } finally {
+      setLoadingEditId(null);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    setLoadingDeleteId(id);
+    try {
+      await handleDeletePatient(id);
+    } finally {
+      setLoadingDeleteId(null);
+    }
+  };
+
+  const handleAction = (action, record) => {
+    switch (action) {
+      case 'edit':
+        return (
+          <Button
+            style={{
+              backgroundColor: '#0066FF',
+              color: '#fff',
+              border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setEditingPatient(record);
+              try {
+                const freshPatient = await getPatientById(record.id);
+                setEditingPatient(freshPatient);
+              } finally {
+                setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+              }
+            }}
+            disabled={loadingEditId === record.id}
+          >
+            {loadingEditId === record.id ? (
+              <Spin size="small" style={{ color: '#fff' }} />
+            ) : (
+              'Editar'
+            )}
+          </Button>
+        );
+      /*       case 'info':
+        return (
+          <Button
+            style={{
+              backgroundColor: '#00AA55',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => navigate(`info/${record.id}`)}
+          >
+            Más Info
+          </Button>
+        ); */
+      case 'history':
+        return (
+          <Button
+            style={{
+              backgroundColor: '#8800CC',
+              color: '#fff',
+              border: 'none',
+            }}
+            onClick={() => navigate(`historia/${record.id}`)}
+          >
+            Historia
+          </Button>
+        );
+      case 'delete':
+        return (
+          <Button
+            style={{
+              backgroundColor: '#FF3333',
+              color: '#fff',
+              border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onClick={() => handleDelete(record.id)}
+            disabled={loadingDeleteId === record.id}
+          >
+            {loadingDeleteId === record.id ? (
+              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
+                <Spin />
+              </ConfigProvider>
+            ) : (
+              'Eliminar'
+            )}
+          </Button>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const handleButton = () => {
+    navigate('registrar');
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
 
   const columns = [
     {
@@ -44,65 +161,14 @@ export default function Patients() {
       key: 'actions',
       render: (_, record) => (
         <Space size="small">
-          <Button 
-            style={{ backgroundColor: '#0066FF', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('edit', record)}
-          >
-            Editar
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#00AA55', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('info', record)}
-          >
-            Más Info
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#8800CC', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('history', record)}
-          >
-            Historia
-          </Button>
-          <Button 
-            style={{ backgroundColor: '#FF3333', color: '#fff', border: 'none' }}
-            onClick={() => handleAction('delete', record)}
-          >
-            Eliminar
-          </Button>
+          {handleAction('edit', record)}
+          {handleAction('info', record)}
+          {handleAction('history', record)}
+          {handleAction('delete', record)}
         </Space>
       ),
     },
   ];
-
-  const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
-    switch(action) {
-      case 'edit':
-        // Lógica para editar
-        break;
-      case 'info':
-        // Lógica para más info
-        break;
-      case 'history':
-        // Lógica para historia
-        break;
-      case 'delete':
-        // Lógica para eliminar
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
-    navigate('registrar');
-  };
-
-  const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
-    setSearchTerm(value);
-  };
 
   return (
     <div
@@ -121,7 +187,6 @@ export default function Patients() {
         }}
       >
         <CustomButton text="Crear Paciente" onClick={handleButton} />
-
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
@@ -136,10 +201,19 @@ export default function Patients() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 100,
+          pageSize: 50,
           onChange: handlePageChange,
         }}
       />
+
+      {/* Modal de edición */}
+      {editingPatient && (
+        <EditPatient
+          patient={editingPatient}
+          onClose={() => setEditingPatient(null)}
+          onSave={() => handlePageChange(pagination.currentPage)}
+        />
+      )}
     </div>
   );
 }

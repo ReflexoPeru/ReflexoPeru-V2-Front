@@ -1,12 +1,16 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
 import dayjs from 'dayjs';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  getPaginatedAppointmentsByDate,
-  searchAppointments,
   createAppointment,
+  getAppointmentById, // Importar nueva función
+  getPaginatedAppointmentsByDate,
   getPatients,
+  searchAppointments,
   searchPatients,
+  updateAppointment, // Importar nueva función
 } from '../service/appointmentsService';
+import { useToast } from '../../../services/toastify/ToastContext';
+import { formatToastMessage } from '../../../utils/messageFormatter';
 
 export const useAppointments = () => {
   // Estados principales
@@ -27,6 +31,8 @@ export const useAppointments = () => {
 
   // Referencia para evitar llamadas duplicadas
   const abortControllerRef = useRef(null);
+
+  const { showToast } = useToast();
 
   // Función principal para cargar citas
   const loadAppointments = useCallback(async () => {
@@ -64,7 +70,13 @@ export const useAppointments = () => {
       }));
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error loading appointments:', error);
+        showToast(
+          'error',
+          formatToastMessage(
+            error.response?.data?.message,
+            'Error al cargar citas',
+          ),
+        );
         setError(error);
         setAppointments([]);
         setPagination((prev) => ({ ...prev, totalItems: 0 }));
@@ -125,11 +137,18 @@ export const useAppointments = () => {
           ),
           created_at: dayjs().format('YYYY-MM-DD HH:mm:ss'),
         };
-
         const result = await createAppointment(payload);
+        showToast('crearCita');
         await loadAppointments(); // Recargar lista después de crear
         return result;
       } catch (error) {
+        showToast(
+          'error',
+          formatToastMessage(
+            error.response?.data?.message,
+            'Error creando cita',
+          ),
+        );
         console.error('Error creating appointment:', error);
         throw error;
       } finally {
@@ -138,6 +157,57 @@ export const useAppointments = () => {
     },
     [loadAppointments],
   );
+
+  // Nueva función para obtener detalles de una cita
+  const getAppointmentDetails = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getAppointmentById(id);
+      return data;
+    } catch (err) {
+      console.error(`Error fetching appointment ${id}:`, err);
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Nueva función para actualizar una cita existente
+  const updateExistingAppointment = useCallback(
+    async (id, appointmentData) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const payload = {
+          ...appointmentData,
+          appointment_date: dayjs(appointmentData.appointment_date).format(
+            'YYYY-MM-DD',
+          ),
+        };
+        const result = await updateAppointment(id, payload);
+        showToast('actualizarCita');
+        await loadAppointments(); // Recargar lista después de actualizar
+        return result;
+      } catch (err) {
+        showToast(
+          'error',
+          formatToastMessage(
+            err.response?.data?.message,
+            'Error actualizando cita',
+          ),
+        );
+        console.error(`Error updating appointment ${id}:`, err);
+        setError(err);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadAppointments],
+  );
+
   const loadPaginatedAppointmentsByDate = useCallback(
     (date) => {
       const formattedDate = dayjs(date).isValid()
@@ -152,6 +222,7 @@ export const useAppointments = () => {
     },
     [selectedDate, searchTerm],
   );
+
   return {
     // Estados
     appointments,
@@ -168,6 +239,8 @@ export const useAppointments = () => {
     handlePageChange,
     submitNewAppointment,
     loadPaginatedAppointmentsByDate,
+    getAppointmentDetails, // Exponer nueva función
+    updateExistingAppointment, // Exponer nueva función
     // Setters
     setSearchTerm,
     setSelectedDate,
@@ -185,6 +258,21 @@ export const usePatients = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [initialLoad, setInitialLoad] = useState(false);
+
+  // nuevo
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/patients?search=${searchTerm}`);
+      if (!response.ok) throw new Error('Error al obtener pacientes');
+      const data = await response.json();
+      setPatients(data);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Función para cargar pacientes paginados
   const loadPatients = async (page) => {
@@ -229,8 +317,9 @@ export const usePatients = () => {
     if (!initialLoad) {
       loadPatients(1);
       setInitialLoad(true);
+      fetchPatients();
     }
-  }, [initialLoad]);
+  }, [searchTerm, initialLoad]);
 
   // Búsqueda con debounce
   useEffect(() => {
@@ -248,11 +337,12 @@ export const usePatients = () => {
   }, [searchTerm, initialLoad]);
 
   return {
-    patients,       // Lista de pacientes
-    loading,       // Estado de carga
-    error,         // Mensaje de error (si existe)
-    pagination,    // Información de paginación
+    patients, // Lista de pacientes
+    loading, // Estado de carga
+    error, // Mensaje de error (si existe)
+    pagination, // Información de paginación
     setSearchTerm, // Función para establecer término de búsqueda
+    fetchPatients,
     handlePageChange: loadPatients, // Función para cambiar de página
   };
 };

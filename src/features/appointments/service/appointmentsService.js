@@ -1,4 +1,9 @@
-import { post, get } from '../../../services/api/Axios/MethodsGeneral';
+import {
+  get,
+  post,
+  patch,
+  del,
+} from '../../../services/api/Axios/MethodsGeneral';
 
 export const createAppointment = async (data) => {
   try {
@@ -10,7 +15,7 @@ export const createAppointment = async (data) => {
   }
 };
 
-export const getAppointments = async (page = 1, perPage = 100) => {
+export const getAppointments = async (page = 1, perPage = 50) => {
   try {
     const response = await get(`appointments?page=${page}&per_page=${perPage}`);
 
@@ -69,7 +74,29 @@ export const getPaginatedAppointmentsByDate = async (date, perPage = 100) => {
   }
 };
 
-export const getPatients = async (page = 1, perPage = 100) => {
+// Nueva función para obtener una cita por ID
+export const getAppointmentById = async (id) => {
+  try {
+    const response = await get(`appointments/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error en getAppointmentById para ID ${id}:`, error);
+    throw error;
+  }
+};
+// Nueva función para actualizar una cita
+export const updateAppointment = async (id, data) => {
+  try {
+    const response = await patch(`appointments/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error(`Error en updateAppointment para ID ${id}:`, error);
+    throw error;
+  }
+};
+//==============================================================================
+
+export const getPatients = async (page = 1, perPage = 10) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
@@ -98,7 +125,7 @@ export const getPatients = async (page = 1, perPage = 100) => {
 
 export const searchPatients = async (term) => {
   try {
-    const res = await get(`patients/search?search=${term}&per_page=100`);
+    const res = await get(`patients/search?search=${term}&per_page=50`);
     console.log('🔍 Resultado de búsqueda:', res.data);
 
     const data = Array.isArray(res.data)
@@ -109,6 +136,17 @@ export const searchPatients = async (term) => {
     return { data, total };
   } catch (error) {
     console.error('❌ Error en searchPatients:', error);
+    throw error;
+  }
+};
+
+// Eliminar cita por ID
+export const deleteAppointment = async (id) => {
+  try {
+    const response = await del(`appointments/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar la cita con ID ${id}:`, error);
     throw error;
   }
 };

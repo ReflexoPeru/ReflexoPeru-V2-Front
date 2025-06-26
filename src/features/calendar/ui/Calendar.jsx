@@ -44,17 +44,47 @@ const Calendario = () => {
     setView(newView);
   };
 
-  const eventStyleGetter = () => ({
-    style: {
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      borderRadius: '4px',
-      border: 'none',
-      fontWeight: 'bold', //
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
+  const getEventColor = (statusId) => {
+    switch (statusId) {
+      case 1:
+        return '#FFA500';
+      case 2:
+        return '#4CAF50';
+      default:
+        return '#888';
+    }
+  };
+
+  const eventPropGetter = (event) => {
+    const status = event.details.appointment_status_id;
+    if (status === 1) {
+      return { className: 'pending-event' };
+    } else if (status === 2) {
+      return { className: 'confirmed-event' };
+    }
+    return {};
+  };
+
+  const EventContent = ({ event }) => {
+    const status = event.details.appointment_status_id;
+    let prefix = '';
+    if (status === 1) prefix = '[PENDIENTE]';
+    if (status === 2) prefix = '[CONFIRMADA]';
+    return (
+      <span
+        style={{
+          fontWeight: 'bold',
+          textTransform: 'uppercase',
+          fontSize: '0.95em',
+        }}
+      >
+        {prefix}
+        {event.details.patient_first_name
+          ? ` - ${event.details.patient_first_name}`
+          : ''}
+      </span>
+    );
+  };
 
   const getAppointmentStatus = (statusId) => {
     switch (statusId) {
@@ -84,14 +114,6 @@ const Calendario = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className={styles.loadingContainer}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   if (error) {
     return <p>Error al cargar eventos: {error.message}</p>;
   }
@@ -107,7 +129,8 @@ const Calendario = () => {
             endAccessor="end"
             style={{ height: '100%' }}
             onSelectEvent={handleSelectEvent}
-            eventPropGetter={eventStyleGetter}
+            eventPropGetter={eventPropGetter}
+            components={{ event: EventContent }}
             date={date}
             onNavigate={handleNavigate}
             view={view}
@@ -142,6 +165,17 @@ const Calendario = () => {
         {selectedEvent && (
           <div style={{ color: 'black' }}>
             <p>
+              <strong>Paciente:</strong>{' '}
+              {selectedEvent.details.patient_full_name}
+            </p>
+            <p>
+              <strong>Terapeuta:</strong>{' '}
+              {selectedEvent.details.therapist_full_name}
+            </p>
+            <p>
+              <strong>Tipo de cita:</strong> {selectedEvent.title}
+            </p>
+            <p>
               <strong>Fecha:</strong>{' '}
               {dayjs(selectedEvent.start).format('DD/MM/YYYY')}
             </p>
@@ -151,30 +185,23 @@ const Calendario = () => {
               {dayjs(selectedEvent.end).format('HH:mm')}
             </p>
             <p>
-              <strong>Tipo de cita:</strong> {selectedEvent.title}
+              <strong>Diagnóstico:</strong>{' '}
+              {selectedEvent.details.diagnosis || 'No especificado'}
             </p>
             <p>
               <strong>Malestar:</strong>{' '}
               {selectedEvent.details.ailments || 'No especificado'}
             </p>
             <p>
-              <strong>Diagnóstico reflexológico:</strong>{' '}
-              {selectedEvent.details.reflexology_diagnostics ||
-                'No especificado'}
-            </p>
-            <p>
               <strong>Observaciones:</strong>{' '}
               {selectedEvent.details.observation || 'Ninguna'}
             </p>
             <p>
-              <strong>Estado:</strong>{' '}
-              {getAppointmentStatus(
-                selectedEvent.details.appointment_status_id,
-              )}
+              <strong>Tipo de pago:</strong>{' '}
+              {selectedEvent.details.payment_type_name}
             </p>
             <p>
-              <strong>Tipo de pago:</strong>{' '}
-              {getPaymentType(selectedEvent.details.payment_type_id)}
+              <strong>Ticket:</strong> {selectedEvent.details.ticket_number}
             </p>
           </div>
         )}

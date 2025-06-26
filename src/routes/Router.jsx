@@ -1,10 +1,7 @@
-import { createBrowserRouter, RouterProvider } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Login from '../features/auth/ui/login';
 import View from '../pages/View';
 import Prueba from '../pages/prueba';
-import Paciente from '../features/patients/ui/patients';
-import Terapeuta from '../features/staff/ui/staff';
-import Citas from '../features/appointments/ui/appointments';
 import Patients from '../features/patients/ui/patients';
 import Appointments from '../features/appointments/ui/appointments';
 import Staff from '../features/staff/ui/staff';
@@ -25,6 +22,7 @@ import Error404 from '../pages/Error/Error404';
 import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
 import AppointmentsComplete from '../features/appointmentsComplete/ui/appointmentsComplete';
+import Historia from '../features/history/ui/PatientHistory';
 
 const router = createBrowserRouter([
   {
@@ -41,7 +39,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/contraseñaolvidada',
-    element: <h1>Contraseña olvidada</h1>,
+    element: <h1>Contraseña olvidada</h1>,
   },
   {
     path: '/primerInicio',
@@ -65,13 +63,11 @@ const router = createBrowserRouter([
           },
           {
             path: 'pacientes',
-            element: <Patients />,
-            children: [
-              {
-                path: 'editar/:id',
-                element: <Prueba />,
-              },
-            ],
+            element: <Patients />, // Listado principal
+          },
+          {
+            path: 'pacientes/historia/:id', // Ruta independiente
+            element: <Historia />,
           },
           {
             path: 'pacientes/registrar',
@@ -117,7 +113,8 @@ const router = createBrowserRouter([
           },
           {
             path: 'configPagos',
-            element: <Payments />,
+            element: <ProtectedRoute allowedRoles={[1]} />,
+            children: [{ index: true, element: <Payments /> }],
           },
           {
             path: 'configPerfil',
