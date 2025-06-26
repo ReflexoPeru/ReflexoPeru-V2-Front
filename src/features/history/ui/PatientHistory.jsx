@@ -12,12 +12,18 @@ import {
   Typography,
   ConfigProvider,
   message,
-  Spin
+  Spin,
 } from 'antd';
 import styles from './PatientHistory.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import CustomSearch from '../../../components/Search/CustomSearch';
-import { useStaff, usePatientHistory, usePatientAppointments, useUpdatePatientHistory, useUpdateAppointment }  from '../hook/historyHook';
+import {
+  useStaff,
+  usePatientHistory,
+  usePatientAppointments,
+  useUpdatePatientHistory,
+  useUpdateAppointment,
+} from '../hook/historyHook';
 import { updateAppointmentById } from '../service/historyService';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -44,14 +50,14 @@ const theme = {
   },
   components: {
     Table: {
-            headerBg: '#272727', 
-            headerColor: 'rgba(199,26,26,0.88)',
-            colorBgContainer: '#272727',                 
-            borderColor: '#555555',                  
-            rowHoverBg: '#555555',                    
-            cellPaddingBlock: 12,                     
-            cellPaddingInline: 16, 
-          },
+      headerBg: '#272727',
+      headerColor: 'rgba(199,26,26,0.88)',
+      colorBgContainer: '#272727',
+      borderColor: '#555555',
+      rowHoverBg: '#555555',
+      cellPaddingBlock: 12,
+      cellPaddingInline: 16,
+    },
     Radio: {
       colorPrimary: '#4caf50',
       colorBgContainer: '#fff',
@@ -120,56 +126,68 @@ const PatientHistory = () => {
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [loadingTicket, setLoadingTicket] = useState(false);
-  
-  const { id } = useParams()
+
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm } = useStaff();
-  const { data: patientHistory } = usePatientHistory(id)
+  const { data: patientHistory } = usePatientHistory(id);
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
-  const { 
-    appointments, 
+  const {
+    appointments,
     lastAppointment,
-    loadingAppointments, 
-    appointmentsError, 
-    contextHolder 
+    loadingAppointments,
+    appointmentsError,
   } = usePatientAppointments(id);
-  const { updateHistory, loading: updatingHistory, contextHolder: updateContext} = useUpdatePatientHistory();
+  const { updateHistory, loading: updatingHistory } = useUpdatePatientHistory();
   const { updateAppointment } = useUpdateAppointment();
 
   // MEMORIZAR LAS FECHAS DE CITAS
   const appointmentDates = useMemo(() => {
-    return [...new Set(appointments?.map(a => a.appointment_date) || [])];
+    return [...new Set(appointments?.map((a) => a.appointment_date) || [])];
   }, [appointments]);
 
   const selectedAppointment = useMemo(() => {
-    return appointments?.find((a) => a.appointment_date === selectedAppointmentDate) || null;
+    return (
+      appointments?.find(
+        (a) => a.appointment_date === selectedAppointmentDate,
+      ) || null
+    );
   }, [appointments, selectedAppointmentDate]);
 
   useEffect(() => {
     if (patientHistory && patientHistory.data && patientHistory.data.patient) {
       const { patient, ...historyData } = patientHistory.data;
-      
+
       form.setFieldsValue({
         // Información del paciente con verificación segura
-        patientName: `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
-        
+        patientName:
+          `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
+
         // Observaciones
         observationPrivate: historyData?.private_observation || '',
         observation: historyData?.observation || '',
-        
+
         // Información física
         talla: historyData?.height || '',
         pesoInicial: historyData?.weight || '',
         ultimoPeso: historyData?.last_weight || '',
-        
+
         // Información médica
         testimonio: historyData?.testimony ? 'Sí' : 'No',
-        gestacion: isFemale ? (historyData?.gestation ? 'Sí' : 'No') : undefined,
-        menstruacion: isFemale ? (historyData?.menstruation ? 'Sí' : 'No') : undefined,
+        gestacion: isFemale
+          ? historyData?.gestation
+            ? 'Sí'
+            : 'No'
+          : undefined,
+        menstruacion: isFemale
+          ? historyData?.menstruation
+            ? 'Sí'
+            : 'No'
+          : undefined,
         tipoDIU: isFemale ? historyData?.diu_type || '' : undefined,
-        
+
         // Campos adicionales
         diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
         operaciones: historyData?.operaciones || '',
@@ -179,7 +197,7 @@ const PatientHistory = () => {
         observacionesAdicionales: historyData?.observaciones_adicionales || '',
         antecedentesFamiliares: historyData?.antecedentes_familiares || '',
         alergias: historyData?.alergias || '',
-        
+
         // Fechas
         fechaInicio: dayjs(),
       });
@@ -204,7 +222,7 @@ const PatientHistory = () => {
     if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
 
     const selectedAppointment = appointments.find(
-      (a) => a.appointment_date === selectedAppointmentDate
+      (a) => a.appointment_date === selectedAppointmentDate,
     );
 
     if (selectedAppointment) {
@@ -218,7 +236,8 @@ const PatientHistory = () => {
         medicamentos: selectedAppointment.medications ?? '',
         operaciones: selectedAppointment.surgeries ?? '',
         observacionesAdicionales: selectedAppointment.observation ?? '',
-        diagnosticosReflexologia: selectedAppointment.reflexology_diagnostics ?? '',
+        diagnosticosReflexologia:
+          selectedAppointment.reflexology_diagnostics ?? '',
         therapist: fullName,
       });
 
@@ -235,7 +254,6 @@ const PatientHistory = () => {
     }
   }, [appointmentFromState, lastAppointment]);
 
-
   // Función para abrir el modal
   const showTherapistModal = () => {
     setIsModalVisible(true);
@@ -249,10 +267,10 @@ const PatientHistory = () => {
   // Función para confirmar la selección
   const handleOk = () => {
     if (selectedTherapistId) {
-      const selected = staff.find(t => t.id === selectedTherapistId);
+      const selected = staff.find((t) => t.id === selectedTherapistId);
       if (selected) {
-        setTherapist(selected.full_name );
-        form.setFieldsValue({ therapist: selected.full_name  });
+        setTherapist(selected.full_name);
+        form.setFieldsValue({ therapist: selected.full_name });
       }
     }
     setIsModalVisible(false);
@@ -273,12 +291,12 @@ const PatientHistory = () => {
   const onFinish = async (values) => {
     const historyId = patientHistory?.data?.id;
     const selectedAppointment = appointments.find(
-      (a) => a.appointment_date === selectedAppointmentDate
+      (a) => a.appointment_date === selectedAppointmentDate,
     );
     const appointmentId = selectedAppointment?.id;
 
     if (!historyId || !appointmentId) {
-      message.error("Falta el ID del historial o la cita.");
+      message.error('Falta el ID del historial o la cita.');
       return;
     }
 
@@ -336,10 +354,10 @@ const PatientHistory = () => {
       dataIndex: 'id',
       align: 'center',
       render: (id) => (
-        <Radio 
+        <Radio
           checked={selectedTherapistId === id}
           onChange={() => handleSelectTherapist(id)}
-          style={{ color: '#ffffff' }} 
+          style={{ color: '#ffffff' }}
         />
       ),
       width: 150,
@@ -361,7 +379,12 @@ const PatientHistory = () => {
         <Spin
           size="large"
           tip="Cargando historial..."
-          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '60vh',
+          }}
         />
       </ConfigProvider>
     );
@@ -414,7 +437,7 @@ const PatientHistory = () => {
                   placeholder="Seleccione una fecha"
                   loading={loadingAppointments}
                 >
-                  {appointmentDates.map(date => (
+                  {appointmentDates.map((date) => (
                     <Option key={date} value={date}>
                       {dayjs(date).format('DD/MM/YYYY')}
                     </Option>
@@ -594,10 +617,7 @@ const PatientHistory = () => {
                 label="Fecha de Inicio"
                 className={styles.startDateSection}
               >
-                <DatePicker
-                  className={styles.datePicker}
-                  format="DD-MM-YY"
-                />
+                <DatePicker className={styles.datePicker} format="DD-MM-YY" />
               </Form.Item>
 
               <div className={styles.actionButtons}>
@@ -617,7 +637,7 @@ const PatientHistory = () => {
                 >
                   Guardar Cambios
                 </Button>
-                <Button 
+                <Button
                   className={styles.cancelButton}
                   onClick={() => navigate(-1)}
                 >
@@ -637,9 +657,9 @@ const PatientHistory = () => {
             <Button key="back" onClick={handleCancel}>
               Cancelar
             </Button>,
-            <Button 
-              key="submit" 
-              type="primary" 
+            <Button
+              key="submit"
+              type="primary"
               onClick={handleOk}
               disabled={!selectedTherapistId}
             >
@@ -684,11 +704,16 @@ const PatientHistory = () => {
                 }}
                 ticket={{
                   number: selectedAppointment.ticket_number,
-                  date: dayjs(selectedAppointment.appointment_date).format('DD/MM/YYYY'),
-                  patient: `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
+                  date: dayjs(selectedAppointment.appointment_date).format(
+                    'DD/MM/YYYY',
+                  ),
+                  patient:
+                    `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
                   service: 'Consulta',
                   unit: 1,
                   amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
+                  paymentType:
+                    selectedAppointment.payment_type?.name || 'Sin especificar',
                 }}
               />
             </PDFViewer>

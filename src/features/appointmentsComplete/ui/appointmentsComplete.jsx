@@ -41,6 +41,15 @@ export default function AppointmentsComplete() {
       },
     },
     {
+      title: 'Terapeuta',
+      key: 'therapist_id',
+      width: '140px',
+      render: (text, record) => {
+        if (!record.therapist) return 'Sin asignar';
+        return `${record.therapist.name} ${record.therapist.paternal_lastname} ${record.therapist.maternal_lastname}`;
+      },
+    },
+    {
       title: 'Sala',
       dataIndex: 'room',
       key: 'room',
