@@ -342,6 +342,7 @@ const PatientHistory = () => {
     try {
       await updateHistory(historyId, historyPayload);
       await updateAppointment(appointmentId, appointmentPayload);
+      navigate(-1);
     } catch (e) {
       console.error('Error actualizando historial y cita:', e);
     }
