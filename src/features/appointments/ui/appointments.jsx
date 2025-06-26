@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import estilo from './appointments.module.css';
-import ModeloTable from '../../../components/Table/Tabla';
-import CustomButton from '../../../components/Button/CustomButtom';
-import CustomSearch from '../../../components/Search/CustomSearch';
-import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
-import { useNavigate } from 'react-router-dom';
-import { useAppointments } from '../hook/appointmentsHook';
-import { Space, Button, Modal } from 'antd';
-import dayjs from 'dayjs';
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import { Button, Modal, Space, Spin } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CustomButton from '../../../components/Button/CustomButtom';
+import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
+import CustomSearch from '../../../components/Search/CustomSearch';
+import ModeloTable from '../../../components/Table/Tabla';
 import { getAppointmentsByPatientId } from '../../history/service/historyService';
+import { useAppointments } from '../hook/appointmentsHook';
+import EditAppointment from '../ui/EditAppointment/EditAppointment'; // Importar el componente de edición
 
 export default function Appointments() {
   const navigate = useNavigate();
   const {
     appointments,
     loading,
-    error,
     pagination,
     handlePageChange,
     setSearchTerm,
@@ -31,6 +30,14 @@ export default function Appointments() {
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [selectedFicha, setSelectedFicha] = useState(null);
   const [visitasFicha, setVisitasFicha] = useState(0);
+
+  // Estado para manejar el modal de edición
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [appointmentIdToEdit, setAppointmentIdToEdit] = useState(null);
+  const [loadingEditId, setLoadingEditId] = useState(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
+  const [loadingPrintFichaId, setLoadingPrintFichaId] = useState(null);
+  const [loadingPrintTicketId, setLoadingPrintTicketId] = useState(null);
 
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
@@ -53,7 +60,6 @@ export default function Appointments() {
         return `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
       },
     },
-
     {
       title: 'Sala',
       dataIndex: 'room',
@@ -89,10 +95,24 @@ export default function Appointments() {
               backgroundColor: '#555555',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            onClick={() => handleAction('edit', record)}
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setAppointmentIdToEdit(record.id);
+              setIsEditModalOpen(true);
+              setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+            }}
+            disabled={loadingEditId === record.id}
           >
-            Editar
+            {loadingEditId === record.id ? (
+              <Spin size="small" style={{ color: '#fff' }} />
+            ) : (
+              'Editar'
+            )}
           </Button>
           <Button
             style={{
@@ -110,25 +130,30 @@ export default function Appointments() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => handlePrintFicha(record)}
+            onClick={() => handleAction('imprimir', record)}
+            disabled={loadingPrintFichaId === record.id}
           >
-            Imprimir
+            {loadingPrintFichaId === record.id ? (
+              <Spin size="small" />
+            ) : (
+              'Imprimir'
+            )}
           </Button>
-
           <Button
             style={{
               backgroundColor: '#69276F',
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => {
-              setSelectedAppointment(record);
-              setShowTicketModal(true);
-            }}
+            onClick={() => handleAction('boleta', record)}
+            disabled={loadingPrintTicketId === record.id}
           >
-            Imprimir Boleta
+            {loadingPrintTicketId === record.id ? (
+              <Spin size="small" />
+            ) : (
+              'Imprimir Boleta'
+            )}
           </Button>
-
           <Button
             style={{
               backgroundColor: '#FF3333',
@@ -136,35 +161,42 @@ export default function Appointments() {
               border: 'none',
             }}
             onClick={() => handleAction('delete', record)}
+            disabled={loadingDeleteId === record.id}
           >
-            Eliminar
+            {loadingDeleteId === record.id ? <Spin size="small" /> : 'Eliminar'}
           </Button>
         </Space>
       ),
     },
   ];
 
-  const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
+  const handleAction = async (action, record) => {
     switch (action) {
       case 'edit':
-        // Lógica para editar
+        setLoadingEditId(record.id);
+        setAppointmentIdToEdit(record.id);
+        setIsEditModalOpen(true);
+        break;
+      case 'delete':
+        setLoadingDeleteId(record.id);
+        setLoadingDeleteId(null);
+        loadPaginatedAppointmentsByDate(selectDate);
         break;
       case 'imprimir':
-        // Lógica para más info
+        setLoadingPrintFichaId(record.id);
+        await handlePrintFicha(record);
+        setLoadingPrintFichaId(null);
         break;
       case 'boleta':
+        setLoadingPrintTicketId(record.id);
         setSelectedAppointment(record);
         setShowTicketModal(true);
+        setLoadingPrintTicketId(null);
         break;
       case 'history':
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
           state: { appointment: record },
         });
-        break;
-      case 'delete':
-        // Lógica para eliminar
         break;
       default:
         break;
@@ -172,12 +204,10 @@ export default function Appointments() {
   };
 
   const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
 
@@ -200,7 +230,6 @@ export default function Appointments() {
     const blob = await asPdf.toBlob();
     const url = URL.createObjectURL(blob);
 
-    // Crear un iframe oculto
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
     iframe.style.right = '0';
@@ -211,19 +240,16 @@ export default function Appointments() {
     iframe.src = url;
     document.body.appendChild(iframe);
 
-    // Manejar afterprint para limpiar el iframe solo después de imprimir
     const cleanUp = () => {
       setTimeout(() => {
         document.body.removeChild(iframe);
         URL.revokeObjectURL(url);
       }, 100);
-      // Quitar el listener para evitar fugas de memoria
       iframe.contentWindow.removeEventListener('afterprint', cleanUp);
     };
 
     iframe.onload = function () {
       setTimeout(() => {
-        // Agregar el listener de afterprint
         iframe.contentWindow.addEventListener('afterprint', cleanUp);
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
@@ -257,10 +283,9 @@ export default function Appointments() {
 
         <CustomTimeFilter
           onDateChange={setSelectDate}
-          // onTimeRangeChange={handleTimeRangeChange}
           width="250px"
-          showTime={false} // Ocultar hora si no es necesaria
-          format="YYYY-MM-DD" // Formato día/mes/año
+          showTime={false}
+          format="YYYY-MM-DD"
         />
       </div>
 
@@ -309,6 +334,28 @@ export default function Appointments() {
               }}
             />
           </PDFViewer>
+        )}
+      </Modal>
+
+      {/* Modal para editar cita */}
+      <Modal
+        title="Editar Cita"
+        open={isEditModalOpen}
+        onCancel={() => setIsEditModalOpen(false)}
+        footer={null}
+        width={730}
+      >
+        {appointmentIdToEdit && (
+          <EditAppointment
+            appointmentId={appointmentIdToEdit}
+            onEditSuccess={() => {
+              setIsEditModalOpen(false);
+              setLoadingEditId(null);
+              setTimeout(() => {
+                loadPaginatedAppointmentsByDate(selectDate);
+              }, 300);
+            }}
+          />
         )}
       </Modal>
     </div>
