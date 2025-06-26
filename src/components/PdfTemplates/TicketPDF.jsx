@@ -1,6 +1,12 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
@@ -129,12 +135,20 @@ const TicketPDF = ({
     service: 'Consulta',
     unit: 1,
     amount: 'S/ 0.00',
+    paymentType: 'EFECTIVO',
   },
 }) => (
   <Document>
     <Page size="A6" style={styles.page} wrap={false}>
       <View style={styles.center} wrap={false}>
-        <Text style={{ ...styles.bold, fontSize: getFontSize(company.name, 13, 10, 22) }}>{company.name}</Text>
+        <Text
+          style={{
+            ...styles.bold,
+            fontSize: getFontSize(company.name, 13, 10, 22),
+          }}
+        >
+          {company.name}
+        </Text>
         <Text style={styles.contact}>{company.address}</Text>
         <Text style={styles.contact}>Tel: {company.phone}</Text>
         <Text style={styles.contact}>{company.email}</Text>
@@ -145,19 +159,40 @@ const TicketPDF = ({
         <View style={styles.spaceBlock} />
         <Text style={{ marginTop: 2 }}>TICKET N° {ticket.number}</Text>
         <Text>Fecha: {ticket.date}</Text>
-        <Text style={{ marginBottom: 6, fontSize: getFontSize(ticket.patient, 12, 9, 22) }}>Paciente: {ticket.patient}</Text>
+        <Text
+          style={{
+            marginBottom: 6,
+            fontSize: getFontSize(ticket.patient, 12, 9, 22),
+          }}
+        >
+          Paciente: {ticket.patient}
+        </Text>
+        <Text style={{ marginBottom: 6 }}>
+          Tipo de Pago: {ticket.paymentType}
+        </Text>
       </View>
       <View style={styles.lineDouble} wrap={false} />
       <View style={styles.table} wrap={false}>
         <View style={styles.tableRow} wrap={false}>
           <Text style={styles.tableCellHeader}>SERVICIO</Text>
           <Text style={styles.tableCellHeader}>UNIDAD</Text>
-          <Text style={[styles.tableCellHeader, styles.lastCell]}>S/ IMPORTE</Text>
+          <Text style={[styles.tableCellHeader, styles.lastCell]}>
+            S/ IMPORTE
+          </Text>
         </View>
         <View style={styles.tableRow} wrap={false}>
-          <Text style={{ ...styles.tableCell, fontSize: getFontSize(ticket.service, 13, 9, 18) }}>{ticket.service}</Text>
+          <Text
+            style={{
+              ...styles.tableCell,
+              fontSize: getFontSize(ticket.service, 13, 9, 18),
+            }}
+          >
+            {ticket.service}
+          </Text>
           <Text style={styles.tableCell}>{ticket.unit}</Text>
-          <Text style={[styles.tableCell, styles.lastCell]}>{ticket.amount}</Text>
+          <Text style={[styles.tableCell, styles.lastCell]}>
+            {ticket.amount}
+          </Text>
         </View>
       </View>
       <View style={styles.lineDouble} wrap={false} />
@@ -166,9 +201,8 @@ const TicketPDF = ({
       </View>
       <Text style={styles.small}>Gracias por su preferencia</Text>
       <Text style={styles.small}>Presentarse 30 minutos antes de la cita</Text>
-
     </Page>
   </Document>
 );
 
-export default TicketPDF; 
+export default TicketPDF;
