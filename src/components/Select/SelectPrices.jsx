@@ -6,81 +6,108 @@ import { getPredeterminedPrices } from './SelectsApi';
 
 const { Option } = Select;
 
-const SelectPrices = ({ onChange, value, ...rest }) => {
+const SelectPrices = ({
+  onChange,
+  onPriceChange,
+  value,
+  initialPrice = '',
+  ...rest
+}) => {
   const [prices, setPrices] = useState([]);
-  const [selectedPrice, setSelectedPrice] = useState('');
+  const [inputPrice, setInputPrice] = useState(initialPrice);
 
   useEffect(() => {
     const fetchPrices = async () => {
       const priceOptions = await getPredeterminedPrices();
       setPrices(priceOptions);
     };
-
     fetchPrices();
   }, []);
 
-  const handleSelectChange = (value) => {
-    const selected = prices.find(item => item.value === value);
-    setSelectedPrice(selected?.price || '');
-    
-    if (onChange) {
-      onChange(value);
-    }
+  // Si cambia el initialPrice desde el padre, actualizar el input
+  useEffect(() => {
+    setInputPrice(initialPrice);
+  }, [initialPrice]);
+
+  const handleSelectChange = (selectedValue) => {
+    const selected = prices.find((item) => item.value === selectedValue);
+    const newPrice = selected?.price || '';
+    setInputPrice(newPrice);
+    if (onChange) onChange(selectedValue);
+    if (onPriceChange) onPriceChange(newPrice);
   };
 
-    return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
-        <ConfigProvider
-        theme={{
-            components: {
-            Select: {
-                colorPrimary: '#1677ff',
-                optionSelectedBg: '#333333',
-                colorText: '#fff',
-                colorBgElevated: '#444444',
-                colorTextPlaceholder: '#aaa',
-                controlItemBgHover: '#444444',
-                selectorBg: '#444444',
-            },
-            },
-            token: {
-            colorTextBase: '#fff',
-            },
-        }}
-        >
-        <Select
-            className={styles.inputStyle}
-            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
-            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
-            onChange={handleSelectChange}
-            value={value}
-            {...rest}
-        >
-            {prices.map((item) => (
-            <Option key={item.value} value={item.value} style={{ color: '#fff' }}>
-                {item.label}
-            </Option>
-            ))}
-        </Select>
-        </ConfigProvider>
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setInputPrice(newValue);
+    if (onPriceChange) onPriceChange(newValue);
+  };
 
-        <Input
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        width: '100%',
+      }}
+    >
+      <ConfigProvider
+        theme={{
+          components: {
+            Select: {
+              colorPrimary: '#1677ff',
+              optionSelectedBg: '#333333',
+              colorText: '#fff',
+              colorBgElevated: '#444444',
+              colorTextPlaceholder: '#aaa',
+              controlItemBgHover: '#444444',
+              selectorBg: '#444444',
+            },
+          },
+          token: {
+            colorTextBase: '#fff',
+          },
+        }}
+      >
+        <Select
           className={styles.inputStyle}
-          value={selectedPrice}
-          readOnly
-          prefix="S/"
-          style={{
-            height: '35px',
-            lineHeight: '40px',     // Alineación vertical del texto
-            paddingTop: '0px',      // Opcional: evita desalineación extra
-            paddingBottom: '0px',   // Opcional: evita desalineación extra
-            marginBottom: '-50px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        />
+          dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
+          style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
+          onChange={handleSelectChange}
+          value={value}
+          allowClear
+          {...rest}
+        >
+          {prices.map((item) => (
+            <Option
+              key={item.value}
+              value={item.value}
+              style={{ color: '#fff' }}
+            >
+              {item.label}
+            </Option>
+          ))}
+        </Select>
+      </ConfigProvider>
+
+      <Input
+        className={styles.inputStyle}
+        value={inputPrice}
+        prefix="S/"
+        onChange={handleInputChange}
+        style={{
+          height: '35px',
+          lineHeight: '40px',
+          paddingTop: '0px',
+          paddingBottom: '0px',
+          marginBottom: '-50px',
+          display: rest.hidePriceInput ? 'none' : 'flex',
+          alignItems: 'center',
+        }}
+      />
     </div>
-    );
+  );
 };
 
 export default SelectPrices;

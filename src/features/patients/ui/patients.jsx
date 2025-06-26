@@ -1,4 +1,4 @@
-import { Button, Space, notification } from 'antd';
+import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
@@ -11,7 +11,8 @@ import { getPatientById } from '../service/patientsService';
 export default function Patients() {
   const navigate = useNavigate();
   const [editingPatient, setEditingPatient] = useState(null);
-  const [loadingEditId, setLoadingEditId] = useState(null); // Para mostrar loading en el botón de editar
+  const [loadingEditId, setLoadingEditId] = useState(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const {
     patients,
     loading,
@@ -24,6 +25,7 @@ export default function Patients() {
   // Nuevo handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
     setLoadingEditId(record.id);
+    setEditingPatient(record);
     try {
       const freshPatient = await getPatientById(record.id);
       setEditingPatient(freshPatient);
@@ -37,6 +39,15 @@ export default function Patients() {
     }
   };
 
+  const handleDelete = async (id) => {
+    setLoadingDeleteId(id);
+    try {
+      await handleDeletePatient(id);
+    } finally {
+      setLoadingDeleteId(null);
+    }
+  };
+
   const handleAction = (action, record) => {
     switch (action) {
       case 'edit':
@@ -46,11 +57,28 @@ export default function Patients() {
               backgroundColor: '#0066FF',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            loading={loadingEditId === record.id}
-            onClick={() => handleEdit(record)}
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setEditingPatient(record);
+              try {
+                const freshPatient = await getPatientById(record.id);
+                setEditingPatient(freshPatient);
+              } finally {
+                setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+              }
+            }}
+            disabled={loadingEditId === record.id}
           >
-            Editar
+            {loadingEditId === record.id ? (
+              <Spin size="small" style={{ color: '#fff' }} />
+            ) : (
+              'Editar'
+            )}
           </Button>
         );
       /*       case 'info':
@@ -86,10 +114,21 @@ export default function Patients() {
               backgroundColor: '#FF3333',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            onClick={() => handleDeletePatient(record.id)}
+            onClick={() => handleDelete(record.id)}
+            disabled={loadingDeleteId === record.id}
           >
-            Eliminar
+            {loadingDeleteId === record.id ? (
+              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
+                <Spin />
+              </ConfigProvider>
+            ) : (
+              'Eliminar'
+            )}
           </Button>
         );
       default:
@@ -172,6 +211,7 @@ export default function Patients() {
         <EditPatient
           patient={editingPatient}
           onClose={() => setEditingPatient(null)}
+          onSave={() => handlePageChange(pagination.currentPage)}
         />
       )}
     </div>

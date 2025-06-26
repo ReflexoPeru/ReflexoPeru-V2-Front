@@ -8,191 +8,167 @@ import {
   Image,
 } from '@react-pdf/renderer';
 
-const logo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const defaultLogo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const defaultClinicName = 'Reflexo Perú';
+
+// Paleta de colores pastel original
 const pastelGreen = '#95e472';
 const darkGreen = '#2d5a3d';
-const clinicName = 'Reflexo Perú';
+const lightBackground = '#f8f9fa';
 
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
     padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 12,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100%',
+    fontSize: 9,
   },
+  // Cabecera
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 0,
-  },
-  headerLeft: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  headerCenter: {
-    flex: 2,
-    alignItems: 'center',
-  },
-  headerRight: {
-    flex: 1,
-    alignItems: 'flex-end',
+    marginBottom: 25,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    borderWidth: 5,
+    borderColor: '#4CAF50',
+    borderStyle: 'solid',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+
+  headerTitles: {
+    marginLeft: 15,
+  },
+  clinicName: {
     color: darkGreen,
-    marginBottom: 4,
-    letterSpacing: 1,
-    textAlign: 'center',
+    fontSize: 22,
+    fontFamily: 'Helvetica-Bold',
   },
-  subtitle: {
-    fontSize: 16,
+  reportTitle: {
     color: '#444',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  date: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 0,
-    textAlign: 'center',
+  },
+  headerInfo: {
+    marginLeft: 'auto',
+    textAlign: 'right',
+  },
+  infoText: {
+    fontSize: 9,
+    color: '#555',
+    marginBottom: 2,
   },
   divider: {
-    borderBottomWidth: 3,
+    borderBottomWidth: 2,
     borderBottomColor: pastelGreen,
     marginVertical: 15,
-    marginHorizontal: 0,
   },
-  content: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 15,
-  },
-  summary: {
-    padding: 15,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: pastelGreen,
-    marginBottom: 10,
-  },
-  summaryTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: darkGreen,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  summaryRow: {
+  // Sección de Resumen
+  summaryContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
-    paddingHorizontal: 10,
+    backgroundColor: lightBackground,
+    padding: 15,
+    borderRadius: 8,
+    border: `1px solid #e0e0e0`,
+    marginBottom: 20,
+  },
+  summaryItem: {
+    alignItems: 'center',
+    flex: 1,
   },
   summaryLabel: {
-    fontSize: 14,
-    color: '#444',
-    fontWeight: 'bold',
+    fontSize: 10,
+    color: '#555',
+    marginBottom: 4,
   },
   summaryValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 16,
     color: darkGreen,
+    fontFamily: 'Helvetica-Bold',
   },
+  // Estilos de la tabla
   table: {
-    borderWidth: 2,
-    borderColor: pastelGreen,
-    borderRadius: 10,
+    border: `1px solid #e0e0e0`,
+    borderRadius: 8,
     overflow: 'hidden',
-    marginTop: 5,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: pastelGreen,
+    padding: 10,
+  },
+  headerCell: {
+    color: '#fff',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 11,
   },
   tableRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: 35,
-  },
-  tableHeader: {
-    backgroundColor: pastelGreen,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-    textAlign: 'center',
     padding: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#b6e6b0',
-  },
-  cellName: {
-    flex: 1.6,
-    padding: 10,
-    fontSize: 12,
-    color: '#222',
-    textAlign: 'left',
-  },
-  cellCount: {
-    flex: 0.7,
-    padding: 10,
-    fontSize: 12,
-    color: '#222',
-    textAlign: 'center',
-  },
-  cellMoney: {
-    flex: 1,
-    padding: 10,
-    fontSize: 12,
-    color: darkGreen,
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  rowEven: {
-    backgroundColor: '#f8f8f8',
+    borderBottom: `1px solid #e0e0e0`,
   },
   rowOdd: {
-    backgroundColor: '#fff',
+    backgroundColor: lightBackground,
   },
-  totalRow: {
-    flexDirection: 'row',
-    backgroundColor: '#eaffdf',
-    minHeight: 40,
-    borderTopWidth: 3,
-    borderTopColor: pastelGreen,
+  tableCell: {
+    fontSize: 10,
   },
-  totalLabel: {
-    flex: 2.3,
-    padding: 10,
-    fontWeight: 'bold',
-    color: '#222',
-    textAlign: 'right',
-    fontSize: 14,
+  cellMethod: {
+    flex: 2,
+    fontFamily: 'Helvetica-Bold',
   },
-  totalValue: {
+  cellCount: {
     flex: 1,
-    padding: 10,
-    fontWeight: 'bold',
-    color: pastelGreen,
     textAlign: 'center',
-    fontSize: 14,
   },
-  footer: {
-    marginTop: 'auto',
-    textAlign: 'center',
+  cellAmount: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  // Pie de tabla
+  tableFooter: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#eaffdf',
+    borderTop: `2px solid ${pastelGreen}`,
+  },
+  footerLabel: {
+    flex: 3,
+    textAlign: 'right',
+    fontFamily: 'Helvetica-Bold',
+    color: darkGreen,
     fontSize: 12,
-    color: '#888',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-    paddingTop: 10,
+  },
+  footerValue: {
+    flex: 1,
+    textAlign: 'right',
+    fontFamily: 'Helvetica-Bold',
+    color: darkGreen,
+    fontSize: 12,
+  },
+  // Pie de página del documento
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 30,
+    right: 30,
+    textAlign: 'center',
+    fontSize: 8,
+    color: '#999',
+    borderTop: `1px solid #e0e0e0`,
+    paddingTop: 8,
   },
 });
 
-const DailyCashReportPDF = ({ data, date }) => {
+const DailyCashReportPDF = ({
+  data,
+  date,
+  logoUrl,
+  companyInfo,
+  isEdited = false,
+}) => {
   const rows = Object.values(data || {});
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
@@ -204,77 +180,107 @@ const DailyCashReportPDF = ({ data, date }) => {
   const promedioPorCita =
     totalCitas > 0 ? (totalGeneral / totalCitas).toFixed(2) : 0;
 
+  const clinicName = companyInfo?.company_name || defaultClinicName;
+  const logo = logoUrl || defaultLogo;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image src={logo} style={styles.logo} />
+          <Image src={logo} style={styles.logo} />
+          <View style={styles.headerTitles}>
+            <Text style={styles.clinicName}>{clinicName}</Text>
+            <Text style={styles.reportTitle}>
+              Reporte de Caja Diaria
+              {isEdited && (
+                <Text style={{ fontSize: 10, color: '#ff6b35', marginLeft: 8 }}>
+                  (Datos Simulados)
+                </Text>
+              )}
+            </Text>
           </View>
-          <View style={styles.headerCenter}>
-            <Text style={styles.title}>{clinicName}</Text>
-            <Text style={styles.subtitle}>Reporte de Caja Diaria</Text>
-            <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
+          <View style={styles.headerInfo}>
+            <Text style={styles.infoText}>
+              Fecha del Reporte: {date.format('DD/MM/YYYY')}
+            </Text>
+            <Text style={styles.infoText}>Generado: {fechaHora}</Text>
+            {isEdited && (
+              <Text style={{ fontSize: 8, color: '#ff6b35', marginTop: 2 }}>
+                * Datos modificados para simulación
+              </Text>
+            )}
           </View>
-          <View style={styles.headerRight}></View>
         </View>
+
+        <View style={styles.summaryContainer}>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Total de Citas</Text>
+            <Text style={styles.summaryValue}>{totalCitas}</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Promedio por Cita</Text>
+            <Text style={styles.summaryValue}>S/ {promedioPorCita}</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>Ingreso Total</Text>
+            <Text style={styles.summaryValue}>
+              S/ {totalGeneral.toFixed(2)}
+            </Text>
+          </View>
+        </View>
+
         <View style={styles.divider} />
 
-        <View style={styles.content}>
-          {/* Resumen */}
-          <View style={styles.summary}>
-            <Text style={styles.summaryTitle}>Resumen del Día</Text>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Total de Citas:</Text>
-              <Text style={styles.summaryValue}>{totalCitas}</Text>
-            </View>
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Promedio por Cita:</Text>
-              <Text style={styles.summaryValue}>S/ {promedioPorCita}</Text>
-            </View>
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text style={[styles.headerCell, { flex: 2 }]}>Método de Pago</Text>
+            <Text style={[styles.headerCell, { flex: 1, textAlign: 'center' }]}>
+              Citas
+            </Text>
+            <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
+              Monto
+            </Text>
+            <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
+              Total
+            </Text>
           </View>
-
-          {/* Tabla de Detalles */}
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={[styles.cellName, styles.tableHeader]}>
-                Método de Pago
+          {rows.map((row, idx) => (
+            <View
+              style={[styles.tableRow, idx % 2 !== 0 ? styles.rowOdd : {}]}
+              key={row.name}
+            >
+              <Text style={[styles.tableCell, styles.cellMethod]}>
+                {row.name}
               </Text>
-              <Text style={[styles.cellCount, styles.tableHeader]}>Citas</Text>
-              <Text style={[styles.cellMoney, styles.tableHeader]}>
-                Monto Unitario
+              <Text style={[styles.tableCell, styles.cellCount]}>
+                {row.countAppointment}
               </Text>
-              <Text style={[styles.cellMoney, styles.tableHeader]}>Total</Text>
+              <Text style={[styles.tableCell, styles.cellAmount]}>
+                S/ {row.payment.toFixed(2)}
+              </Text>
+              <Text style={[styles.tableCell, styles.cellAmount]}>
+                S/ {row.total.toFixed(2)}
+              </Text>
             </View>
-            {rows.map((row, idx) => (
-              <View
-                style={[
-                  styles.tableRow,
-                  idx % 2 === 0 ? styles.rowEven : styles.rowOdd,
-                ]}
-                key={row.name}
-              >
-                <Text style={styles.cellName}>{row.name}</Text>
-                <Text style={styles.cellCount}>{row.countAppointment}</Text>
-                <Text style={styles.cellMoney}>S/ {row.payment}</Text>
-                <Text style={styles.cellMoney}>S/ {row.total}</Text>
-              </View>
-            ))}
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total General</Text>
-              <Text style={styles.totalValue}></Text>
-              <Text style={styles.totalValue}></Text>
-              <Text style={styles.totalValue}>S/ {totalGeneral}</Text>
-            </View>
+          ))}
+          <View style={styles.tableFooter}>
+            <Text style={styles.footerLabel}>Total General:</Text>
+            <Text style={styles.footerValue}>S/ {totalGeneral.toFixed(2)}</Text>
           </View>
         </View>
 
         <Text style={styles.footer}>
-          {clinicName} | Generado el {fechaHora}
+          {clinicName} - Documento generado automáticamente.
+          {isEdited && (
+            <Text style={{ color: '#ff6b35' }}>
+              {' '}
+              Datos modificados para simulación.
+            </Text>
+          )}
         </Text>
       </Page>
     </Document>
   );
 };
 
-export default DailyCashReportPDF;
+export default React.memo(DailyCashReportPDF);

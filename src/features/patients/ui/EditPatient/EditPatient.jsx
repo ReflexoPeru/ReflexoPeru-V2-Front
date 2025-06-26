@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
-import { getPatientById } from '../../service/patientsService';
 
 // Reutilizamos los mismos campos del formulario de creación
 const fields = [
@@ -11,7 +10,7 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'document_type_id',
+        name: 'document_type',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -149,18 +148,19 @@ const fields = [
   },
 ];
 
-const EditPatient = ({ patient, onClose }) => {
+const EditPatient = ({ patient, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
 
-  // Actualiza el formulario con los datos recibidos (sea de prop o del GET)
+  // Actualiza el formulario con los datos recibidos
   const setFormWithPatient = (data) => {
     if (!data) return;
+    // Usar document_type
     const ubicacion = {
-      region_id: data.region || data.region_id || null,
-      province_id: data.province || data.province_id || null,
-      district_id: data.district || data.district_id || null,
+      region_id: data.region,
+      province_id: data.province,
+      district_id: data.district,
     };
     if (ubicacion.region_id !== null)
       ubicacion.region_id = String(ubicacion.region_id);
@@ -170,22 +170,26 @@ const EditPatient = ({ patient, onClose }) => {
       ubicacion.district_id = String(ubicacion.district_id);
     const formData = {
       name: data.name || '',
-      paternal_lastname: data.paternal_lastname || '',
-      maternal_lastname: data.maternal_lastname || '',
-      document_type_id: data.document_type_id || '',
-      document_number: data.document_number || '',
-      personal_reference: data.personal_reference || '',
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
+      document_type:
+        data.document_type !== undefined && data.document_type !== null
+          ? String(data.document_type)
+          : undefined,
+      document_number: data.document_number,
+      personal_reference: data.personal_reference,
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
-      sex: data.sex || '',
-      primary_phone: data.primary_phone || '',
-      secondary_phone: data.secondary_phone || '',
-      email: data.email || '',
-      occupation: data.ocupation || data.occupation || '',
-      address: data.address || '',
-      country_id: data.country_id || '',
+      sex: data.sex,
+      primary_phone: data.primary_phone,
+      secondary_phone: data.secondary_phone,
+      email: data.email,
+      occupation: data.ocupation,
+      address: data.address,
+      country_id: data.country_id,
       ubicacion,
     };
     form.setFieldsValue(formData);
+    console.log('Valores seteados en el form:', formData);
   };
 
   // Inicializa el formulario con los datos de la prop patient
@@ -193,33 +197,22 @@ const EditPatient = ({ patient, onClose }) => {
     setFormWithPatient(patient);
   }, [patient]);
 
-  // Cuando el modal se abre, hace un GET pero no bloquea la UI
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (patient && patient.id) {
-          const freshPatient = await getPatientById(patient.id);
-          setFormWithPatient(freshPatient);
-        }
-      } catch (error) {
-        notification.error({
-          message: 'Error',
-          description: 'No se pudo obtener los datos actualizados del paciente',
-        });
-      }
-    };
-    fetchData();
-    // eslint-disable-next-line
-  }, [patient]);
-
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      await handleUpdatePatient(patient.id, formData);
+      // Convertir el tipo de documento a número y renombrar el campo
+      const dataToSend = {
+        ...formData,
+        document_type_id: Number(formData.document_type),
+      };
+      delete dataToSend.document_type;
+
+      await handleUpdatePatient(patient.id, dataToSend);
       notification.success({
         message: 'Éxito',
         description: 'Paciente actualizado correctamente',
       });
+      if (onSave) onSave();
       onClose();
     } catch (error) {
       notification.error({

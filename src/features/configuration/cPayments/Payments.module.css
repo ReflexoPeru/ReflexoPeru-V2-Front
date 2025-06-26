@@ -11,6 +11,18 @@
   background-color: rgba(20, 245, 140, 0.23);
 }
 
+.statusDisabled {
+  display: inline-block;
+
+  padding: 4px 12px;
+  border-radius: 16px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+
+  background-color: rgba(255, 77, 79, 0.23);
+}
 
 /* Botones - Estilos base */
 .editButton {

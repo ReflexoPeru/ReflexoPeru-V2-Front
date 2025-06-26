@@ -7,10 +7,12 @@ import {
   updateAllProfile,
   validatePassword,
   changePassword,
-  uploadPhoto,
-  getPhoto,
+  getUserPhoto,
+  uploadProfilePhoto,
 } from '../service/profileService';
 import { useToast } from '../../../../services/toastify/ToastContext';
+import { persistLocalStorage } from '../../../../utils/localStorageUtility';
+import { formatToastMessage } from '../../../../utils/messageFormatter';
 
 // Cache para almacenar datos temporalmente
 const profileCache = {
@@ -31,11 +33,14 @@ export const useSendVerifyCode = () => {
       try {
         const data = { type_email: '2', new_email: email };
         const response = await createPatient(data);
-        showToast('codigoEnviado');
+        showToast('verificacionDosPasos');
         return response;
       } catch (err) {
         setError(err);
-        showToast('intentoFallido', err.response?.data?.message);
+        showToast(
+          'intentoFallido',
+          formatToastMessage(err.response?.data?.message),
+        );
         throw err;
       } finally {
         setLoading(false);
@@ -50,10 +55,23 @@ export const useSendVerifyCode = () => {
       setError(null);
       try {
         const response = await verifyCode(code);
+
+        if (response.valid === false) {
+          const err = new Error(
+            response.message || 'El código ingresado no coincide.',
+          );
+          err.response = { data: { message: response.message } };
+          throw err;
+        }
+
+        showToast('codigoVerificado');
         return response;
       } catch (err) {
         setError(err);
-        showToast('codigoIncorrecto', err.response?.data?.message);
+        showToast(
+          'codigoIncorrecto',
+          formatToastMessage(err.response?.data?.message || err.message),
+        );
         throw err;
       } finally {
         setLoading(false);
@@ -63,18 +81,21 @@ export const useSendVerifyCode = () => {
   );
 
   const updateEmail = useCallback(
-    async (email) => {
+    async (email, code) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await updateProfileEmail(email);
+        const response = await updateProfileEmail(email, code);
         showToast('exito', 'Correo electrónico actualizado con éxito');
         return response;
       } catch (err) {
         setError(err);
         showToast(
           'error',
-          err.response?.data?.message || 'Error al actualizar el correo',
+          formatToastMessage(
+            err.response?.data?.message,
+            'Error al actualizar el correo',
+          ),
         );
         throw err;
       } finally {
@@ -89,7 +110,6 @@ export const useSendVerifyCode = () => {
 
 export const useProfile = () => {
   const [profile, setProfile] = useState(null);
-  const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { showToast } = useToast();
@@ -104,7 +124,6 @@ export const useProfile = () => {
         now - profileCache.lastFetch < profileCache.ttl
       ) {
         setProfile(profileCache.data.profile);
-        setPhoto(profileCache.data.photo);
         setLoading(false);
         return;
       }
@@ -113,25 +132,19 @@ export const useProfile = () => {
       try {
         const [profileData, photoData] = await Promise.allSettled([
           getProfile(),
-          getPhoto(),
         ]);
 
         const profileResult =
           profileData.status === 'fulfilled' ? profileData.value : null;
-        const photoResult =
-          photoData.status === 'fulfilled'
-            ? URL.createObjectURL(photoData.value)
-            : '/src/assets/Img/MiniLogoReflexo.webp';
 
         // Actualizar caché
         profileCache.data = {
           profile: profileResult,
-          photo: photoResult,
         };
         profileCache.lastFetch = now;
 
         setProfile(profileResult);
-        setPhoto(photoResult);
+        persistLocalStorage('user_full_name', profileResult?.full_name);
       } catch (error) {
         setError(error);
         showToast('error', 'Error al cargar el perfil');
@@ -146,7 +159,7 @@ export const useProfile = () => {
     fetchProfile();
   }, [fetchProfile]);
 
-  return { profile, photo, loading, error, refetch: fetchProfile };
+  return { profile, loading, error, refetch: fetchProfile };
 };
 
 export const useUpdateProfile = () => {
@@ -160,15 +173,17 @@ export const useUpdateProfile = () => {
         setIsUpdating(true);
         setUpdateError(null);
         const updatedProfile = await updateAllProfile(data);
-        // Invalidar caché después de actualización
         profileCache.lastFetch = 0;
-        showToast('exito', 'Perfil actualizado correctamente');
+        showToast('configuracionGuardada');
         return updatedProfile;
       } catch (error) {
         setUpdateError(error);
         showToast(
           'error',
-          error.response?.data?.message || 'Error al actualizar el perfil',
+          formatToastMessage(
+            error.response?.data?.message,
+            'Error al actualizar el perfil',
+          ),
         );
         throw error;
       } finally {
@@ -203,26 +218,11 @@ export const useUpdateProfile = () => {
       } catch (error) {
         showToast(
           'error',
-          error.response?.data?.message || 'Error al cambiar la contraseña',
+          formatToastMessage(
+            error.response?.data?.message,
+            'Error al cambiar la contraseña',
+          ),
         );
-        throw error;
-      }
-    },
-    [showToast],
-  );
-
-  const uploadProfilePhoto = useCallback(
-    async (file) => {
-      try {
-        const formData = new FormData();
-        formData.append('photo', file);
-        const response = await uploadPhoto(formData);
-        // Invalidar caché de foto
-        profileCache.lastFetch = 0;
-        showToast('exito', 'Foto de perfil actualizada');
-        return response;
-      } catch (error) {
-        showToast('error', 'Error al subir la foto de perfil');
         throw error;
       }
     },
@@ -233,8 +233,58 @@ export const useUpdateProfile = () => {
     updateProfile,
     validateCurrentPassword,
     updatePassword,
-    uploadProfilePhoto,
     isUpdating,
     error: updateError,
   };
+};
+
+//HOOK PARA CONSEGUIR LA IMAGEN DEL PERFIL
+export const useUserPhoto = () => {
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getUserPhoto(controller.signal)
+      .then(setPhotoUrl)
+      .catch(() => setPhotoUrl(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { photoUrl, loading };
+};
+
+//HOOK PARA ACTUALIZAR LA IMAGEN DEL PERFIL
+export const useUploadUserAvatar = () => {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const { showToast } = useToast();
+
+  const uploadAvatar = async (file) => {
+    setUploading(true);
+    setError(null);
+    setSuccess(false);
+    try {
+      const response = await uploadProfilePhoto(file);
+      setSuccess(true);
+      showToast(
+        'imageUploadSuccess',
+        response.message || 'Avatar actualizado correctamente',
+      );
+    } catch (error) {
+      setError(error);
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al subir el avatar',
+        ),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return { uploadAvatar, uploading, error, success };
 };

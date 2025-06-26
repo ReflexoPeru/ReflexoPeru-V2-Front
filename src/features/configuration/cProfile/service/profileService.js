@@ -4,6 +4,7 @@ import {
   post,
   patch,
 } from '../../../../services/api/Axios/MethodsGeneral';
+import instance from '../../../../services/api/Axios/baseConfig';
 
 // Cache para peticiones
 const apiCache = new Map();
@@ -103,29 +104,42 @@ export const changePassword = async (data) => {
   }
 };
 
-export const uploadPhoto = async (formData) => {
+//CONSEGUIR LA FOTO DE PERFIL -> (GET)
+export const getUserPhoto = async (signal) => {
   try {
-    const res = await post('users/photo', formData, {
+    const response = await instance.get('users/photo', {
+      responseType: 'blob',
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
+      signal
+    });
+
+    // Convertir blob a URL para mostrarla como imagen
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    console.error('Error fetching user photo:', error);
+    throw error;
+  }
+}
+
+//ACTUALIZAR LA FOTO DE PERFIL -> (POST)
+export const uploadProfilePhoto = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    console.log("Pipippipipippipippipip:", formData);
+
+    const response = await instance.post('users/photo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
-    // Invalidar caché de la foto
-    apiCache.delete('users/photo');
-    return res.data;
-  } catch (error) {
-    console.error('Error in uploadPhoto:', error);
-    throw error;
-  }
-};
 
-export const getPhoto = async () => {
-  try {
-    return await cachedRequest('users/photo', () =>
-      get('users/photo', { responseType: 'blob' }),
-    );
+    return response.data;
   } catch (error) {
-    console.error('Error in getPhoto:', error);
+    console.error('Error subiendo avatar:', error.response?.data || error.message);
     throw error;
   }
-};
+}

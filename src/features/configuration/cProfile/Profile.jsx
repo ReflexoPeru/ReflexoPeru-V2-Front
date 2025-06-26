@@ -4,7 +4,7 @@ import {
   Select,
   Button,
   Input,
-  Modal,
+  Image,
   message,
   Form,
   ConfigProvider,
@@ -16,18 +16,31 @@ import {
   ArrowLeft,
   CheckCircle,
 } from '@phosphor-icons/react';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import styles from './Profile.module.css';
 import {
   useSendVerifyCode,
-  useProfile,
   useUpdateProfile,
+  useUploadUserAvatar,
 } from './hook/profileHook';
 import { useToast } from '../../../services/toastify/ToastContext';
 import ModalBase from '../../../components/Modal/BaseModalProfile/BaseModalProfile';
+import { useUser } from '../../../context/UserContext';
+
 const { Password } = AntdInput;
 
 const Profile = () => {
-  const [avatar, setAvatar] = useState('/src/assets/Img/MiniLogoReflexo.webp');
+  const {
+    profile,
+    photoUrl,
+    refetchProfile,
+    refetchPhoto,
+    loading: profileLoading,
+  } = useUser();
+
+  const [avatar, setAvatar] = useState(
+    photoUrl || '/src/assets/Img/MiniLogoReflexo.webp',
+  );
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
@@ -63,15 +76,11 @@ const Profile = () => {
     loading: codeLoading,
     error: codeError,
   } = useSendVerifyCode();
-  const { profile, loading: profileLoading, refetch } = useProfile();
-  const {
-    updateProfile,
-    isUpdating,
-    validateCurrentPassword,
-    updatePassword,
-    uploadProfilePhoto,
-  } = useUpdateProfile();
+  const { updateProfile, isUpdating, validateCurrentPassword, updatePassword } =
+    useUpdateProfile();
   const { showToast } = useToast();
+
+  const { uploadAvatar, uploading, error: uploadError } = useUploadUserAvatar();
 
   useEffect(() => {
     if (profile) {
@@ -84,20 +93,27 @@ const Profile = () => {
     }
   }, [profile]);
 
-  const handleAvatarChange = async (info) => {
-    const file = info.file.originFileObj;
-    if (file) {
-      try {
-        const formData = new FormData();
-        formData.append('photo', file);
-        await uploadProfilePhoto(formData);
-        message.success('Avatar actualizado correctamente');
-        const reader = new FileReader();
-        reader.onload = (e) => setAvatar(e.target.result);
-        reader.readAsDataURL(file);
-      } catch (error) {
-        message.error('Error al actualizar el avatar');
-      }
+  useEffect(() => {
+    if (photoUrl) {
+      setAvatar(photoUrl);
+    }
+  }, [photoUrl]);
+
+  const handleAvatarChange = async ({ file }) => {
+    if (file.status !== 'done') return;
+
+    const newFile = file.originFileObj;
+    if (!newFile) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => setAvatar(e.target.result);
+    reader.readAsDataURL(newFile);
+
+    try {
+      await uploadAvatar(newFile);
+      refetchPhoto();
+    } catch (err) {
+      console.error('Error capturado en el componente:', err);
     }
   };
 
@@ -137,13 +153,13 @@ const Profile = () => {
     setVerifyLoading(true);
     try {
       await verify(values.code);
-      await updateEmail(newEmail);
+      await updateEmail(newEmail, values.code);
       setCorreo(newEmail);
       setShowCodeModal(false);
-      message.success('¡Correo actualizado exitosamente!');
     } catch (error) {
-      message.error(
-        error.response?.data?.message || 'Error al actualizar el correo',
+      console.error(
+        'Error en el flujo de verificación y actualización:',
+        error,
       );
     } finally {
       setVerifyLoading(false);
@@ -232,12 +248,9 @@ const Profile = () => {
 
       await updateProfile(updateData);
       message.success('Cambios guardados exitosamente');
-      refetch();
+      refetchProfile();
     } catch (error) {
-      message.error(
-        'Error al actualizar el perfil: ' +
-          (error.response?.data?.message || error.message),
-      );
+      message.error('Error al guardar los cambios');
     }
   };
 
@@ -291,28 +304,72 @@ const Profile = () => {
               <div className={styles.card}>
                 <h2 className={styles.title}>PERFIL</h2>
 
-                <div className={styles.formRow}>
+                {/* Avatar */}
+                <div className={styles.section}>
                   <label className={styles.label}>Avatar:</label>
-                  <div className={styles.avatarContainer}>
-                    <div className={styles.avatarBlock}>
-                      <span className={styles.avatarTitle}>Actual</span>
-                      <img
-                        src={avatar}
-                        alt="Avatar actual"
-                        className={styles.avatarImage}
-                      />
+                  <div className={styles.logoRow}>
+                    <div className={styles.logoBlock}>
+                      {avatar ? (
+                        <Image
+                          src={avatar}
+                          alt="Avatar del usuario"
+                          preview={false}
+                          style={{
+                            width: '100px',
+                            height: '100px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            border: '2px solid #4CAF50',
+                            padding: '3px',
+                            backgroundColor: '#000',
+                          }}
+                        />
+                      ) : (
+                        <div className={styles.noLogo}>
+                          No hay avatar disponible
+                        </div>
+                      )}
                     </div>
-                    <div className={styles.avatarBlock}>
-                      <span className={styles.avatarTitle}>Subir</span>
+                    <div className={styles.logoBlock}>
                       <Upload
+                        name="logo"
+                        listType="picture-circle"
+                        className="avatar-uploader"
                         showUploadList={false}
-                        beforeUpload={() => false}
-                        onChange={handleAvatarChange}
                         accept="image/*"
+                        customRequest={({ file, onSuccess }) => {
+                          onSuccess('ok');
+                        }}
+                        beforeUpload={(file) => {
+                          const isImage = file.type.startsWith('image/');
+                          if (!isImage) {
+                            message.error(
+                              'Solo puedes subir archivos de imagen!',
+                            );
+                          }
+                          const isLt2M = file.size / 1024 / 1024 < 2;
+                          if (!isLt2M) {
+                            message.error('¡La imagen debe ser menor a 2MB!');
+                          }
+                          return isImage && isLt2M ? true : Upload.LIST_IGNORE;
+                        }}
+                        onChange={handleAvatarChange}
+                        style={{
+                          borderRadius: '50%',
+                          border: '2px dashed #4CAF50',
+                          width: 97,
+                          height: 97,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: '#1a1a1a', // si estás en modo oscuro
+                          cursor: 'pointer',
+                        }}
                       >
-                        <button type="button" className={styles.uploadButton}>
-                          <span className={styles.uploadText}>Upload</span>
-                        </button>
+                        <div style={{ color: '#fff', textAlign: 'center' }}>
+                          <UploadOutlined />
+                          <div style={{ marginTop: 8 }}>Subir avatar</div>
+                        </div>
                       </Upload>
                     </div>
                   </div>

@@ -10,7 +10,6 @@ import {
   TimePicker,
   theme,
 } from 'antd';
-import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -94,7 +93,7 @@ const InputField = ({
       return (
         <Form.Item
           label="Metodos de Pago:"
-          name="payment_type_id"
+          name="payment"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
           <SelectPaymentStatus />
@@ -102,16 +101,18 @@ const InputField = ({
       );
 
     case 'typeOfDocument':
-      return <SelectTypeOfDocument onChange={rest.onChange} />;
+      return (
+        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
+      );
 
     case 'selectPrices':
       return (
         <Form.Item
           label="Opciones de Pago:"
-          name="payment"
+          name="payment_type_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
-          <SelectPrices {...rest} />
+          <SelectPrices hidePriceInput={rest.hidePriceInput} {...rest} />
         </Form.Item>
       );
 
@@ -129,6 +130,9 @@ const InputField = ({
       break;
 
     case 'text':
+      if (rest.name === 'payment' && rest.hidePaymentInput) {
+        return <input type="hidden" name="payment" value={rest.value || ''} />;
+      }
       inputComponent = (
         <Input
           {...inputProps}
@@ -219,6 +223,46 @@ const InputField = ({
     case 'cita':
       return <CitaComponents {...rest} />;
 
+    case 'manualPayment':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Monto"
+          rules={[{ required: true, message: 'El monto es requerido' }]}
+        >
+          <Input
+            value={rest.value}
+            onChange={(e) =>
+              rest.form.setFieldsValue({ [rest.name]: e.target.value })
+            }
+            prefix="S/"
+            placeholder="S/ 0.00"
+          />
+        </Form.Item>
+      );
+
+    case 'paymentMethod':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Método de Pago"
+          rules={[
+            { required: true, message: 'El método de pago es requerido' },
+          ]}
+        >
+          <SelectPaymentStatus
+            value={rest.value}
+            onChange={(value) =>
+              rest.form.setFieldsValue({ [rest.name]: value })
+            }
+            placeholder="Selecciona método de pago"
+          />
+        </Form.Item>
+      );
+
+    case 'hidden':
+      return <input type="hidden" name={rest.name} value={rest.value || ''} />;
+
     default:
       inputComponent = <Input {...inputProps} />;
       break;
@@ -264,13 +308,28 @@ const CitaComponents = ({ componentType, form, ...props }) => {
     case 'dateField':
       return <DateField form={form} />;
     case 'patientField':
-      return <PatientField form={form}  {...props} />;
+      return <PatientField form={form} {...props} />;
     case 'timeField':
       return <TimeField form={form} />;
     case 'hourCheckbox':
       return <HourCheckbox {...props} />;
     case 'paymentCheckbox':
       return <PaymentCheckbox {...props} />;
+    case 'paymentMethodField':
+      // Renderiza el componente personalizado pasado por props
+      const PaymentComponent = props.component;
+      return (
+        <Form.Item
+          label="Método de Pago"
+          name="payment_method_id"
+          rules={[{ required: true, message: 'Este campo es requerido' }]}
+        >
+          <PaymentComponent />
+        </Form.Item>
+      );
+    case 'spacer':
+      // Espacio visual en blanco
+      return <div style={{ height: props.height || 32 }} />;
     default:
       return null;
   }
@@ -287,7 +346,6 @@ const PatientField = ({
   changeSelectedPatient,
   onOpenSelectModal,
 }) => {
-
   const formInstance = form || Form.useFormInstance();
 
   // Función para cambiar el texto del paciente
@@ -303,10 +361,14 @@ const PatientField = ({
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
             <InputField
-            readonly = {true}
-           type= "text"
-           value={  selectedPatient?.concatenatedName||selectedPatient?.full_name || ''}
-            onChange={(e) => changeSelectedPatient(e.target.value)}
+              readonly={true}
+              type="text"
+              value={
+                selectedPatient?.concatenatedName ||
+                selectedPatient?.full_name ||
+                ''
+              }
+              onChange={(e) => changeSelectedPatient(e.target.value)}
             />
           </Form.Item>
           <Form.Item name="patient_id" hidden>
@@ -353,7 +415,7 @@ const DateField = ({ form }) => {
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
     formInstance.setFieldsValue({
-      appointment_date: dateString
+      appointment_date: dateString,
     });
   };
 
@@ -401,9 +463,8 @@ const TimeField = ({ form }) => {
   const formInstance = form || Form.useFormInstance();
 
   const handleTimeChange = (time, timeString) => {
-    console.log('Hora seleccionada:', timeString);
     formInstance.setFieldsValue({
-      appointment_hour: timeString
+      appointment_hour: timeString,
     });
   };
 
