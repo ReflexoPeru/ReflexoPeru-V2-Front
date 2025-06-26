@@ -8,12 +8,14 @@ import {
   notification,
 } from 'antd';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
 import { useAppointments, usePatients } from '../../hook/appointmentsHook';
 import styles from '../RegisterAppointment/NewAppointment.module.css';
+import SelectPaymentStatus from '../../../../components/Select/SelectPaymentStatus';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
@@ -26,6 +28,7 @@ const NewAppointment = () => {
   const [isCreatePatientModalVisible, setIsCreatePatientModalVisible] =
     useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
+  const [selectedPrice, setSelectedPrice] = useState('');
 
   const { submitNewAppointment } = useAppointments();
   const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
@@ -33,23 +36,35 @@ const NewAppointment = () => {
   // Usar form de Ant Design
   const [form] = Form.useForm();
 
+  const navigate = useNavigate();
+
+  // Sincronizar el valor de payment cada vez que cambie el select de precios
+  useEffect(() => {
+    const unsubscribe = form.subscribe?.(() => {
+      const paymentTypeId = form.getFieldValue('payment_type_id');
+      const prices = form.getFieldInstance?.('payment_type_id')?.props?.options;
+      if (prices && paymentTypeId) {
+        const selected = prices.find((item) => item.value === paymentTypeId);
+        if (selected) {
+          form.setFieldsValue({ payment: selected.price });
+        }
+      }
+    });
+    return () => unsubscribe && unsubscribe();
+  }, [form]);
+
   // Callback para actualizar el monto
   const handlePriceChange = (price) => {
     form.setFieldsValue({ payment: price });
+    setSelectedPrice(price);
   };
 
-  const handleSubmit = (values) => {
-    setFormValues(values);
-    handleCompleteRegistration();
-  };
-
-  const handleCancel = () => {
-    setIsCreatePatientModalVisible(false);
-    setIsModalVisible(false);
-  };
-
-  const handleCompleteRegistration = async () => {
-    if (isSubmitting) return;
+  const handleSubmit = async (values) => {
+    // Si falta payment, usar el estado local
+    let paymentValue = values.payment;
+    if (!paymentValue) {
+      paymentValue = selectedPrice;
+    }
 
     if (!selectedPatient) {
       notification.error({
@@ -59,32 +74,22 @@ const NewAppointment = () => {
       return;
     }
 
-    if (!formValues) {
-      notification.error({
-        message: 'Error',
-        description: 'Complete todos los campos del formulario',
-      });
-      return;
-    }
-
     // Validar campos requeridos
-    if (!formValues.appointment_date) {
+    if (!values.appointment_date) {
       notification.error({
         message: 'Error',
         description: 'La fecha de la cita es requerida',
       });
       return;
     }
-
-    if (!formValues.payment_type_id) {
+    if (!values.payment_type_id) {
       notification.error({
         message: 'Error',
         description: 'El tipo de pago es requerido',
       });
       return;
     }
-
-    if (!formValues.payment) {
+    if (!paymentValue) {
       notification.error({
         message: 'Error',
         description: 'El monto de pago es requerido',
@@ -95,48 +100,33 @@ const NewAppointment = () => {
     setIsSubmitting(true);
 
     try {
-      // Debug: Verificar que tenemos el patient_id
-      console.log('🔍 Debug - selectedPatient:', selectedPatient);
-      console.log('🔍 Debug - patient_id a enviar:', selectedPatient?.id);
-      console.log('🔍 Debug - formValues:', formValues);
-      console.log('🔍 Debug - hora original:', formValues.appointment_hour);
-
       // Lógica para determinar appointment_status_id basada en la fecha
-      const appointmentDate = dayjs(formValues.appointment_date);
+      const appointmentDate = dayjs(values.appointment_date);
       const currentDate = dayjs();
 
       let appointment_status_id;
       if (appointmentDate.isBefore(currentDate, 'day')) {
-        // Si la fecha es anterior al día actual
         appointment_status_id = 2;
       } else {
-        // Si es fecha presente o futura
         appointment_status_id = 1;
       }
 
-      // Limpiar el valor de payment
-      let paymentValue = formValues.payment;
       if (typeof paymentValue === 'string') {
-        paymentValue = paymentValue.replace(/[^\d.]/g, ''); // Quita S/ y espacios
+        paymentValue = paymentValue.replace(/[^\d.]/g, '');
         paymentValue = parseFloat(paymentValue);
       }
 
-      const { appointment_hour, ...formDataWithoutHour } = formValues;
+      // Eliminar patient_id del formulario y usar el del estado
+      const { appointment_hour, patient_id, ...formDataWithoutHour } = values;
       const payload = {
         ...formDataWithoutHour,
-        ...(showHourField && formValues.appointment_hour
-          ? { appointment_hour: formValues.appointment_hour }
+        ...(showHourField && values.appointment_hour
+          ? { appointment_hour: values.appointment_hour }
           : {}),
         appointment_status_id: appointment_status_id,
         patient_id: selectedPatient.id,
+        payment: paymentValue,
       };
-
-      console.log('🔍 Debug - payload completo:', payload);
-      console.log(
-        '🔍 Debug - appointment_status_id calculado:',
-        appointment_status_id,
-      );
-      console.log('🔍 Debug - showHourField:', showHourField);
 
       const result = await submitNewAppointment(payload);
 
@@ -146,30 +136,30 @@ const NewAppointment = () => {
       });
 
       form.resetFields();
-      setFormValues(null);
       setSelectedPatient(null);
       setPatientType('nuevo');
       setShowHourField(false);
       setIsPaymentRequired(false);
-
-      return result;
+      navigate('/Inicio/citas');
     } catch (error) {
-      console.error('Error al registrar cita:', error);
       let errorMessage =
         'No se pudo registrar la cita. Por favor intente nuevamente.';
-
       if (error.response) {
         errorMessage = error.response.data?.message || errorMessage;
       }
-
       notification.error({
         message: 'Error',
         description: errorMessage,
       });
-      throw error;
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCancel = () => {
+    setIsCreatePatientModalVisible(false);
+    setIsModalVisible(false);
+    navigate('/Inicio/citas');
   };
 
   const handleOpenCreateModal = () => {
@@ -180,8 +170,9 @@ const NewAppointment = () => {
     setIsModalVisible(true);
   };
 
-  const handleChangeSelectedPatient = (newText) => {
-    setSelectedPatient(newText);
+  const handleChangeSelectedPatient = (newPatient) => {
+    setSelectedPatient(newPatient);
+    form.setFieldsValue({ patient_id: newPatient?.id });
   };
 
   const handleLogServerResponse = (result) => {
@@ -199,6 +190,7 @@ const NewAppointment = () => {
         full_name: concatenatedName,
         stringifiedData: stringified,
       });
+      form.setFieldsValue({ patient_id: result.id });
     } else {
       console.error('El resultado no es un objeto válido:', result);
     }
@@ -258,6 +250,12 @@ const NewAppointment = () => {
           required: true,
           span: 15,
           onChange: handlePriceChange,
+          hidePriceInput: true,
+          className: 'hide-price-input',
+        },
+        {
+          name: 'payment',
+          type: 'hidden',
         },
       ],
     },
@@ -265,10 +263,28 @@ const NewAppointment = () => {
       type: 'customRow',
       fields: [
         {
-          name: 'payment',
-          type: 'paymentStatus',
-          span: 15,
+          type: 'customComponent',
+          componentType: 'spacer',
+          span: 24,
+          props: {
+            height: 40,
+          },
+        },
+      ],
+    },
+    {
+      type: 'customRow',
+      fields: [
+        {
+          name: 'payment_method_id',
+          type: 'customComponent',
+          componentType: 'paymentMethodField',
+          label: 'Método de Pago',
           required: true,
+          span: 15,
+          props: {
+            component: SelectPaymentStatus,
+          },
         },
       ],
     },
@@ -389,7 +405,6 @@ const NewAppointment = () => {
           onOpenSelectModal={handleOpenSelectModal}
           onCancel={handleCancel}
           submitButtonText="Registrar"
-          onRegisterClick={handleCompleteRegistration}
           isSubmitting={isSubmitting}
           onPriceChange={handlePriceChange}
         />
@@ -421,6 +436,7 @@ const NewAppointment = () => {
                   (p) => p.key === selectedRowKey,
                 );
                 setSelectedPatient(selectedPatient);
+                form.setFieldsValue({ patient_id: selectedPatient.id });
 
                 setIsModalVisible(false);
                 setSelectedRowKey(null);
@@ -434,7 +450,7 @@ const NewAppointment = () => {
               Seleccionar
             </Button>,
           ]}
-          bodyStyle={{ padding: '24px' }}
+          styles={{ body: { padding: '24px' } }}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -465,11 +481,30 @@ const NewAppointment = () => {
           footer={null}
           width={800}
           destroyOnClose
-          bodyStyle={{ overflow: 'hidden' }}
+          styles={{ body: { overflow: 'hidden' } }}
         >
           <NewPatient
             onCancel={handleCancel}
-            onSubmit={handleLogServerResponse}
+            onSubmit={(result) => {
+              if (result && typeof result === 'object') {
+                // Concatenar el nombre completo
+                const concatenatedName =
+                  `${result.name} ${result.paternal_lastname} ${result.maternal_lastname}`.trim();
+
+                // Convertir todo el objeto a string
+                const stringified = JSON.stringify(result);
+
+                // Guardar en estado
+                setSelectedPatient({
+                  ...result,
+                  full_name: concatenatedName,
+                  stringifiedData: stringified,
+                });
+                form.setFieldsValue({ patient_id: result.id });
+              } else {
+                console.error('El resultado no es un objeto válido:', result);
+              }
+            }}
           />
         </Modal>
       </div>
