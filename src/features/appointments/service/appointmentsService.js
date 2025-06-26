@@ -1,4 +1,9 @@
-import { get, post, patch } from '../../../services/api/Axios/MethodsGeneral';
+import {
+  get,
+  post,
+  patch,
+  del,
+} from '../../../services/api/Axios/MethodsGeneral';
 
 export const createAppointment = async (data) => {
   try {
@@ -131,6 +136,17 @@ export const searchPatients = async (term) => {
     return { data, total };
   } catch (error) {
     console.error('❌ Error en searchPatients:', error);
+    throw error;
+  }
+};
+
+// Eliminar cita por ID
+export const deleteAppointment = async (id) => {
+  try {
+    const response = await del(`appointments/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al eliminar la cita con ID ${id}:`, error);
     throw error;
   }
 };

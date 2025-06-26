@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
+import { useNavigate } from 'react-router';
 
 const fields = [
   { type: 'title', label: 'Nuevo Terapista' },
@@ -12,7 +13,7 @@ const fields = [
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
-        required: true
+        required: true,
       },
       {
         name: 'document_number',
@@ -21,51 +22,51 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese el número de documento' 
+          {
+            required: true,
+            message: 'Por favor ingrese el número de documento',
           },
           {
             pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos'
-          }
-        ]
+            message: 'El documento debe tener 8 dígitos',
+          },
+        ],
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'paternal_lastname', 
-        label: 'Apellido Paterno', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'paternal_lastname',
+        label: 'Apellido Paterno',
+        type: 'text',
+        required: true,
+        span: 8,
       },
-      { 
-        name: 'maternal_lastname', 
-        label: 'Apellido Materno', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'maternal_lastname',
+        label: 'Apellido Materno',
+        type: 'text',
+        span: 8,
       },
-      { 
-        name: 'name', 
-        label: 'Nombre', 
-        type: 'text', 
-        required: true, 
-        span: 8 
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        span: 8,
       },
     ],
   },
   {
     type: 'customRow',
     fields: [
-      { 
-        name: 'birth_date', 
-        label: 'Fecha de Nacimiento', 
-        type: 'date', 
-        span: 8 
+      {
+        name: 'birth_date',
+        label: 'Fecha de Nacimiento',
+        type: 'date',
+        span: 8,
       },
       {
         name: 'sex',
@@ -76,13 +77,13 @@ const fields = [
           { value: 'F', label: 'Femenino' },
         ],
         span: 8,
-        required: true
+        required: true,
       },
-      { 
-        name: 'personal_reference', 
-        label: 'Referencia Personal', 
-        type: 'text', 
-        span: 8 
+      {
+        name: 'personal_reference',
+        label: 'Referencia Personal',
+        type: 'text',
+        span: 8,
       },
     ],
   },
@@ -97,31 +98,37 @@ const fields = [
         required: true,
         span: 8,
         rules: [
-          { 
-            required: true, 
-            message: 'Por favor ingrese su número telefónico' 
+          {
+            required: true,
+            message: 'Por favor ingrese su número telefónico',
           },
           () => ({
             validator(_, value) {
               if (!value) {
-                return Promise.reject(new Error('Por favor ingrese su teléfono'));
+                return Promise.reject(
+                  new Error('Por favor ingrese su teléfono'),
+                );
               }
               if (value.length < 9) {
-                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener 9 dígitos'),
+                );
               }
               if (value.length > 9) {
-                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener exactamente 9 dígitos'),
+                );
               }
               return Promise.resolve();
             },
           }),
-        ]
+        ],
       },
-      { 
-        name: 'email', 
-        label: 'Correo Electrónico', 
-        type: 'email', 
-        span: 16 
+      {
+        name: 'email',
+        label: 'Correo Electrónico',
+        type: 'email',
+        span: 16,
       },
     ],
   },
@@ -141,22 +148,28 @@ const fields = [
 
 const NewTherapist = () => {
   const { submitNewTherapist } = useStaff();
+  const navigate = useNavigate();
 
   const handleSubmit = async (formData) => {
     console.log('📝 Formulario enviado:', formData);
-    
+
     try {
       // Validación básica de campos requeridos
-      if (!formData.document_number || !formData.name || !formData.primary_phone) {
+      if (
+        !formData.document_number ||
+        !formData.name ||
+        !formData.primary_phone
+      ) {
         notification.error({
           message: 'Error',
-          description: 'Documento, nombre y teléfono son campos obligatorios'
+          description: 'Documento, nombre y teléfono son campos obligatorios',
         });
         return;
       }
 
       const result = await submitNewTherapist(formData);
       console.log('🎉 Terapeuta creado con éxito:', result);
+      navigate('/Inicio/terapeutas');
       return result;
     } catch (error) {
       console.error('❌ Error al crear terapeuta:', error);
@@ -164,13 +177,18 @@ const NewTherapist = () => {
     }
   };
 
+  const handleCancel = () => {
+    navigate('/Inicio/terapeutas');
+  };
+
   return (
-    <FormGenerator 
-      fields={fields} 
-      mode="create" 
+    <FormGenerator
+      fields={fields}
+      mode="create"
       onSubmit={handleSubmit}
+      onCancel={handleCancel}
       initialValues={{
-        document_type_id: 1 // Valor por defecto
+        document_type_id: 1, // Valor por defecto
       }}
     />
   );

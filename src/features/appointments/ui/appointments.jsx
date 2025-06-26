@@ -1,5 +1,5 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import { Button, Modal, Space, Spin } from 'antd';
+import { Button, Modal, Space, Spin, notification } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,10 @@ import ModeloTable from '../../../components/Table/Tabla';
 import { getAppointmentsByPatientId } from '../../history/service/historyService';
 import { useAppointments } from '../hook/appointmentsHook';
 import EditAppointment from '../ui/EditAppointment/EditAppointment'; // Importar el componente de edición
+import { deleteAppointment } from '../service/appointmentsService';
+import { useToast } from '../../../services/toastify/ToastContext';
+import { defaultConfig } from '../../../services/toastify/toastConfig';
+import { formatToastMessage } from '../../../utils/messageFormatter';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -22,6 +26,7 @@ export default function Appointments() {
     handlePageChange,
     setSearchTerm,
     loadPaginatedAppointmentsByDate,
+    loadAppointments,
   } = useAppointments();
 
   const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
@@ -38,6 +43,8 @@ export default function Appointments() {
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const [loadingPrintFichaId, setLoadingPrintFichaId] = useState(null);
   const [loadingPrintTicketId, setLoadingPrintTicketId] = useState(null);
+
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
@@ -179,8 +186,29 @@ export default function Appointments() {
         break;
       case 'delete':
         setLoadingDeleteId(record.id);
+        try {
+          const response = await deleteAppointment(record.id);
+          const backendMsg = response?.message || response?.msg;
+          showToast(
+            'cancelarCita',
+            backendMsg
+              ? formatToastMessage(
+                  backendMsg,
+                  defaultConfig.cancelarCita.message,
+                )
+              : undefined,
+          );
+          await loadAppointments();
+        } catch (error) {
+          showToast(
+            'error',
+            formatToastMessage(
+              error?.response?.data?.message,
+              defaultConfig.error.message,
+            ),
+          );
+        }
         setLoadingDeleteId(null);
-        loadPaginatedAppointmentsByDate(selectDate);
         break;
       case 'imprimir':
         setLoadingPrintFichaId(record.id);
@@ -350,12 +378,10 @@ export default function Appointments() {
         {appointmentIdToEdit && (
           <EditAppointment
             appointmentId={appointmentIdToEdit}
-            onEditSuccess={() => {
+            onEditSuccess={async () => {
               setIsEditModalOpen(false);
               setLoadingEditId(null);
-              setTimeout(() => {
-                loadPaginatedAppointmentsByDate(selectDate);
-              }, 300);
+              await loadAppointments();
             }}
           />
         )}
