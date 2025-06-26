@@ -11,6 +11,7 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
         const data = await getPaymentStatuses(); // Ya viene con value y label
         const formattedOptions = data.map((item) => ({
           ...item,
+          value: String(item.value), // Forzar a string
           label: <span style={{ color: '#fff' }}>{item.label}</span>,
         }));
         setOptions(formattedOptions);

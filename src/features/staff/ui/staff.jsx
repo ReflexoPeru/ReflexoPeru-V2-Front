@@ -67,13 +67,20 @@ export default function Staff() {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onClick={() => handleEdit(record)}
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setEditingTherapist(record);
+              try {
+                const freshTherapist = await getTherapistById(record.id);
+                setEditingTherapist(freshTherapist);
+              } finally {
+                setLoadingEditId(null);
+              }
+            }}
             disabled={loadingEditId === record.id}
           >
             {loadingEditId === record.id ? (
-              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
-                <Spin />
-              </ConfigProvider>
+              <Spin size="small" style={{ color: '#fff' }} />
             ) : (
               'Editar'
             )}

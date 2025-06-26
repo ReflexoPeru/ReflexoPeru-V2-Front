@@ -113,7 +113,7 @@ const InputField = ({
           name="payment_type_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
         >
-          <SelectPrices {...rest} onPriceChange={rest.onPriceChange} />
+          <SelectPrices {...rest} />
         </Form.Item>
       );
 
@@ -220,6 +220,43 @@ const InputField = ({
 
     case 'cita':
       return <CitaComponents {...rest} />;
+
+    case 'manualPayment':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Monto"
+          rules={[{ required: true, message: 'El monto es requerido' }]}
+        >
+          <Input
+            value={rest.value}
+            onChange={(e) =>
+              rest.form.setFieldsValue({ [rest.name]: e.target.value })
+            }
+            prefix="S/"
+            placeholder="S/ 0.00"
+          />
+        </Form.Item>
+      );
+
+    case 'paymentMethod':
+      return (
+        <Form.Item
+          name={rest.name}
+          label="Método de Pago"
+          rules={[
+            { required: true, message: 'El método de pago es requerido' },
+          ]}
+        >
+          <SelectPaymentStatus
+            value={rest.value}
+            onChange={(value) =>
+              rest.form.setFieldsValue({ [rest.name]: value })
+            }
+            placeholder="Selecciona método de pago"
+          />
+        </Form.Item>
+      );
 
     default:
       inputComponent = <Input {...inputProps} />;

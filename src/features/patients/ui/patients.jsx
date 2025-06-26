@@ -62,13 +62,20 @@ export default function Patients() {
               alignItems: 'center',
               justifyContent: 'center',
             }}
-            onClick={() => handleEdit(record)}
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setEditingPatient(record);
+              try {
+                const freshPatient = await getPatientById(record.id);
+                setEditingPatient(freshPatient);
+              } finally {
+                setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+              }
+            }}
             disabled={loadingEditId === record.id}
           >
             {loadingEditId === record.id ? (
-              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
-                <Spin />
-              </ConfigProvider>
+              <Spin size="small" style={{ color: '#fff' }} />
             ) : (
               'Editar'
             )}
