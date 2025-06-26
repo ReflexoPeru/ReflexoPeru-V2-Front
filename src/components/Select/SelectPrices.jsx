@@ -6,29 +6,41 @@ import { getPredeterminedPrices } from './SelectsApi';
 
 const { Option } = Select;
 
-const SelectPrices = ({ onChange, onPriceChange, value, ...rest }) => {
+const SelectPrices = ({
+  onChange,
+  onPriceChange,
+  value,
+  initialPrice = '',
+  ...rest
+}) => {
   const [prices, setPrices] = useState([]);
-  const [selectedPrice, setSelectedPrice] = useState('');
+  const [inputPrice, setInputPrice] = useState(initialPrice);
 
   useEffect(() => {
     const fetchPrices = async () => {
       const priceOptions = await getPredeterminedPrices();
       setPrices(priceOptions);
     };
-
     fetchPrices();
   }, []);
 
-  const handleSelectChange = (value) => {
-    const selected = prices.find((item) => item.value === value);
-    setSelectedPrice(selected?.price || '');
+  // Si cambia el initialPrice desde el padre, actualizar el input
+  useEffect(() => {
+    setInputPrice(initialPrice);
+  }, [initialPrice]);
 
-    if (onChange) {
-      onChange(value);
-    }
-    if (onPriceChange) {
-      onPriceChange(selected?.price || '');
-    }
+  const handleSelectChange = (selectedValue) => {
+    const selected = prices.find((item) => item.value === selectedValue);
+    const newPrice = selected?.price || '';
+    setInputPrice(newPrice);
+    if (onChange) onChange(selectedValue);
+    if (onPriceChange) onPriceChange(newPrice);
+  };
+
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setInputPrice(newValue);
+    if (onPriceChange) onPriceChange(newValue);
   };
 
   return (
@@ -64,6 +76,7 @@ const SelectPrices = ({ onChange, onPriceChange, value, ...rest }) => {
           style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
           onChange={handleSelectChange}
           value={value}
+          allowClear
           {...rest}
         >
           {prices.map((item) => (
@@ -80,16 +93,16 @@ const SelectPrices = ({ onChange, onPriceChange, value, ...rest }) => {
 
       <Input
         className={styles.inputStyle}
-        value={selectedPrice}
-        readOnly
+        value={inputPrice}
         prefix="S/"
+        onChange={handleInputChange}
         style={{
           height: '35px',
-          lineHeight: '40px', // Alineación vertical del texto
-          paddingTop: '0px', // Opcional: evita desalineación extra
-          paddingBottom: '0px', // Opcional: evita desalineación extra
+          lineHeight: '40px',
+          paddingTop: '0px',
+          paddingBottom: '0px',
           marginBottom: '-50px',
-          display: 'flex',
+          display: rest.hidePriceInput ? 'none' : 'flex',
           alignItems: 'center',
         }}
       />

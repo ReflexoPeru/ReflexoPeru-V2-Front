@@ -1,5 +1,5 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import { Button, Modal, Space } from 'antd';
+import { Button, Modal, Space, Spin } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -30,10 +30,14 @@ export default function Appointments() {
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [selectedFicha, setSelectedFicha] = useState(null);
   const [visitasFicha, setVisitasFicha] = useState(0);
-  
+
   // Estado para manejar el modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [appointmentIdToEdit, setAppointmentIdToEdit] = useState(null);
+  const [loadingEditId, setLoadingEditId] = useState(null);
+  const [loadingDeleteId, setLoadingDeleteId] = useState(null);
+  const [loadingPrintFichaId, setLoadingPrintFichaId] = useState(null);
+  const [loadingPrintTicketId, setLoadingPrintTicketId] = useState(null);
 
   useEffect(() => {
     loadPaginatedAppointmentsByDate(selectDate);
@@ -91,10 +95,24 @@ export default function Appointments() {
               backgroundColor: '#555555',
               color: '#fff',
               border: 'none',
+              minWidth: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
-            onClick={() => handleAction('edit', record)} // Llamar a la función de editar
+            onClick={async () => {
+              setLoadingEditId(record.id);
+              setAppointmentIdToEdit(record.id);
+              setIsEditModalOpen(true);
+              setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+            }}
+            disabled={loadingEditId === record.id}
           >
-            Editar
+            {loadingEditId === record.id ? (
+              <Spin size="small" style={{ color: '#fff' }} />
+            ) : (
+              'Editar'
+            )}
           </Button>
           <Button
             style={{
@@ -112,25 +130,30 @@ export default function Appointments() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => handlePrintFicha(record)}
+            onClick={() => handleAction('imprimir', record)}
+            disabled={loadingPrintFichaId === record.id}
           >
-            Imprimir
+            {loadingPrintFichaId === record.id ? (
+              <Spin size="small" />
+            ) : (
+              'Imprimir'
+            )}
           </Button>
-
           <Button
             style={{
               backgroundColor: '#69276F',
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => {
-              setSelectedAppointment(record);
-              setShowTicketModal(true);
-            }}
+            onClick={() => handleAction('boleta', record)}
+            disabled={loadingPrintTicketId === record.id}
           >
-            Imprimir Boleta
+            {loadingPrintTicketId === record.id ? (
+              <Spin size="small" />
+            ) : (
+              'Imprimir Boleta'
+            )}
           </Button>
-
           <Button
             style={{
               backgroundColor: '#FF3333',
@@ -138,35 +161,42 @@ export default function Appointments() {
               border: 'none',
             }}
             onClick={() => handleAction('delete', record)}
+            disabled={loadingDeleteId === record.id}
           >
-            Eliminar
+            {loadingDeleteId === record.id ? <Spin size="small" /> : 'Eliminar'}
           </Button>
         </Space>
       ),
     },
   ];
 
-  const handleAction = (action, record) => {
-    console.log(`${action} action for:`, record);
+  const handleAction = async (action, record) => {
     switch (action) {
       case 'edit':
-        setAppointmentIdToEdit(record.id); // Guardar el ID de la cita a editar
-        setIsEditModalOpen(true); // Abrir el modal de edición
+        setLoadingEditId(record.id);
+        setAppointmentIdToEdit(record.id);
+        setIsEditModalOpen(true);
+        break;
+      case 'delete':
+        setLoadingDeleteId(record.id);
+        setLoadingDeleteId(null);
+        loadPaginatedAppointmentsByDate(selectDate);
         break;
       case 'imprimir':
-        // Lógica para más info
+        setLoadingPrintFichaId(record.id);
+        await handlePrintFicha(record);
+        setLoadingPrintFichaId(null);
         break;
       case 'boleta':
+        setLoadingPrintTicketId(record.id);
         setSelectedAppointment(record);
         setShowTicketModal(true);
+        setLoadingPrintTicketId(null);
         break;
       case 'history':
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
           state: { appointment: record },
         });
-        break;
-      case 'delete':
-        // Lógica para eliminar
         break;
       default:
         break;
@@ -313,14 +343,17 @@ export default function Appointments() {
         open={isEditModalOpen}
         onCancel={() => setIsEditModalOpen(false)}
         footer={null}
-        width="70%"
+        width={730}
       >
         {appointmentIdToEdit && (
           <EditAppointment
             appointmentId={appointmentIdToEdit}
             onEditSuccess={() => {
               setIsEditModalOpen(false);
-              loadPaginatedAppointmentsByDate(selectDate); // Recargar citas después de editar
+              setLoadingEditId(null);
+              setTimeout(() => {
+                loadPaginatedAppointmentsByDate(selectDate);
+              }, 300);
             }}
           />
         )}
