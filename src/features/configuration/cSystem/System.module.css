@@ -9,32 +9,32 @@ body {
 }
 
 .layout {
+  overflow: hidden;
   display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 100%;
-  height: 90vh;
+  height: 100%;
+
   background-color: transparent;
 }
-
 
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
 }
-
 
 .container {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
 }
 
 .box {
   width: 65%;
   max-width: 650px;
-  height: 60%;
   padding: 30px;
   border-radius: 8px;
 
@@ -74,16 +74,19 @@ body {
   color: white;
 }
 
-.logoImage {
-  width: 85px;
-  height: 85px;
-  padding: 5px;
-  border: 2px solid green;
+/* .logoImage {
+  width: 60%;
+  height: 30%;
+
+  padding: 4px;
+  border: 2px solid #4CAF50;
   border-radius: 50%;
 
-  object-fit: contain;
+  object-fit: cover;
   background-color: #000;
-}
+
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+} */
 
 .uploadBtn {
   cursor: pointer;
@@ -127,6 +130,9 @@ body {
   background-color: #333;
 }
 
+.input:hover {
+  background-color: #444; /* Color de fondo al hacer hover */
+}
 .input:focus {
   background-color: #333;
   outline: none;
@@ -155,13 +161,4 @@ body {
 .changeBtn:hover {
   color: white;
   background-color: #20c55f; 
-}
-
-.layout {
-  display: flex;
-  align-items: center;      
-  justify-content: center;  
-
-  width: 100%;              
-  height: 100vh;            
 }

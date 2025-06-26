@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
-import { getPatientById } from '../../service/patientsService';
 
 // Reutilizamos los mismos campos del formulario de creación
 const fields = [
@@ -11,7 +10,7 @@ const fields = [
     type: 'customRow',
     fields: [
       {
-        name: 'document_type_id',
+        name: 'document_type',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -149,69 +148,71 @@ const fields = [
   },
 ];
 
-const EditPatient = ({ patient, onClose }) => {
+const EditPatient = ({ patient, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (patient) {
-      // Si no existen los campos individuales, los extraemos de full_name
-      let name = patient.name || '';
-      let paternal_lastname = patient.paternal_lastname || '';
-      let maternal_lastname = patient.maternal_lastname || '';
-      if (
-        (!name || !paternal_lastname || !maternal_lastname) &&
-        patient.full_name
-      ) {
-        const parts = patient.full_name.trim().split(' ');
-        if (parts.length >= 3) {
-          paternal_lastname = paternal_lastname || parts[0];
-          maternal_lastname = maternal_lastname || parts[1];
-          name = name || parts.slice(2).join(' ');
-        } else if (parts.length === 2) {
-          paternal_lastname = paternal_lastname || parts[0];
-          name = name || parts[1];
-        } else if (parts.length === 1) {
-          name = name || parts[0];
-        }
-      }
-      // Mapeo para el select en cascada: ids y nombres
-      const ubicacion = {
-        region_id: patient.region_id || null,
-        province_id: patient.province_id || null,
-        district_id: patient.district_id || null,
-      };
+  // Actualiza el formulario con los datos recibidos
+  const setFormWithPatient = (data) => {
+    if (!data) return;
+    // Usar document_type
+    const ubicacion = {
+      region_id: data.region,
+      province_id: data.province,
+      district_id: data.district,
+    };
+    if (ubicacion.region_id !== null)
+      ubicacion.region_id = String(ubicacion.region_id);
+    if (ubicacion.province_id !== null)
+      ubicacion.province_id = String(ubicacion.province_id);
+    if (ubicacion.district_id !== null)
+      ubicacion.district_id = String(ubicacion.district_id);
+    const formData = {
+      name: data.name || '',
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
+      document_type:
+        data.document_type !== undefined && data.document_type !== null
+          ? String(data.document_type)
+          : undefined,
+      document_number: data.document_number,
+      personal_reference: data.personal_reference,
+      birth_date: data.birth_date ? dayjs(data.birth_date) : null,
+      sex: data.sex,
+      primary_phone: data.primary_phone,
+      secondary_phone: data.secondary_phone,
+      email: data.email,
+      occupation: data.ocupation,
+      address: data.address,
+      country_id: data.country_id,
+      ubicacion,
+    };
+    form.setFieldsValue(formData);
+    console.log('Valores seteados en el form:', formData);
+  };
 
-      const formData = {
-        name,
-        paternal_lastname,
-        maternal_lastname,
-        document_type_id: patient.document_type_id || '',
-        document_number: patient.document_number || '',
-        personal_reference: patient.personal_reference || '',
-        birth_date: patient.birth_date ? dayjs(patient.birth_date) : null,
-        sex: patient.sex || '',
-        primary_phone: patient.primary_phone || '',
-        secondary_phone: patient.secondary_phone || '',
-        email: patient.email || '',
-        occupation: patient.ocupation || patient.occupation || '',
-        address: patient.address || '',
-        country_id: patient.country_id || '',
-        ubicacion,
-      };
-      form.setFieldsValue(formData);
-    }
-  }, [patient, form]);
+  // Inicializa el formulario con los datos de la prop patient
+  useEffect(() => {
+    setFormWithPatient(patient);
+  }, [patient]);
 
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      await handleUpdatePatient(patient.id, formData);
+      // Convertir el tipo de documento a número y renombrar el campo
+      const dataToSend = {
+        ...formData,
+        document_type_id: Number(formData.document_type),
+      };
+      delete dataToSend.document_type;
+
+      await handleUpdatePatient(patient.id, dataToSend);
       notification.success({
         message: 'Éxito',
         description: 'Paciente actualizado correctamente',
       });
+      if (onSave) onSave();
       onClose();
     } catch (error) {
       notification.error({
@@ -226,7 +227,6 @@ const EditPatient = ({ patient, onClose }) => {
 
   if (!patient) return null;
 
-  // Mostrar el nombre completo en el título
   const modalTitle =
     patient.full_name ||
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();

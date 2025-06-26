@@ -8,201 +8,229 @@ import {
   Image,
 } from '@react-pdf/renderer';
 
-const logo = '/MiniLogoReflexo.png';
+const defaultLogo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const defaultClinicName = 'Reflexo Perú';
+
+// Paleta de colores pastel
 const pastelGreen = '#95e472';
 const darkGreen = '#2d5a3d';
-const clinicName = 'Reflexo Perú';
+const lightBackground = '#f8f9fa';
 
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
-    padding: 40,
+    padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 11,
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100%',
+    fontSize: 9,
   },
+  // Cabecera
   header: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 18,
-    marginTop: 0,
+    marginBottom: 25,
   },
   logo: {
-    width: 90,
-    height: 90,
-    marginBottom: 8,
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    borderWidth: 5,
+    borderColor: '#4CAF50',
+    borderStyle: 'solid',
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
+  headerTitles: {
+    marginLeft: 15,
+  },
+  clinicName: {
     color: darkGreen,
-    marginBottom: 2,
-    letterSpacing: 1,
-    textAlign: 'center',
+    fontSize: 22,
+    fontFamily: 'Helvetica-Bold',
   },
-  subtitle: {
-    fontSize: 14,
+  reportTitle: {
     color: '#444',
-    marginBottom: 2,
-    textAlign: 'center',
+    fontSize: 14,
   },
-  date: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 10,
-    textAlign: 'center',
+  headerInfo: {
+    marginLeft: 'auto',
+    textAlign: 'right',
+  },
+  infoText: {
+    fontSize: 9,
+    color: '#555',
+    marginBottom: 2,
   },
   divider: {
     borderBottomWidth: 2,
     borderBottomColor: pastelGreen,
-    marginVertical: 12,
-    marginHorizontal: 0,
+    marginVertical: 15,
   },
+  // Resumen
+  summaryContainer: {
+    backgroundColor: lightBackground,
+    padding: 15,
+    borderRadius: 8,
+    border: `1px solid #e0e0e0`,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  summaryLabel: {
+    fontSize: 12,
+    color: '#555',
+    marginBottom: 4,
+  },
+  summaryValue: {
+    fontSize: 18,
+    color: darkGreen,
+    fontFamily: 'Helvetica-Bold',
+  },
+  // Estilos de la tabla
   table: {
-    marginTop: 10,
-    borderWidth: 1.5,
-    borderColor: pastelGreen,
+    border: `1px solid #e0e0e0`,
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: pastelGreen,
+    padding: 10,
+  },
+  headerCell: {
+    color: '#fff',
+    fontFamily: 'Helvetica-Bold',
+    fontSize: 11,
   },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 28,
+    padding: 10,
+    borderBottom: `1px solid #e0e0e0`,
   },
-  tableHeader: {
-    backgroundColor: pastelGreen,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 13,
-    textAlign: 'center',
-    padding: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#b6e6b0',
+  rowOdd: {
+    backgroundColor: lightBackground,
   },
-  cell: {
-    flex: 1,
-    padding: 8,
-    fontSize: 11,
-    color: '#222',
+  tableCell: {
+    fontSize: 10,
+  },
+  cellIndex: {
+    flex: 0.5,
     textAlign: 'center',
   },
   cellName: {
-    flex: 4,
-    padding: 8,
-    fontSize: 11,
-    color: '#222',
-    textAlign: 'left',
+    flex: 3,
+    fontFamily: 'Helvetica-Bold',
   },
   cellCount: {
     flex: 1,
-    padding: 8,
-    fontSize: 11,
-    color: '#222',
     textAlign: 'center',
   },
-  rowEven: {
-    backgroundColor: '#f8f8f8',
-  },
-  rowOdd: {
-    backgroundColor: '#fff',
-  },
-  totalRow: {
+  // Pie de tabla
+  tableFooter: {
     flexDirection: 'row',
+    padding: 10,
     backgroundColor: '#eaffdf',
-    minHeight: 32,
-    borderTopWidth: 2,
-    borderTopColor: pastelGreen,
+    borderTop: `2px solid ${pastelGreen}`,
   },
-  totalLabel: {
-    flex: 5,
-    padding: 8,
-    fontWeight: 'bold',
-    color: '#222',
+  footerLabel: {
+    flex: 3.5, // Suma de flex de N° y Nombre
     textAlign: 'right',
-    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: darkGreen,
+    fontSize: 12,
   },
-  totalValue: {
+  footerValue: {
     flex: 1,
-    padding: 8,
-    fontWeight: 'bold',
-    color: pastelGreen,
     textAlign: 'center',
-    fontSize: 13,
+    fontFamily: 'Helvetica-Bold',
+    color: darkGreen,
+    fontSize: 12,
   },
-  content: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-  },
+  // Pie de página del documento
   footer: {
-    marginTop: 'auto',
+    position: 'absolute',
+    bottom: 20,
+    left: 30,
+    right: 30,
     textAlign: 'center',
-    fontSize: 10,
-    color: '#888',
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    fontSize: 8,
+    color: '#999',
+    borderTop: `1px solid #e0e0e0`,
     paddingTop: 8,
   },
 });
 
-const DailyTherapistReportPDF = ({ data, date }) => {
+const DailyTherapistReportPDF = ({ data, date, logoUrl, companyInfo }) => {
   const therapists = data?.therapists_appointments || [];
-  const total = data?.total_appointments_count || 0;
+  const totalAppointments = data?.total_appointments_count || 0;
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
+  const clinicName = companyInfo?.company_name || defaultClinicName;
+  const logo = logoUrl || defaultLogo;
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.title}>{clinicName}</Text>
-          <Text style={styles.subtitle}>
-            Reporte de Atenciones Diarias x Terapeuta
-          </Text>
-          <Text style={styles.date}>Fecha: {date.format('DD/MM/YYYY')}</Text>
-        </View>
-        <View style={styles.divider} />
-        <View style={styles.content}>
-          <View style={styles.table}>
-            <View style={styles.tableRow}>
-              <Text style={[styles.cell, styles.tableHeader, { flex: 0.7 }]}>
-                N°
-              </Text>
-              <Text style={[styles.cellName, styles.tableHeader]}>Nombre</Text>
-              <Text style={[styles.cellCount, styles.tableHeader]}>
-                Cantidad
-              </Text>
-            </View>
-            {therapists.map((t, idx) => (
-              <View
-                style={[
-                  styles.tableRow,
-                  idx % 2 === 0 ? styles.rowEven : styles.rowOdd,
-                ]}
-                key={t.id}
-              >
-                <Text style={[styles.cell, { flex: 0.7 }]}>{idx + 1}</Text>
-                <Text style={styles.cellName}>
-                  {`${t.paternal_lastname} ${t.maternal_lastname} ${t.name}`}
-                </Text>
-                <Text style={styles.cellCount}>{t.appointments_count}</Text>
-              </View>
-            ))}
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>{total}</Text>
-            </View>
+          <Image src={logo} style={styles.logo} />
+          <View style={styles.headerTitles}>
+            <Text style={styles.clinicName}>{clinicName}</Text>
+            <Text style={styles.reportTitle}>
+              Reporte de Atenciones por Terapeuta
+            </Text>
+          </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.infoText}>
+              Fecha del Reporte: {date.format('DD/MM/YYYY')}
+            </Text>
+            <Text style={styles.infoText}>Generado: {fechaHora}</Text>
           </View>
         </View>
+
+        <View style={styles.summaryContainer}>
+          <Text style={styles.summaryLabel}>Total de Atenciones en el Día</Text>
+          <Text style={styles.summaryValue}>{totalAppointments}</Text>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.table}>
+          <View style={styles.tableHeader}>
+            <Text
+              style={[styles.headerCell, { flex: 0.5, textAlign: 'center' }]}
+            >
+              N°
+            </Text>
+            <Text style={[styles.headerCell, { flex: 3 }]}>Terapeuta</Text>
+            <Text style={[styles.headerCell, { flex: 1, textAlign: 'center' }]}>
+              Atenciones
+            </Text>
+          </View>
+          {therapists.map((t, idx) => (
+            <View
+              style={[styles.tableRow, idx % 2 !== 0 ? styles.rowOdd : {}]}
+              key={t.id}
+            >
+              <Text style={[styles.tableCell, styles.cellIndex]}>
+                {idx + 1}
+              </Text>
+              <Text style={[styles.tableCell, styles.cellName]}>
+                {`${t.paternal_lastname} ${t.maternal_lastname}, ${t.name}`}
+              </Text>
+              <Text style={[styles.tableCell, styles.cellCount]}>
+                {t.appointments_count}
+              </Text>
+            </View>
+          ))}
+          <View style={styles.tableFooter}>
+            <Text style={styles.footerLabel}>Total General:</Text>
+            <Text style={styles.footerValue}>{totalAppointments}</Text>
+          </View>
+        </View>
+
         <Text style={styles.footer}>
-          {clinicName} | Generado el {fechaHora}
+          {clinicName} - Documento generado automáticamente.
         </Text>
       </Page>
     </Document>
   );
 };
 
-export default DailyTherapistReportPDF;
+export default React.memo(DailyTherapistReportPDF);

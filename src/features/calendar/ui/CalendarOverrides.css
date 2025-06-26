@@ -50,84 +50,100 @@
   box-shadow: var(--shadow-strong);
 }
 
+/* === Estilos Globales para react-big-calendar === */
+.rbc-calendar {
+  overflow: hidden; 
+
+  height: 100%;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg); 
+
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+
+  background: var(--bg-primary);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-strong);
+}
+
 /* === Barra superior del calendario === */
 .rbc-toolbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; 
 
   margin-bottom: 24px;
   padding: 20px 24px;
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md); 
 
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   backdrop-filter: blur(10px);
 }
 
-.rbc-toolbar-label { 
+.rbc-toolbar-label {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em; 
 
   background: linear-gradient(135deg, var(--primary-green), #00E693);
   -webkit-background-clip: text;
-  background-clip: text;
+  background-clip: text; 
 
   -webkit-text-fill-color: transparent;
 }
 
 .rbc-btn-group {
   display: flex;
-  gap: 6px;
+  gap: 6px; 
 
   padding: 4px;
   border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md); 
 
   background: var(--bg-quaternary);
 }
 
 .rbc-toolbar button {
-  cursor: pointer;
+  cursor: pointer; 
 
-  position: relative;
+  position: relative; 
 
-  overflow: hidden;
+  overflow: hidden; 
 
   padding: 10px 20px;
   border: none !important;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-sm); 
 
   font-family: 'Inter', sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text-tertiary) !important;
+  color: var(--text-tertiary) !important; 
 
-  background: transparent !important;
+  background: transparent !important; 
 
   transition: all var(--transition-normal);
 }
 
 .rbc-toolbar button::before {
-  content: '';
+  content: ''; 
 
   position: absolute;
   z-index: -1;
   top: 0;
   right: 0;
   bottom: 0;
-  left: 0;
+  left: 0; 
 
   opacity: 0;
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)); 
 
   transition: opacity var(--transition-normal);
 }
 
+/* Estilos para hover */
 .rbc-toolbar button:hover {
   transform: translateY(-1px);
   color: var(--text-primary) !important;
@@ -138,13 +154,51 @@
   opacity: 1;
 }
 
-.rbc-toolbar button.rbc-active {
+/* === ESTILOS PARA BOTONES === */
+.rbc-toolbar button.rbc-active,
+.rbc-toolbar button[aria-pressed="true"] {
+  transform: translateY(-1px);
+  font-weight: 600;
   color: var(--text-primary) !important;
   box-shadow: var(--shadow-glow);
 }
 
-.rbc-toolbar button.rbc-active::before {
+.rbc-toolbar button.rbc-active::before,
+.rbc-toolbar button[aria-pressed="true"]::before {
   opacity: 1;
+}
+
+/* Estilos adicionales para asegurar que el botón activo se mantenga resaltado */
+.rbc-toolbar button.rbc-active:not(:hover),
+.rbc-toolbar button[aria-pressed="true"]:not(:hover) {
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)) !important;
+}
+
+/* Si react-big-calendar usa clases específicas para cada vista */
+.rbc-toolbar .rbc-btn-group button[class*="month"].rbc-active,
+.rbc-toolbar .rbc-btn-group button[class*="week"].rbc-active,
+.rbc-toolbar .rbc-btn-group button[class*="day"].rbc-active,
+.rbc-toolbar .rbc-btn-group button[class*="agenda"].rbc-active {
+  transform: translateY(-1px);
+
+  font-weight: 600;
+  color: var(--text-primary) !important;
+
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)) !important;
+  box-shadow: var(--shadow-glow);
+}
+
+.rbc-toolbar .rbc-btn-group > button:first-child.rbc-active, 
+.rbc-toolbar .rbc-btn-group > button:nth-child(2).rbc-active, 
+.rbc-toolbar .rbc-btn-group > button:nth-child(3).rbc-active, 
+.rbc-toolbar .rbc-btn-group > button:last-child.rbc-active { 
+  transform: translateY(-1px);
+
+  font-weight: 600;
+  color: var(--text-primary) !important;
+
+  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)) !important;
+  box-shadow: var(--shadow-glow);
 }
 
 /* === Cabeceras de días === */
@@ -156,7 +210,7 @@
 
   font-size: 1rem;
   font-weight: 600;
-  color: var(--primary-green);
+  color: var(--text-secondary);
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -203,7 +257,9 @@
 }
 
 /* === Eventos === */
-.rbc-event {
+.rbc-event,
+.pending-event,
+.confirmed-event {
   position: relative;
 
   overflow: hidden;
@@ -213,39 +269,16 @@
   border-radius: var(--radius-sm);
 
   font-size: 0.85em;
-  font-weight: 500;
-  color: white !important;
+  font-weight: bold;
+  color: #fff !important;
 
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover)) !important;
+  background: #4CAF50 !important;
   box-shadow: var(--shadow-soft);
 
   transition: all var(--transition-normal);
 }
 
-.rbc-event::before {
-  content: '';
-
-  position: absolute;
-  top: 0;
-  left: -100%;
-
-  width: 100%;
-  height: 100%;
-
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-
-  transition: left var(--transition-slow);
-}
-
-.rbc-event:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: var(--shadow-glow);
-}
-
-.rbc-event:hover::before {
-  left: 100%;
-}
-
+.rbc-event::before,
 .rbc-event-content {
   position: relative;
   z-index: 1;
@@ -255,7 +288,6 @@
 /* === Día actual resaltado === */
 .rbc-today {
   position: relative;
-  border: 1px solid var(--primary-green);
   background: var(--primary-green-light);
 }
 
@@ -642,4 +674,43 @@
 
   opacity: 0.8;
   background: var(--bg-primary);
+}
+
+.pending-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+  border: none;
+  border-radius: 4px;
+
+  font-weight: bold;
+  color: #fff !important;
+
+  background-color: #FFA500 !important;
+}
+
+.confirmed-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+  border: none;
+  border-radius: 4px;
+
+  font-weight: bold;
+  color: #fff !important;
+
+  background-color: #4CAF50 !important;
+}
+
+/* Colores personalizados para eventos en la vista Agenda */
+.rbc-agenda-event-cell.pending-event,
+.rbc-agenda-event-cell.confirmed-event {
+  border-radius: 4px;
+  font-weight: bold;
+  color: #fff !important;
+  background-color: #4CAF50 !important;
 }

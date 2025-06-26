@@ -2,10 +2,12 @@
   max-width: 1400px;
   margin: 20px auto;
   padding: 0;
+
 }
 
 .card {
   border-radius: 10px;
+  background: #161616;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
@@ -16,7 +18,7 @@
 
   font-size: 28px;
   font-weight: 700;
-  color: #4caf50;
+  color: #fff;
   text-align: center;
   letter-spacing: 1px;
 }
@@ -26,7 +28,7 @@
 
   font-size: 20px;
   font-weight: 700;
-  color: #eee;
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -41,7 +43,7 @@
 
 .formItem label {
   font-weight: 600;
-  color: #4caf50 !important;
+  color: #fff !important;
 }
 
 .input, .textarea, .select {
@@ -148,12 +150,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
+
+  min-width: 900px;
   margin-bottom: 15px;
 }
 
 .physicalInfoItem {
   flex: 1;
   min-width: 150px;
+  max-width: 200px;
 }
 
 .bottomSection {
@@ -224,7 +229,7 @@
   }
   
   .physicalInfoRow {
-    flex-wrap: wrap;
+    min-width: 0;
   }
   
   .physicalInfoItem {
@@ -285,4 +290,36 @@
   .actionButtons button {
     width: 100%;
   }
+}
+
+.ticketModalLoading {
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  background: #222;
+}
+
+.flexRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.flexItem {
+  flex: 1;
+  min-width: 220px;
+  margin-bottom: 0 !important;
+}
+
+.flexItem textarea {
+  resize: vertical;
+  min-height: 80px !important;
+  max-height: 120px !important;
+}
+
+.therapistRow {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  align-items: center;
 }

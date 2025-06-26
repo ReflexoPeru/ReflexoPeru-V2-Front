@@ -4,9 +4,11 @@ import {
   getStaff,
   searchStaff,
   deleteTherapist,
+  updateTherapist,
 } from '../service/staffService';
 import dayjs from 'dayjs';
 import { useToast } from '../../../services/toastify/ToastContext';
+import { formatToastMessage } from '../../../utils/messageFormatter';
 
 export const useStaff = () => {
   const [staff, setStaff] = useState([]);
@@ -32,7 +34,13 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      showToast('error', 'Error al cargar terapeutas');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al cargar terapeutas',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -50,7 +58,13 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      showToast('error', 'Error al buscar terapeutas');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al buscar terapeutas',
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -59,8 +73,11 @@ export const useStaff = () => {
   const handleDeleteTherapist = async (id) => {
     try {
       setLoading(true);
-      await deleteTherapist(id);
-      showToast('success', 'Terapeuta eliminado correctamente');
+      const response = await deleteTherapist(id);
+      showToast(
+        'exito',
+        response.message || 'Terapeuta eliminado correctamente',
+      );
 
       // Actualización optimista
       setStaff((prevStaff) =>
@@ -78,10 +95,66 @@ export const useStaff = () => {
         await loadStaff(pagination.currentPage);
       }
     } catch (error) {
-      showToast('error', 'Error al eliminar terapeuta');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al eliminar terapeuta',
+        ),
+      );
       console.error('Error deleting therapist:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateTherapist = async (therapistId, formData) => {
+    try {
+      const payload = {
+        document_number: formData.document_number,
+        paternal_lastname:
+          formData.paternal_lastname || formData.paternal_lastName,
+        maternal_lastname:
+          formData.maternal_lastname || formData.maternal_lastName,
+        name: formData.name,
+        personal_reference:
+          formData.personal_reference || formData.referencia || null,
+        birth_date: formData.birth_date
+          ? dayjs(formData.birth_date).format('YYYY-MM-DD')
+          : null,
+        sex: formData.sex,
+        primary_phone: formData.primary_phone,
+        secondary_phone: formData.secondary_phone || null,
+        email: formData.email || null,
+        address: formData.address,
+        document_type_id: formData.document_type_id,
+        country_id: 1,
+        region_id: formData.region_id || formData.ubicacion?.region_id || null,
+        province_id:
+          formData.province_id || formData.ubicacion?.province_id || null,
+        district_id:
+          formData.district_id || formData.ubicacion?.district_id || null,
+      };
+
+      await updateTherapist(therapistId, payload);
+      showToast('actualizarTerapeuta');
+
+      // Recargar los datos actualizados
+      if (searchTerm.trim()) {
+        await searchStaffByTerm(searchTerm.trim());
+      } else {
+        await loadStaff(pagination.currentPage);
+      }
+    } catch (error) {
+      console.error('Error actualizando terapeuta:', error);
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'Error al actualizar terapeuta',
+        ),
+      );
+      throw error;
     }
   };
 
@@ -112,10 +185,16 @@ export const useStaff = () => {
 
     try {
       const result = await createTherapist(payload);
-      showToast('success', 'Terapeuta registrado correctamente');
+      showToast('nuevoTerapeuta');
       return result;
     } catch (error) {
-      showToast('error', 'No se pudo crear el terapeuta');
+      showToast(
+        'error',
+        formatToastMessage(
+          error.response?.data?.message,
+          'No se pudo crear el terapeuta',
+        ),
+      );
       throw error;
     }
   };
@@ -147,6 +226,7 @@ export const useStaff = () => {
     error,
     pagination,
     submitNewTherapist,
+    handleUpdateTherapist,
     handlePageChange: loadStaff,
     setSearchTerm,
     handleDeleteTherapist,

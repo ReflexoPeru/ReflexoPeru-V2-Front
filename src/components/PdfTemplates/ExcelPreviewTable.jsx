@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Table } from 'antd';
 
 const pastelGreen = '#95e472';
@@ -53,7 +53,26 @@ const columns = [
   },
 ];
 
-const ExcelPreviewTable = ({ data }) => {
+const ExcelPreviewTable = ({
+  data,
+  pagination: controlledPagination,
+  onPaginationChange,
+}) => {
+  const [localPagination, setLocalPagination] = useState({
+    current: 1,
+    pageSize: 20,
+  });
+
+  // Usar paginación controlada si se pasa, si no usar local
+  const pagination = controlledPagination || localPagination;
+  const handleTableChange = (newPagination) => {
+    if (onPaginationChange) {
+      onPaginationChange(newPagination);
+    } else {
+      setLocalPagination(newPagination);
+    }
+  };
+
   return (
     <div
       style={{
@@ -68,7 +87,14 @@ const ExcelPreviewTable = ({ data }) => {
         columns={columns}
         dataSource={data?.appointments || []}
         rowKey="patient_id"
-        pagination={{ pageSize: 20 }}
+        pagination={{
+          ...pagination,
+          showSizeChanger: true,
+          pageSizeOptions: ['10', '20', '50', '100'],
+          position: ['bottomCenter'],
+          showTotal: false,
+        }}
+        onChange={handleTableChange}
         scroll={{ x: 900, y: 500 }}
         bordered
         size="middle"
@@ -78,7 +104,27 @@ const ExcelPreviewTable = ({ data }) => {
       <style>{`
         .row-even td { background: #f8f8f8 !important; }
         .row-odd td { background: #fff !important; }
-        .ant-table-thead > tr > th { background: ${pastelGreen} !important; color: #222 !important; font-weight: bold; }
+        .ant-table-thead > tr > th { 
+          background: ${pastelGreen} !important; 
+          color: #222 !important; 
+          font-weight: bold !important;
+          border: none !important;
+        }
+        .ant-table-tbody > tr > td {
+          border: 1px solid #d9d9d9 !important;
+        }
+        .ant-pagination-item-active {
+          border-color: ${pastelGreen} !important;
+        }
+        .ant-pagination-item-active a {
+          color: ${darkGreen} !important;
+        }
+        .ant-pagination-item:hover {
+          border-color: ${pastelGreen} !important;
+        }
+        .ant-pagination-item:hover a {
+          color: ${darkGreen} !important;
+        }
       `}</style>
     </div>
   );
