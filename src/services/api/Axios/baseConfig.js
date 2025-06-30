@@ -4,7 +4,8 @@ import {
   removeLocalStorage,
 } from '../../../utils/localStorageUtility';
 
-const BaseURL = 'https://reflexoperu-v2.marketingmedico.vip/backend/api/';
+const BaseURL =
+  'https://reflexoperu-v2.marketingmedico.vip/backend/public/api/';
 
 const instance = axios.create({
   baseURL: BaseURL,
