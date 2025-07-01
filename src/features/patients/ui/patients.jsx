@@ -7,12 +7,15 @@ import ModeloTable from '../../../components/Table/Tabla';
 import { usePatients } from '../hook/patientsHook';
 import EditPatient from '../ui/EditPatient/EditPatient';
 import { getPatientById } from '../service/patientsService';
+import InfoPatient from './InfoPatient/infopatient';
 
 export default function Patients() {
   const navigate = useNavigate();
   const [editingPatient, setEditingPatient] = useState(null);
   const [loadingEditId, setLoadingEditId] = useState(null);
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
+  const [patientInfo, setPatientInfo] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
   const {
     patients,
     loading,
@@ -48,6 +51,11 @@ export default function Patients() {
     }
   };
 
+  const handleInfo = (record) => {
+    setPatientInfo(record);
+    setShowInfoModal(true);
+  };
+
   const handleAction = (action, record) => {
     switch (action) {
       case 'edit':
@@ -81,7 +89,7 @@ export default function Patients() {
             )}
           </Button>
         );
-      /*       case 'info':
+      case 'info':
         return (
           <Button
             style={{
@@ -89,11 +97,11 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => navigate(`info/${record.id}`)}
+            onClick={() => handleInfo(record)}
           >
             Más Info
           </Button>
-        ); */
+        );
       case 'history':
         return (
           <Button
@@ -212,6 +220,14 @@ export default function Patients() {
           patient={editingPatient}
           onClose={() => setEditingPatient(null)}
           onSave={() => handlePageChange(pagination.currentPage)}
+        />
+      )}
+
+      {patientInfo && (
+        <InfoPatient
+          patient={patientInfo}
+          open={showInfoModal}
+          onClose={() => setShowInfoModal(false)}
         />
       )}
     </div>

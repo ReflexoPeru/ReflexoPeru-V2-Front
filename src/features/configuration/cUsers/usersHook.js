@@ -6,14 +6,20 @@ export const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalItems: 0,
+    pageSize: 20,
+  });
   const { showToast } = useToast();
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = 1, perPage = 20) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getUsers();
-      const formattedData = (data || []).map((user) => ({
+      const res = await getUsers(page, perPage);
+      const data = res.data || [];
+      const formattedData = data.map((user) => ({
         id: user.id,
         document_number: user.document_number,
         name: user.name,
@@ -31,6 +37,11 @@ export const useUsers = () => {
         country: user.country,
       }));
       setUsers(formattedData);
+      setPagination({
+        currentPage: res.current_page || 1,
+        totalItems: res.total || formattedData.length,
+        pageSize: res.per_page || 20,
+      });
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
       setError('Error al cargar usuarios');
@@ -40,10 +51,14 @@ export const useUsers = () => {
     }
   };
 
+  const handlePageChange = (page, pageSize = pagination.pageSize) => {
+    fetchUsers(page, pageSize);
+  };
+
   const addUser = async (userData) => {
     try {
       await createUser(userData);
-      await fetchUsers();
+      await fetchUsers(pagination.currentPage, pagination.pageSize);
       showToast('exito', 'Usuario creado correctamente');
       return true;
     } catch (error) {
@@ -59,7 +74,7 @@ export const useUsers = () => {
   const editUser = async (id, userData) => {
     try {
       await updateUser(id, userData);
-      await fetchUsers();
+      await fetchUsers(pagination.currentPage, pagination.pageSize);
       showToast('actualizadouser', 'Usuario actualizado correctamente');
       return true;
     } catch (error) {
@@ -75,7 +90,7 @@ export const useUsers = () => {
   const removeUser = async (id) => {
     try {
       await deleteUser(id);
-      await fetchUsers();
+      await fetchUsers(pagination.currentPage, pagination.pageSize);
       showToast('pagoelminado', 'Usuario eliminado correctamente');
       return true;
     } catch (error) {
@@ -89,8 +104,19 @@ export const useUsers = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(1, pagination.pageSize);
+    // eslint-disable-next-line
   }, []);
 
-  return { users, loading, error, addUser, editUser, removeUser, fetchUsers };
+  return {
+    users,
+    loading,
+    error,
+    addUser,
+    editUser,
+    removeUser,
+    fetchUsers,
+    pagination,
+    handlePageChange,
+  };
 };
