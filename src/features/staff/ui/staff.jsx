@@ -146,13 +146,13 @@ export default function Staff() {
 
   const columns = [
     {
-      title: 'Documento',
+      title: 'Nro. Documento',
       dataIndex: 'document_number',
       key: 'document_number',
-      width: '110px',
+      width: '150px',
     },
     {
-      title: 'Nombre',
+      title: 'Apellidos y Nombres',
       dataIndex: 'full_name',
       key: 'name',
     },

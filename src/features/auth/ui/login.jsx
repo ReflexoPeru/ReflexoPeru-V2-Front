@@ -141,9 +141,9 @@ function Login() {
                 </div>
               </Form.Item>
 
-              <a className={styles.forgot} onClick={onForgotPassword}>
+              {/* <a className={styles.forgot} onClick={onForgotPassword}>
                 Olvide mi Contraseña
-              </a>
+              </a> */}
               <Form.Item className={styles.buttonContainer}>
                 <Button
                   type="primary"
