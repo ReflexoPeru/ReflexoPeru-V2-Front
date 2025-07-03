@@ -21,11 +21,21 @@ export const useDailyTherapistReport = () => {
       // Formatear la fecha a YYYY-MM-DD
       const formattedDate = date.format('YYYY-MM-DD');
       const res = await getAppointmentsforTherapist(formattedDate);
-      setData(res);
-
-      if (Array.isArray(res) && res.length === 0) {
+      // Si la respuesta es el objeto vacío esperado, no setear data
+      if (
+        res &&
+        typeof res === 'object' &&
+        Array.isArray(res.therapists_appointments) &&
+        res.therapists_appointments.length === 0 &&
+        res.total_appointments_count === 0
+      ) {
         showToast('error', 'No se encontraron datos para generar el reporte.');
+        setData(null);
+      } else if (Array.isArray(res) && res.length === 0) {
+        showToast('error', 'No se encontraron datos para generar el reporte.');
+        setData(null);
       } else {
+        setData(res);
         showToast('reporteGenerado');
       }
     } catch (err) {

@@ -129,7 +129,15 @@ const SelectSex = ({ value, onChange, ...rest }) => {
 };
 
 const Users = () => {
-  const { users, loading, addUser, editUser, removeUser } = useUsers();
+  const {
+    users,
+    loading,
+    addUser,
+    editUser,
+    removeUser,
+    pagination,
+    handlePageChange,
+  } = useUsers();
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(null);
@@ -424,7 +432,17 @@ const Users = () => {
           </Button>
         </div>
 
-        <ModeloTable columns={userColumns} data={users} loading={loading} />
+        <ModeloTable
+          columns={userColumns}
+          data={users}
+          loading={loading}
+          pagination={{
+            current: pagination.currentPage,
+            total: pagination.totalItems,
+            pageSize: pagination.pageSize,
+            onChange: handlePageChange,
+          }}
+        />
 
         <BaseModal
           visible={modalVisible}
