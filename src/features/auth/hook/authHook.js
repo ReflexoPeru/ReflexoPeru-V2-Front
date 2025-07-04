@@ -103,6 +103,9 @@ export const useAuth = () => {
       setIsAuthenticated(false);
       setUserRole(null);
       navigate('/');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     }
   };
 

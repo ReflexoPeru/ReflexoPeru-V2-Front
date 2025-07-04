@@ -5,16 +5,84 @@ import {
   PhoneOutlined,
   HomeOutlined,
 } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import {
+  getDepartaments,
+  getProvinces,
+  getDistricts,
+} from '../../../../components/Select/SelectsApi';
 
 const InfoPatient = ({ patient, open, onClose }) => {
   if (!patient) return null;
 
   // Construir nombre completo
   const fullName =
+    patient.full_name ||
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
 
-  // Avatar: usar foto si hay, si no, icono
+  // Avatar: usar foto si hay, si no, icono. Evitar deformación del icono.
   const avatarUrl = patient.photo_url || null;
+  const avatarProps = avatarUrl
+    ? { src: avatarUrl }
+    : { icon: <UserOutlined style={{ fontSize: 38 }} /> };
+
+  // Estado para ubigeo
+  const [ubigeo, setUbigeo] = useState({
+    departamento: '-',
+    provincia: '-',
+    distrito: '-',
+  });
+
+  useEffect(() => {
+    async function fetchUbigeo() {
+      if (
+        patient.region ||
+        patient.region_id ||
+        patient.departamento_id ||
+        patient.province ||
+        patient.province_id ||
+        patient.provincia_id ||
+        patient.district ||
+        patient.district_id ||
+        patient.distrito_id
+      ) {
+        const region_id =
+          patient.region || patient.region_id || patient.departamento_id;
+        const province_id =
+          patient.province || patient.province_id || patient.provincia_id;
+        const district_id =
+          patient.district || patient.district_id || patient.distrito_id;
+        let departamento = '-';
+        let provincia = '-';
+        let distrito = '-';
+        if (region_id) {
+          const departamentos = await getDepartaments();
+          const found = departamentos.find(
+            (d) => String(d.id) === String(region_id),
+          );
+          if (found) departamento = found.name;
+        }
+        if (province_id) {
+          const provincias = await getProvinces(region_id);
+          const found = provincias.find(
+            (p) => String(p.id) === String(province_id),
+          );
+          if (found) provincia = found.name;
+        }
+        if (district_id) {
+          const distritos = await getDistricts(province_id);
+          const found = distritos.find(
+            (d) => String(d.id) === String(district_id),
+          );
+          if (found) distrito = found.name;
+        }
+        setUbigeo({ departamento, provincia, distrito });
+      } else {
+        setUbigeo({ departamento: '-', provincia: '-', distrito: '-' });
+      }
+    }
+    if (open) fetchUbigeo();
+  }, [open, patient]);
 
   return (
     <Modal
@@ -49,9 +117,15 @@ const InfoPatient = ({ patient, open, onClose }) => {
       >
         <Avatar
           size={80}
-          src={avatarUrl}
-          icon={<UserOutlined />}
-          style={{ background: '#4caf50', color: '#fff' }}
+          {...avatarProps}
+          style={{
+            background: '#4caf50',
+            color: '#fff',
+            objectFit: 'cover',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         />
         <div>
           <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>
@@ -77,7 +151,10 @@ const InfoPatient = ({ patient, open, onClose }) => {
         </Descriptions.Item>
         <Descriptions.Item label={<PhoneOutlined />}>
           {' '}
-          {patient.phone || patient.phone1 || 'No registrado'}{' '}
+          {patient.primary_phone ||
+            patient.phone ||
+            patient.phone1 ||
+            'No registrado'}{' '}
         </Descriptions.Item>
         <Descriptions.Item label="Sexo">
           {' '}
@@ -97,23 +174,19 @@ const InfoPatient = ({ patient, open, onClose }) => {
         </Descriptions.Item>
         <Descriptions.Item label="Departamento">
           {' '}
-          {patient.departamento_name || patient.region_name || '-'}{' '}
+          {ubigeo.departamento}{' '}
         </Descriptions.Item>
         <Descriptions.Item label="Provincia">
           {' '}
-          {patient.provincia_name || '-'}{' '}
+          {ubigeo.provincia}{' '}
         </Descriptions.Item>
         <Descriptions.Item label="Distrito">
           {' '}
-          {patient.distrito_name || '-'}{' '}
+          {ubigeo.distrito}{' '}
         </Descriptions.Item>
         <Descriptions.Item label="Ocupación">
           {' '}
-          {patient.ocupation || '-'}{' '}
-        </Descriptions.Item>
-        <Descriptions.Item label="Condición de salud">
-          {' '}
-          {patient.healthCondition || '-'}{' '}
+          {patient.ocupation || patient.occupation || '-'}{' '}
         </Descriptions.Item>
       </Descriptions>
     </Modal>
