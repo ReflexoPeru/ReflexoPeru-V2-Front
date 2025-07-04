@@ -6,9 +6,12 @@ import BtnLogOut from './ButtonLogOut/btnLogOut';
 import { useAuth } from '../../routes/AuthContext';
 import { useUser } from '../../context/UserContext';
 import { useCompany } from '../../context/CompanyContext';
+import { useNavigate, useLocation } from 'react-router';
 
 export default function Dashboard() {
   const { userRole } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { profile, photoUrl, loading: userLoading } = useUser();
   const { companyInfo, logoUrl, loading: companyLoading } = useCompany();
