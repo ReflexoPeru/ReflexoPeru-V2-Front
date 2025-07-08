@@ -2,3 +2,47 @@
   background-color: #272727; /* color para filas pares */
 }
 
+.custom-table {
+  border: 1px solid #000;
+}
+.custom-table .ant-table-thead > tr > th {
+  background-color: var(--bg-quaternary) !important;
+  color: var(--text-primary) !important;
+}
+.row-light {
+  background-color: var(--bg-senary) !important;
+}
+.row-dark {
+  background-color: var(--bg-quinary) !important;
+}
+.custom-table .ant-table-tbody > tr > td {
+  border-color: #000 !important;
+  border-bottom: 1px solid #000 !important;
+}
+
+[data-theme="light"] .custom-table,
+[data-theme="light"] .custom-table .ant-table-thead > tr > th,
+[data-theme="light"] .custom-table .ant-table-tbody > tr > td {
+  color: #1A1A1A !important;
+  background-color: #fff !important;
+  border-color: #000 !important;
+}
+[data-theme="light"] .row-light {
+  background-color: #FAFAFA !important;
+}
+[data-theme="light"] .row-dark {
+  background-color: #F5F5F5 !important;
+}
+
+[data-theme="light"] .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  background: #fff;
+}
+[data-theme="light"] .ant-table-body::-webkit-scrollbar-thumb {
+  background: #232323;
+  border-radius: 4px;
+}
+[data-theme="light"] .ant-table-body::-webkit-scrollbar-track {
+  background: #fff;
+}
+

@@ -1,5 +1,5 @@
+import { ConfigProvider, Pagination } from "antd";
 import React from "react";
-import { Pagination, ConfigProvider } from "antd";
 
 const ModeloPagination = ({ total, current, pageSize, onChange }) => {
     const handleChange = (page, size) => {

@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { Table, ConfigProvider, Spin } from 'antd';
-import estilos from './Tabla.module.css';
-import ModeloPagination from './Pagination/Pagination.jsx';
 import { Package } from '@phosphor-icons/react';
+import { ConfigProvider, Spin, Table } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { themeTokensDark, themeTokensLight, useTheme } from '../../context/ThemeContext';
+import ModeloPagination from './Pagination/Pagination.jsx';
+import estilos from './Tabla.module.css';
 
 
 const ModeloTable = ({ 
@@ -19,6 +20,33 @@ const ModeloTable = ({
 
   const containerRef = useRef(null);
   const [tableHeight, setTableHeight] = useState('auto');
+  const { theme } = useTheme();
+  const themeConfig = theme === 'dark'
+    ? themeTokensDark
+    : {
+        ...themeTokensLight,
+        token: {
+          ...themeTokensLight.token,
+          colorBgContainer: '#fff',
+          colorText: '#1A1A1A',
+          colorBorder: '#000',
+          colorFillAlter: '#FAFAFA',
+          headerBg: '#232323',
+          headerColor: '#fff',
+          rowHoverBg: '#C8F7D8',
+        },
+        components: {
+          Table: {
+            colorBgContainer: '#fff',
+            colorFillAlter: '#FAFAFA',
+            colorText: '#1A1A1A',
+            borderColor: '#000',
+            headerBg: '#232323',
+            headerColor: '#fff',
+            rowHoverBg: '#C8F7D8',
+          },
+        },
+      };
 
   // Transformar columnas para centrar contenido
   const centeredColumns = columns.map((column, index, arr) => {
@@ -75,39 +103,20 @@ const ModeloTable = ({
 
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Table: {
-            colorBgContainer: '#1e1e1e',
-            colorFillAlter: '#2c2c2c',
-            colorText: '#ffffff',
-            borderColor: '#444',
-            headerBg: '#272727',
-            headerColor: '#ffffff',
-            headerBorderRadius: 8,
-            headerSplitColor: 'none',
-            rowHoverBg: '#333',
-            cellFontSize: 12,
-            cellPaddingBlock: 12,
-            cellPaddingInline: 16,
-            cellFontFamily: 'Arial, Helvetica, sans-serif',
-          },
-        },
-      }}
+    <ConfigProvider theme={themeConfig}
       renderEmpty={() => {
-          <div style={{ 
-            color: '#a0a0a0', 
-            padding: '16px', 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
-            <Package size={40} />
-            <span>No hay datos disponibles</span>
-          </div>
+        <div style={{ 
+          color: '#a0a0a0', 
+          padding: '16px', 
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <Package size={40} />
+          <span>No hay datos disponibles</span>
+        </div>
       }}
     >
       <div
@@ -130,9 +139,7 @@ const ModeloTable = ({
               rowKey="id"
               pagination={false}
               scroll={{ y: tableHeight, x: 'max-content' }}
-              rowClassName={(__, index) =>
-                index % 2 === 0 ? estilos.zebraRow : ''
-              }
+              rowClassName={(record, index) => index % 2 === 0 ? 'row-light' : 'row-dark'}
               loading={{
                 spinning: loading,
                 indicator: (
@@ -143,6 +150,7 @@ const ModeloTable = ({
                   />
                 )
               }}
+              className="custom-table"
             />
         </div>
         <div>

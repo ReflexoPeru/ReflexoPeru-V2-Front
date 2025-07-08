@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { Layout, Typography } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
-import { CaretLeft, ArrowLeft } from '@phosphor-icons/react';
-import styles from './Header.module.css';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import styles from './Header.module.css';
 dayjs.locale('es');
 
 const { Header } = Layout;
@@ -29,7 +29,7 @@ const CustomHeader = ({ title, isBack = true }) => {
     navigate(-1);
   };
   return (
-    <div className={styles.headerContent}>
+    <div className={`${styles.header} ${styles.headerContent}`}>
       <div className={styles.headerLeft}>
         {isBack && (
           <button className={styles.backButton} onClick={back}>

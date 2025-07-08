@@ -1,5 +1,6 @@
+import { ConfigProvider, Input } from "antd";
 import React from "react";
-import { Input, ConfigProvider } from "antd";
+import { useTheme } from '../../context/ThemeContext';
 
 const CustomSearch = ({
     placeholder = "Buscar...",  
@@ -12,20 +13,32 @@ const CustomSearch = ({
         onSearch(e.target.value);
     };
 
+    const { theme } = useTheme();
+    const inputTheme = theme === 'dark'
+        ? {
+            colorTextPlaceholder: '#AAAAAA',
+            colorBgContainer: '#333333',
+            colorText: '#FFFFFF',
+            colorBorder: '#444444',
+            borderRadius: 4,
+            hoverBorderColor: '#555555',
+            activeBorderColor: '#00AA55',
+        }
+        : {
+            colorTextPlaceholder: '#444444',
+            colorBgContainer: '#fff',
+            colorText: '#1A1A1A',
+            colorBorder: '#CCCCCC',
+            borderRadius: 4,
+            hoverBorderColor: '#4CAF50',
+            activeBorderColor: '#4CAF50',
+        };
 
     return (
         <ConfigProvider
         theme={{
             components: {
-            Input: {
-                colorTextPlaceholder: "#AAAAAA", 
-                colorBgContainer: "#333333",    
-                colorText: "#FFFFFF",           
-                colorBorder: "#444444",         
-                borderRadius: 4,                
-                hoverBorderColor: "#555555",    
-                activeBorderColor: "#00AA55",  
-            },
+            Input: inputTheme,
             },
         }}
         >
@@ -36,6 +49,8 @@ const CustomSearch = ({
             style={{ 
             width,
             boxShadow: "none",
+            background: theme === 'light' ? '#fff' : '#333',
+            color: theme === 'light' ? '#1A1A1A' : '#fff',
             ...style 
             }}
         />

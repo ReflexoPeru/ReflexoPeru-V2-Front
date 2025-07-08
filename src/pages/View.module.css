@@ -11,6 +11,9 @@
   background-color: #1e1e1e;
 }
 
+[data-theme="light"] .SideBar {
+  background-color: rgb(211, 211, 211) !important;
+}
 
 .Content {
   overflow-y: auto; /* Permite scroll solo en el área de contenido */
@@ -32,6 +35,11 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+[data-theme="light"] .Header {
+  background-color: #4CAF50 !important;
+  padding: 0 !important;
+}
+
 .Outlet {
   display: flex;
   flex: 1;
@@ -40,4 +48,11 @@
 
   background-color: #121212;
   /* Puede crecer y hacer que .Content tenga scroll */
+}
+
+[data-theme="light"] .Content {
+  background-color: rgb(219, 219, 219) !important;
+}
+[data-theme="light"] .Outlet {
+  background-color: rgb(219, 219, 219) !important;
 }

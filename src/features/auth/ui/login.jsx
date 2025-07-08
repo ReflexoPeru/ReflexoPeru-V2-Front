@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, ConfigProvider, message } from 'antd';
-import styles from './Login.module.css';
-import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
-import { Eye, EyeSlash, Envelope } from '@phosphor-icons/react';
-import { initializeParticles } from '../../../hooks/loginpacticles';
+import { Envelope, Eye, EyeSlash } from '@phosphor-icons/react';
+import { Button, ConfigProvider, Form, Input } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import logo from '../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
+import { useTheme } from '../../../context/ThemeContext';
+import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useToast } from '../../../services/toastify/ToastContext';
-import { useAuth } from '../hook/authHook';
 import { removeLocalStorage } from '../../../utils/localStorageUtility';
+import { useAuth } from '../hook/authHook';
+import styles from './Login.module.css';
 
 function Login() {
   // Estados de login
@@ -23,6 +24,9 @@ function Login() {
 
   //Navegación
   const navigate = useNavigate();
+
+  //Theme
+  const { theme, toggleTheme } = useTheme();
 
   //////////Funciones simples///////////////////
 
@@ -159,6 +163,24 @@ function Login() {
         </div>
         <div className={styles.footer}>
           © 2025 Centro de Reflexoterapia - Todos los derechos reservados
+          <div style={{ marginTop: 12 }}>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              style={{
+                background: 'none',
+                border: '1px solid #888',
+                color: 'inherit',
+                borderRadius: 6,
+                padding: '6px 16px',
+                cursor: 'pointer',
+                marginLeft: 8,
+                fontSize: 14,
+              }}
+            >
+              {theme === 'dark' ? 'Tema Claro' : 'Tema Oscuro'}
+            </button>
+          </div>
         </div>
       </div>
     </ConfigProvider>

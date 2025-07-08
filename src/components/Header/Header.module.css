@@ -69,3 +69,18 @@
   text-transform: capitalize; 
   opacity: 0.8;
 }
+
+[data-theme="light"] .header {
+  background-color: #4CAF50 !important;
+}
+[data-theme="light"] .headerTitle {
+  color: #fff !important;
+}
+[data-theme="light"] .headerTime,
+[data-theme="light"] .headerDate {
+  color: #fff !important;
+}
+
+[data-theme="light"] .dashboardUserName p {
+  color: #1A1A1A !important;
+}

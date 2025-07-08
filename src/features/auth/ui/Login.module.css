@@ -135,3 +135,37 @@ a {
 .forgot:hover{
   color: #454746;
 }
+
+[data-theme="light"] body {
+  background: var(--bg-senary) !important;
+}
+[data-theme="light"] .particlesJs {
+  background-color: var(--bg-senary) !important;
+}
+[data-theme="light"] .loginForm {
+  background: var(--bg-quaternary) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+}
+[data-theme="light"] .inputContainer {
+  background-color: var(--bg-tertiary) !important;
+}
+[data-theme="light"] .inputContainer:hover {
+  background-color: var(--bg-quinary) !important;
+}
+[data-theme="light"] .loginForm h2 {
+  color: var(--text-secondary) !important;
+}
+[data-theme="light"] .loginForm button {
+  background-color: var(--primary-green) !important;
+  color: #fff !important;
+}
+[data-theme="light"] .inputContainer input {
+  color: var(--text-primary) !important;
+}
+[data-theme="light"] .inputContainer input::placeholder {
+  color: var(--text-quaternary) !important;
+}
+[data-theme="light"] .forgot {
+  color: var(--text-senary) !important;
+}

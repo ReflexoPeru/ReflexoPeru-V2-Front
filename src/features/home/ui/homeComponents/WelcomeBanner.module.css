@@ -4,7 +4,8 @@
 
     text-align: left;
 
-    background-color: #1E1E1E;
+    background-color: var(--bg-quaternary);
+    color: var(--text-primary);
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -18,12 +19,12 @@
 
     font-size: clamp(1.5rem, 4vw, 2.5rem);
     font-weight: bold;
-    color: #fff;
+    color: var(--text-primary);
 }
 
 /* Versículo adaptable */
 .subtitle {
     flex-wrap: wrap;
     font-size: clamp(1rem, 2.5vw, 1.25rem);
-    color: #ccc;
+    color: var(--text-secondary);
 }

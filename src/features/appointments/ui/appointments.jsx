@@ -259,6 +259,7 @@ export default function Appointments() {
 
   return (
     <div
+      className="appointmentsMainContainer"
       style={{
         height: '100%',
         paddingTop: '50px',

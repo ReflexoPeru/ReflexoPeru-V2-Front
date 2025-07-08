@@ -72,3 +72,15 @@
         text-align: center;
     }
 }
+
+[data-theme="light"] .dashboardContainer,
+[data-theme="light"] .dashboardHeader {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .dashboardContainer {
+  background-color: rgb(92, 92, 92) !important;
+}
+[data-theme="light"] .dashboardHeader {
+  background-color: rgb(92, 92, 92) !important;
+}

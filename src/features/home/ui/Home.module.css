@@ -26,3 +26,16 @@
     padding: 20px 15px;
   }
 }
+
+.card,
+.quickAccess,
+.todayAppointments {
+  background-color: var(--bg-quaternary);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .card,
+[data-theme="light"] .quickAccess,
+[data-theme="light"] .todayAppointments {
+  color: #1A1A1A !important;
+}

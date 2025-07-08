@@ -1,12 +1,12 @@
-import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
+import { Button, ConfigProvider, notification, Space, Spin } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
 import { usePatients } from '../hook/patientsHook';
-import EditPatient from '../ui/EditPatient/EditPatient';
 import { getPatientById } from '../service/patientsService';
+import EditPatient from '../ui/EditPatient/EditPatient';
 
 export default function Patients() {
   const navigate = useNavigate();
@@ -172,6 +172,7 @@ export default function Patients() {
 
   return (
     <div
+      className="patientsMainContainer"
       style={{
         height: '100%',
         paddingTop: '50px',

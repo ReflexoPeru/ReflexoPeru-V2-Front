@@ -74,3 +74,8 @@
         padding: 0.7rem;
     }
 }
+
+.quickAccessCard {
+  background-color: var(--bg-quaternary);
+  color: var(--text-primary);
+}

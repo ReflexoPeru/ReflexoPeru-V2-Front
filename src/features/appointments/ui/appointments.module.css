@@ -3,3 +3,7 @@
     align-items: center;
     justify-content: center; 
 }
+
+[data-theme="light"] .appointmentsMainContainer {
+  background-color: #fff !important;
+}

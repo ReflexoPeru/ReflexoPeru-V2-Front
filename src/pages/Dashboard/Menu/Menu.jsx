@@ -1,22 +1,24 @@
 import {
   AddressBook,
+  CalendarDots,
   ChartBar,
   FileDoc,
   House,
   Nut,
   Person,
-  CalendarDots,
 } from '@phosphor-icons/react';
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
+import { useTheme } from '../../../context/ThemeContext';
 import { useAuth } from '../../../routes/AuthContext';
 import Style from './Menu.module.css';
 export default function MenuDashboard() {
   const { userRole } = useAuth();
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleResize = () => {
@@ -185,7 +187,7 @@ export default function MenuDashboard() {
 
   ////////////////////////////////////////////////////////
   return (
-    <>
+    <div className={Style.menuContainer}>
       <ConfigProvider
         theme={{
           components: {
@@ -223,6 +225,24 @@ export default function MenuDashboard() {
           onOpenChange={onOpenChange}
         />
       </ConfigProvider>
-    </>
+      <div style={{ marginTop: 'auto', padding: 16, textAlign: 'center' }}>
+        <button className={Style.buttontheme}
+          type="button"
+          onClick={toggleTheme}
+          style={{
+            background: '#ffffff',
+            border: '1px solid #888',
+            color: 'black',
+            fontWeight: 'bolder',
+            borderRadius: 6,
+            padding: '6px 16px',
+            cursor: 'pointer',
+            fontSize: 14,
+          }}
+        >
+          {theme === 'dark' ? 'Tema Claro' : 'Tema Oscuro'}
+        </button>
+      </div>
+    </div>
   );
 }
