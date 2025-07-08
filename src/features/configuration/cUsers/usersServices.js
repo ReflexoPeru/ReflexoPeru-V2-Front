@@ -6,10 +6,10 @@ import {
   del,
 } from '../../../services/api/Axios/MethodsGeneral';
 
-export const getUsers = async () => {
+export const getUsers = async (page = 1, perPage = 20) => {
   try {
-    const res = await get(`users`);
-    return res.data.data;
+    const res = await get(`users?page=${page}&per_page=${perPage}`);
+    return res.data;
   } catch (error) {
     console.error('Error en getUsers:', error);
     throw error;

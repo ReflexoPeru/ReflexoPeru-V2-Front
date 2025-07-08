@@ -7,8 +7,9 @@ import { useTheme } from '../../../context/ThemeContext';
 import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { removeLocalStorage } from '../../../utils/localStorageUtility';
-import { useAuth } from '../hook/authHook';
+
 import styles from './Login.module.css';
+import { useAuth as useAuthentication } from '../../../routes/AuthContext';
 
 function Login() {
   // Estados de login
@@ -43,6 +44,12 @@ function Login() {
     removeLocalStorage('name');
     return cleanup;
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/Inicio', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   //////////////////////////////////////////////
 
@@ -145,9 +152,9 @@ function Login() {
                 </div>
               </Form.Item>
 
-              <a className={styles.forgot} onClick={onForgotPassword}>
+              {/* <a className={styles.forgot} onClick={onForgotPassword}>
                 Olvide mi Contraseña
-              </a>
+              </a> */}
               <Form.Item className={styles.buttonContainer}>
                 <Button
                   type="primary"

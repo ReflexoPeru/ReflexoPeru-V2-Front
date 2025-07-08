@@ -29,6 +29,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 import { PDFViewer } from '@react-pdf/renderer';
+import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -126,6 +127,7 @@ const PatientHistory = () => {
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [loadingTicket, setLoadingTicket] = useState(false);
+  const [showFichaModal, setShowFichaModal] = useState(false);
 
   const { id } = useParams();
   const location = useLocation();
@@ -342,6 +344,7 @@ const PatientHistory = () => {
     try {
       await updateHistory(historyId, historyPayload);
       await updateAppointment(appointmentId, appointmentPayload);
+      navigate(-1);
     } catch (e) {
       console.error('Error actualizando historial y cita:', e);
     }
@@ -628,6 +631,15 @@ const PatientHistory = () => {
                   }}
                   disabled={!selectedAppointment}
                 >
+                  Generar Boleta
+                </Button>
+                <Button
+                  className={styles.printButton}
+                  onClick={() => {
+                    setShowFichaModal(true);
+                  }}
+                  disabled={!selectedAppointment}
+                >
                   Generar Ticket
                 </Button>
                 <Button
@@ -715,6 +727,24 @@ const PatientHistory = () => {
                   paymentType:
                     selectedAppointment.payment_type?.name || 'Sin especificar',
                 }}
+              />
+            </PDFViewer>
+          )}
+        </Modal>
+        <Modal
+          open={showFichaModal}
+          onCancel={() => setShowFichaModal(false)}
+          footer={null}
+          width={420}
+          bodyStyle={{ padding: 0 }}
+        >
+          {selectedAppointment && patientHistory?.data && (
+            <PDFViewer width="100%" height={600} showToolbar={true}>
+              <FichaPDF
+                cita={selectedAppointment}
+                paciente={patientHistory.data.patient}
+                visitas={appointments.length}
+                historia={patientHistory.data}
               />
             </PDFViewer>
           )}
