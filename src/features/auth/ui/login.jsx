@@ -7,15 +7,17 @@ import { useTheme } from '../../../context/ThemeContext';
 import { initializeParticles } from '../../../hooks/loginpacticles';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { removeLocalStorage } from '../../../utils/localStorageUtility';
+import { useAuth as useAuthContext } from '../../../routes/AuthContext';
 
 import styles from './Login.module.css';
-import { useAuth as useAuthentication } from '../../../routes/AuthContext';
+import { useAuth } from '../hook/authHook';
 
 function Login() {
   // Estados de login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
+  const { isAuthenticated } = useAuthContext();
 
   // Definir el estado para la visibilidad de la contraseña
   const [passwordVisible, setPasswordVisible] = useState(false);

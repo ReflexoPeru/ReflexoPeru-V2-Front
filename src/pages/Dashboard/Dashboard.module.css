@@ -79,8 +79,8 @@
 }
 
 [data-theme="light"] .dashboardContainer {
-  background-color: rgb(92, 92, 92) !important;
+  background-color: #a0a3a0 !important;
 }
 [data-theme="light"] .dashboardHeader {
-  background-color: rgb(92, 92, 92) !important;
+  background-color: #a0a3a0 !important;
 }
