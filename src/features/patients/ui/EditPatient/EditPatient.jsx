@@ -207,6 +207,11 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       };
       delete dataToSend.document_type;
 
+      // Solo enviar email si cambió
+      if (formData.email === patient.email) {
+        delete dataToSend.email;
+      }
+
       await handleUpdatePatient(patient.id, dataToSend);
       notification.success({
         message: 'Éxito',

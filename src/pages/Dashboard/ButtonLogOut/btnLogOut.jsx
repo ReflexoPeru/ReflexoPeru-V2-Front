@@ -10,6 +10,7 @@ export default function BtnLogOut() {
     setLoading(true);
     try {
       await logOut();
+      // window.location.reload(); // Eliminado para no recargar la página
     } catch (error) {
       console.error('Error durante el logout:', error);
     } finally {

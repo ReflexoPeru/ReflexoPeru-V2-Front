@@ -8,6 +8,7 @@ import { useState } from 'react';
 import EditTherapist from './EditTherapist/EditTherapist';
 import { getTherapistById } from '../service/staffService';
 import { LoadingOutlined } from '@ant-design/icons';
+import InfoTherapist from './infoTherapist/infoTherapist';
 
 const whiteSpinIndicator = (
   <LoadingOutlined style={{ fontSize: 20, color: '#fff' }} spin />
@@ -26,6 +27,8 @@ export default function Staff() {
   const [editingTherapist, setEditingTherapist] = useState(null);
   const [loadingEditId, setLoadingEditId] = useState(null);
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
+  const [therapistInfo, setTherapistInfo] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // Nuevo handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
@@ -51,6 +54,11 @@ export default function Staff() {
     } finally {
       setLoadingDeleteId(null);
     }
+  };
+
+  const handleInfo = (record) => {
+    setTherapistInfo(record);
+    setShowInfoModal(true);
   };
 
   const handleAction = (action, record) => {
@@ -94,7 +102,7 @@ export default function Staff() {
               color: '#fff',
               border: 'none',
             }}
-            onClick={() => navigate(`info/${record.id}`)}
+            onClick={() => handleInfo(record)}
           >
             Más Info
           </Button>
@@ -138,13 +146,13 @@ export default function Staff() {
 
   const columns = [
     {
-      title: 'Documento',
+      title: 'Nro. Documento',
       dataIndex: 'document_number',
       key: 'document_number',
-      width: '110px',
+      width: '150px',
     },
     {
-      title: 'Nombre',
+      title: 'Apellidos y Nombres',
       dataIndex: 'full_name',
       key: 'name',
     },
@@ -203,6 +211,14 @@ export default function Staff() {
           therapist={editingTherapist}
           onClose={() => setEditingTherapist(null)}
           onSave={() => handlePageChange(pagination.currentPage)}
+        />
+      )}
+
+      {therapistInfo && (
+        <InfoTherapist
+          therapist={therapistInfo}
+          open={showInfoModal}
+          onClose={() => setShowInfoModal(false)}
         />
       )}
     </div>

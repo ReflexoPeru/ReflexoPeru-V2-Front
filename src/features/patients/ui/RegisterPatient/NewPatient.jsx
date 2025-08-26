@@ -1,6 +1,7 @@
 import { notification } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
+import { useNavigate } from 'react-router';
 
 const fields = [
   { type: 'title', label: 'Nuevo Paciente' },
@@ -104,13 +105,19 @@ const fields = [
           () => ({
             validator(_, value) {
               if (!value) {
-                return Promise.reject(new Error('Por favor ingrese su teléfono'));
+                return Promise.reject(
+                  new Error('Por favor ingrese su teléfono'),
+                );
               }
               if (value.length < 9) {
-                return Promise.reject(new Error('El teléfono debe tener 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener 9 dígitos'),
+                );
               }
               if (value.length > 9) {
-                return Promise.reject(new Error('El teléfono debe tener exactamente 9 dígitos'));
+                return Promise.reject(
+                  new Error('El teléfono debe tener exactamente 9 dígitos'),
+                );
               }
               return Promise.resolve();
             },
@@ -142,10 +149,15 @@ const fields = [
 
 const NewPatient = ({ onSubmit, onCancel }) => {
   const { submitNewPatient } = usePatients();
+  const navigate = useNavigate();
 
   const handleSubmit = async (formData) => {
     try {
-      if (!formData.document_number || !formData.name || !formData.primary_phone) {
+      if (
+        !formData.document_number ||
+        !formData.name ||
+        !formData.primary_phone
+      ) {
         notification.error({
           message: 'Error',
           description: 'Documento, nombre y teléfono son campos obligatorios',
@@ -171,8 +183,8 @@ const NewPatient = ({ onSubmit, onCancel }) => {
         description: 'Paciente creado correctamente',
       });
 
-      onSubmit(result);
-      onCancel();
+      if (onSubmit) onSubmit(result);
+      navigate('/Inicio/pacientes');
 
       return result;
     } catch (error) {
@@ -199,10 +211,15 @@ const NewPatient = ({ onSubmit, onCancel }) => {
     }
   };
 
+  const handleCancel = () => {
+    if (onCancel) onCancel();
+    navigate('/Inicio/pacientes');
+  };
+
   return (
     <FormGenerator
       fields={fields}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       mode="create"
       onSubmit={handleSubmit}
       initialValues={{

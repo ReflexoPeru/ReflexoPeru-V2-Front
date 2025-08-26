@@ -209,6 +209,11 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
       };
       delete dataToSend.document_type;
 
+      // Solo enviar email si cambió
+      if (formData.email === therapist.email) {
+        delete dataToSend.email;
+      }
+
       await handleUpdateTherapist(therapist.id, dataToSend);
 
       notification.success({

@@ -18,21 +18,27 @@ const styles = StyleSheet.create({
   },
   center: {
     textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   bold: {
     fontWeight: 'bold',
     fontSize: 13,
+    letterSpacing: 1.2,
+  },
+  labelBold: {
+    fontWeight: 'bold',
+    fontSize: 12,
+    letterSpacing: 1.1,
   },
   line: {
-    marginVertical: 8,
+    marginVertical: 10,
     borderBottomWidth: 1.2,
     borderBottomColor: '#000',
     width: '100%',
     alignSelf: 'center',
   },
   lineDouble: {
-    marginVertical: 8,
+    marginVertical: 10,
     borderBottomWidth: 2.2,
     borderBottomColor: '#000',
     width: '100%',
@@ -41,7 +47,7 @@ const styles = StyleSheet.create({
   table: {
     display: 'table',
     width: '100%',
-    marginVertical: 8,
+    marginVertical: 10,
     borderStyle: 'solid',
     borderWidth: 1,
     borderColor: '#000',
@@ -60,6 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     textAlign: 'center',
     fontSize: 12,
+    letterSpacing: 1.1,
   },
   tableCell: {
     flex: 1,
@@ -68,47 +75,65 @@ const styles = StyleSheet.create({
     borderRightColor: '#000',
     textAlign: 'center',
     fontSize: 13,
+    letterSpacing: 1.1,
   },
   lastCell: {
     borderRightWidth: 0,
   },
   totalBlock: {
-    marginTop: 7,
-    marginBottom: 8,
+    marginTop: 12,
+    marginBottom: 12,
     backgroundColor: '#f5f5f5',
     borderRadius: 4,
-    padding: 6,
+    padding: 8,
     textAlign: 'center',
   },
   total: {
     fontWeight: 'bold',
     fontSize: 15,
     textAlign: 'center',
-    letterSpacing: 1,
+    letterSpacing: 1.5,
   },
   small: {
-    fontSize: 11,
+    fontSize: 13,
     textAlign: 'center',
-    marginTop: 7,
+    marginTop: 10,
     color: '#333',
+    letterSpacing: 1.1,
+    fontWeight: 'bold',
   },
   spaceBlock: {
-    height: 10,
+    height: 12,
   },
   spaceBlockBig: {
-    height: 18,
+    height: 22,
   },
   contact: {
     fontSize: 11,
     color: '#222',
     marginBottom: 2,
+    letterSpacing: 1.1,
   },
   footer: {
-    marginTop: 12,
+    marginTop: 16,
     textAlign: 'center',
     fontSize: 10,
     color: '#888',
-    letterSpacing: 0.5,
+    letterSpacing: 1.1,
+  },
+  field: {
+    fontWeight: 'bold',
+  },
+  headerLine: {
+    textAlign: 'center',
+    marginBottom: 6,
+    letterSpacing: 1.1,
+  },
+  headerLineBold: {
+    textAlign: 'center',
+    marginBottom: 8,
+    fontWeight: 'bold',
+    letterSpacing: 1.2,
   },
 });
 
@@ -141,34 +166,24 @@ const TicketPDF = ({
   <Document>
     <Page size="A6" style={styles.page} wrap={false}>
       <View style={styles.center} wrap={false}>
-        <Text
-          style={{
-            ...styles.bold,
-            fontSize: getFontSize(company.name, 13, 10, 22),
-          }}
-        >
-          {company.name}
-        </Text>
-        <Text style={styles.contact}>{company.address}</Text>
-        <Text style={styles.contact}>Tel: {company.phone}</Text>
-        <Text style={styles.contact}>{company.email}</Text>
+        <Text style={styles.bold}>{company.name}</Text>
+        <Text style={styles.headerLine}>{company.address}</Text>
+        <Text style={styles.headerLine}>Tel: {company.phone}</Text>
+        <Text style={styles.headerLine}>{company.email}</Text>
         <View style={styles.spaceBlock} />
-        <Text>{company.city}</Text>
-        <Text>{company.exonerated}</Text>
-        <Text>{company.di}</Text>
+        <Text style={styles.headerLine}>{company.city}</Text>
+        <Text style={styles.headerLine}>{company.exonerated}</Text>
+        <Text style={styles.headerLine}>{company.di}</Text>
         <View style={styles.spaceBlock} />
-        <Text style={{ marginTop: 2 }}>TICKET N° {ticket.number}</Text>
-        <Text>Fecha: {ticket.date}</Text>
-        <Text
-          style={{
-            marginBottom: 6,
-            fontSize: getFontSize(ticket.patient, 12, 9, 22),
-          }}
-        >
-          Paciente: {ticket.patient}
+        <Text style={styles.headerLineBold}>TICKET N° {ticket.number}</Text>
+        <Text style={styles.headerLineBold}>
+          Fecha: <Text style={styles.field}>{ticket.date}</Text>
         </Text>
-        <Text style={{ marginBottom: 6 }}>
-          Tipo de Pago: {ticket.paymentType}
+        <Text style={styles.headerLineBold}>
+          Paciente: <Text style={styles.field}>{ticket.patient}</Text>
+        </Text>
+        <Text style={styles.headerLineBold}>
+          Tipo de Pago: <Text style={styles.field}>{ticket.paymentType}</Text>
         </Text>
       </View>
       <View style={styles.lineDouble} wrap={false} />
@@ -181,14 +196,7 @@ const TicketPDF = ({
           </Text>
         </View>
         <View style={styles.tableRow} wrap={false}>
-          <Text
-            style={{
-              ...styles.tableCell,
-              fontSize: getFontSize(ticket.service, 13, 9, 18),
-            }}
-          >
-            {ticket.service}
-          </Text>
+          <Text style={styles.tableCell}>{ticket.service}</Text>
           <Text style={styles.tableCell}>{ticket.unit}</Text>
           <Text style={[styles.tableCell, styles.lastCell]}>
             {ticket.amount}
