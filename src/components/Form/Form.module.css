@@ -12,23 +12,112 @@
   background-color: #1e1e1e;
 }
 
-/* Título más compacto */
+/* Título más compacto y centrado */
 .title {
   margin-top: 10px;
   font-size: 26px;
   font-weight: bold;
   color: white;
+  text-align: center;
 }
 
 /* Etiquetas */
 .label {
   font-size: 0.95rem;
-  color: white;
+  color: white !important;
+}
+
+/* Asegurar que todos los labels de Ant Design sean blancos */
+:global(.ant-form-item-label > label) {
+  color: #ffffff !important;
+}
+
+/* Estilos para labels requeridos */
+:global(.ant-form-item-required::before) {
+  color: #ff4d4f !important;
+}
+
+/* Texto de los radio buttons */
+:global(.ant-radio-wrapper) {
+  color: #ffffff !important;
+}
+
+/* Texto de los checkboxes */
+:global(.ant-checkbox-wrapper) {
+  color: #ffffff !important;
+}
+
+/* Texto de los inputs */
+:global(.ant-input) {
+  color: #ffffff !important;
+  background-color: #444444 !important;
+  border-color: #666666 !important;
+}
+
+/* Placeholders */
+:global(.ant-input::placeholder) {
+  color: #999999 !important;
+}
+
+/* Select options */
+:global(.ant-select-selection-item) {
+  color: #ffffff !important;
+}
+
+/* Select placeholder */
+:global(.ant-select-selection-placeholder) {
+  color: #999999 !important;
+}
+
+/* DatePicker text */
+:global(.ant-picker-input > input) {
+  color: #ffffff !important;
+}
+
+/* DatePicker placeholder */
+:global(.ant-picker-input > input::placeholder) {
+  color: #999999 !important;
+}
+
+/* Botones de texto */
+:global(.ant-btn-text) {
+  color: #ffffff !important;
+}
+
+/* Texto general dentro del formulario */
+:global(.formContainer *) {
+  color: #ffffff;
+}
+
+/* Quitar fondo gris del campo de monto (input number) */
+:global(.ant-input-number) {
+  background-color: transparent !important;
+  border: 1px solid   #666666 !important;
+  color: #ffffff !important;
+}
+
+:global(.ant-input-number-input) {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* Forzar Opciones de Pago más arriba - múltiples selectores */
+:global(.ant-form-item:has(.ant-select)) {
+  margin-top: -25px !important;
+}
+
+:global(.ant-form-item:has(.ant-input-number)) {
+  margin-top: -25px !important;
+}
+
+/* Selector específico para el campo selectPrices */
+:global(.hide-price-input) {
+  margin-top: -25px !important;
 }
 
 /* Espaciado entre campos más compacto */
 .formItem {
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 /* Grupo de botones */
