@@ -9,7 +9,10 @@ import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
-import { getAppointmentsByPatientId } from '../../history/service/historyService';
+import {
+  getAppointmentsByPatientId,
+  getPatientHistoryById,
+} from '../../history/service/historyService';
 import { useAppointments } from '../hook/appointmentsHook';
 import EditAppointment from '../ui/EditAppointment/EditAppointment'; // Importar el componente de edición
 import { deleteAppointment } from '../service/appointmentsService';
@@ -60,7 +63,7 @@ export default function Appointments() {
     {
       title: 'Paciente',
       key: 'patient_id',
-      width: '155px',
+      width: '180px',
       render: (_, record) => {
         const patient = record?.patient;
         if (!patient) return 'Paciente no disponible';
@@ -94,7 +97,7 @@ export default function Appointments() {
     {
       title: 'Acciones',
       key: 'actions',
-      width: '200px',
+      width: '150px',
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -250,8 +253,20 @@ export default function Appointments() {
   };
 
   const printFichaPDF = async (record, visitas) => {
+    // Obtener historia clínica por ID
+    let historia = {};
+    try {
+      historia = await getPatientHistoryById(record.patient.id);
+    } catch (e) {
+      historia = {};
+    }
     const doc = (
-      <FichaPDF cita={record} paciente={record.patient} visitas={visitas} />
+      <FichaPDF
+        cita={record}
+        paciente={record.patient}
+        visitas={visitas}
+        historia={historia.data || {}}
+      />
     );
     const asPdf = pdf([]);
     asPdf.updateContainer(doc);
