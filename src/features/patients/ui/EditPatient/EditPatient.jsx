@@ -27,10 +27,6 @@ const fields = [
             required: true,
             message: 'Por favor ingrese el número de documento',
           },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
-          },
         ],
       },
     ],
@@ -110,17 +106,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
-              }
-              return Promise.resolve();
+              return Promise();
             },
           }),
         ],
@@ -135,7 +121,7 @@ const fields = [
   },
   {
     name: 'ubicacion',
-    label: 'Ubicación',
+    label: 'Departamento / Provincia / Distrito',
     type: 'ubigeo',
     span: 12,
   },
@@ -242,7 +228,7 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       open={true}
       onCancel={onClose}
       footer={null}
-      width={800}
+      width={950}
       centered
       destroyOnClose
     >

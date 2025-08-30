@@ -6,7 +6,6 @@ import { useStaff } from '../../hook/staffHook';
 
 // Reutiliza los mismos fields que para crear
 const fields = [
-  { type: 'subtitle', label: 'EDITAR TERAPEUTA' },
   {
     type: 'customRow',
     fields: [
@@ -27,10 +26,6 @@ const fields = [
           {
             required: true,
             message: 'Por favor ingrese el número de documento',
-          },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
           },
         ],
       },
@@ -89,7 +84,7 @@ const fields = [
       },
     ],
   },
-  { type: 'title', label: 'INFORMACIÓN DE CONTACTO' },
+  { type: 'title', label: 'Información de Contacto' },
   {
     type: 'customRow',
     fields: [
@@ -111,17 +106,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
-              }
-              return Promise.resolve();
+              return Promise();
             },
           }),
         ],
@@ -135,17 +120,22 @@ const fields = [
     ],
   },
   {
-    name: 'address',
-    label: 'Dirección de Domicilio',
-    type: 'text',
-    span: 24,
-    required: true,
-  },
-  {
-    name: 'ubicacion',
-    label: 'Ubicación',
-    type: 'ubigeo',
-    span: 24,
+    type: 'customRow',
+    fields: [
+      {
+        name: 'ubicacion',
+        label: 'Departamento / Provincia / Distrito',
+        type: 'ubigeo',
+        span: 12,
+      },
+      {
+        name: 'address',
+        label: 'Dirección de Domicilio',
+        type: 'text',
+        span: 12,
+        required: true,
+      },
+    ],
   },
 ];
 
@@ -246,7 +236,7 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
       open={true}
       onCancel={onClose}
       footer={null}
-      width={800}
+      width={950}
       centered
       destroyOnClose
     >
