@@ -185,7 +185,7 @@ export default function Staff() {
           margin: '0 auto',
         }}
       >
-        <CustomButton text="Crear Terapeuta" onClick={handleButton} />
+        <CustomButton text="Crear Personal" onClick={handleButton} />
 
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."

@@ -6,6 +6,7 @@ import { useStaff } from '../../hook/staffHook';
 
 // Reutiliza los mismos fields que para crear
 const fields = [
+  { type: 'subtitle', label: 'EDITAR TERAPEUTA' },
   {
     type: 'customRow',
     fields: [
@@ -81,14 +82,14 @@ const fields = [
         required: true,
       },
       {
-        name: 'personal_reference',
-        label: 'Referencia Personal',
+        name: 'occupation',
+        label: 'Ocupación',
         type: 'text',
         span: 8,
       },
     ],
   },
-  { type: 'title', label: 'Información de contacto' },
+  { type: 'title', label: 'INFORMACIÓN DE CONTACTO' },
   {
     type: 'customRow',
     fields: [
@@ -134,17 +135,17 @@ const fields = [
     ],
   },
   {
-    name: 'ubicacion',
-    label: 'Ubicación',
-    type: 'ubigeo',
-    span: 12,
-  },
-  {
     name: 'address',
     label: 'Dirección de Domicilio',
     type: 'text',
-    span: 12,
+    span: 24,
     required: true,
+  },
+  {
+    name: 'ubicacion',
+    label: 'Ubicación',
+    type: 'ubigeo',
+    span: 24,
   },
 ];
 
