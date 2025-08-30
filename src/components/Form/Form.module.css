@@ -14,15 +14,23 @@
 
 /* Título más compacto */
 .title {
+  text-align: center;
   margin-top: 10px;
-  font-size: 26px;
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+}
+
+.subtitle {
+  margin-top: 10px;
+  font-size: 30px;
   font-weight: bold;
   color: white;
 }
 
 /* Etiquetas */
 .label {
-  font-size: 0.95rem;
+  font-size: 0.97rem;
   color: white;
 }
 

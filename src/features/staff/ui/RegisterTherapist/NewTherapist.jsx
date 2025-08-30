@@ -4,7 +4,8 @@ import { useStaff } from '../../hook/staffHook';
 import { useNavigate } from 'react-router';
 
 const fields = [
-  { type: 'title', label: 'Nuevo Terapista' },
+  { type: 'title', label: 'REGISTRAR TERAPEUTA' },
+  { type: 'subtitle', label: 'NUEVO TERAPEUTA' },
   {
     type: 'customRow',
     fields: [
@@ -80,14 +81,14 @@ const fields = [
         required: true,
       },
       {
-        name: 'personal_reference',
-        label: 'Referencia Personal',
+        name: 'occupation',
+        label: 'Ocupación',
         type: 'text',
         span: 8,
       },
     ],
   },
-  { type: 'title', label: 'Información de contacto' },
+  { type: 'title', label: 'INFORMACIÓN DE CONTACTO' },
   {
     type: 'customRow',
     fields: [
@@ -133,16 +134,16 @@ const fields = [
     ],
   },
   {
-    name: 'ubicacion',
-    label: 'Ubicación',
-    type: 'ubigeo',
-    span: 12,
-  },
-  {
     name: 'address',
     label: 'Dirección de Domicilio',
     type: 'text',
-    span: 12,
+    span: 24,
+  },
+  {
+    name: 'ubicacion',
+    label: 'Departamento',
+    type: 'ubigeo',
+    span: 24,
   },
 ];
 

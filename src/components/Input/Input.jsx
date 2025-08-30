@@ -211,6 +211,7 @@ const InputField = ({
               backgroundColor: '#424242FF',
               borderColor: '#444444',
             }}
+            format="DD/MM/YYYY"
             dropdownStyle={{
               backgroundColor: '#000000',
               color: '#ffffff',
