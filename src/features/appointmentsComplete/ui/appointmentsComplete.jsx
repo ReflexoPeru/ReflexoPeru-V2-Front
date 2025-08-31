@@ -56,16 +56,20 @@ export default function AppointmentsComplete() {
       width: '60px',
     },
     {
+      title: 'Fecha cita',
+      dataIndex: 'appointment_date',
+      key: 'appointment_date',
+      width: '70px',
+      render: (date) => {
+        if (!date) return '-';
+        return dayjs(date).format('DD/MM/YYYY');
+      },
+    },
+    {
       title: 'Hora',
       dataIndex: 'appointment_hour',
       key: 'appointment_hour',
       width: '60px',
-    },
-    {
-      title: 'Pago',
-      dataIndex: 'payment',
-      key: 'payment',
-      width: '70px',
     },
     {
       title: 'Metodo Pago',
@@ -73,6 +77,13 @@ export default function AppointmentsComplete() {
       width: '100px',
       render: (_, record) => record.payment_type?.name || 'Sin método',
     },
+    {
+      title: 'Pago',
+      dataIndex: 'payment',
+      key: 'payment',
+      width: '70px',
+    },
+
     {
       title: 'Acciones',
       key: 'actions',

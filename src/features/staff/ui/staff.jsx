@@ -152,10 +152,21 @@ export default function Staff() {
       width: '150px',
     },
     {
-      title: 'Apellidos y Nombres',
-      dataIndex: 'full_name',
+      title: 'Apellido paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido materno',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'name',
       key: 'name',
     },
+
     {
       title: 'Acciones',
       key: 'actions',
