@@ -10,6 +10,7 @@ import {
   TimePicker,
   theme,
 } from 'antd';
+import es_ES from 'antd/lib/locale/es_ES';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -189,6 +190,7 @@ const InputField = ({
     case 'date':
       inputComponent = (
         <ConfigProvider
+          locale={es_ES}
           theme={{
             components: {
               DatePicker: {
@@ -205,6 +207,7 @@ const InputField = ({
         >
           <DatePicker
             {...inputProps}
+            format="DD/MM/YYYY"
             style={{
               width: '100%',
               color: '#ffffff',
@@ -427,6 +430,7 @@ const DateField = ({ form }) => {
       className={styles.formItem}
     >
       <ConfigProvider
+        locale={es_ES}
         theme={{
           components: {
             DatePicker: {
@@ -442,6 +446,7 @@ const DateField = ({ form }) => {
         }}
       >
         <DatePicker
+          format="DD/MM/YYYY"
           style={{
             width: '100%',
             color: '#ffffff',
