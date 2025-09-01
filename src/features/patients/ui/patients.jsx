@@ -160,9 +160,19 @@ export default function Patients() {
       width: '150px',
     },
     {
-      title: 'Apellidos y Nombres',
-      dataIndex: 'full_name',
-      key: 'name',
+      title: 'Apellido Paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido Materno',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'name',
+      key: 'names',
     },
     {
       title: 'Acciones',

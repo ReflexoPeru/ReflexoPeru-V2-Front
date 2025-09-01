@@ -1,10 +1,19 @@
-import { notification } from 'antd';
+import React from 'react';
+import { notification, ConfigProvider } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
 import { useNavigate } from 'react-router';
 
+// Definir campos del formulario con estilos personalizados
 const fields = [
-  { type: 'title', label: 'Nuevo Terapista' },
+  {
+    type: 'title',
+    label: 'REGISTRAR TERAPEUTA',
+  },
+  {
+    type: 'subtitle',
+    label: 'Nuevo terapeuta',
+  },
   {
     type: 'customRow',
     fields: [
@@ -18,17 +27,13 @@ const fields = [
       {
         name: 'document_number',
         label: 'Nro Documento',
-        type: 'documentNumber', // Usamos nuestro tipo personalizado
+        type: 'documentNumber',
         required: true,
         span: 8,
         rules: [
           {
             required: true,
             message: 'Por favor ingrese el número de documento',
-          },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
           },
         ],
       },
@@ -80,21 +85,24 @@ const fields = [
         required: true,
       },
       {
-        name: 'personal_reference',
-        label: 'Referencia Personal',
+        name: 'occupation',
+        label: 'Ocupación',
         type: 'text',
         span: 8,
       },
     ],
   },
-  { type: 'title', label: 'Información de contacto' },
+  {
+    type: 'title',
+    label: 'Información de Contacto',
+  },
   {
     type: 'customRow',
     fields: [
       {
         name: 'primary_phone',
         label: 'Teléfono',
-        type: 'phoneNumber', // Usamos nuestro tipo personalizado
+        type: 'phoneNumber',
         required: true,
         span: 8,
         rules: [
@@ -107,16 +115,6 @@ const fields = [
               if (!value) {
                 return Promise.reject(
                   new Error('Por favor ingrese su teléfono'),
-                );
-              }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
                 );
               }
               return Promise.resolve();
@@ -133,16 +131,21 @@ const fields = [
     ],
   },
   {
-    name: 'ubicacion',
-    label: 'Ubicación',
-    type: 'ubigeo',
-    span: 12,
-  },
-  {
-    name: 'address',
-    label: 'Dirección de Domicilio',
-    type: 'text',
-    span: 12,
+    type: 'customRow',
+    fields: [
+      {
+        name: 'ubicacion',
+        label: 'Departamento / Provincia / Distrito',
+        type: 'ubigeo',
+        span: 12,
+      },
+      {
+        name: 'address',
+        label: 'Dirección de Domicilio',
+        type: 'text',
+        span: 12,
+      },
+    ],
   },
 ];
 
@@ -154,7 +157,6 @@ const NewTherapist = () => {
     console.log('📝 Formulario enviado:', formData);
 
     try {
-      // Validación básica de campos requeridos
       if (
         !formData.document_number ||
         !formData.name ||
@@ -169,10 +171,18 @@ const NewTherapist = () => {
 
       const result = await submitNewTherapist(formData);
       console.log('🎉 Terapeuta creado con éxito:', result);
+      notification.success({
+        message: 'Éxito',
+        description: 'Terapeuta registrado correctamente',
+      });
       navigate('/Inicio/terapeutas');
       return result;
     } catch (error) {
       console.error('❌ Error al crear terapeuta:', error);
+      notification.error({
+        message: 'Error',
+        description: 'Ocurrió un error al registrar el terapeuta',
+      });
       throw error;
     }
   };
@@ -182,15 +192,33 @@ const NewTherapist = () => {
   };
 
   return (
-    <FormGenerator
-      fields={fields}
-      mode="create"
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      initialValues={{
-        document_type_id: 1, // Valor por defecto
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#1890ff',
+          borderRadius: 6,
+          fontSize: 16,
+        },
+        components: {
+          Form: {
+            labelFontSize: 14,
+            verticalLabelPadding: '0 0 8px',
+          },
+        },
       }}
-    />
+    >
+      <FormGenerator
+        fields={fields}
+        mode="create"
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        initialValues={{
+          document_type_id: 1,
+        }}
+        submitText="Registrar Terapeuta"
+        cancelText="Cancelar"
+      />
+    </ConfigProvider>
   );
 };
 

@@ -1,11 +1,22 @@
 import {
-  AddressBook,
-  ChartBar,
-  FileDoc,
-  House,
-  Nut,
-  Person,
-  CalendarDots,
+  House, // Inicio
+  Users, // Pacientes
+  Calendar, // Citas
+  CalendarCheck, // Citas completas
+  UserGear, // Terapeutas
+  ChartPie, // Reportes
+  CalendarBlank, // Calendario
+  ChartLine, // Estadísticas
+  Gear, // Configuraciones
+  CurrencyDollar, // Pagos
+  User, // Perfil
+  Cpu, // Sistema
+  UserList, // Usuarios
+  FileText, // Alternativa para Reportes
+  ChartBar, // Alternativa para Estadísticas
+  FileDoc, // Alternativa para Configuraciones
+  AddressBook, // Alternativa para Terapeutas
+  Wrench,
 } from '@phosphor-icons/react';
 import { ConfigProvider, Menu } from 'antd';
 import { useEffect, useState } from 'react';
@@ -31,54 +42,52 @@ export default function MenuDashboard() {
   const items = [
     {
       key: '1',
-      label: <Link to="/Inicio"> Inicio </Link>,
+      label: <Link to="/Inicio">Inicio</Link>,
       icon: (
         <div className={Style.icon}>
-          <House />
+          <House weight="regular" />
         </div>
       ),
     },
     {
-      key: '2',
-      label: 'Pacientes',
+      key: '3',
+      label: <Link to="pacientes">Pacientes</Link>,
       icon: (
         <div className={Style.icon}>
-          <Person />
+          <Users weight="regular" />
         </div>
       ),
-      children: [
-        {
-          key: '3',
-          label: <Link to="pacientes"> Pacientes</Link>,
-        },
-        {
-          key: '5',
-          label: <Link to="citas"> Citas</Link>,
-        },
-        {
-          key: '6',
-          label: <Link to="citasCompletas"> Citas completas</Link>,
-        },
-      ],
     },
     {
-      key: '7',
-      label: 'Terapeutas',
+      key: '5',
+      label: <Link to="citas">Citas</Link>,
+      icon: (
+        <div className={Style.icon}>
+          <Calendar weight="regular" />
+        </div>
+      ),
+    },
+    {
+      key: '6',
+      label: <Link to="citasCompletas">Citas completas</Link>,
+      icon: (
+        <div className={Style.icon}>
+          <CalendarCheck weight="regular" />
+        </div>
+      ),
+    },
+    {
+      key: '8',
+      label: <Link to="terapeutas">Terapeutas</Link>,
       icon: (
         <div className={Style.icon}>
           <AddressBook />
         </div>
       ),
-      children: [
-        {
-          key: '8',
-          label: <Link to="terapeutas"> Terapeutas</Link>,
-        },
-      ],
     },
     {
       key: '9',
-      label: <Link to="reportes"> Reportes </Link>,
+      label: <Link to="reportes">Reportes</Link>,
       icon: (
         <div className={Style.icon}>
           <FileDoc />
@@ -87,19 +96,19 @@ export default function MenuDashboard() {
     },
     {
       key: '10',
-      label: <Link to="calendar"> Calendario </Link>,
+      label: <Link to="calendar">Calendario</Link>,
       icon: (
         <div className={Style.icon}>
-          <CalendarDots />
+          <CalendarBlank weight="regular" />
         </div>
       ),
     },
     {
       key: '11',
-      label: <Link to="estadisticas"> Estadisticas </Link>,
+      label: <Link to="estadisticas">Estadísticas</Link>,
       icon: (
         <div className={Style.icon}>
-          <ChartBar />
+          <ChartLine weight="regular" /> {/* o <ChartBar /> */}
         </div>
       ),
     },
@@ -108,7 +117,7 @@ export default function MenuDashboard() {
       label: 'Configuraciones',
       icon: (
         <div className={Style.icon}>
-          <Nut />
+          <Gear weight="regular" /> {/* o <Wrench /> */}
         </div>
       ),
       children: [
@@ -117,29 +126,32 @@ export default function MenuDashboard() {
               {
                 key: '33',
                 label: <Link to="configPagos">Pagos</Link>,
+                icon: <CurrencyDollar weight="regular" />,
               },
             ]
           : []),
         {
           key: '16',
           label: <Link to="configPerfil">Perfil</Link>,
+          icon: <User weight="regular" />,
         },
         ...(userRole === 1
           ? [
               {
                 key: '17',
                 label: <Link to="configSistema">Sistema</Link>,
+                icon: <Cpu weight="regular" />,
               },
               {
                 key: '14',
                 label: <Link to="configUser">Usuarios</Link>,
+                icon: <UserList weight="regular" />,
               },
             ]
           : []),
       ],
     },
   ];
-
   //////Funciones para tener solo 1 submenu abierto/////////
   const [stateOpenKeys, setStateOpenKeys] = useState([]);
   const onOpenChange = (openKeys) => {
@@ -200,6 +212,8 @@ export default function MenuDashboard() {
               itemActiveBg: '#1CB54A',
               subMenuItemSelectedColor: '#8ad366',
               itemSelectedColor: '#ffffff',
+              // Aumentar el tamaño de la letra
+              fontSize: 15, // Tamaño base aumentado
             },
             menuItem: {
               color: '#ffffff',

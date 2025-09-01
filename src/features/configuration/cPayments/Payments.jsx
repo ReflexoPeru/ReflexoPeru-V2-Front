@@ -349,7 +349,7 @@ const Payments = () => {
         {/* Tipos de Pago */}
         <div>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Tipos de pago</h2>
+            <h2 className={styles.sectionTitle}>Método de pago</h2>
             <Button
               type="primary"
               className={styles.addButton}
@@ -369,7 +369,7 @@ const Payments = () => {
         {/* Precios */}
         <div>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Precios</h2>
+            <h2 className={styles.sectionTitle}>Opciones de Pago</h2>
             <Button
               type="primary"
               className={styles.addButton}
