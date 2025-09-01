@@ -17,10 +17,9 @@ import esES from 'antd/locale/es_ES';
 import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import styles from '../Input/Input.module.css';
-import { useEffect } from 'react';
 
 // Importaciones corregidas
-import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import SelectTypeOfDocument from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
 import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
@@ -149,8 +148,12 @@ const InputField = ({
           onChange={(e) => {
             const value = e.target.value.toUpperCase();
             if (rest.onChange) rest.onChange(value);
-            if (form && rest.name) {
-              form.setFieldValue(rest.name, value);
+            if (
+              form &&
+              rest.name &&
+              typeof form.setFieldsValue === 'function'
+            ) {
+              form.setFieldsValue({ [rest.name]: value });
             }
           }}
         />
@@ -223,7 +226,6 @@ const InputField = ({
               backgroundColor: '#424242FF',
               borderColor: '#444444',
             }}
-            format="DD/MM/YYYY"
             dropdownStyle={{
               backgroundColor: '#000000',
               color: '#ffffff',
@@ -472,7 +474,7 @@ const DateField = ({ form }) => {
       style={{ marginBottom: 0 }}
     >
       <ConfigProvider
-        locale={es_ES}
+        locale={esES}
         theme={{
           components: {
             DatePicker: {
@@ -495,7 +497,6 @@ const DateField = ({ form }) => {
             backgroundColor: '#333333FF',
             borderColor: '#444444',
           }}
-          format="DD/MM/YYYY"
           placeholder="Seleccione una fecha"
           onChange={handleDateChange}
           defaultValue={dayjs()}
