@@ -556,7 +556,7 @@ const PatientHistory = () => {
                    },
                  ]}
                >
-                 <Input className={styles.input} />
+                 <Input className={`${styles.input} ${styles.smallInput}`} />
                </Form.Item>
 
                <Form.Item
@@ -570,7 +570,7 @@ const PatientHistory = () => {
                    },
                  ]}
                >
-                 <Input className={styles.input} />
+                 <Input className={`${styles.input} ${styles.smallInput}`} />
                </Form.Item>
 
                <Form.Item
@@ -584,7 +584,7 @@ const PatientHistory = () => {
                    },
                  ]}
                >
-                 <Input className={styles.input} />
+                 <Input className={`${styles.input} ${styles.smallInput}`} />
                </Form.Item>
 
               <Form.Item
@@ -592,7 +592,7 @@ const PatientHistory = () => {
                 label="Testimonio"
                 className={styles.physicalInfoItem}
               >
-                <Select className={styles.select}>
+                <Select className={`${styles.select} ${styles.smallInput}`}>
                   <Option value="Sí">Sí</Option>
                   <Option value="No">No</Option>
                 </Select>
@@ -606,7 +606,7 @@ const PatientHistory = () => {
                     label="Gestación"
                     className={styles.physicalInfoItem}
                   >
-                    <Select className={styles.select}>
+                    <Select className={`${styles.select} ${styles.smallInput}`}>
                       <Option value="Sí">Sí</Option>
                       <Option value="No">No</Option>
                     </Select>
@@ -617,7 +617,7 @@ const PatientHistory = () => {
                     label="Menstruación"
                     className={styles.physicalInfoItem}
                   >
-                    <Select className={styles.select}>
+                    <Select className={`${styles.select} ${styles.smallInput}`}>
                       <Option value="Sí">Sí</Option>
                       <Option value="No">No</Option>
                     </Select>
@@ -628,7 +628,7 @@ const PatientHistory = () => {
                     label="Tipo DIU"
                     className={styles.physicalInfoItem}
                   >
-                    <Input className={styles.input} />
+                    <Input className={`${styles.input} ${styles.smallInput}`} />
                   </Form.Item>
                 </>
               )}
