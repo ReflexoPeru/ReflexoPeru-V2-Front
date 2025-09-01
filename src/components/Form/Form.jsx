@@ -54,6 +54,19 @@ const FormComponent = forwardRef(
           </Col>
         );
       }
+      if (field.type === 'separator') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.title}>{field.label}</h2>
+            <div
+              style={{
+                borderBottom: '2px solid #1cb54a',
+                marginTop: 4,
+              }}
+            />
+          </Col>
+        );
+      }
 
       if (field.type === 'subtitle') {
         return (
