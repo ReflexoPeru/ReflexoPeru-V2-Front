@@ -24,9 +24,7 @@ const TodayAppointments = () => {
             >
               <div className={styles.appointmentContent}>
                 <div className={styles.name}>{appt.name}</div>
-                <div className={styles.details}>
-                  {appt.service} - {appt.time}
-                </div>
+                <div className={styles.details}></div>
               </div>
               <div className={styles.check}>
                 <CheckCircle size={22} />
