@@ -45,9 +45,12 @@ const FormComponent = forwardRef(
 
     const renderField = (field, index) => {
       if (field.type === 'title') {
+        // Solo agregar línea verde al primer título (REGISTRAR PACIENTE)
+        const isMainTitle = field.label === 'REGISTRAR PACIENTE';
         return (
           <Col span={24} key={index}>
             <h2 className={styles.title}>{field.label}</h2>
+            {isMainTitle && <div className={styles.greenSeparator}></div>}
           </Col>
         );
       }

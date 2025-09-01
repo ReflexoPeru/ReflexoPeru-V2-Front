@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 const fields = [
   {
     type: 'title',
-    label: 'REGISTRARqweqrqwrqwrq',
+    label: 'REGISTRAR PACIENTE',
   },
   {
     type: 'subtitle',
