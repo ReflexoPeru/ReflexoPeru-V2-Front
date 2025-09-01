@@ -55,7 +55,7 @@ const FormComponent = forwardRef(
       if (field.type === 'customRow') {
         return (
           <Col span={24} key={index}>
-            <Row gutter={[25, 0]}>
+            <Row gutter={[25, 16]}>
               {field.fields.map((subField, subIndex) =>
                 renderField(subField, `${index}-${subIndex}`),
               )}
@@ -163,7 +163,7 @@ const FormComponent = forwardRef(
             className={styles.formContainer}
             ref={ref}
           >
-            <Row gutter={[20, 0]}>
+            <Row gutter={[20, 8]}>
               {fields.map((field, index) => renderField(field, index))}
             </Row>
 

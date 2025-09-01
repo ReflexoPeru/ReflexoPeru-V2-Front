@@ -666,8 +666,8 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               SECCIÓN: SELECCIÓN DE PACIENTE
               Permite seleccionar un paciente existente o crear uno nuevo
             */}
-            <Row gutter={16}>
-              <Col span={16}>
+            <Row gutter={38}>
+              <Col span={17}>
                 <Form.Item label="Paciente" required>
                   <Input
                     value={selectedPatient?.full_name || ''}
@@ -677,11 +677,13 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col span={6}>
                 <Button
                   type="primary"
                   onClick={() => setIsSelectPatientModalOpen(true)}
-                  style={{ marginTop: '32px' }}
+                  style={{ marginTop: '30px' }}
+                  
+                  
                 >
                   Agregar Paciente
                 </Button>
@@ -826,8 +828,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                     },
                   ]}
                 >
-                  <Input
-                    placeholder="Ingrese el monto"
+                  <Input                   
                     prefix="S/"
                     type="number"
                     step="0.01"

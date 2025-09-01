@@ -10,8 +10,14 @@ import {
   Select,
   TimePicker,
   theme,
+  Row,
+  Col,
 } from 'antd';
+import esES from 'antd/locale/es_ES';
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
 import styles from '../Input/Input.module.css';
+import { useEffect } from 'react';
 
 // Importaciones corregidas
 import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
@@ -20,6 +26,9 @@ import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
 import SelectPrices from '../Select/SelectPrices';
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
+
+// Fijar locale global en español para dayjs (utilizado por AntD DatePicker/TimePicker)
+dayjs.locale('es');
 
 const { Option } = Select;
 
@@ -190,6 +199,7 @@ const InputField = ({
     case 'date':
       inputComponent = (
         <ConfigProvider
+          locale={esES}
           theme={{
             components: {
               DatePicker: {
@@ -250,6 +260,7 @@ const InputField = ({
           rules={[
             { required: true, message: 'El método de pago es requerido' },
           ]}
+          style={{ marginTop: 8, marginBottom: 8 }}
         >
           <SelectPaymentStatus
             value={rest.value}
@@ -324,6 +335,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
           label="Método de Pago"
           name="payment_method_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
+          style={{ marginTop: 8, marginBottom: 8 }}
         >
           <PaymentComponent />
         </Form.Item>
@@ -352,45 +364,66 @@ const PatientField = ({
 
   return (
     <div className={styles.patientRow}>
-      {/* Subtítulo para Tipo de Paciente */}
-      <div style={{ marginBottom: '16px' }}>
-        <h4 style={{ 
-          margin: '0 0 12px 0', 
-          fontSize: '14px', 
-          fontWeight: '600', 
-          color: '#ffffff' 
-        }}>
-          Tipo de Paciente:
-        </h4>
-        <Radio.Group
-          value={patientType}
-          onChange={(e) => onPatientTypeChange(e.target.value)}
-          style={{ display: 'flex', gap: '16px' }}
-        >
-          {patientTypeOptions.map((option) => (
-            <Radio
-              key={option.value}
-              value={option.value}
-              style={{
-                color: '#ffffff',
-                fontSize: '14px'
-              }}
-            >
-              {option.label}
-            </Radio>
-          ))}
-        </Radio.Group>
+      {/* Subtítulo y opciones de Tipo de Paciente */}
+      <div style={{
+        margin: '0 0 6px 0',
+        fontSize: 14,
+        fontWeight: 600,
+        color: '#ffffff'
+      }}>
+        Tipos de pacientes
       </div>
+      <Row gutter={16} align="bottom" style={{ marginBottom: 12 }}>
+        <Col span={12}>
+          <ConfigProvider
+            theme={{
+              components: {
+                Radio: {
+                  colorPrimary: '#1677ff',
+                },
+              },
+            }}
+          >
+            <Radio.Group
+              value={patientType}
+              onChange={(e) => onPatientTypeChange(e.target.value)}
+              style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
+            >
+              <Radio value="nuevo" style={{ color: '#ffffff' }}>
+                Nuevo
+              </Radio>
+              <Radio value="continuador" style={{ color: '#ffffff' }}>
+                Continuador
+              </Radio>
+            </Radio.Group>
+          </ConfigProvider>
+        </Col>
+        <Col span={12}>
+          <Button
+            type="primary"
+            className={styles.patientButton}
+            onClick={() => {
+              if (patientType === 'nuevo') {
+                onOpenCreateModal();
+              } else {
+                onOpenSelectModal();
+              }
+            }}
+          >
+            {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
+          </Button>
+        </Col>
+      </Row>
 
-      {/* Campo Paciente debajo de los radio buttons */}
-      <div className={styles.patientContainer}>
-        <div className={styles.patientInputContainer}>
+      {/* Campo Paciente debajo de los checkboxes */}
+      <Row gutter={16} align="bottom">
+        <Col span={24}>
           <Form.Item
             label="Paciente"
             rules={[{ required: required, message: 'Este campo es requerido' }]}
             required={required}
             className={styles.formItem}
-            style={{ marginBottom: '-30px', marginTop: '-10px' }}
+            style={{ marginBottom: 8 }}
           >
             <InputField
               readonly={true}
@@ -406,24 +439,8 @@ const PatientField = ({
           <Form.Item name="patient_id" hidden>
             <Input />
           </Form.Item>
-        </div>
-
-        <div className={styles.patientButtonContainer}>
-          <Button
-            type="primary"
-            className={styles.patientButton}
-            onClick={() => {
-              if (patientType === 'nuevo') {
-                onOpenCreateModal();
-              } else {
-                onOpenSelectModal();
-              }
-            }}
-          >
-            {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
-          </Button>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -434,9 +451,11 @@ const DateField = ({ form }) => {
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
     formInstance.setFieldsValue({
-      appointment_date: dateString,
+      appointment_date: date || null,
     });
   };
+
+  // No controlar el componente: usaremos defaultValue del DatePicker
 
   return (
     <Form.Item
@@ -444,8 +463,10 @@ const DateField = ({ form }) => {
       name="appointment_date"
       rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
+      style={{ marginBottom: 0 }}
     >
       <ConfigProvider
+        locale={esES}
         theme={{
           components: {
             DatePicker: {
@@ -470,6 +491,7 @@ const DateField = ({ form }) => {
           format="DD/MM/YYYY"
           placeholder="Seleccione una fecha"
           onChange={handleDateChange}
+          defaultValue={dayjs()}
           dropdownStyle={{
             backgroundColor: '#2C2C2CFF',
             color: '#ffffff',
