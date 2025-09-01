@@ -52,6 +52,14 @@ const FormComponent = forwardRef(
         );
       }
 
+      if (field.type === 'subtitle') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.subtitle}>{field.label}</h2>
+          </Col>
+        );
+      }
+
       if (field.type === 'customRow') {
         return (
           <Col span={24} key={index}>
@@ -75,6 +83,7 @@ const FormComponent = forwardRef(
               type="cita"
               componentType={field.componentType}
               form={form}
+              required={field.required}
               {...field.props}
               showHourField={showHourField}
               isPaymentRequired={isPaymentRequired}

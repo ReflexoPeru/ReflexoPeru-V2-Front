@@ -1,11 +1,13 @@
 .container {
+  width: 1400px;
   max-width: 1400px;
+  min-width: 1400px;
   margin: 20px auto;
   padding: 0;
-
 }
 
 .card {
+  width: 100%;
   border-radius: 10px;
   background: #161616;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -34,6 +36,7 @@
 }
 
 .form {
+  width: 100%;
   padding: 20px;
 }
 

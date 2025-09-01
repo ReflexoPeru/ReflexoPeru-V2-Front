@@ -1,35 +1,34 @@
-import { useState, useEffect, useMemo } from 'react';
+import { PDFViewer } from '@react-pdf/renderer';
 import {
+  Button,
   Card,
-  Modal,
-  Table,
-  Radio,
+  ConfigProvider,
+  DatePicker,
   Form,
   Input,
-  Button,
-  Select,
-  DatePicker,
-  Typography,
-  ConfigProvider,
   message,
+  Modal,
+  Radio,
+  Select,
   Spin,
+  Table,
+  Typography,
 } from 'antd';
-import styles from './PatientHistory.module.css';
+import dayjs from 'dayjs';
+import { useEffect, useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import {
-  useStaff,
-  usePatientHistory,
   usePatientAppointments,
-  useUpdatePatientHistory,
+  usePatientHistory,
+  useStaff,
   useUpdateAppointment,
+  useUpdatePatientHistory,
 } from '../hook/historyHook';
-import { updateAppointmentById } from '../service/historyService';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
-import { PDFViewer } from '@react-pdf/renderer';
-import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import styles from './PatientHistory.module.css';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -114,6 +113,7 @@ const theme = {
     Form: {
       labelColor: '#4caf50',
       itemMarginBottom: 16,
+      labelFontSize: 18,
     },
   },
 };
@@ -200,8 +200,10 @@ const PatientHistory = () => {
         antecedentesFamiliares: historyData?.antecedentes_familiares || '',
         alergias: historyData?.alergias || '',
 
-        // Fechas
-        fechaInicio: dayjs(),
+                 // Fechas
+         fechaInicio: appointments && appointments.length > 0 
+           ? dayjs(appointments[0].appointment_date) 
+           : dayjs(),
       });
 
       // Manejo del terapeuta con verificación segura
@@ -397,9 +399,9 @@ const PatientHistory = () => {
     <ConfigProvider theme={theme}>
       <div className={styles.container}>
         <Card className={styles.card}>
-          <Title level={2} className={styles.title}>
-            Detalles del Historial
-          </Title>
+                     <Title level={2} className={styles.title} style={{ textAlign: 'center', color: '#ffffff' }}>
+             Detalles del Historial
+           </Title>
 
           <Form
             form={form}
@@ -408,107 +410,107 @@ const PatientHistory = () => {
             layout="vertical"
             className={styles.form}
           >
-            {/* Fila: Paciente y Observación */}
-            <div className={styles.flexRow}>
-              <Form.Item
-                name="patientName"
-                label="Paciente"
-                className={styles.flexItem}
-              >
-                <Input disabled className={styles.input} />
-              </Form.Item>
-              <Form.Item
-                name="observation"
-                label="Observación"
-                className={styles.flexItem}
-              >
-                <TextArea rows={1} className={styles.textarea} />
-              </Form.Item>
-            </div>
+            {/* Información del Paciente */}
+            <Form.Item
+              name="patientName"
+              label="Paciente"
+              className={styles.formItem}
+            >
+              <Input disabled className={styles.input} />
+            </Form.Item>
 
-            <Title level={3} className={styles.sectionTitle}>
-              Citas
-            </Title>
+            {/* Observaciones */}
+            <Form.Item
+              name="observation"
+              label="Observación"
+              className={styles.formItem}
+            >
+              <TextArea rows={3} className={styles.textarea} />
+            </Form.Item>
 
-            {/* Fila: Fecha de la Cita y Terapeuta */}
-            <div className={styles.flexRow}>
-              <Form.Item label="Fecha de la Cita" className={styles.flexItem}>
-                <Select
-                  value={selectedAppointmentDate}
-                  onChange={setSelectedAppointmentDate}
-                  className={styles.select}
-                  placeholder="Seleccione una fecha"
-                  loading={loadingAppointments}
-                >
-                  {appointmentDates.map((date) => (
-                    <Option key={date} value={date}>
-                      {dayjs(date).format('DD/MM/YYYY')}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="therapist"
-                label="Terapeuta"
-                className={styles.flexItem}
-              >
-                <div className={styles.therapistRow}>
-                  <Input
-                    disabled
-                    value={therapist || 'No se ha seleccionado terapeuta'}
-                    className={styles.input}
-                  />
-                  <Button
-                    type="primary"
-                    onClick={showTherapistModal}
-                    className={styles.selectButton}
-                  >
-                    Seleccionar
-                  </Button>
-                  {form.getFieldValue('therapist') && (
-                    <Button
-                      danger
-                      onClick={handleRemoveTherapist}
-                      className={styles.removeButton}
-                    >
-                      Eliminar
-                    </Button>
-                  )}
-                </div>
-              </Form.Item>
-            </div>
+                         <Title level={3} className={styles.sectionTitle} style={{ textAlign: 'center', color: '#ffffff' }}>
+               Citas
+             </Title>
 
-            <div className={styles.threeColumnLayout}>
-              <div className={styles.column}>
-                <Form.Item
-                  name="diagnosticosMedicos"
-                  label="Diagnósticos médicos"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
+                         {/* Fecha de la Cita */}
+             <Form.Item label="Fecha de la Cita" className={styles.formItem}>
+               <Select
+                 value={selectedAppointmentDate}
+                 onChange={setSelectedAppointmentDate}
+                 className={styles.select}
+                 placeholder="Seleccione una fecha"
+                 loading={loadingAppointments}
+               >
+                 {appointmentDates.map((date) => (
+                   <Option key={date} value={date}>
+                     {dayjs(date).format('DD/MM/YYYY')}
+                   </Option>
+                 ))}
+               </Select>
+             </Form.Item>
 
-              <div className={styles.column}>
-                <Form.Item
-                  name="dolencias"
-                  label="Dolencias"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
+             {/* Terapeuta */}
+             <Form.Item
+               name="therapist"
+               label="Terapeuta"
+               className={styles.formItem}
+             >
+               <div className={styles.therapistRow}>
+                 <Input
+                   disabled
+                   value={therapist || 'No se ha seleccionado terapeuta'}
+                   className={styles.input}
+                 />
+                 <Button
+                   type="primary"
+                   onClick={showTherapistModal}
+                   className={styles.selectButton}
+                 >
+                   Seleccionar
+                 </Button>
+                 {form.getFieldValue('therapist') && (
+                   <Button
+                     danger
+                     onClick={handleRemoveTherapist}
+                     className={styles.removeButton}
+                   >
+                     Eliminar
+                   </Button>
+                 )}
+               </div>
+             </Form.Item>
 
-              <div className={styles.column}>
-                <Form.Item
-                  name="medicamentos"
-                  label="Medicamentos"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
-            </div>
+                         <div className={styles.threeColumnLayout} style={{ marginTop: '20px' }}>
+               <div className={styles.column}>
+                 <Form.Item
+                   name="diagnosticosMedicos"
+                   label="Diagnósticos médicos"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+
+               <div className={styles.column}>
+                 <Form.Item
+                   name="dolencias"
+                   label="Dolencias"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+
+               <div className={styles.column}>
+                 <Form.Item
+                   name="medicamentos"
+                   label="Medicamentos"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+             </div>
 
             <div className={styles.threeColumnLayout}>
               <div className={styles.column}>
@@ -543,29 +545,47 @@ const PatientHistory = () => {
             </div>
 
             <div className={styles.physicalInfoRow}>
-              <Form.Item
-                name="talla"
-                label="Talla"
-                className={styles.physicalInfoItem}
-              >
-                <Input className={styles.input} />
-              </Form.Item>
+                             <Form.Item
+                 name="talla"
+                 label="Talla"
+                 className={styles.physicalInfoItem}
+                 rules={[
+                   {
+                     pattern: /^\d+(\.\d+)?$/,
+                     message: 'Solo se permiten números enteros o decimales',
+                   },
+                 ]}
+               >
+                 <Input className={styles.input} />
+               </Form.Item>
 
-              <Form.Item
-                name="pesoInicial"
-                label="Peso Inicial"
-                className={styles.physicalInfoItem}
-              >
-                <Input className={styles.input} />
-              </Form.Item>
+               <Form.Item
+                 name="pesoInicial"
+                 label="Peso Inicial"
+                 className={styles.physicalInfoItem}
+                 rules={[
+                   {
+                     pattern: /^\d+(\.\d+)?$/,
+                     message: 'Solo se permiten números enteros o decimales',
+                   },
+                 ]}
+               >
+                 <Input className={styles.input} />
+               </Form.Item>
 
-              <Form.Item
-                name="ultimoPeso"
-                label="Último Peso"
-                className={styles.physicalInfoItem}
-              >
-                <Input className={styles.input} />
-              </Form.Item>
+               <Form.Item
+                 name="ultimoPeso"
+                 label="Último Peso"
+                 className={styles.physicalInfoItem}
+                 rules={[
+                   {
+                     pattern: /^\d+(\.\d+)?$/,
+                     message: 'Solo se permiten números enteros o decimales',
+                   },
+                 ]}
+               >
+                 <Input className={styles.input} />
+               </Form.Item>
 
               <Form.Item
                 name="testimonio"

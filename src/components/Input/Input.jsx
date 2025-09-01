@@ -6,6 +6,7 @@ import {
   DatePicker,
   Form,
   Input,
+  Radio,
   Select,
   TimePicker,
   theme,
@@ -214,6 +215,7 @@ const InputField = ({
               backgroundColor: '#424242FF',
               borderColor: '#444444',
             }}
+            format="DD/MM/YYYY"
             dropdownStyle={{
               backgroundColor: '#000000',
               color: '#ffffff',
@@ -348,18 +350,49 @@ const PatientField = ({
   selectedPatient,
   changeSelectedPatient,
   onOpenSelectModal,
+  required = false,
 }) => {
   const formInstance = form || Form.useFormInstance();
 
-  // Función para cambiar el texto del paciente
-
   return (
     <div className={styles.patientRow}>
+      {/* Subtítulo para Tipo de Paciente */}
+      <div style={{ marginBottom: '16px' }}>
+        <h4 style={{ 
+          margin: '0 0 12px 0', 
+          fontSize: '14px', 
+          fontWeight: '600', 
+          color: '#ffffff' 
+        }}>
+          Tipo de Paciente:
+        </h4>
+        <Radio.Group
+          value={patientType}
+          onChange={(e) => onPatientTypeChange(e.target.value)}
+          style={{ display: 'flex', gap: '16px' }}
+        >
+          {patientTypeOptions.map((option) => (
+            <Radio
+              key={option.value}
+              value={option.value}
+              style={{
+                color: '#ffffff',
+                fontSize: '14px'
+              }}
+            >
+              {option.label}
+            </Radio>
+          ))}
+        </Radio.Group>
+      </div>
+
+      {/* Campo Paciente debajo de los radio buttons */}
       <div className={styles.patientContainer}>
         <div className={styles.patientInputContainer}>
           <Form.Item
             label="Paciente"
-            rules={[{ required: true, message: 'Este campo es requerido' }]}
+            rules={[{ required: required, message: 'Este campo es requerido' }]}
+            required={required}
             className={styles.formItem}
             style={{ marginBottom: '-30px', marginTop: '-10px' }}
           >
@@ -391,21 +424,8 @@ const PatientField = ({
               }
             }}
           >
-            {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
+            {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
           </Button>
-        </div>
-
-        <div className={styles.checkboxColumn}>
-          {patientTypeOptions.map((option) => (
-            <Checkbox
-              key={option.value}
-              checked={patientType === option.value}
-              onChange={() => onPatientTypeChange(option.value)}
-              className={`${styles.checkbox} ${styles.checkboxItem}`}
-            >
-              {option.label}
-            </Checkbox>
-          ))}
         </div>
       </div>
     </div>
@@ -453,6 +473,8 @@ const DateField = ({ form }) => {
             backgroundColor: '#333333FF',
             borderColor: '#444444',
           }}
+          format="DD/MM/YYYY"
+          placeholder="Seleccione una fecha"
           onChange={handleDateChange}
           dropdownStyle={{
             backgroundColor: '#2C2C2CFF',
