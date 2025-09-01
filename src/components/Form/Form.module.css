@@ -28,7 +28,7 @@
   font-size: 30px;
   font-weight: bold;
   color: white;
-  text-align: center;
+  text-align: left;
 }
 
 /* Etiquetas */
@@ -39,7 +39,7 @@
 
 /* Espaciado entre campos más compacto */
 .formItem {
-  margin: 8px 0;
+  margin: 15px 0;
 }
 
 /* Grupo de botones */

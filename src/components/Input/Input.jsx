@@ -13,6 +13,9 @@ import {
 } from 'antd';
 import styles from '../Input/Input.module.css';
 
+import esES from 'antd/locale/es_ES';
+import 'dayjs/locale/es'; // activa el idioma en dayjs
+
 // Importaciones corregidas
 import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
@@ -190,6 +193,7 @@ const InputField = ({
     case 'date':
       inputComponent = (
         <ConfigProvider
+          locale={esES}
           theme={{
             components: {
               DatePicker: {
