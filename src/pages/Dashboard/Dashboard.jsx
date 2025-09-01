@@ -94,7 +94,6 @@ export default function Dashboard() {
       <div className={Style.dashboardFooter}>
         <Divider style={{ backgroundColor: '#333333' }} />
         <BtnLogOut />
-        <p>© 2025 Centro de Reflexoterapia </p>
       </div>
     </div>
   );

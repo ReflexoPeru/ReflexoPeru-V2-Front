@@ -1,12 +1,14 @@
-*{
+* {
     font-family: Arial, Helvetica, sans-serif;
 }
-.dashboardContainer{
+
+.dashboardContainer {
+    overflow: hidden; /* Evita scroll general */
     display: flex;
     flex-direction: column;
 
     box-sizing: border-box;
-    min-height: 100vh;
+    height: 100vh; /* Cambiado de min-height a height */
     padding: 15px;
 
     color: #ffffff;
@@ -14,58 +16,86 @@
     background-color: #1E1E1E;
 }
 
-.dashboardHeader{
+.dashboardHeader {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0; /* Evita que se encoja */
     gap: 5px;
     align-items: center;
 
-    & img{
+    & img {
         width: 111px;
         height: 98px;
     }
-    & p{
+
+    & p {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 18px;
         font-weight: bold;
         text-align: center;
     }
 }
-.dashboardUser{
+
+.dashboardUser {
     display: flex;
+    flex-shrink: 0; /* Evita que se encoja */
     gap: 10px;
     align-items: center;
 
-    & img{
+    & img {
         border-radius: 50%;
     }
 }
 
-.dashboardUserName{
+.dashboardUserName {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    & h1{
+
+    & h1 {
         font-size: 14px;
         font-weight: bold;
     }
-    & p{
+
+    & p {
         font-size: 12px;
         color: #AAAAAA;
     }
 }
-.dashboardMenu{
-    display: flex;
-    flex: 1;
-    flex-direction: column;
+
+.dashboardMenu {
+    overflow: hidden; /* Oculta scroll del contenedor */
+    flex: 1; /* Toma el espacio disponible */
+    min-height: 0; /* IMPORTANTE: Permite que el flex se comprima */
 }
-.dashboardFooter{
+
+/* Contenedor interno del menú para scroll controlado */
+.dashboardMenu > div {
+    overflow-x: hidden;
+    overflow-y: auto; /* Scroll interno solo si es necesario */
+    height: 100%;
+}
+
+/* Ocultar barra de scroll pero mantener funcionalidad */
+.dashboardMenu > div::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.dashboardMenu > div {
+    scrollbar-width: none; /* Firefox */
+
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.dashboardFooter {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0; /* Evita que se encoja */
     align-items: center;
     justify-content: flex-end;
-    
-    & p{
+
+    & p {
         margin-top: 40px;
         font-size: 14px;
         color: #6B7280;

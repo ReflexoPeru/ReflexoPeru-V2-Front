@@ -43,3 +43,31 @@
 .hide-payment-field {
   display: none !important;
 }
+
+/* FORZAR Opciones de Pago más arriba - múltiples selectores agresivos */
+.container :global(.ant-form-item):nth-of-type(4) {
+  margin-top: -10px !important;
+  transform: translateY(-5px) !important;
+}
+
+.container :global(.hide-price-input) {
+  margin-top: -10px !important;
+  transform: translateY(-5px) !important;
+}
+
+.container :global(.ant-form-item:has(.ant-select:not(.ant-select-disabled))) {
+  margin-top: -10px !important;
+  transform: translateY(-5px) !important;
+}
+
+/* Quitar fondo gris del campo de monto */
+.container :global(.ant-input-number) {
+  background-color: transparent !important;
+  border: 1px solid #666666 !important;
+  color: #ffffff !important;
+}
+
+.container :global(.ant-input-number-input) {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}

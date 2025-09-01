@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { formatToastMessage } from '../../../utils/messageFormatter';
 import {
-  getAppointmentsforTherapist,
-  getPatientsByTherapist,
-  getDailyCash,
-  getAppointmentsBetweenDates,
+    getAppointmentsBetweenDates,
+    getAppointmentsforTherapist,
+    getDailyCash,
+    getPatientsByTherapist,
 } from '../service/reportsService';
 
 export const useDailyTherapistReport = () => {
@@ -21,7 +21,8 @@ export const useDailyTherapistReport = () => {
       // Formatear la fecha a YYYY-MM-DD
       const formattedDate = date.format('YYYY-MM-DD');
       const res = await getAppointmentsforTherapist(formattedDate);
-      // Si la respuesta es el objeto vacío esperado, no setear data
+      
+      // Verificar si hay datos válidos
       if (
         res &&
         typeof res === 'object' &&
@@ -29,14 +30,17 @@ export const useDailyTherapistReport = () => {
         res.therapists_appointments.length === 0 &&
         res.total_appointments_count === 0
       ) {
-        showToast('error', 'No se encontraron datos para generar el reporte.');
-        setData(null);
+        // No hay datos pero la respuesta es válida
+        setData(res); // Mantener la respuesta aunque esté vacía
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       } else if (Array.isArray(res) && res.length === 0) {
-        showToast('error', 'No se encontraron datos para generar el reporte.');
-        setData(null);
+        // Array vacío pero respuesta válida
+        setData(res); // Mantener la respuesta aunque esté vacía
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       } else {
+        // Hay datos válidos
         setData(res);
-        showToast('reporteGenerado');
+        showToast('success', 'Reporte generado exitosamente.');
       }
     } catch (err) {
       setError(err);
@@ -70,9 +74,9 @@ export const usePatientsByTherapistReport = () => {
       setData(res);
 
       if (Array.isArray(res) && res.length === 0) {
-        showToast('error', 'No se encontraron datos para generar el reporte.');
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       } else {
-        showToast('reporteGenerado');
+        showToast('success', 'Reporte generado exitosamente.');
       }
     } catch (err) {
       setError(err);
@@ -106,9 +110,9 @@ export const useDailyCashReport = () => {
       setData(res);
 
       if (Array.isArray(res) && res.length === 0) {
-        showToast('error', 'No se encontraron datos para generar el reporte.');
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       } else {
-        showToast('reporteGenerado');
+        showToast('success', 'Reporte generado exitosamente.');
       }
     } catch (err) {
       setError(err);
@@ -141,9 +145,9 @@ export const useAppointmentsBetweenDatesReport = () => {
       setData(res);
 
       if (Array.isArray(res) && res.length === 0) {
-        showToast('error', 'No se encontraron datos para generar el reporte.');
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       } else {
-        showToast('reporteGenerado');
+        showToast('success', 'Reporte generado exitosamente.');
       }
     } catch (err) {
       setError(err);

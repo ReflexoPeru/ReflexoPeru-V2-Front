@@ -83,6 +83,7 @@ const FormComponent = forwardRef(
               type="cita"
               componentType={field.componentType}
               form={form}
+              required={field.required}
               {...field.props}
               showHourField={showHourField}
               isPaymentRequired={isPaymentRequired}

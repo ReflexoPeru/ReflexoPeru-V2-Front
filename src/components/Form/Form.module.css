@@ -12,20 +12,23 @@
   background-color: #1e1e1e;
 }
 
-/* Título más compacto */
+/* Título más compacto y centrado */
 .title {
-  text-align: center;
   margin-top: 10px;
+
   font-size: 30px;
   font-weight: bold;
   color: white;
+  text-align: center;
 }
 
 .subtitle {
   margin-top: 10px;
+
   font-size: 30px;
   font-weight: bold;
   color: white;
+  text-align: center;
 }
 
 /* Etiquetas */
@@ -36,7 +39,7 @@
 
 /* Espaciado entre campos más compacto */
 .formItem {
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 /* Grupo de botones */
