@@ -14,7 +14,7 @@ import {
   getPatientHistoryById,
 } from '../../history/service/historyService';
 import { useAppointments } from '../hook/appointmentsHook';
-import EditAppointment from '../ui/EditAppointment/EditAppointment'; // Importar el componente de edición
+import EditAppointment from '../ui/EditAppointment/EditAppointment';
 import { deleteAppointment } from '../service/appointmentsService';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
@@ -32,7 +32,8 @@ export default function Appointments() {
     loadAppointments,
   } = useAppointments();
 
-  const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
+  // Cambiado: Estado como objeto dayjs en lugar de string
+  const [selectDate, setSelectDate] = useState(dayjs());
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showFichaModal, setShowFichaModal] = useState(false);
@@ -50,7 +51,8 @@ export default function Appointments() {
   const { showToast } = useToast();
 
   useEffect(() => {
-    loadPaginatedAppointmentsByDate(selectDate);
+    // Cambiado: Convertir a formato YYYY-MM-DD para la API
+    loadPaginatedAppointmentsByDate(selectDate.format('YYYY-MM-DD'));
   }, [selectDate]);
 
   const columns = [
@@ -58,7 +60,7 @@ export default function Appointments() {
       title: 'Nro Ticket',
       dataIndex: 'ticket_number',
       key: 'ticket_number',
-      width: '70px',
+      width: '75px',
     },
     {
       title: 'Paciente',
@@ -74,9 +76,8 @@ export default function Appointments() {
       title: 'Sala',
       dataIndex: 'room',
       key: 'room',
-      width: '60px',
+      width: '65px',
     },
-
     {
       title: 'Fecha cita',
       dataIndex: 'appointment_date',
@@ -114,7 +115,6 @@ export default function Appointments() {
         return dayjs(date).format('DD-MM-YYYY HH:mm:ss');
       },
     },
-
     {
       title: 'Acciones',
       key: 'actions',
@@ -135,7 +135,7 @@ export default function Appointments() {
               setLoadingEditId(record.id);
               setAppointmentIdToEdit(record.id);
               setIsEditModalOpen(true);
-              setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
+              setLoadingEditId(null);
             }}
             disabled={loadingEditId === record.id}
           >
@@ -274,7 +274,6 @@ export default function Appointments() {
   };
 
   const printFichaPDF = async (record, visitas) => {
-    // Obtener historia clínica por ID
     let historia = {};
     try {
       historia = await getPatientHistoryById(record.patient.id);
@@ -346,10 +345,11 @@ export default function Appointments() {
         />
 
         <CustomTimeFilter
-          onDateChange={setSelectDate}
+          onDateChange={setSelectDate} // Ahora recibe objeto dayjs
+          value={selectDate} // Pasa el valor actual
           width="250px"
           showTime={false}
-          format="YYYY-MM-DD"
+          format="DD-MM-YYYY"
         />
       </div>
 
