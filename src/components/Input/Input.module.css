@@ -51,9 +51,9 @@
 
 /* Clase específica para el asterisco rojo */
 .requiredAsterisk {
-  color: #ff4d4f !important;
   margin-right: 4px !important;
   font-weight: bold !important;
+  color: #ff4d4f !important;
 }
 
 /* Clase específica para el texto del label */
@@ -95,19 +95,19 @@
 }
 
 .radioButton {
-  color: #262626;
   font-size: 14px;
+  color: #262626;
 }
 
 /* Personalización global de radio buttons para que sean azules */
 :global(.ant-radio-wrapper) {
-  color: #ffffff !important;
   font-size: 14px !important;
+  color: #ffffff !important;
 }
 
 :global(.ant-radio-checked .ant-radio-inner) {
-  background-color: #1890ff !important;
   border-color: #1890ff !important;
+  background-color: #1890ff !important;
 }
 
 :global(.ant-radio:hover .ant-radio-inner) {

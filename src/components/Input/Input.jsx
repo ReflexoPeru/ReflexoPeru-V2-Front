@@ -19,9 +19,6 @@ import 'dayjs/locale/es';
 import styles from '../Input/Input.module.css';
 import { useEffect } from 'react';
 
-import esES from 'antd/locale/es_ES';
-import 'dayjs/locale/es'; // activa el idioma en dayjs
-
 // Importaciones corregidas
 import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
