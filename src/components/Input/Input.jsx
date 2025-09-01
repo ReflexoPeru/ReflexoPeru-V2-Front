@@ -216,6 +216,7 @@ const InputField = ({
         >
           <DatePicker
             {...inputProps}
+            format="DD/MM/YYYY"
             style={{
               width: '100%',
               color: '#ffffff',
@@ -366,12 +367,14 @@ const PatientField = ({
   return (
     <div className={styles.patientRow}>
       {/* Subtítulo y opciones de Tipo de Paciente */}
-      <div style={{
-        margin: '0 0 6px 0',
-        fontSize: 14,
-        fontWeight: 600,
-        color: '#ffffff'
-      }}>
+      <div
+        style={{
+          margin: '0 0 6px 0',
+          fontSize: 14,
+          fontWeight: 600,
+          color: '#ffffff',
+        }}
+      >
         Tipos de pacientes
       </div>
       <Row gutter={16} align="bottom" style={{ marginBottom: 12 }}>
@@ -411,7 +414,9 @@ const PatientField = ({
               }
             }}
           >
-            {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
+            {patientType === 'nuevo'
+              ? 'Crear Paciente'
+              : 'Seleccionar Paciente'}
           </Button>
         </Col>
       </Row>
@@ -467,7 +472,7 @@ const DateField = ({ form }) => {
       style={{ marginBottom: 0 }}
     >
       <ConfigProvider
-        locale={esES}
+        locale={es_ES}
         theme={{
           components: {
             DatePicker: {
@@ -483,6 +488,7 @@ const DateField = ({ form }) => {
         }}
       >
         <DatePicker
+          format="DD/MM/YYYY"
           style={{
             width: '100%',
             color: '#ffffff',
