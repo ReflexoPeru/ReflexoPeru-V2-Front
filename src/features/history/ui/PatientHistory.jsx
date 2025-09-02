@@ -493,8 +493,8 @@ const PatientHistory = () => {
 
                <div className={styles.column}>
                  <Form.Item
-                   name="dolencias"
-                   label="Dolencias"
+                   name="medicamentos"
+                   label="Medicamentos"
                    className={styles.formItem}
                  >
                    <TextArea rows={3} className={styles.diagnosticTextArea} />
@@ -503,8 +503,8 @@ const PatientHistory = () => {
 
                <div className={styles.column}>
                  <Form.Item
-                   name="medicamentos"
-                   label="Medicamentos"
+                   name="operaciones"
+                   label="Operaciones"
                    className={styles.formItem}
                  >
                    <TextArea rows={3} className={styles.diagnosticTextArea} />
@@ -515,8 +515,8 @@ const PatientHistory = () => {
             <div className={styles.threeColumnLayout}>
               <div className={styles.column}>
                 <Form.Item
-                  name="operaciones"
-                  label="Operaciones"
+                  name="dolencias"
+                  label="Dolencias"
                   className={styles.formItem}
                 >
                   <TextArea rows={3} className={styles.diagnosticTextArea} />
