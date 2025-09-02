@@ -12,23 +12,47 @@
   background-color: #1e1e1e;
 }
 
-/* Título más compacto */
+/* Título más compacto y centrado */
 .title {
   margin-top: 10px;
-  font-size: 26px;
+
+  font-size: 30px;
   font-weight: bold;
   color: white;
+  text-align: center;
 }
 
+.subtitle {
+  margin-top: 10px;
+
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+/* Línea separadora verde */
+.greenSeparator {
+  width: 100%;
+  height: 3px;
+  margin: 15px 0;
+  border-radius: 2px;
+
+  background-color: #00b96b;
+}
+
+.formItem {
+  margin: 16px 0;
+}
 /* Etiquetas */
 .label {
-  font-size: 0.95rem;
+  font-size: 0.97rem;
   color: white;
 }
 
 /* Espaciado entre campos más compacto */
 .formItem {
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 /* Grupo de botones */

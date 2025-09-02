@@ -1,33 +1,33 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { ConfigProvider, DatePicker, Button, theme, Card, Select } from 'antd';
-import ReportSelector from './ReportSelector';
-import ReportPreview from './ReportPreview';
-import EditCashReportModal from './EditCashReportModal';
-import styles from './reports.module.css';
-import dayjs from 'dayjs';
 import {
-  useDailyTherapistReport,
-  usePatientsByTherapistReport,
-  useDailyCashReport,
-  useAppointmentsBetweenDatesReport,
-} from '../hook/reportsHook';
-import { PDFViewer } from '@react-pdf/renderer';
-import DailyTherapistReportPDF from '../../../components/PdfTemplates/DailyTherapistReportPDF';
-import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/PatientsByTherapistReportPDF';
-import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
-import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
-import ExcelJS from 'exceljs';
-import {
-  FilePlus,
-  ChartPieSlice,
-  Users,
-  Wallet,
-  CalendarBlank,
+    CalendarBlank,
+    ChartPieSlice,
+    FilePlus,
+    Users,
+    Wallet,
 } from '@phosphor-icons/react';
+import { PDFViewer } from '@react-pdf/renderer';
+import { Button, Card, ConfigProvider, DatePicker, theme } from 'antd';
+import dayjs from 'dayjs';
+import ExcelJS from 'exceljs';
+import React, { useEffect, useMemo, useState } from 'react';
+import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
+import DailyTherapistReportPDF from '../../../components/PdfTemplates/DailyTherapistReportPDF';
+import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
+import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/PatientsByTherapistReportPDF';
 import {
-  useCompanyInfo,
-  useSystemHook,
+    useCompanyInfo,
+    useSystemHook,
 } from '../../configuration/cSystem/hook/systemHook';
+import {
+    useAppointmentsBetweenDatesReport,
+    useDailyCashReport,
+    useDailyTherapistReport,
+    usePatientsByTherapistReport,
+} from '../hook/reportsHook';
+import EditCashReportModal from './EditCashReportModal';
+import ReportPreview from './ReportPreview';
+import styles from './reports.module.css';
+import ReportSelector from './ReportSelector';
 
 const reportOptions = [
   {
@@ -267,19 +267,25 @@ const Reporte = () => {
       loading = diariaLoading || logoLoading || loadingInfo;
       error = diariaError || logoError || errorInfo;
       content = diariaData && (
-        <PDFViewer
-          key={`diaria-${safeDate.format('YYYY-MM-DD')}`}
-          width="100%"
-          height="95%"
-          style={pdfViewerStyle}
-        >
-          <DailyTherapistReportPDF
-            data={diariaData}
-            date={safeDate}
-            logoUrl={logoUrl}
-            companyInfo={companyInfo}
-          />
-        </PDFViewer>
+        diariaData.therapists_appointments && diariaData.therapists_appointments.length > 0 ? (
+          <PDFViewer
+            key={`diaria-${safeDate.format('YYYY-MM-DD')}`}
+            width="100%"
+            height="95%"
+            style={pdfViewerStyle}
+          >
+            <DailyTherapistReportPDF
+              data={diariaData}
+              date={safeDate}
+              logoUrl={logoUrl}
+              companyInfo={companyInfo}
+            />
+          </PDFViewer>
+        ) : (
+          <div className={styles.errorMsg}>
+            No hay datos para mostrar en la fecha seleccionada.
+          </div>
+        )
       );
     } else if (showPreview === 'pacientesTerapeuta') {
       loading = pacientesLoading || logoLoading || loadingInfo;
@@ -312,7 +318,7 @@ const Reporte = () => {
       const dataToShow = editedCajaData || cajaData;
 
       content =
-        dataToShow && Object.keys(dataToShow).length > 0 ? (
+        dataToShow && dataToShow.appointments && dataToShow.appointments.length > 0 ? (
           <PDFViewer
             key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
             width="100%"

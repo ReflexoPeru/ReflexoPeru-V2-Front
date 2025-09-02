@@ -199,7 +199,7 @@ const NewAppointment = () => {
   const appointmentFields = [
     {
       type: 'customRow',
-      fields: [{ type: 'title', label: 'Nueva Cita', span: 8 }],
+      fields: [{ type: 'title', label: 'REGISTRAR CITA', span: 8 }],
     },
     {
       type: 'customRow',
@@ -234,9 +234,39 @@ const NewAppointment = () => {
             onPatientTypeChange: (value) => {
               setPatientType(value);
               setSelectedPatient(null);
+              
             },
             onOpenCreateModal: handleOpenCreateModal,
             onOpenSelectModal: handleOpenSelectModal,
+          },
+        },
+      ],
+    },
+    {
+      type: 'customRow',
+      fields: [
+        {
+          type: 'customComponent',
+          componentType: 'spacer',
+          span: 24,
+          props: {
+            height: 8,
+          },
+        },
+      ],
+    },
+    {
+      type: 'customRow',
+      fields: [
+        {
+          name: 'payment_method_id',
+          type: 'customComponent',
+          componentType: 'paymentMethodField',
+          label: 'Método de Pago',
+          required: true,
+          span: 15,
+          props: {
+            component: SelectPaymentStatus,
           },
         },
       ],
@@ -267,23 +297,7 @@ const NewAppointment = () => {
           componentType: 'spacer',
           span: 24,
           props: {
-            height: 40,
-          },
-        },
-      ],
-    },
-    {
-      type: 'customRow',
-      fields: [
-        {
-          name: 'payment_method_id',
-          type: 'customComponent',
-          componentType: 'paymentMethodField',
-          label: 'Método de Pago',
-          required: true,
-          span: 15,
-          props: {
-            component: SelectPaymentStatus,
+            height: 8,
           },
         },
       ],

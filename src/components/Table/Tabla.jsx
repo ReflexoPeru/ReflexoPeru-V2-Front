@@ -4,12 +4,11 @@ import estilos from './Tabla.module.css';
 import ModeloPagination from './Pagination/Pagination.jsx';
 import { Package } from '@phosphor-icons/react';
 
-
-const ModeloTable = ({ 
-  columns, 
-  data, 
-  loading = false, 
-  pagination = {} ,
+const ModeloTable = ({
+  columns,
+  data,
+  loading = false,
+  pagination = {},
   maxHeight = '60vh',
 }) => {
   const currentPage = pagination?.current || 1;
@@ -22,49 +21,53 @@ const ModeloTable = ({
 
   // Transformar columnas para centrar contenido
   const centeredColumns = columns.map((column, index, arr) => {
-  const isLast = index === arr.length - 1;
-  
-  return {
-    ...column,
-    align: 'center',
-    onCell: () => ({
-      style: {
-        textAlign: 'center',
-        background: 'inherit',
-        borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha
-        borderBottom: 'none',
-      },
-    }),
-    onHeaderCell: () => ({
-      style: {
-        textAlign: 'center',
-        background: '#272727',
-        borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha en header
-        borderBottom: 'none',
-        color: '#fff',
-      },
-    }),
-  };
-});
+    const isLast = index === arr.length - 1;
+
+    return {
+      ...column,
+      align: 'center',
+      onCell: () => ({
+        style: {
+          textAlign: 'center',
+          background: 'inherit',
+          borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha
+          borderBottom: 'none',
+        },
+      }),
+      onHeaderCell: () => ({
+        style: {
+          textAlign: 'center',
+          background: '#3b3b3b',
+          borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha en header
+          borderBottom: 'none',
+          color: '#fff',
+        },
+      }),
+    };
+  });
 
   //Calculo simplificado de altura
   useEffect(() => {
     const calculateHeight = () => {
       if (!containerRef.current) return;
-      
+
       const containerRect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const spaceFromTop = containerRect.top;
       const marginBottom = 32; // Margen para paginación y espacio respiro
-      
+
       // Altura calculada con límite máximo
       const calculatedHeight = windowHeight - spaceFromTop - marginBottom;
-      
+
       // Aplicamos el mínimo entre la altura calculada y el máximo especificado
-      const finalHeight = typeof maxHeight === 'string' && maxHeight.endsWith('vh') 
-        ? Math.min(calculatedHeight, (windowHeight * parseInt(maxHeight)) / 100)
-        : Math.min(calculatedHeight, maxHeight);
-      
+      const finalHeight =
+        typeof maxHeight === 'string' && maxHeight.endsWith('vh')
+          ? Math.min(
+              calculatedHeight,
+              (windowHeight * parseInt(maxHeight)) / 100,
+            )
+          : Math.min(calculatedHeight, maxHeight);
+
       setTableHeight(`${finalHeight}px`);
     };
 
@@ -72,7 +75,6 @@ const ModeloTable = ({
     window.addEventListener('resize', calculateHeight);
     return () => window.removeEventListener('resize', calculateHeight);
   }, [maxHeight]);
-
 
   return (
     <ConfigProvider
@@ -96,18 +98,20 @@ const ModeloTable = ({
         },
       }}
       renderEmpty={() => {
-          <div style={{ 
-            color: '#a0a0a0', 
-            padding: '16px', 
+        <div
+          style={{
+            color: '#a0a0a0',
+            padding: '16px',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '8px',
-          }}>
-            <Package size={40} />
-            <span>No hay datos disponibles</span>
-          </div>
+          }}
+        >
+          <Package size={40} />
+          <span>No hay datos disponibles</span>
+        </div>;
       }}
     >
       <div
@@ -117,33 +121,34 @@ const ModeloTable = ({
           marginTop: '15px',
         }}
       >
-        <div style={{ 
+        <div
+          style={{
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            
-          }}>
-            <Table
-              className={estilos.tableCustom}
-              columns={centeredColumns}
-              dataSource={data}
-              rowKey="id"
-              pagination={false}
-              scroll={{ y: tableHeight, x: 'max-content' }}
-              rowClassName={(__, index) =>
-                index % 2 === 0 ? estilos.zebraRow : ''
-              }
-              loading={{
-                spinning: loading,
-                indicator: (
-                  <Spin 
-                    size="large" 
-                    style={{ color: '#ffffff' }} // Texto blanco
-                    tip="Cargando..."
-                  />
-                )
-              }}
-            />
+          }}
+        >
+          <Table
+            className={estilos.tableCustom}
+            columns={centeredColumns}
+            dataSource={data}
+            rowKey="id"
+            pagination={false}
+            scroll={{ y: tableHeight, x: 'max-content' }}
+            rowClassName={(__, index) =>
+              index % 2 === 0 ? estilos.zebraRow : ''
+            }
+            loading={{
+              spinning: loading,
+              indicator: (
+                <Spin
+                  size="large"
+                  style={{ color: '#ffffff' }} // Texto blanco
+                  tip="Cargando..."
+                />
+              ),
+            }}
+          />
         </div>
         <div>
           <ModeloPagination

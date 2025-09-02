@@ -1,11 +1,13 @@
 .container {
-  max-width: 1400px;
+  width: 1000px;
+  max-width: 1000px;
+  min-width: 1000px;
   margin: 20px auto;
   padding: 0;
-
 }
 
 .card {
+  width: 100%;
   border-radius: 10px;
   background: #161616;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -14,7 +16,7 @@
 .title {
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 2px solid #4caf50;
 
   font-size: 28px;
   font-weight: 700;
@@ -34,6 +36,7 @@
 }
 
 .form {
+  width: 100%;
   padding: 20px;
 }
 
@@ -157,8 +160,8 @@
 
 .physicalInfoItem {
   flex: 1;
-  min-width: 150px;
-  max-width: 200px;
+  min-width: 120px;
+  max-width: 150px;
 }
 
 .bottomSection {
@@ -309,6 +312,22 @@
   flex: 1;
   min-width: 220px;
   margin-bottom: 0 !important;
+}
+
+/* Campos con ancho reducido */
+.smallInput {
+  width: 120px !important;
+  max-width: 120px !important;
+}
+
+.mediumInput {
+  width: 170px !important;
+  max-width: 170px !important;
+}
+
+.testimonioInput {
+  width: 250px !important;
+  max-width: 250px !important;
 }
 
 .flexItem textarea {

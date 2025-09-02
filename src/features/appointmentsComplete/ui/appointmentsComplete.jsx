@@ -20,9 +20,12 @@ export default function AppointmentsComplete() {
     loadPaginatedAppointmentsCompleteByDate,
   } = useAppointmentsComplete();
 
-  const [selectDate, setSelectDate] = useState(dayjs().format('YYYY-MM-DD'));
+  // Cambiado: Estado como objeto dayjs en lugar de string
+  const [selectDate, setSelectDate] = useState(dayjs());
+
   useEffect(() => {
-    loadPaginatedAppointmentsCompleteByDate(selectDate);
+    // Convertir a formato YYYY-MM-DD para la API
+    loadPaginatedAppointmentsCompleteByDate(selectDate.format('YYYY-MM-DD'));
   }, [selectDate]);
 
   const columns = [
@@ -35,7 +38,7 @@ export default function AppointmentsComplete() {
     {
       title: 'Paciente',
       key: 'patient_id',
-      width: '140px',
+      width: '160px',
       render: (text, record) => {
         return `${record.patient.paternal_lastname} ${record.patient.maternal_lastname} ${record.patient.name}`;
       },
@@ -43,7 +46,7 @@ export default function AppointmentsComplete() {
     {
       title: 'Terapeuta',
       key: 'therapist_id',
-      width: '140px',
+      width: '160px',
       render: (text, record) => {
         if (!record.therapist) return 'Sin asignar';
         return `${record.therapist.name} ${record.therapist.paternal_lastname} ${record.therapist.maternal_lastname}`;
@@ -56,16 +59,20 @@ export default function AppointmentsComplete() {
       width: '60px',
     },
     {
+      title: 'Fecha cita',
+      dataIndex: 'appointment_date',
+      key: 'appointment_date',
+      width: '70px',
+      render: (date) => {
+        if (!date) return '-';
+        return dayjs(date).format('DD/MM/YYYY');
+      },
+    },
+    {
       title: 'Hora',
       dataIndex: 'appointment_hour',
       key: 'appointment_hour',
       width: '60px',
-    },
-    {
-      title: 'Pago',
-      dataIndex: 'payment',
-      key: 'payment',
-      width: '70px',
     },
     {
       title: 'Metodo Pago',
@@ -74,9 +81,15 @@ export default function AppointmentsComplete() {
       render: (_, record) => record.payment_type?.name || 'Sin método',
     },
     {
+      title: 'Pago',
+      dataIndex: 'payment',
+      key: 'payment',
+      width: '70px',
+    },
+    {
       title: 'Acciones',
       key: 'actions',
-      width: '200px',
+      width: '100px',
       render: (_, record) => (
         <Space size="small">
           <Button
@@ -95,12 +108,8 @@ export default function AppointmentsComplete() {
   ];
 
   const handleAction = (action, record) => {
-    // Implementa las acciones según el tipo
-    console.log(`${action} action for:`, record);
-
     switch (action) {
       case 'history':
-        // Lógica para eliminar
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
           state: { appointment: record },
         });
@@ -111,12 +120,10 @@ export default function AppointmentsComplete() {
   };
 
   const handleButton = () => {
-    // Aquí puedes implementar la lógica de registrar
     navigate('registrar');
   };
 
   const handleSearch = (value) => {
-    // Aquí puedes implementar la lógica de filtrado
     setSearchTerm(value);
   };
 
@@ -143,11 +150,11 @@ export default function AppointmentsComplete() {
         />
 
         <CustomTimeFilter
-          onDateChange={setSelectDate}
-          // onTimeRangeChange={handleTimeRangeChange}
+          onDateChange={setSelectDate} // Recibe objeto dayjs
+          value={selectDate} // Pasa el valor actual
           width="250px"
-          showTime={false} // Ocultar hora si no es necesaria
-          format="YYYY-MM-DD" // Formato día/mes/año
+          showTime={false}
+          format="DD-MM-YYYY" // Formato visual DD-MM-YYYY
         />
       </div>
 

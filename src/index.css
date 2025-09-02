@@ -30,3 +30,11 @@ html,body,#root{
   scrollbar-color: #4CAF50 #2a2a2a;
   scrollbar-width: thin;
 }
+.ant-table-thead > tr > th {
+  font-size: 13.5px !important;
+  font-weight: bold !important;
+}
+
+.ant-table-tbody > tr > td {
+  font-size: 13.8px !important;
+}

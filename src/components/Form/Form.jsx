@@ -45,9 +45,33 @@ const FormComponent = forwardRef(
 
     const renderField = (field, index) => {
       if (field.type === 'title') {
+        // Solo agregar línea verde al primer título (REGISTRAR PACIENTE)
+        const isMainTitle = field.label === 'REGISTRAR PACIENTE';
         return (
           <Col span={24} key={index}>
             <h2 className={styles.title}>{field.label}</h2>
+            {isMainTitle && <div className={styles.greenSeparator}></div>}
+          </Col>
+        );
+      }
+      if (field.type === 'separator') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.title}>{field.label}</h2>
+            <div
+              style={{
+                borderBottom: '2px solid #1cb54a',
+                marginTop: 4,
+              }}
+            />
+          </Col>
+        );
+      }
+
+      if (field.type === 'subtitle') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.subtitle}>{field.label}</h2>
           </Col>
         );
       }
@@ -55,7 +79,7 @@ const FormComponent = forwardRef(
       if (field.type === 'customRow') {
         return (
           <Col span={24} key={index}>
-            <Row gutter={[25, 0]}>
+            <Row gutter={[25, 16]}>
               {field.fields.map((subField, subIndex) =>
                 renderField(subField, `${index}-${subIndex}`),
               )}
@@ -75,6 +99,7 @@ const FormComponent = forwardRef(
               type="cita"
               componentType={field.componentType}
               form={form}
+              required={field.required}
               {...field.props}
               showHourField={showHourField}
               isPaymentRequired={isPaymentRequired}
@@ -162,7 +187,7 @@ const FormComponent = forwardRef(
             className={styles.formContainer}
             ref={ref}
           >
-            <Row gutter={[20, 0]}>
+            <Row gutter={[20, 8]}>
               {fields.map((field, index) => renderField(field, index))}
             </Row>
 
