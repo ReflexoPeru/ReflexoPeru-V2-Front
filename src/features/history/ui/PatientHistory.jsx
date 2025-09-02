@@ -443,7 +443,7 @@ const PatientHistory = () => {
                >
                  {appointmentDates.map((date) => (
                    <Option key={date} value={date}>
-                     {dayjs(date).format('DD/MM/YYYY')}
+                     {dayjs(date).format('DD-MM-YYYY')}
                    </Option>
                  ))}
                </Select>
@@ -545,47 +545,47 @@ const PatientHistory = () => {
             </div>
 
             <div className={styles.physicalInfoRow}>
-                             <Form.Item
-                 name="talla"
-                 label="Talla"
-                 className={styles.physicalInfoItem}
-                 rules={[
-                   {
-                     pattern: /^\d+(\.\d+)?$/,
-                     message: 'Solo se permiten números enteros o decimales',
-                   },
-                 ]}
-               >
-                 <Input className={`${styles.input} ${styles.smallInput}`} />
-               </Form.Item>
+              <Form.Item
+                name="talla"
+                label="Talla"
+                className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
+              >
+                <Input className={`${styles.input} ${styles.smallInput}`} />
+              </Form.Item>
 
-               <Form.Item
-                 name="pesoInicial"
-                 label="Peso Inicial"
-                 className={styles.physicalInfoItem}
-                 rules={[
-                   {
-                     pattern: /^\d+(\.\d+)?$/,
-                     message: 'Solo se permiten números enteros o decimales',
-                   },
-                 ]}
-               >
-                 <Input className={`${styles.input} ${styles.smallInput}`} />
-               </Form.Item>
+              <Form.Item
+                name="pesoInicial"
+                label="Peso Inicial"
+                className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
+              >
+                <Input className={`${styles.input} ${styles.smallInput}`} />
+              </Form.Item>
 
-               <Form.Item
-                 name="ultimoPeso"
-                 label="Último Peso"
-                 className={styles.physicalInfoItem}
-                 rules={[
-                   {
-                     pattern: /^\d+(\.\d+)?$/,
-                     message: 'Solo se permiten números enteros o decimales',
-                   },
-                 ]}
-               >
-                 <Input className={`${styles.input} ${styles.smallInput}`} />
-               </Form.Item>
+              <Form.Item
+                name="ultimoPeso"
+                label="Último Peso"
+                className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
+              >
+                <Input className={`${styles.input} ${styles.smallInput}`} />
+              </Form.Item>
 
               <Form.Item
                 name="testimonio"
@@ -598,40 +598,39 @@ const PatientHistory = () => {
                 </Select>
               </Form.Item>
 
-              {/* Mostrar solo si es mujer */}
-              {isFemale && (
-                <>
-                  <Form.Item
-                    name="gestacion"
-                    label="Gestación"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Select className={`${styles.select} ${styles.smallInput}`}>
-                      <Option value="Sí">Sí</Option>
-                      <Option value="No">No</Option>
-                    </Select>
-                  </Form.Item>
+              {/* Campos condicionales para mujeres que ahora están en la misma fila */}
+              <Form.Item
+                name="menstruacion"
+                label="Menstruación"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Select className={`${styles.select} ${styles.smallInput}`}>
+                  <Option value="Sí">Sí</Option>
+                  <Option value="No">No</Option>
+                </Select>
+              </Form.Item>
 
-                  <Form.Item
-                    name="menstruacion"
-                    label="Menstruación"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Select className={`${styles.select} ${styles.smallInput}`}>
-                      <Option value="Sí">Sí</Option>
-                      <Option value="No">No</Option>
-                    </Select>
-                  </Form.Item>
+              <Form.Item
+                name="gestacion"
+                label="Gestación"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Select className={`${styles.select} ${styles.smallInput}`}>
+                  <Option value="Sí">Sí</Option>
+                  <Option value="No">No</Option>
+                </Select>
+              </Form.Item>
 
-                  <Form.Item
-                    name="tipoDIU"
-                    label="Tipo DIU"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Input className={`${styles.input} ${styles.smallInput}`} />
-                  </Form.Item>
-                </>
-              )}
+              <Form.Item
+                name="tipoDIU"
+                label="Tipo DIU"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Input className={`${styles.input} ${styles.smallInput}`} />
+              </Form.Item>
             </div>
 
             <div className={styles.bottomSection}>
@@ -640,7 +639,7 @@ const PatientHistory = () => {
                 label="Fecha de Inicio"
                 className={styles.startDateSection}
               >
-                <DatePicker className={styles.datePicker} format="DD-MM-YY" />
+                <DatePicker className={styles.datePicker} format="DD-MM-YYYY" />
               </Form.Item>
 
               <div className={styles.actionButtons}>
@@ -737,7 +736,7 @@ const PatientHistory = () => {
                 ticket={{
                   number: selectedAppointment.ticket_number,
                   date: dayjs(selectedAppointment.appointment_date).format(
-                    'DD/MM/YYYY',
+                    'DD-MM-YYYY',
                   ),
                   patient:
                     `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
