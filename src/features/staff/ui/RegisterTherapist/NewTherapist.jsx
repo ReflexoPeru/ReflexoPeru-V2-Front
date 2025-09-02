@@ -1,5 +1,5 @@
 import React from 'react';
-import { notification, ConfigProvider } from 'antd';
+import { notification, ConfigProvider, Divider } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
 import { useNavigate } from 'react-router';
@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router';
 // Definir campos del formulario con estilos personalizados
 const fields = [
   {
-    type: 'title',
+    type: 'separator',
     label: 'REGISTRAR TERAPEUTA',
   },
   {

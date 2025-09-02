@@ -234,6 +234,7 @@ const NewAppointment = () => {
             onPatientTypeChange: (value) => {
               setPatientType(value);
               setSelectedPatient(null);
+              
             },
             onOpenCreateModal: handleOpenCreateModal,
             onOpenSelectModal: handleOpenSelectModal,
@@ -249,8 +250,7 @@ const NewAppointment = () => {
           componentType: 'spacer',
           span: 24,
           props: {
-            
-            height: 30,
+            height: 8,
           },
         },
       ],
@@ -297,7 +297,7 @@ const NewAppointment = () => {
           componentType: 'spacer',
           span: 24,
           props: {
-            height: 50,
+            height: 8,
           },
         },
       ],
