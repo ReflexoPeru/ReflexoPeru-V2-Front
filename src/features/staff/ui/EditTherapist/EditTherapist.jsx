@@ -81,6 +81,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },

@@ -152,10 +152,9 @@ const FormComponent = forwardRef(
             }
           >
             <InputField
+              {...field}
               type={isPhoneField ? 'phoneNumber' : field.type}
               selectedPatient={selectedPatient}
-              label={field.label}
-              options={field.options || []}
               isPhoneField={isPhoneField}
               isPhoneRequired={isPhoneRequired}
               togglePhoneRequired={togglePhoneRequired}

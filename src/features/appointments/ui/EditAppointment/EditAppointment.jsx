@@ -387,6 +387,46 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   };
 
   /**
+   * Maneja el cambio de opciones de pago desde el componente SelectPrices
+   * @param {string|number} serviceId - ID del servicio seleccionado
+   */
+  const handleServiceChange = (serviceId) => {
+    form.setFieldsValue({
+      service_id: serviceId,
+    });
+
+    // Buscar el servicio seleccionado para verificar si es "cupon sin costo"
+    if (serviceId) {
+      // Obtener las opciones de precios predeterminados
+      const fetchServiceInfo = async () => {
+        try {
+          const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
+          const prices = await getPredeterminedPrices();
+          const selectedService = prices.find(item => item.value === serviceId);
+          
+          if (selectedService) {
+            const serviceName = selectedService.label?.toLowerCase() || '';
+            
+            // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
+            if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
+              // Limpiar el campo de detalles de pago
+              form.setFieldsValue({
+                payment_type_id: '',
+              });
+              
+              console.log('🔍 Debug - Cupon sin costo detectado, limpiando payment_type_id');
+            }
+          }
+        } catch (error) {
+          console.error('Error al verificar el servicio seleccionado:', error);
+        }
+      };
+      
+      fetchServiceInfo();
+    }
+  };
+
+  /**
    * Función principal para manejar el envío del formulario
    * @description Valida los datos, prepara el payload y envía la actualización
    * @param {Object} values - Valores del formulario validados
@@ -411,13 +451,15 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       }
       
       if (
-        !values.payment ||
+        values.payment === undefined ||
+        values.payment === null ||
+        values.payment === '' ||
         isNaN(Number(values.payment)) ||
-        Number(values.payment) <= 0
+        Number(values.payment) < 0
       ) {
         notification.error({
           message: 'Error',
-          description: 'El monto es requerido y debe ser mayor a cero',
+          description: 'El monto es requerido y debe ser mayor o igual a cero',
         });
         return;
       }
@@ -756,9 +798,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   <SelectPrices
                     value={form.getFieldValue('service_id')}
                     initialPrice={form.getFieldValue('payment')}
-                    onChange={(value) =>
-                      form.setFieldsValue({ service_id: value })
-                    }
+                    onChange={handleServiceChange}
                     onPriceChange={(price) =>
                       form.setFieldsValue({ payment: price })
                     }
@@ -813,19 +853,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                       required: true,
                       message: 'El monto es requerido',
                     },
-                    {
-                      validator: (_, value) => {
-                        if (
-                          value &&
-                          (isNaN(Number(value)) || Number(value) <= 0)
-                        ) {
-                          return Promise.reject(
-                            new Error('El monto debe ser mayor a cero'),
-                          );
-                        }
-                        return Promise.resolve();
-                      },
-                    },
+                    
                   ]}
                 >
                   <Input                   

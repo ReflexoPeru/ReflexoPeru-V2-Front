@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Table, ConfigProvider, Spin } from 'antd';
 import estilos from './Tabla.module.css';
 import ModeloPagination from './Pagination/Pagination.jsx';
-import { Package } from '@phosphor-icons/react';
+import EmptyState from '../Empty/EmptyState';
+import ConsistentSpinner from '../Loading/ConsistentSpinner';
 
 const ModeloTable = ({
   columns,
@@ -93,26 +94,21 @@ const ModeloTable = ({
             cellFontSize: 12,
             cellPaddingBlock: 12,
             cellPaddingInline: 16,
-            cellFontFamily: 'Arial, Helvetica, sans-serif',
+            cellFontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif',
           },
         },
       }}
-      renderEmpty={() => {
-        <div
-          style={{
-            color: '#a0a0a0',
-            padding: '16px',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
-          <Package size={40} />
-          <span>No hay datos disponibles</span>
-        </div>;
-      }}
+       renderEmpty={() => (
+         <EmptyState
+           icon="package"
+           title="No hay datos disponibles"
+           description="Los datos aparecerán aquí cuando estén disponibles"
+           style={{
+             margin: '16px',
+             minHeight: '200px'
+           }}
+         />
+       )}
     >
       <div
         ref={containerRef}
@@ -141,10 +137,9 @@ const ModeloTable = ({
             loading={{
               spinning: loading,
               indicator: (
-                <Spin
+                <ConsistentSpinner
                   size="large"
-                  style={{ color: '#ffffff' }} // Texto blanco
-                  tip="Cargando..."
+                  tip="Cargando datos..."
                 />
               ),
             }}
