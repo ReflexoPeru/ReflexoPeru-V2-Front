@@ -19,6 +19,7 @@ const SelectPrices = ({
   useEffect(() => {
     const fetchPrices = async () => {
       const priceOptions = await getPredeterminedPrices();
+      console.log('Loaded predetermined prices:', priceOptions);
       setPrices(priceOptions);
     };
     fetchPrices();
@@ -30,7 +31,9 @@ const SelectPrices = ({
   }, [initialPrice]);
 
   const handleSelectChange = (selectedValue) => {
+    console.log('SelectPrices - Selected value:', selectedValue);
     const selected = prices.find((item) => item.value === selectedValue);
+    console.log('SelectPrices - Selected item:', selected);
     const newPrice = selected?.price || '';
     setInputPrice(newPrice);
     if (onChange) onChange(selectedValue);

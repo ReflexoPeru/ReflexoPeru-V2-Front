@@ -89,6 +89,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
@@ -213,7 +214,7 @@ const NewTherapist = () => {
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         initialValues={{
-          document_type_id: 1,
+          document_type_id: "1", // DNI por defecto (string)
         }}
         submitText="Registrar Terapeuta"
         cancelText="Cancelar"

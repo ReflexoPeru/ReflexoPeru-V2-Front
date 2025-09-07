@@ -40,6 +40,7 @@ const InputField = ({
   isPhoneField = false,
   isPhoneRequired,
   togglePhoneRequired,
+  capitalize = true,
   ...rest
 }) => {
   let inputComponent;
@@ -146,7 +147,13 @@ const InputField = ({
         <Input
           {...inputProps}
           onChange={(e) => {
-            const value = e.target.value.toUpperCase();
+            let value = e.target.value;
+            if (capitalize === true) {
+              value = value.toUpperCase();
+            } else if (capitalize === 'first') {
+              value =
+                value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+            }
             if (rest.onChange) rest.onChange(value);
             if (
               form &&

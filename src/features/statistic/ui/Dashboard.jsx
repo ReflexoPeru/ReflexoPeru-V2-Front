@@ -22,6 +22,34 @@ const themeConfig = {
     controlHeight: 40,
     fontSize: 14,
   },
+  components: {
+    DatePicker: {
+      colorTextPlaceholder: '#AAAAAA',
+      colorBgContainer: '#333333',
+      colorText: '#FFFFFF',
+      colorBorder: '#444444',
+      borderRadius: 4,
+      hoverBorderColor: '#555555',
+      activeBorderColor: '#1DB954',
+      colorIcon: '#FFFFFF',
+      colorIconHover: '#1DB954',
+      colorBgElevated: '#121212',
+      colorPrimary: '#1DB954',
+      colorTextDisabled: '#333333',
+      colorTextHeading: '#FFFFFF',
+      cellHoverBg: '#1DB954',
+      colorSplit: '#444444',
+    },
+    Radio: {
+      colorPrimary: '#1DB954',
+      colorPrimaryHover: '#00cc6a',
+    },
+    Button: {
+      colorPrimary: '#1DB954',
+      colorPrimaryHover: '#00cc6a',
+      colorPrimaryActive: '#ffffff',
+    },
+  },
 };
 
 export default function PerformanceDashboard() {

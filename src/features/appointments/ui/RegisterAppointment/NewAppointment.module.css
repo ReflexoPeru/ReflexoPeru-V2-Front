@@ -1,17 +1,20 @@
 .container {
-  max-width: 550px;
-  margin: 0 auto;
+  max-width: 1200px;
+  margin: 40px auto 0 auto;
   padding: 20px;
+  background-color: #c0afaf;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* Espaciado entre los campos del formulario usando selectores estándar */
 .container .ant-form-item {
-  margin-bottom: 22px !important;
+  margin-bottom: 12px !important;
 }
 
 /* Espaciado extra para el título */
 .container h2 {
-  margin-bottom: 28px !important;
+  margin-bottom: 16px !important;
 }
 
 /* Espacio extra entre Opciones de Pago y Método de Pago */
@@ -22,17 +25,17 @@
 
 /* Espacio extra entre Opciones de Pago (con input) y Método de Pago */
 .container .ant-form-item-label > label[for='payment_method_id'] {
-  margin-top: 32px !important;
+  margin-top: 8px !important;
 }
 
 /* Alternativa: margen al form-item completo si el anterior no es suficiente */
 .container .ant-form-item:has(> .ant-form-item-label > label[for='payment_method_id']) {
-  margin-top: 32px !important;
+  margin-top: 8px !important;
 }
 
 /* Clase personalizada para margen extra entre bloques */
 .metodoPagoSpacing {
-  margin-top: 96px !important;
+  margin-top: 16px !important;
 }
 
 .hide-price-input input[type="number"],
@@ -46,18 +49,18 @@
 
 /* FORZAR Opciones de Pago más arriba - múltiples selectores agresivos */
 .container :global(.ant-form-item):nth-of-type(4) {
-  margin-top: -10px !important;
-  transform: translateY(-5px) !important;
+  margin-top: -8px !important;
+  transform: translateY(-3px) !important;
 }
 
 .container :global(.hide-price-input) {
-  margin-top: -10px !important;
-  transform: translateY(-5px) !important;
+  margin-top: -8px !important;
+  transform: translateY(-3px) !important;
 }
 
 .container :global(.ant-form-item:has(.ant-select:not(.ant-select-disabled))) {
-  margin-top: -10px !important;
-  transform: translateY(-5px) !important;
+  margin-top: -8px !important;
+  transform: translateY(-3px) !important;
 }
 
 /* Quitar fondo gris del campo de monto */
@@ -70,4 +73,77 @@
 .container :global(.ant-input-number-input) {
   background-color: transparent !important;
   color: #ffffff !important;
+}
+
+/* Estilos para TimePicker - ítem seleccionado */
+.container :global(.ant-picker-time-panel-cell-selected) {
+  background-color: #1cb54a !important;
+  color: #000000 !important;
+}
+
+.container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
+  background-color: #1cb54a !important;
+  color: #000000 !important;
+}
+
+.container :global(.ant-picker-time-panel-column > .ant-picker-time-panel-cell-selected) {
+  background-color: #1cb54a !important;
+  color: #000000 !important;
+}
+
+/* Selectores más específicos para el texto */
+.container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner span) {
+  color: #000000 !important;
+}
+
+.container :global(.ant-picker-time-panel-cell-selected span) {
+  color: #000000 !important;
+}
+
+.container :global(.ant-picker-time-panel-cell-selected *) {
+  color: #000000 !important;
+}
+
+/* Forzar el color en todos los elementos hijos */
+.container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner *) {
+  color: #000000 !important;
+}
+
+/* Alternativa: si el fondo sigue siendo blanco, usar texto negro */
+.container :global(.ant-picker-time-panel-cell-selected) {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Hover en TimePicker */
+.container :global(.ant-picker-time-panel-cell:hover) {
+  background-color: rgba(28, 181, 74, 0.2) !important;
+}
+
+.container :global(.ant-picker-time-panel-cell:hover .ant-picker-time-panel-cell-inner) {
+  background-color: rgba(28, 181, 74, 0.2) !important;
+}
+
+/* Estilos globales para TimePicker - más agresivos */
+:global(.ant-picker-time-panel-cell-selected) {
+  background-color: #1cb54a !important;
+  color: #000000 !important;
+}
+
+:global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
+  background-color: #1cb54a !important;
+  color: #000000 !important;
+}
+
+:global(.ant-picker-time-panel-cell-selected *) {
+  color: #000000 !important;
+}
+
+:global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner *) {
+  color: #000000 !important;
 }

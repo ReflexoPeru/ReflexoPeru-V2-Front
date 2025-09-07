@@ -96,10 +96,12 @@ export const getPaymentStatuses = async () => {
 
   const response = await get('payment-types'); // Endpoint exacto
   const data =
-    response.data?.map((item) => ({
-      value: item.id,
-      label: item.name,
-    })) || [];
+    response.data
+      ?.filter((item) => !item.deleted_at) // Filtrar elementos eliminados
+      ?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      })) || [];
 
   apiCache.paymentStatuses = data;
   return data;
@@ -113,11 +115,13 @@ export const getPredeterminedPrices = async () => {
 
   const response = await get('predetermined-prices'); // Endpoint exacto
   const data =
-    response.data?.map((item) => ({
-      value: item.id,
-      label: item.name,
-      price: item.price, // Agregamos el precio como propiedad adicional
-    })) || [];
+    response.data
+      ?.filter((item) => !item.deleted_at) // Filtrar elementos eliminados
+      ?.map((item) => ({
+        value: item.id,
+        label: item.name,
+        price: item.price, // Agregamos el precio como propiedad adicional
+      })) || [];
 
   apiCache.predeterminedPrices = data;
   return data;
