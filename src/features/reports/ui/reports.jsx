@@ -10,10 +10,11 @@ import {
     Receipt,
 } from '@phosphor-icons/react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { Button, Card, ConfigProvider, DatePicker, theme } from 'antd';
+import { Button, Card, DatePicker, theme } from 'antd';
 import dayjs from 'dayjs';
 import ExcelJS from 'exceljs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTheme } from '../../../context/ThemeContext';
 import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
 import DailyTherapistReportPDF from '../../../components/PdfTemplates/DailyTherapistReportPDF';
 import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
@@ -78,6 +79,7 @@ const Reporte = () => {
   // Nuevos estados para el modal de edición
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedCajaData, setEditedCajaData] = useState(null);
+  const { isDarkMode } = useTheme();
 
   const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
   const { logoUrl, loading: logoLoading, error: logoError } = useSystemHook();
@@ -466,10 +468,30 @@ const Reporte = () => {
   }
 
   return (
-    <ConfigProvider theme={themeConfig}>
-      <div className={styles.mainContainer}>
-        <Card className={styles.card}>
-          <h2 className={styles.title}>Generador de Reportes</h2>
+    <div 
+      className={styles.mainContainer}
+      style={{
+        backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
+        color: isDarkMode ? '#ffffff' : '#333333'
+      }}
+    >
+      <Card 
+        className={styles.card}
+        style={{
+          backgroundColor: isDarkMode ? '#242424' : '#ffffff',
+          borderColor: isDarkMode ? '#333333' : '#e0e0e0',
+          color: isDarkMode ? '#ffffff' : '#333333'
+        }}
+      >
+        <h2 
+          className={styles.title}
+          style={{
+            color: isDarkMode ? '#ffffff' : '#333333',
+            borderBottomColor: isDarkMode ? '#333333' : '#e0e0e0'
+          }}
+        >
+          Generador de Reportes
+        </h2>
 
           <form onSubmit={handleSubmit}>
             <ReportSelector
@@ -513,7 +535,6 @@ const Reporte = () => {
           </form>
         </Card>
       </div>
-    </ConfigProvider>
   );
 };
 

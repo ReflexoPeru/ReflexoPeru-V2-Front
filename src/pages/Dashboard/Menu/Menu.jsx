@@ -23,9 +23,11 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 import { useAuth } from '../../../routes/AuthContext';
+import { useTheme } from '../../../context/ThemeContext';
 import Style from './Menu.module.css';
 export default function MenuDashboard() {
   const { userRole } = useAuth();
+  const { isDarkMode } = useTheme();
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
 
@@ -199,38 +201,37 @@ export default function MenuDashboard() {
   return (
     <>
       <ConfigProvider
-        theme={{
-          components: {
-            Menu: {
-              itemMarginInline: 0,
-              iconSize: 18,
-              itemColor: '#ffffff',
-              itemHoverColor: '#ffffff',
-              itemHoverBg: '#19803885',
-              itemSelectedColor: '#ffffff',
-              itemSelectedBg: '#1CB54A',
-              itemActiveBg: '#1CB54A',
-              subMenuItemSelectedColor: '#8ad366',
-              itemSelectedColor: '#ffffff',
-              // Aumentar el tamaño de la letra
-              fontSize: 15, // Tamaño base aumentado
-            },
-            menuItem: {
-              color: '#ffffff',
-              backgroundColor: '#1E1E1E',
-            },
-          },
-          token: {
-            colorBgBase: '#1E1E1E+',
-          },
-        }}
+         theme={{
+           components: {
+             Menu: {
+               itemMarginInline: 0,
+               iconSize: 18,
+               itemColor: isDarkMode ? '#ffffff' : '#333333',
+               itemHoverColor: isDarkMode ? '#ffffff' : '#333333',
+               itemHoverBg: 'rgba(28, 181, 74, 0.15)',
+               itemSelectedColor: '#ffffff',
+               itemSelectedBg: '#1CB54A',
+               itemActiveBg: '#1CB54A',
+               subMenuItemSelectedColor: '#1CB54A',
+               // Aumentar el tamaño de la letra
+               fontSize: 15, // Tamaño base aumentado
+             },
+             menuItem: {
+               color: isDarkMode ? '#ffffff' : '#333333',
+               backgroundColor: isDarkMode ? '#1E1E1E' : '#ffffff',
+             },
+           },
+           token: {
+             colorBgBase: isDarkMode ? '#1E1E1E' : '#ffffff',
+           },
+         }}
       >
         <Menu
           mode={isMenuMode ? 'inline' : 'vertical'}
           items={items}
           style={{
             borderInlineEnd: 'none',
-            backgroundColor: '#1E1E1E',
+            backgroundColor: isDarkMode ? '#1E1E1E' : '#ffffff',
           }}
           defaultSelectedKeys={['1']}
           openKeys={stateOpenKeys}

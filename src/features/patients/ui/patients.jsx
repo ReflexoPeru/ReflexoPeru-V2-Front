@@ -66,9 +66,11 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
               minWidth: 80,
+              height: '36px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: '4px',
             }}
             onClick={async () => {
               setLoadingEditId(record.id);
@@ -96,6 +98,8 @@ export default function Patients() {
               backgroundColor: '#00AA55',
               color: '#fff',
               border: 'none',
+              height: '36px',
+              borderRadius: '4px',
             }}
             onClick={() => handleInfo(record)}
           >
@@ -109,6 +113,8 @@ export default function Patients() {
               backgroundColor: '#8800CC',
               color: '#fff',
               border: 'none',
+              height: '36px',
+              borderRadius: '4px',
             }}
             onClick={() => navigate(`historia/${record.id}`)}
           >
@@ -123,9 +129,11 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
               minWidth: 80,
+              height: '36px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: '4px',
             }}
             onClick={() => handleDelete(record.id)}
             disabled={loadingDeleteId === record.id}

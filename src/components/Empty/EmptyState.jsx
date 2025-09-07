@@ -1,5 +1,6 @@
 import React from 'react';
 import { Package, Users, Calendar, FileText, Gear, ChartBar } from '@phosphor-icons/react';
+import { useTheme } from '../../context/ThemeContext';
 
 /**
  * Componente para mostrar estados vacíos de manera consistente
@@ -12,6 +13,8 @@ const EmptyState = ({
   style = {},
   className = ''
 }) => {
+  const { isDarkMode } = useTheme();
+  
   // Mapeo de iconos
   const iconMap = {
     package: Package,
@@ -24,51 +27,73 @@ const EmptyState = ({
 
   const IconComponent = iconMap[icon] || Package;
 
+  // Estilos base que se combinan con los personalizados
+  const baseStyles = {
+    color: isDarkMode ? '#ffffff' : '#333333',
+    padding: '48px 24px',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px',
+    background: isDarkMode ? '#2a2a2a' : '#f8f9fa',
+    borderRadius: '16px',
+    margin: '24px',
+    border: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,
+    minHeight: '200px',
+    justifyContent: 'center',
+    fontFamily: 'var(--font-family)',
+    boxShadow: isDarkMode 
+      ? '0 4px 12px rgba(0, 0, 0, 0.2)' 
+      : '0 4px 20px rgba(0, 0, 0, 0.08)',
+    transition: 'all var(--transition-normal)',
+    position: 'relative',
+    overflow: 'hidden'
+  };
+
   return (
     <div
       style={{
-        color: '#ffffff',
-        padding: '48px 24px',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-        background: '#1e1e1e',
-        borderRadius: '12px',
-        margin: '24px',
-        border: '1px solid #444',
-        minHeight: '200px',
-        justifyContent: 'center',
-        fontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif',
+        ...baseStyles,
         ...style
       }}
       className={className}
     >
       <IconComponent 
         size={64} 
-        color="#22c55e" 
+        color="#1CB54A" 
         style={{ 
           opacity: 0.8,
-          filter: 'drop-shadow(0 2px 4px rgba(34, 197, 94, 0.2))'
+          filter: 'drop-shadow(0 2px 4px rgba(28, 181, 74, 0.2))',
+          transition: 'all var(--transition-normal)'
         }} 
       />
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '400px' }}>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '12px', 
+        maxWidth: '400px',
+        textAlign: 'center'
+      }}>
         <h3 style={{ 
           fontSize: '18px', 
           fontWeight: '600', 
           margin: 0,
-          color: '#ffffff'
+          color: isDarkMode ? '#ffffff' : '#333333',
+          fontFamily: 'var(--font-family)',
+          transition: 'color var(--transition-normal)'
         }}>
           {title}
         </h3>
         
         <p style={{ 
           fontSize: '14px', 
-          color: '#a0a0a0',
+          color: isDarkMode ? '#a0a0a0' : '#666666',
           margin: 0,
-          lineHeight: '1.5'
+          lineHeight: '1.5',
+          fontFamily: 'var(--font-family)',
+          transition: 'color var(--transition-normal)'
         }}>
           {description}
         </p>

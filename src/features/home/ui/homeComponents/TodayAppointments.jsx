@@ -2,28 +2,36 @@ import React from 'react';
 import styles from './TodayAppointments.module.css';
 import { CheckCircle } from '@phosphor-icons/react';
 import { useTodayAppointments } from '../../hook/homeHook';
-import { Spin, ConfigProvider } from 'antd';
+import { Spin } from 'antd';
+import { useTheme } from '../../../../context/ThemeContext';
 
 const TodayAppointments = () => {
   const { appointments, loading } = useTodayAppointments();
+  const { isDarkMode } = useTheme();
 
   return (
-    <div className={styles.container}>
+    <div 
+      className={styles.container}
+      style={{
+        backgroundColor: isDarkMode ? '#1E1E1E' : '#ffffff',
+        boxShadow: isDarkMode 
+          ? '0 4px 12px rgba(0, 0, 0, 0.15)' 
+          : '0 4px 20px rgba(0, 0, 0, 0.08)'
+      }}
+    >
       <h2 className={styles.title}>Citas para hoy</h2>
       <div className={styles.scrollArea}>
         {loading ? (
           <div className={styles.loadingContainer}>
-            <ConfigProvider theme={{ token: { colorPrimary: '#22c55e' } }}>
-              <Spin
-                size="large"
-                style={{ 
-                  color: '#22c55e',
-                  fontSize: '16px',
-                  fontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif'
-                }}
-                tip="Cargando citas de hoy..."
-              />
-            </ConfigProvider>
+            <Spin
+              size="large"
+              style={{ 
+                color: '#1CB54A',
+                fontSize: '16px',
+                fontFamily: 'var(--font-family)'
+              }}
+              tip="Cargando citas de hoy..."
+            />
           </div>
         ) : appointments.length > 0 ? (
           appointments.map((appt, index) => (
@@ -43,28 +51,29 @@ const TodayAppointments = () => {
         ) : (
           <div
             style={{
-              color: '#ffffff',
+              color: isDarkMode ? '#ffffff' : '#333333',
               padding: '32px 16px',
               textAlign: 'center',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               gap: '16px',
-              background: '#1e1e1e',
+              background: isDarkMode ? '#2a2a2a' : '#f8f9fa',
               borderRadius: '12px',
               margin: '16px',
-              border: '1px solid #444',
+              border: `1px solid ${isDarkMode ? '#444' : '#e0e0e0'}`,
               minHeight: '150px',
               justifyContent: 'center',
-              fontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif'
+              fontFamily: 'var(--font-family)',
+              transition: 'all var(--transition-normal)'
             }}
           >
             <CheckCircle 
               size={48} 
-              color="#22c55e" 
+              color="#1CB54A" 
               style={{ 
                 opacity: 0.8,
-                filter: 'drop-shadow(0 2px 4px rgba(34, 197, 94, 0.2))'
+                filter: 'drop-shadow(0 2px 4px rgba(28, 181, 74, 0.2))'
               }} 
             />
             
@@ -73,14 +82,14 @@ const TodayAppointments = () => {
                 fontSize: '16px', 
                 fontWeight: '600', 
                 margin: 0,
-                color: '#ffffff'
+                color: isDarkMode ? '#ffffff' : '#333333'
               }}>
                 No hay citas para hoy
               </h3>
               
               <p style={{ 
                 fontSize: '14px', 
-                color: '#a0a0a0',
+                color: isDarkMode ? '#a0a0a0' : '#666666',
                 margin: 0,
                 lineHeight: '1.5'
               }}>

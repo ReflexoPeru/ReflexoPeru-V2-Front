@@ -3,25 +3,28 @@
   width: 100%;
   max-width: 100%; 
   padding: 16px;
-  border: 1px solid #333 !important;
-  border-radius: 16px !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-xxl) !important;
 
   text-align: center;
 
-  background-color: #242424 !important;
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
 
-  transition: max-width 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .title {
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--color-border-primary);
 
   font-size: 22px; 
-  font-weight: 600;
-  color: #fff;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
   text-align: center;
+  transition: color var(--transition-normal);
 }
 
 /* Contenedor de las tarjetas de selección */
@@ -36,25 +39,27 @@
 .reportCard {
   cursor: pointer;
 
-  border: 1px solid #444 !important;
-  border-radius: 12px !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
 
   text-align: left;
 
-  background-color: #2f2f2f !important;
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
 
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .reportCard:hover {
   transform: translateY(-4px);
-  border-color: #4caf50 !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-medium);
 }
 
 .selectedCard {
-  border-color: #4caf50 !important;
-  background-color: #333833 !important;
-  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary-light) !important;
+  box-shadow: var(--shadow-glow);
 }
 
 .cardContent {
@@ -70,14 +75,18 @@
 .cardTitle {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
-  color: #fff;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+  transition: color var(--transition-normal);
 }
 
 .cardDescription {
   margin: 0;
   font-size: 13px;
-  color: #a0a0a0;
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  transition: color var(--transition-normal);
 }
 
 .controlsWrapper {
@@ -89,10 +98,11 @@
   width: 100%;
   margin: 24px auto 0; 
   padding: 16px;
-  border: 1px solid #444;
-  border-radius: 12px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
 
-  background-color: #2f2f2f;
+  background-color: var(--color-background-secondary);
+  transition: all var(--transition-normal);
 }
 
 .datePickerContainer {
@@ -104,9 +114,17 @@
   border: none !important;
 
   font-size: 16px !important;
-  font-weight: 600 !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-family: var(--font-family) !important;
 
-  background: linear-gradient(90deg, #4caf50, #00c36a) !important;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-hover)) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.generateBtn:hover {
+  background: linear-gradient(90deg, var(--color-primary-hover), var(--color-primary-active)) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-glow) !important;
 }
 
 /* Media Query para pantallas más grandes (escritorio) */
@@ -138,9 +156,11 @@
   width: 85%;
   height:90%;
   padding: 32px;
-  border-radius: 18px;
+  border-radius: var(--radius-xxl);
 
-  background-color: #2a2a2a;
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  transition: all var(--transition-normal);
 }
 
 .topActions {
@@ -168,23 +188,32 @@
   width: 42px;
   height: 42px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
 
   font-size: 24px;
-  color: #fff;
+  color: var(--color-text-primary);
 
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--color-background-tertiary);
+  transition: all var(--transition-normal);
 }
 
 .actionBtn:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--color-background-quaternary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .downloadButtons button {
-  border-color: #4caf50;
+  border-color: var(--color-primary);
   color: white;
-  background-color: #4caf50;
+  background-color: var(--color-primary);
+  transition: all var(--transition-normal);
+}
+
+.downloadButtons button:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .previewContent {
@@ -202,8 +231,10 @@
 
 .errorMsg, .noDataMsg {
   padding: 40px;
-  color: #fff;
+  color: var(--color-text-primary);
   text-align: center;
+  font-family: var(--font-family);
+  transition: color var(--transition-normal);
 }
 
 /* Estilos para el modal de edición */

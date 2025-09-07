@@ -2,20 +2,36 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import { AuthProvider } from './routes/AuthContext';
 import { UserProvider } from './context/UserContext';
 import { CompanyProvider } from './context/CompanyContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Router from './routes/Router';
 import { ToastProvider } from './services/toastify/ToastContext';
+import { ConfigProvider } from 'antd';
+import { useTheme } from './context/ThemeContext';
+
+// Componente interno que usa el tema
+function AppContent() {
+  const { antdTheme } = useTheme();
+
+  return (
+    <ConfigProvider theme={antdTheme}>
+      <Router />
+    </ConfigProvider>
+  );
+}
 
 function App() {
   return (
-    <ToastProvider>
-      <CompanyProvider>
-        <UserProvider>
-          <AuthProvider>
-            <Router />
-          </AuthProvider>
-        </UserProvider>
-      </CompanyProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <CompanyProvider>
+          <UserProvider>
+            <AuthProvider>
+              <AppContent />
+            </AuthProvider>
+          </UserProvider>
+        </CompanyProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

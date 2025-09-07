@@ -1,6 +1,153 @@
 .icon {
-    padding: 5px ;
+    padding: 5px;
     border-radius: 50%;
-    background-color: #4b4b4b;
+    background-color: var(--color-background-quaternary);
+    transition: background-color var(--transition-fast);
+}
+
+.icon:hover {
+    background-color: var(--color-primary-light);
+}
+
+/* ================================================== */
+/* MENÚ COMPACTO Y OPTIMIZADO                        */
+/* ================================================== */
+
+/* Asegurar que el menu respete las variables CSS del tema */
+:global(.ant-menu-root) {
+    background-color: var(--color-background-primary) !important;
+}
+
+/* Items del menú más compactos */
+:global(.ant-menu-item),
+:global(.ant-menu-submenu-title) {
+    color: var(--color-text-primary) !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    padding: 0 14px !important;
+    margin: 1px 6px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: all var(--transition-fast) !important;
+}
+
+/* Hover states más sutiles */
+:global(.ant-menu-item:hover),
+:global(.ant-menu-submenu-title:hover) {
+    color: var(--color-text-primary) !important;
+    background-color: var(--color-background-secondary) !important;
+    transform: translateX(2px) !important;
+}
+
+/* Item activo */
+:global(.ant-menu-item-selected) {
+    background-color: var(--color-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+:global(.ant-menu-item-selected:hover) {
+    background-color: var(--color-primary-hover) !important;
+    color: #ffffff !important;
+    transform: translateX(2px) !important;
+}
+
+/* Submenu más compacto con indentación visual */
+:global(.ant-menu-submenu) {
+    margin: 0 !important;
+    background-color: var(--color-background-primary) !important;
+}
+
+/* Contenedor del submenu sin padding extra */
+:global(.ant-menu-submenu .ant-menu-submenu-popup) {
+    background-color: var(--color-background-primary) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+:global(.ant-menu-submenu .ant-menu-item) {
+    height: 32px !important;
+    line-height: 32px !important;
+    padding: 0 10px 0 32px !important; /* Indentación a la derecha */
+    margin: 0 2px !important;
+    font-size: 12px !important;
+    background-color: transparent !important;
+    border-left: 3px solid var(--color-primary) !important;
+    position: relative !important;
+}
+
+/* Indicador visual de submenu */
+:global(.ant-menu-submenu .ant-menu-item::before) {
+    content: '└' !important;
+    position: absolute !important;
+    left: 16px !important;
+    color: var(--color-primary) !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+/* Hover para submenu */
+:global(.ant-menu-submenu .ant-menu-item:hover) {
+    background-color: var(--color-background-secondary) !important;
+    border-left-color: var(--color-primary-hover) !important;
+    transform: translateX(2px) !important;
+}
+
+/* Asegurar que el submenu tenga el mismo fondo que el menú principal */
+:global(.ant-menu-submenu .ant-menu) {
+    background-color: var(--color-background-primary) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Items del submenu con fondo transparente para que se vea igual */
+:global(.ant-menu-submenu .ant-menu .ant-menu-item) {
+    background-color: transparent !important;
+    margin: 0 !important;
+}
+
+/* Submenu item activo */
+:global(.ant-menu-submenu .ant-menu-item-selected) {
+    background-color: var(--color-primary) !important;
+    color: #ffffff !important;
+    border-left-color: #ffffff !important;
+}
+
+:global(.ant-menu-submenu .ant-menu-item-selected::before) {
+    color: #ffffff !important;
+}
+
+:global(.ant-menu-submenu .ant-menu-item-selected:hover) {
+    background-color: var(--color-primary-hover) !important;
+    border-left-color: #ffffff !important;
+}
+
+/* Iconos más pequeños */
+:global(.ant-menu-item .anticon),
+:global(.ant-menu-submenu-title .anticon) {
+    font-size: 14px !important;
+    margin-right: 8px !important;
+}
+
+/* Espaciado general del menú - SIN SCROLL */
+:global(.ant-menu) {
+    padding: 2px 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    height: auto !important;
+}
+
+/* Bloquear completamente el scroll */
+:global(.ant-menu)::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* Para Firefox - ocultar scrollbar */
+:global(.ant-menu) {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
 }
 

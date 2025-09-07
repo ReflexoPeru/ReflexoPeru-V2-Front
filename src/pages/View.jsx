@@ -1,10 +1,12 @@
 import { Outlet, useLocation, matchPath } from 'react-router';
 import CustomLayout from '../components/Header/CustomLayout';
 import Dashboard from './Dashboard/Dashboard';
+import { useTheme } from '../context/ThemeContext';
 import Style from './View.module.css';
 
 export default function View() {
   const location = useLocation();
+  const { isDarkMode } = useTheme();
 
   const path = location.pathname;
 
@@ -39,17 +41,32 @@ export default function View() {
 
   return (
     <div className={Style.Container}>
-      <div className={Style.SideBar}>
+      <div 
+        className={Style.SideBar}
+        style={{
+          backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff'
+        }}
+      >
         <Dashboard />
       </div>
       <div className={Style.Content}>
-        <div className={Style.Header}>
+        <div 
+          className={Style.Header}
+          style={{
+            backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff'
+          }}
+        >
           <CustomLayout
             title={title}
             isBack={title !== 'Inicio' ? true : false}
           />
         </div>
-        <div className={Style.Outlet}>
+        <div 
+          className={Style.Outlet}
+          style={{
+            backgroundColor: isDarkMode ? '#121212' : 'rgb(183, 184, 185)'
+          }}
+        >
           <Outlet />
         </div>
       </div>

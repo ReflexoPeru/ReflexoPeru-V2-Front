@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
-body {
-  margin: 0;
-  padding: 0;
-
-  font-family: 'Poppins', sans-serif;
-  color: #fff;
-
-  background-color: #000;
+/* Variables CSS solo para tema claro */
+[data-theme="light"] {
+  --toast-bg-primary: #ffffff;
+  --toast-bg-secondary: #f8f9fa;
+  --toast-text-primary: #333333;
+  --toast-text-secondary: rgba(51, 51, 51, 0.8);
+  --toast-border: #e0e0e0;
+  --toast-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .notifications {
@@ -43,6 +43,18 @@ body {
   animation: slideIn 0.3s ease forwards;
 }
 
+/* Estilos para tema claro */
+[data-theme="light"] .toast {
+  --color: #1CB54A;
+  color: var(--toast-text-primary);
+  background-color: var(--toast-bg-primary);
+  border: 1px solid var(--toast-border);
+  border-radius: 8px;
+  box-shadow: var(--toast-shadow);
+  background-image: none;
+  border-left: 4px solid #1CB54A;
+}
+
 .toast.exiting {
   animation: slideOut 0.3s ease forwards;
 }
@@ -72,6 +84,16 @@ body {
   font-size: 13px;
   line-height: 1.4;
   opacity: 0.8;
+}
+
+/* Estilos para tema claro */
+[data-theme="light"] .toast .title {
+  color: var(--toast-text-primary);
+}
+
+[data-theme="light"] .toast span {
+  color: var(--toast-text-secondary);
+  opacity: 1;
 }
 
 @keyframes slideIn {
@@ -145,6 +167,28 @@ body {
   background-image: linear-gradient(to right, #3498db55, #333333 30%);
 }
 
+/* Estilos para tema claro */
+[data-theme="light"] .toast.error {
+  --color: #ff4757;
+  border-left: 4px solid #ff4757;
+  background-color: var(--toast-bg-primary);
+  background-image: none;
+}
+
+[data-theme="light"] .toast.warning {
+  --color: #ffa502;
+  border-left: 4px solid #ffa502;
+  background-color: var(--toast-bg-primary);
+  background-image: none;
+}
+
+[data-theme="light"] .toast.info {
+  --color: #3742fa;
+  border-left: 4px solid #3742fa;
+  background-color: var(--toast-bg-primary);
+  background-image: none;
+}
+
 .toast.yape {
   --color: #5e0596; /* Morado */
 
@@ -157,6 +201,21 @@ body {
 
   border-left: 4px solid #00cec9;
   background-color: rgba(0, 206, 201, 0.4); /* Celeste con opacidad */
+}
+
+/* Estilos para tema claro */
+[data-theme="light"] .toast.yape {
+  --color: #5e0596;
+  border-left: 4px solid #5e0596;
+  background-color: var(--toast-bg-primary);
+  background-image: none;
+}
+
+[data-theme="light"] .toast.plin {
+  --color: #00cec9;
+  border-left: 4px solid #00cec9;
+  background-color: var(--toast-bg-primary);
+  background-image: none;
 }
 
 .buttons {
@@ -194,4 +253,20 @@ body {
 
 .btn:active {
   transform: translateY(0);
+}
+
+/* Estilos para tema claro */
+[data-theme="light"] .btn {
+  border: 1px solid var(--toast-border);
+  border-radius: 6px;
+  color: var(--toast-text-primary);
+  background: var(--toast-bg-secondary);
+  box-shadow: none;
+}
+
+[data-theme="light"] .btn:hover {
+  background: var(--toast-bg-primary);
+  border-color: var(--color-primary);
+  opacity: 1;
+  transform: translateY(-1px);
 } 

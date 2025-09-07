@@ -4,16 +4,18 @@
     box-sizing: border-box;
     width: 100%;
     padding: 25px;
-    border-radius: 20px;
-
-    background-color: #1E1E1E;
+    border-radius: var(--radius-xxl);
+    border: 1px solid var(--color-border-primary);
+    transition: all var(--transition-normal);
 }
 
 .title {
     margin-bottom: 30px;
     font-size: clamp(1.5rem, 2.5vw, 2rem);
-    font-weight: bold;
-    color: white;
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
+    transition: color var(--transition-normal);
 }
 
 .grid {
@@ -33,21 +35,20 @@
     box-sizing: border-box;
     min-height: 50px; /* Altura mínima consistente */
     padding: clamp(0.4rem, 2.5vw, 0.7rem);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
 
     font-size: clamp(0.9rem, 2.2vw, 1.25rem);
-    font-weight: 500;
-    color: white;
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-family);
 
-    background-color: #333333;
-
-    transition: all 0.3s ease;
+    transition: all var(--transition-normal);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
     transform: translateY(-2px);
-    background-color: #2a2a2a;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: var(--color-primary) !important;
 }
 
 .card:active {
@@ -55,14 +56,15 @@
 }
 
 .card:focus-visible {
-    outline: 2px solid #00c36a;
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
 }
 
 .icon {
     flex-shrink: 0;
     margin-right: 12px;
-    color: #00c36a;
+    color: var(--color-primary);
+    transition: color var(--transition-normal);
 }
 
 @media screen and (max-width: 600px) {

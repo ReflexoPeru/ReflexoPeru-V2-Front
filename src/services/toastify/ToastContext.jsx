@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import Toast from './Toast';
 import { defaultConfig as toastConfig } from './toastConfig';
+import { useTheme } from '../../context/ThemeContext';
 import styles from './Toastify.module.css';
 
 const ToastContext = createContext();
@@ -8,6 +9,7 @@ const ToastContext = createContext();
 export const useToast = () => useContext(ToastContext);
 
 export const ToastProvider = ({ children }) => {
+  const { isDarkMode } = useTheme();
   const [notifications, setNotifications] = useState([]);
 
   const showToast = (type, backendMessage) => {
@@ -31,7 +33,10 @@ export const ToastProvider = ({ children }) => {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className={styles.notifications}>
+      <div 
+        className={styles.notifications}
+        data-theme={isDarkMode ? 'dark' : 'light'}
+      >
         {notifications.map((toast) => (
           <Toast key={toast.id} {...toast} onClose={() => {}} />
         ))}

@@ -1,0 +1,137 @@
+/* ================================================== */
+/* THEME TOGGLE COMPONENT STYLES                     */
+/* ================================================== */
+
+.themeToggleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  background-color: transparent;
+  border: none;
+  transition: all var(--transition-normal);
+}
+
+.toggleWrapper:hover {
+  background-color: var(--color-background-tertiary);
+  box-shadow: var(--shadow-medium);
+}
+
+.icon {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon.active {
+  color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.sunIcon.active {
+  color: #faad14;
+  text-shadow: 0 0 8px rgba(250, 173, 20, 0.5);
+}
+
+.moonIcon.active {
+  color: #1890ff;
+  text-shadow: 0 0 8px rgba(24, 144, 255, 0.5);
+}
+
+/* Personalización del Switch de Ant Design */
+.switch {
+  background-color: var(--color-background-quaternary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  transform: scale(0.85);
+}
+
+.switch.ant-switch-checked {
+  background-color: var(--color-primary) !important;
+}
+
+.switch:hover:not(.ant-switch-disabled) {
+  background-color: var(--color-background-quaternary) !important;
+}
+
+.switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
+  background-color: var(--color-primary-hover) !important;
+}
+
+.switch .ant-switch-handle {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.switch .ant-switch-handle::before {
+  background-color: var(--color-background-primary) !important;
+}
+
+.switch .ant-switch-inner {
+  color: var(--color-text-primary) !important;
+  font-size: 12px !important;
+}
+
+/* Animaciones */
+@keyframes iconPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.icon.active {
+  animation: iconPulse 0.3s ease-in-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toggleWrapper {
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+  }
+  
+  .icon {
+    font-size: 12px;
+  }
+  
+  .switch {
+    transform: scale(0.9);
+  }
+}
+
+/* Modo de alto contraste */
+@media (prefers-contrast: high) {
+  .toggleWrapper {
+    border-width: 2px;
+  }
+  
+  .icon {
+    font-weight: bold;
+  }
+}
+
+/* Respeto por las preferencias de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .icon,
+  .toggleWrapper,
+  .switch,
+  .switch .ant-switch-handle {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .icon.active {
+    animation: none !important;
+  }
+}
