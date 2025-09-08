@@ -11,10 +11,8 @@ import {
   getProvinces,
   getDistricts,
 } from '../../../../components/Select/SelectsApi';
-import { useTheme } from '../../../../context/ThemeContext';
 
 const InfoPatient = ({ patient, open, onClose }) => {
-  const { isDarkMode } = useTheme();
   if (!patient) return null;
 
   // Construir nombre completo
@@ -89,11 +87,7 @@ const InfoPatient = ({ patient, open, onClose }) => {
   return (
     <Modal
       title={
-        <span style={{ 
-          fontWeight: 600, 
-          fontSize: 20,
-          color: isDarkMode ? '#ffffff' : '#333333'
-        }}>
+        <span style={{ fontWeight: 600, fontSize: 20 }}>
           Información del Paciente
         </span>
       }
@@ -104,32 +98,14 @@ const InfoPatient = ({ patient, open, onClose }) => {
           key="close"
           onClick={onClose}
           type="primary"
-          style={{ 
-            background: '#4caf50', 
-            borderColor: '#4caf50',
-            transition: 'all 0.3s ease'
-          }}
+          style={{ background: '#4caf50', borderColor: '#4caf50' }}
         >
           Cerrar
         </Button>,
       ]}
       width={600}
       centered
-      style={{
-        backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-      }}
-      styles={{
-        body: {
-          background: isDarkMode ? '#1e1e1e' : '#ffffff',
-          color: isDarkMode ? '#fff' : '#333333',
-          borderRadius: 12,
-        },
-        header: {
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-          color: isDarkMode ? '#ffffff' : '#333333',
-          borderBottom: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
-        },
-      }}
+      bodyStyle={{ background: '#1e1e1e', color: '#fff', borderRadius: 12 }}
     >
       <div
         style={{
@@ -152,17 +128,10 @@ const InfoPatient = ({ patient, open, onClose }) => {
           }}
         />
         <div>
-          <div style={{ 
-            fontSize: 22, 
-            fontWeight: 700, 
-            color: isDarkMode ? '#fff' : '#333333' 
-          }}>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#fff' }}>
             {fullName}
           </div>
-          <div style={{ 
-            color: isDarkMode ? '#aaa' : '#666666', 
-            fontSize: 16 
-          }}>
+          <div style={{ color: '#aaa', fontSize: 16 }}>
             {patient.document_type?.name || 'Documento'}:{' '}
             {patient.document_number || '-'}
           </div>
@@ -170,22 +139,11 @@ const InfoPatient = ({ patient, open, onClose }) => {
       </div>
       <Descriptions
         column={1}
-        labelStyle={{ 
-          color: '#4caf50', 
-          fontWeight: 600, 
-          width: 180 
-        }}
-        contentStyle={{ 
-          color: isDarkMode ? '#fff' : '#333333', 
-          fontWeight: 400 
-        }}
+        labelStyle={{ color: '#4caf50', fontWeight: 600, width: 180 }}
+        contentStyle={{ color: '#fff', fontWeight: 400 }}
         bordered
         size="middle"
-        style={{ 
-          background: isDarkMode ? '#232323' : '#f8f9fa',
-          borderRadius: 8,
-          border: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0'
-        }}
+        style={{ background: '#232323', borderRadius: 8 }}
       >
         <Descriptions.Item label={<MailOutlined />}>
           {' '}

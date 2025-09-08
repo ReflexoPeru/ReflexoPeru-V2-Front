@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, ConfigProvider } from "antd";
+import { Input } from "antd";
 
 const CustomSearch = ({
     placeholder = "Buscar...",  
@@ -14,21 +14,6 @@ const CustomSearch = ({
 
 
     return (
-        <ConfigProvider
-        theme={{
-            components: {
-            Input: {
-                colorTextPlaceholder: "#AAAAAA", 
-                colorBgContainer: "#333333",    
-                colorText: "#FFFFFF",           
-                colorBorder: "#444444",         
-                borderRadius: 4,                
-                hoverBorderColor: "#555555",    
-                activeBorderColor: "#00AA55",  
-            },
-            },
-        }}
-        >
         <Input
             placeholder={placeholder}
             size={size}
@@ -39,7 +24,6 @@ const CustomSearch = ({
             ...style 
             }}
         />
-        </ConfigProvider>
     );
 };
 

@@ -1,5 +1,5 @@
 // Select/SelectPrices.jsx
-import { ConfigProvider, Input, Select } from 'antd';
+import { Input, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from '../Input/Input.module.css';
 import { getPredeterminedPrices } from './SelectsApi';
@@ -51,7 +51,7 @@ const SelectPrices = ({
       style={{
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px',
+        gap: 'var(--spacing-xs)',
         width: '100%',
       }}
     >
@@ -78,8 +78,8 @@ const SelectPrices = ({
         prefix="S/"
         onChange={handleInputChange}
         style={{
-          height: '35px',
-          lineHeight: '40px',
+          height: 'var(--button-height-sm)',
+          lineHeight: 'var(--button-height-md)',
           paddingTop: '0px',
           paddingBottom: '0px',
           marginBottom: '-50px',

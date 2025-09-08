@@ -1,4 +1,4 @@
-import { ConfigProvider, Select } from 'antd';
+import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getPaymentStatuses } from './SelectsApi';
 

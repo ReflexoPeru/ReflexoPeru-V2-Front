@@ -8,7 +8,6 @@
 
 import {
   Button,
-  ConfigProvider,
   Form,
   Modal,
   Radio,
@@ -641,57 +640,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            colorPrimary: '#1cb54a',
-            colorPrimaryHover: '#148235',
-            colorPrimaryActive: '#148235',
-            borderRadius: 6,
-            fontWeight: 500,
-          },
-          Table: {
-            headerBg: '#272727',
-            headerColor: '#ffffff',
-            colorBgContainer: '#272727',
-            borderColor: '#555555',
-            rowHoverBg: '#555555',
-          },
-          Radio: {
-            colorPrimary: '#1cb54a',
-          },
-          DatePicker: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextHeading: '#ffffff',
-            colorIcon: '#ffffff',
-            colorPrimary: '#1cb54a',
-            cellHoverBg: '#444444',
-            colorBgContainer: '#333333',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-          Select: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextPlaceholder: '#aaaaaa',
-            controlItemBgHover: '#444444',
-            selectorBg: '#333333',
-          },
-          Input: {
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-        },
-        token: {
-          colorBgElevated: '#333333',
-          colorTextBase: '#fff',
-        },
-      }}
-    >
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
         {/* 
           FORMULARIO PRINCIPAL
@@ -991,7 +939,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           />
         </Modal>
       </div>
-    </ConfigProvider>
   );
 };
 

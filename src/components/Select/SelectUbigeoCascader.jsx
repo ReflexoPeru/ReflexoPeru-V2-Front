@@ -1,4 +1,4 @@
-import { Cascader, ConfigProvider } from 'antd';
+import { Cascader } from 'antd';
 import { useEffect, useState } from 'react';
 import {
   getDepartaments,

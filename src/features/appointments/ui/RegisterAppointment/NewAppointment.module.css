@@ -1,41 +1,76 @@
 .container {
   max-width: 1200px;
-  margin: 40px auto 0 auto;
-  padding: 20px;
-  background-color: #c0afaf;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin: var(--spacing-xl) auto 30px auto;
+  padding: var(--spacing-lg);
+  background-color: var(--color-background-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--color-border-primary);
+  transition: all var(--transition-normal);
 }
 
 /* Espaciado entre los campos del formulario usando selectores estándar */
 .container .ant-form-item {
-  margin-bottom: 12px !important;
+  margin-bottom: var(--spacing-sm) !important;
+}
+
+/* Estilos para todos los labels del formulario */
+.container .ant-form-item-label > label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-md) !important;
+  margin-bottom: var(--spacing-xs) !important;
+}
+
+/* Estilos específicos para labels requeridos */
+.container .ant-form-item-label > label.ant-form-item-required::before {
+  color: var(--color-error) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+
+/* Mejorar la apariencia de los labels */
+.container .ant-form-item-label {
+  margin-bottom: var(--spacing-xs) !important;
+}
+
+.container .ant-form-item-label > label {
+  display: block !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.025em !important;
 }
 
 /* Espaciado extra para el título */
 .container h2 {
-  margin-bottom: 16px !important;
+  margin-bottom: var(--spacing-md) !important;
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Espacio extra entre Opciones de Pago y Método de Pago */
 .container .ant-form-item-label > label[for='payment_type_id'] {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
 }
 
 /* Espacio extra entre Opciones de Pago (con input) y Método de Pago */
 .container .ant-form-item-label > label[for='payment_method_id'] {
-  margin-top: 8px !important;
+  margin-top: var(--spacing-xs) !important;
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
 }
 
 /* Alternativa: margen al form-item completo si el anterior no es suficiente */
 .container .ant-form-item:has(> .ant-form-item-label > label[for='payment_method_id']) {
-  margin-top: 8px !important;
+  margin-top: var(--spacing-xs) !important;
 }
 
 /* Clase personalizada para margen extra entre bloques */
 .metodoPagoSpacing {
-  margin-top: 16px !important;
+  margin-top: var(--spacing-md) !important;
 }
 
 .hide-price-input input[type="number"],
@@ -65,29 +100,29 @@
 
 /* Quitar fondo gris del campo de monto */
 .container :global(.ant-input-number) {
-  background-color: transparent !important;
-  border: 1px solid #666666 !important;
-  color: #ffffff !important;
+  background-color: var(--color-input-bg) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
 }
 
 .container :global(.ant-input-number-input) {
   background-color: transparent !important;
-  color: #ffffff !important;
+  color: var(--color-input-text) !important;
 }
 
 /* Estilos para TimePicker - ítem seleccionado */
 .container :global(.ant-picker-time-panel-cell-selected) {
-  background-color: #1cb54a !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
 .container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
-  background-color: #1cb54a !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
 .container :global(.ant-picker-time-panel-column > .ant-picker-time-panel-cell-selected) {
-  background-color: #1cb54a !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
@@ -111,32 +146,32 @@
 
 /* Alternativa: si el fondo sigue siendo blanco, usar texto negro */
 .container :global(.ant-picker-time-panel-cell-selected) {
-  background-color: #ffffff !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
 .container :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
-  background-color: #ffffff !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
 /* Hover en TimePicker */
 .container :global(.ant-picker-time-panel-cell:hover) {
-  background-color: rgba(28, 181, 74, 0.2) !important;
+  background-color: var(--color-primary-light) !important;
 }
 
 .container :global(.ant-picker-time-panel-cell:hover .ant-picker-time-panel-cell-inner) {
-  background-color: rgba(28, 181, 74, 0.2) !important;
+  background-color: var(--color-primary-light) !important;
 }
 
 /* Estilos globales para TimePicker - más agresivos */
 :global(.ant-picker-time-panel-cell-selected) {
-  background-color: #1cb54a !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
 :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner) {
-  background-color: #1cb54a !important;
+  background-color: var(--color-primary) !important;
   color: #000000 !important;
 }
 
@@ -146,4 +181,139 @@
 
 :global(.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner *) {
   color: #000000 !important;
+}
+
+/* Estilos para Radio buttons */
+.container :global(.ant-radio-wrapper) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.container :global(.ant-radio-wrapper .ant-radio) {
+  color: var(--color-text-primary) !important;
+}
+
+.container :global(.ant-radio-wrapper .ant-radio-inner) {
+  border-color: var(--color-border-primary) !important;
+}
+
+.container :global(.ant-radio-wrapper:hover .ant-radio-inner) {
+  border-color: var(--color-primary) !important;
+}
+
+.container :global(.ant-radio-wrapper .ant-radio-checked .ant-radio-inner) {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary) !important;
+}
+
+.container :global(.ant-radio-wrapper .ant-radio-checked .ant-radio-inner::after) {
+  background-color: var(--color-background-primary) !important;
+}
+
+/* Estilos para Checkbox */
+.container :global(.ant-checkbox-wrapper) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.container :global(.ant-checkbox-wrapper .ant-checkbox) {
+  color: var(--color-text-primary) !important;
+}
+
+.container :global(.ant-checkbox-wrapper .ant-checkbox-inner) {
+  border-color: var(--color-border-primary) !important;
+  background-color: var(--color-input-bg) !important;
+}
+
+.container :global(.ant-checkbox-wrapper:hover .ant-checkbox-inner) {
+  border-color: var(--color-primary) !important;
+}
+
+.container :global(.ant-checkbox-wrapper .ant-checkbox-checked .ant-checkbox-inner) {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary) !important;
+}
+
+/* Estilos para DatePicker y TimePicker */
+.container :global(.ant-picker) {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.container :global(.ant-picker-input > input) {
+  background-color: transparent !important;
+  color: var(--color-input-text) !important;
+}
+
+.container :global(.ant-picker:hover) {
+  border-color: var(--color-primary) !important;
+}
+
+.container :global(.ant-picker-focused) {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(28, 181, 74, 0.2) !important;
+}
+
+/* Estilos para Select */
+.container :global(.ant-select) {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.container :global(.ant-select .ant-select-selector) {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.container :global(.ant-select .ant-select-selection-item) {
+  color: var(--color-input-text) !important;
+}
+
+.container :global(.ant-select .ant-select-selection-placeholder) {
+  color: var(--color-text-secondary) !important;
+}
+
+.container :global(.ant-select:hover .ant-select-selector) {
+  border-color: var(--color-primary) !important;
+}
+
+.container :global(.ant-select-focused .ant-select-selector) {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(28, 181, 74, 0.2) !important;
+}
+
+/* Estilos para labels en modales */
+.container :global(.ant-modal .ant-form-item-label > label) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-md) !important;
+}
+
+/* Estilos para títulos de modales */
+.container :global(.ant-modal .ant-modal-title) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-lg) !important;
+}
+
+/* Mejorar espaciado entre labels y campos */
+.container .ant-form-item {
+  margin-bottom: var(--spacing-md) !important;
+}
+
+/* Estilos para el label "Tipo de Paciente" personalizado */
+.container .patient-type-label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-size: var(--font-size-md) !important;
+  margin-bottom: var(--spacing-xs) !important;
+  display: block !important;
 }

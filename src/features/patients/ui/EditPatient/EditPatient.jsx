@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
-import { useTheme } from '../../../../context/ThemeContext';
 
 // Reutilizamos los mismos campos del formulario de creación
 const fields = [
@@ -140,7 +139,6 @@ const EditPatient = ({ patient, onClose, onSave }) => {
   const [form] = Form.useForm();
   const { handleUpdatePatient } = usePatients();
   const [loading, setLoading] = useState(false);
-  const { isDarkMode } = useTheme();
 
   // Actualiza el formulario con los datos recibidos
   const setFormWithPatient = (data) => {
@@ -234,20 +232,6 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       width={950}
       centered
       destroyOnClose
-      style={{
-        backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-      }}
-      styles={{
-        body: {
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-          color: isDarkMode ? '#ffffff' : '#333333',
-        },
-        header: {
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-          color: isDarkMode ? '#ffffff' : '#333333',
-          borderBottom: isDarkMode ? '1px solid #333333' : '1px solid #e0e0e0',
-        },
-      }}
     >
       <FormGenerator
         form={form}

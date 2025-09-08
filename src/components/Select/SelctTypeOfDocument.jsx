@@ -1,4 +1,4 @@
-import { ConfigProvider, Select } from 'antd';
+import { Select } from 'antd';
 import { useEffect, useState, useCallback } from 'react';
 import { getDocumentTypes } from './SelectsApi';
 

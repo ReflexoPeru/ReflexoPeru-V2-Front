@@ -1,6 +1,5 @@
 import {
   Button,
-  ConfigProvider,
   Form,
   Modal,
   Radio,
@@ -318,6 +317,7 @@ const NewAppointment = () => {
               setSelectedRowKey(record.key);
             }
           }}
+          style={{ color: 'var(--color-text-primary)' }}
         />
       ),
     },
@@ -326,108 +326,46 @@ const NewAppointment = () => {
       dataIndex: 'paternal_lastname',
       key: 'paternal_lastname',
       width: 150,
+      render: (text) => (
+        <span style={{ color: 'var(--color-text-primary)' }}>{text}</span>
+      ),
     },
     {
       title: 'Apellido Materno',
       dataIndex: 'maternal_lastname',
       key: 'maternal_lastname',
       width: 150,
+      render: (text) => (
+        <span style={{ color: 'var(--color-text-primary)' }}>{text}</span>
+      ),
     },
     {
       title: 'Nombre',
       dataIndex: 'name',
       key: 'name',
       width: 200,
+      render: (text) => (
+        <span style={{ color: 'var(--color-text-primary)' }}>{text}</span>
+      ),
     },
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            colorPrimary: '#1cb54a',
-            colorPrimaryHover: '#148235',
-            colorPrimaryActive: '#148235',
-            borderRadius: 6,
-            fontWeight: 500,
-          },
-          Table: {
-            headerBg: '#272727',
-            headerColor: '#ffffff',
-            colorBgContainer: '#272727',
-            borderColor: '#555555',
-            rowHoverBg: '#555555',
-          },
-          Radio: {
-            colorPrimary: '#1cb54a',
-          },
-          DatePicker: {
-            colorBgElevated: '#2a2a2a',
-            colorText: '#ffffff',
-            colorTextHeading: '#ffffff',
-            colorIcon: '#1cb54a',
-            colorPrimary: '#1cb54a',
-            cellHoverBg: 'rgba(28, 181, 74, 0.2)',
-            colorBgContainer: '#2a2a2a',
-            colorBorder: '#1cb54a',
-            colorTextPlaceholder: '#aaaaaa',
-            cellSelectedBg: '#1cb54a',
-            cellSelectedWithRangeBg: '#1cb54a',
-          },
-          TimePicker: {
-            colorBgElevated: '#2a2a2a',
-            colorText: '#ffffff',
-            colorTextHeading: '#ffffff',
-            colorIcon: '#1cb54a',
-            colorPrimary: '#1cb54a',
-            cellHoverBg: 'rgba(28, 181, 74, 0.2)',
-            colorBgContainer: '#2a2a2a',
-            colorBorder: '#1cb54a',
-            colorTextPlaceholder: '#aaaaaa',
-            cellSelectedBg: '#1cb54a',
-            cellSelectedWithRangeBg: '#1cb54a',
-            cellSelectedColor: '#000000',
-            colorTextBase: '#000000',
-          },
-          Select: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextPlaceholder: '#aaaaaa',
-            controlItemBgHover: '#444444',
-            selectorBg: '#333333',
-          },
-          Input: {
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-        },
-        token: {
-          colorBgElevated: '#2a2a2a',
-          colorTextBase: '#000000',
-          colorPrimary: '#1cb54a',
-        },
-      }}
-    >
-      <div style={{ 
-        padding: '30px', 
-        maxWidth: '1400px', 
-        margin: '40px auto 40px auto',
-        backgroundColor: '#1a1a1a',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-      }}>
+      <div className={styles.container}>
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
-          style={{ color: '#ffffff' }}
+          style={{ color: 'var(--color-text-primary)' }}
         >
           {/* TÍTULO */}
-          <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-            <h2 style={{ color: '#ffffff', fontSize: '24px', fontWeight: 'bold' }}>
+          <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
+            <h2 style={{ 
+              color: 'var(--color-text-primary)', 
+              fontSize: 'var(--font-size-xxl)', 
+              fontWeight: 'var(--font-weight-bold)',
+              fontFamily: 'var(--font-family)'
+            }}>
               REGISTRAR CITA
             </h2>
           </div>
@@ -443,52 +381,24 @@ const NewAppointment = () => {
                 label="Fecha de cita"
                 rules={[{ required: true, message: 'La fecha es requerida' }]}
               >
-                <ConfigProvider
-                  theme={{
-                    components: {
-                      DatePicker: {
-                        colorBgElevated: '#2a2a2a',
-                        colorText: '#ffffff',
-                        colorTextHeading: '#ffffff',
-                        colorIcon: '#1cb54a',
-                        colorPrimary: '#1cb54a',
-                        cellHoverBg: 'rgba(28, 181, 74, 0.2)',
-                        colorBgContainer: '#2a2a2a',
-                        colorBorder: '#1cb54a',
-                        colorTextPlaceholder: '#aaaaaa',
-                        cellSelectedBg: '#1cb54a',
-                        cellSelectedWithRangeBg: '#1cb54a',
-                      },
-                    },
-                    token: {
-                      colorBgElevated: '#2a2a2a',
-                      colorTextBase: '#fff',
-                    },
+                <DatePicker
+                  style={{
+                    width: '100%'
                   }}
-                >
-                  <DatePicker
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#2a2a2a',
-                      borderColor: '#1cb54a',
-                      color: '#ffffff'
-                    }}
-                    format="DD-MM-YYYY"
-                    placeholder="Seleccionar fecha"
-                    dropdownClassName="custom-dark-datepicker"
-                    defaultValue={dayjs()}
-                    onChange={(date) => {
-                      console.log('Date changed:', date);
-                      form.setFieldsValue({ appointment_date: date });
-                    }}
-                  />
-                </ConfigProvider>
+                  format="DD-MM-YYYY"
+                  placeholder="Seleccionar fecha"
+                  defaultValue={dayjs()}
+                  onChange={(date) => {
+                    console.log('Date changed:', date);
+                    form.setFieldsValue({ appointment_date: date });
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>
 
           {/* Espacio entre secciones */}
-          <div style={{ height: '24px' }} />
+          <div style={{ height: 'var(--spacing-md)' }} />
 
           {/* 
             SECCIÓN: TIPOS DE PACIENTES
@@ -496,7 +406,7 @@ const NewAppointment = () => {
           */}
           <Row gutter={16} align="middle">
             <Col span={5}>
-              <span style={{ color: '#ffffff', fontSize: '14px', fontWeight: '500' }}>
+              <span className={styles.patientTypeLabel}>
                 Tipo de Paciente:
               </span>
             </Col>
@@ -507,13 +417,13 @@ const NewAppointment = () => {
                   setPatientType(e.target.value);
             setSelectedPatient(null);
           }}
-                style={{ color: '#ffffff' }}
+                style={{ color: 'var(--color-text-primary)' }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <Radio value="nuevo" style={{ color: '#ffffff' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                  <Radio value="nuevo" style={{ color: 'var(--color-text-primary)' }}>
                     Nuevo
                   </Radio>
-                  <Radio value="continuador" style={{ color: '#ffffff' }}>
+                  <Radio value="continuador" style={{ color: 'var(--color-text-primary)' }}>
                     Continuador
                   </Radio>
                 </div>
@@ -531,10 +441,11 @@ const NewAppointment = () => {
                 }}
                 style={{ 
                   width: '100%',
-                  height: '40px',
-                  fontSize: '13px',
-                  padding: '8px 12px',
-                  fontWeight: 'bold'
+                  height: 'var(--button-height-md)',
+                  fontSize: 'var(--font-size-sm)',
+                  padding: 'var(--spacing-xs) var(--spacing-sm)',
+                  fontWeight: 'var(--font-weight-bold)',
+                  fontFamily: 'var(--font-family)'
                 }}
               >
                 {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
@@ -543,7 +454,7 @@ const NewAppointment = () => {
           </Row>
 
           {/* Espacio entre secciones */}
-          <div style={{ height: '24px' }} />
+          <div style={{ height: 'var(--spacing-md)' }} />
 
           {/* 
             SECCIÓN: PACIENTE SELECCIONADO
@@ -554,12 +465,12 @@ const NewAppointment = () => {
               <Form.Item label="Paciente" required>
                 <Input
                   value={selectedPatient?.full_name || ''}
-                  
                   readOnly
                   style={{ 
-                    backgroundColor: '#444444',
-                    border: '1px solid #555555',
-                    borderRadius: '6px'
+                    backgroundColor: 'var(--color-input-bg)',
+                    border: '1px solid var(--color-border-primary)',
+                    borderRadius: 'var(--radius-md)',
+                    color: 'var(--color-input-text)'
                   }}
                 />
               </Form.Item>
@@ -567,10 +478,10 @@ const NewAppointment = () => {
           </Row>
 
           {/* Espacio entre secciones */}
-          <div style={{ height: '24px' }} />
+          <div style={{ height: 'var(--spacing-md)' }} />
 
           {/* Separador visual entre secciones */}
-          <Divider style={{ borderColor: '#555555', marginTop: '1px' }} />
+          <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px' }} />
 
           {/* 
             SECCIÓN: OPCIONES DE PAGO
@@ -599,7 +510,7 @@ const NewAppointment = () => {
           </Row>
 
           {/* Espacio entre secciones */}
-          <div style={{ height: '12px' }} />
+          <div style={{ height: 'var(--spacing-sm)' }} />
 
           {/* 
             SECCIÓN: MÉTODO DE PAGO
@@ -629,7 +540,7 @@ const NewAppointment = () => {
           </Row>
 
           {/* Espacio entre secciones */}
-          <div style={{ height: '12px' }} />
+          <div style={{ height: 'var(--spacing-sm)' }} />
 
           {/* 
             SECCIÓN: CAMPO DE MONTO
@@ -676,7 +587,7 @@ const NewAppointment = () => {
               <Checkbox
                 checked={showHourField}
                 onChange={(e) => setShowHourField(e.target.checked)}
-                style={{ color: '#ffffff' }}
+                style={{ color: 'var(--color-text-primary)' }}
               >
                 Incluir hora
               </Checkbox>
@@ -684,54 +595,24 @@ const NewAppointment = () => {
           </Row>
 
           {/* Espacio entre checkbox y campo de hora */}
-          <div style={{ height: '20px' }} />
+          <div style={{ height: 'var(--spacing-md)' }} />
 
           {/* SECCIÓN: HORA DE CITA - SOLO SE MUESTRA SI EL CHECKBOX ESTÁ MARCADO */}
           {showHourField && (
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item name="appointment_hour">
-                  <ConfigProvider
-                    theme={{
-                      components: {
-                        TimePicker: {
-                          colorBgElevated: '#2a2a2a',
-                          colorText: '#ffffff',
-                          colorTextHeading: '#ffffff',
-                          colorIcon: '#1cb54a',
-                          colorPrimary: '#1cb54a',
-                          cellHoverBg: 'rgba(28, 181, 74, 0.2)',
-                          colorBgContainer: '#2a2a2a',
-                          colorBorder: '#1cb54a',
-                          colorTextPlaceholder: '#aaaaaa',
-                          cellSelectedBg: '#1cb54a',
-                          cellSelectedWithRangeBg: '#1cb54a',
-                          cellSelectedColor: '#000000',
-                          colorTextBase: '#000000',
-                        },
-                      },
-                      token: {
-                        colorBgElevated: '#2a2a2a',
-                        colorTextBase: '#000000',
-                        colorPrimary: '#1cb54a',
-                      },
+                  <TimePicker
+                    style={{
+                      width: '100%'
                     }}
-                  >
-                    <TimePicker
-                      style={{
-                        width: '100%',
-                        backgroundColor: '#2a2a2a',
-                        borderColor: '#1cb54a',
-                        color: '#ffffff'
-                      }}
-                      format="HH:mm"
-                      placeholder="Seleccionar hora"
-                      onChange={(time, timeString) => {
-                        console.log('Time changed:', time, timeString);
-                        form.setFieldsValue({ appointment_hour: timeString });
-                      }}
-                    />
-                  </ConfigProvider>
+                    format="HH:mm"
+                    placeholder="Seleccionar hora"
+                    onChange={(time, timeString) => {
+                      console.log('Time changed:', time, timeString);
+                      form.setFieldsValue({ appointment_hour: timeString });
+                    }}
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -741,15 +622,16 @@ const NewAppointment = () => {
             SECCIÓN: BOTONES DE ACCIÓN
             Botones para cancelar la edición o guardar los cambios
           */}
-          <Row justify="end" style={{ marginTop: '30px' }}>
+          <Row justify="end" style={{ marginTop: 'var(--spacing-lg)' }}>
             <Col>
               <Space>
                 <Button
                   onClick={handleCancel}
                   style={{
-                    backgroundColor: '#666666',
-                    borderColor: '#666666',
-                    color: '#ffffff',
+                    backgroundColor: 'var(--color-background-secondary)',
+                    borderColor: 'var(--color-border-primary)',
+                    color: 'var(--color-text-primary)',
+                    fontFamily: 'var(--font-family)'
                   }}
                 >
                   Cancelar
@@ -758,6 +640,9 @@ const NewAppointment = () => {
                   type="primary"
                   htmlType="submit"
                   loading={isSubmitting}
+                  style={{
+                    fontFamily: 'var(--font-family)'
+                  }}
                 >
                   Registrar Cita
                 </Button>
@@ -773,8 +658,35 @@ const NewAppointment = () => {
           centered
           width={700}
           onCancel={handleCancelSelectModal}
+          styles={{
+            header: {
+              backgroundColor: 'var(--color-background-primary)',
+              color: 'var(--color-text-primary)',
+              borderBottom: '1px solid var(--color-border-primary)'
+            },
+            body: {
+              backgroundColor: 'var(--color-background-primary)',
+              color: 'var(--color-text-primary)',
+              padding: 'var(--spacing-xl)',
+              minHeight: '500px',
+              overflow: 'hidden'
+            },
+            footer: {
+              backgroundColor: 'var(--color-background-primary)',
+              borderTop: '1px solid var(--color-border-primary)'
+            }
+          }}
           footer={[
-            <Button key="cancel" onClick={handleCancelSelectModal}>
+            <Button 
+              key="cancel" 
+              onClick={handleCancelSelectModal}
+              style={{
+                backgroundColor: 'var(--color-background-secondary)',
+                borderColor: 'var(--color-border-primary)',
+                color: 'var(--color-text-primary)',
+                fontFamily: 'var(--font-family)'
+              }}
+            >
               Cancelar
             </Button>,
             <Button
@@ -803,23 +715,19 @@ const NewAppointment = () => {
                   description: `Se ha seleccionado a ${selectedPatient.display_name}`,
                 });
               }}
+              style={{
+                fontFamily: 'var(--font-family)'
+              }}
             >
               Seleccionar
             </Button>,
           ]}
-          styles={{ 
-            body: { 
-              padding: '32px',
-              minHeight: '500px',
-              overflow: 'hidden'
-            } 
-          }}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
             onSearch={(value) => setSearchTerm(value)}
             width="100%"
-            style={{ marginBottom: 24 }}
+            style={{ marginBottom: 'var(--spacing-lg)' }}
           />
           <Table
             dataSource={processedPatients}
@@ -832,19 +740,38 @@ const NewAppointment = () => {
               onClick: () => {
                 setSelectedRowKey(record.key);
               },
+              style: {
+                cursor: 'pointer',
+                backgroundColor: selectedRowKey === record.key ? 'var(--color-primary-light)' : 'transparent'
+              }
             })}
+            style={{
+              backgroundColor: 'var(--color-background-primary)',
+              color: 'var(--color-text-primary)'
+            }}
           />
         </Modal>
 
         {/* MODAL NUEVO PACIENTE */}
         <Modal
-          
+          title="Crear Nuevo Paciente"
           open={isCreatePatientModalVisible}
           onCancel={handleCancelCreateModal}
           footer={null}
           width={800}
           destroyOnClose
-          styles={{ body: { overflow: 'hidden' } }}
+          styles={{
+            header: {
+              backgroundColor: 'var(--color-background-primary)',
+              color: 'var(--color-text-primary)',
+              borderBottom: '1px solid var(--color-border-primary)'
+            },
+            body: {
+              backgroundColor: 'var(--color-background-primary)',
+              color: 'var(--color-text-primary)',
+              overflow: 'hidden'
+            }
+          }}
         >
           <NewPatient
             onCancel={handleCancelCreateModal}
@@ -891,7 +818,6 @@ const NewAppointment = () => {
           />
         </Modal>
       </div>
-    </ConfigProvider>
   );
 };
 

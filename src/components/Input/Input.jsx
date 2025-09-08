@@ -2,14 +2,12 @@ import { CheckCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
-  ConfigProvider,
   DatePicker,
   Form,
   Input,
   Radio,
   Select,
   TimePicker,
-  theme,
   Row,
   Col,
 } from 'antd';
@@ -169,76 +167,30 @@ const InputField = ({
 
     case 'select':
       return (
-        <ConfigProvider
-          theme={{
-            components: {
-              Select: {
-                colorPrimary: '#1677ff',
-                optionSelectedBg: '#333333',
-                colorText: '#fff',
-                colorBgElevated: '#444444',
-                colorTextPlaceholder: '#aaa',
-                controlItemBgHover: '#444444',
-                selectorBg: '#444444',
-              },
-            },
-            token: {
-              colorTextBase: '#fff',
-            },
-          }}
+        <Select
+          className={styles.inputStyle}
+          {...rest}
         >
-          <Select
-            className={styles.inputStyle}
-            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
-            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
-            {...rest}
-          >
-            {options.map((opt) => (
-              <Option
-                key={opt.value}
-                value={opt.value}
-                style={{ color: '#fff' }}
-              >
-                {opt.label}
-              </Option>
-            ))}
-          </Select>
-        </ConfigProvider>
+          {options.map((opt) => (
+            <Option
+              key={opt.value}
+              value={opt.value}
+            >
+              {opt.label}
+            </Option>
+          ))}
+        </Select>
       );
 
     case 'date':
       inputComponent = (
-        <ConfigProvider
-          locale={esES}
-          theme={{
-            components: {
-              DatePicker: {
-                colorBgElevated: '#3B3B3BFF',
-                colorText: '#ffffff',
-                colorTextHeading: '#ffffff',
-                colorIcon: '#ffffff',
-                colorPrimary: '#1cb54a',
-                colorPrimaryHover: '#148235',
-                cellHoverBg: '#333333',
-              },
-            },
+        <DatePicker
+          {...inputProps}
+          format="DD/MM/YYYY"
+          style={{
+            width: '100%',
           }}
-        >
-          <DatePicker
-            {...inputProps}
-            format="DD/MM/YYYY"
-            style={{
-              width: '100%',
-              color: '#ffffff',
-              backgroundColor: '#424242FF',
-              borderColor: '#444444',
-            }}
-            dropdownStyle={{
-              backgroundColor: '#000000',
-              color: '#ffffff',
-            }}
-          />
-        </ConfigProvider>
+        />
       );
       break;
 
@@ -388,28 +340,18 @@ const PatientField = ({
       </div>
       <Row gutter={16} align="bottom" style={{ marginBottom: 12 }}>
         <Col span={12}>
-          <ConfigProvider
-            theme={{
-              components: {
-                Radio: {
-                  colorPrimary: '#1677ff',
-                },
-              },
-            }}
+          <Radio.Group
+            value={patientType}
+            onChange={(e) => onPatientTypeChange(e.target.value)}
+            style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
           >
-            <Radio.Group
-              value={patientType}
-              onChange={(e) => onPatientTypeChange(e.target.value)}
-              style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
-            >
-              <Radio value="nuevo" style={{ color: '#ffffff' }}>
-                Nuevo
-              </Radio>
-              <Radio value="continuador" style={{ color: '#ffffff' }}>
-                Continuador
-              </Radio>
-            </Radio.Group>
-          </ConfigProvider>
+            <Radio value="nuevo">
+              Nuevo
+            </Radio>
+            <Radio value="continuador">
+              Continuador
+            </Radio>
+          </Radio.Group>
         </Col>
         <Col span={12}>
           <Button
@@ -480,39 +422,15 @@ const DateField = ({ form }) => {
       className={styles.formItem}
       style={{ marginBottom: 0 }}
     >
-      <ConfigProvider
-        locale={esES}
-        theme={{
-          components: {
-            DatePicker: {
-              colorBgElevated: '#222222FF',
-              colorText: '#ffffff',
-              colorTextHeading: '#ffffff',
-              colorIcon: '#ffffff',
-              colorPrimary: '#1cb54a',
-              colorPrimaryHover: '#148235',
-              cellHoverBg: '#333333',
-            },
-          },
+      <DatePicker
+        format="DD/MM/YYYY"
+        style={{
+          width: '100%',
         }}
-      >
-        <DatePicker
-          format="DD/MM/YYYY"
-          style={{
-            width: '100%',
-            color: '#ffffff',
-            backgroundColor: '#333333FF',
-            borderColor: '#444444',
-          }}
-          placeholder="Seleccione una fecha"
-          onChange={handleDateChange}
-          defaultValue={dayjs()}
-          dropdownStyle={{
-            backgroundColor: '#2C2C2CFF',
-            color: '#ffffff',
-          }}
-        />
-      </ConfigProvider>
+        placeholder="Seleccione una fecha"
+        onChange={handleDateChange}
+        defaultValue={dayjs()}
+      />
     </Form.Item>
   );
 };
@@ -533,33 +451,11 @@ const TimeField = ({ form }) => {
       rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
     >
-      <ConfigProvider
-        theme={{
-          algorithm: theme.darkAlgorithm,
-          components: {
-            TimePicker: {
-              colorTextPlaceholder: '#AAAAAA',
-              colorBgContainer: '#333333',
-              colorText: '#FFFFFF',
-              colorBorder: '#444444',
-              hoverBorderColor: '#555555',
-              activeBorderColor: '#00AA55',
-              colorIcon: '#FFFFFF',
-              colorIconHover: '#00AA55',
-              colorBgElevated: '#121212',
-              colorPrimary: '#00AA55',
-              colorTextDisabled: '#333333',
-              colorTextHeading: '#FFFFFF',
-            },
-          },
-        }}
-      >
-        <TimePicker
-          format="HH:mm"
-          style={{ width: '100%' }}
-          onChange={handleTimeChange}
-        />
-      </ConfigProvider>
+      <TimePicker
+        format="HH:mm"
+        style={{ width: '100%' }}
+        onChange={handleTimeChange}
+      />
     </Form.Item>
   );
 };
