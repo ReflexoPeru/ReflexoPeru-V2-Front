@@ -22,6 +22,7 @@ import {
   Typography,
   Space,
   Divider,
+  ConfigProvider,
 } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';

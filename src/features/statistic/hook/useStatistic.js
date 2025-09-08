@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTheme } from '../../../context/ThemeContext';
 import { fetchStatisticData } from '../services/statisticService';
 import dayjs from 'dayjs';
 
@@ -13,6 +14,7 @@ const dayTranslations = {
 };
 
 export const useStatistic = (startDate, endDate) => {
+  const { isDarkMode } = useTheme();
   const [chartSeries, setChartSeries] = useState([]);
   const [categories, setCategories] = useState([]);
   const [pieSeries, setPieSeries] = useState([]);
@@ -39,6 +41,17 @@ export const useStatistic = (startDate, endDate) => {
   const loadData = async () => {
     setLoading(true);
     try {
+      // Obtener variables de tema actuales
+      const getCssVar = (name) =>
+        typeof window !== 'undefined'
+          ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+          : '';
+
+      const colorPrimary = getCssVar('--color-primary') || '#1CB54A';
+      const colorTextPrimary = getCssVar('--color-text-primary') || '#333333';
+      const colorTextSecondary = getCssVar('--color-text-secondary') || '#666666';
+      const colorBorderPrimary = getCssVar('--color-border-primary') || '#e0e0e0';
+
       const data = await fetchStatisticData(startDate, endDate);
 
       // Calcular totales para las métricas
@@ -239,7 +252,7 @@ export const useStatistic = (startDate, endDate) => {
 
       setPieOptions({
         labels: ['Nuevos', 'Continuadores'],
-        colors: ['#1DB954', '#10B981'],
+        colors: [colorPrimary, '#10B981'],
       });
 
       // Configurar métricas
@@ -275,13 +288,13 @@ export const useStatistic = (startDate, endDate) => {
         stroke: {
           curve: 'straight',
           width: 3,
-          colors: ['#1DB954'],
+          colors: [colorPrimary],
         },
         markers: {
           size: 6,
-          colors: ['#1DB954'],
+          colors: [colorPrimary],
           strokeWidth: 2,
-          strokeColors: '#ffffff',
+          strokeColors: isDarkMode ? '#141414' : '#ffffff',
           hover: {
             size: 8,
             sizeOffset: 2,
@@ -297,17 +310,17 @@ export const useStatistic = (startDate, endDate) => {
             colorStops: [
               {
                 offset: 0,
-                color: '#1DB954',
+                color: colorPrimary,
                 opacity: 0.3,
               },
               {
                 offset: 50,
-                color: '#1DB954',
+                color: colorPrimary,
                 opacity: 0.15,
               },
               {
                 offset: 100,
-                color: '#1DB954',
+                color: colorPrimary,
                 opacity: 0.05,
               },
             ],
@@ -317,7 +330,7 @@ export const useStatistic = (startDate, endDate) => {
           categories: dateCategories,
           labels: {
             style: {
-              colors: '#9CA3AF',
+              colors: colorTextSecondary,
               fontSize: '11px',
               fontWeight: 500,
             },
@@ -328,15 +341,15 @@ export const useStatistic = (startDate, endDate) => {
         yaxis: {
           labels: {
             style: {
-              colors: '#9CA3AF',
+              colors: colorTextSecondary,
               fontSize: '11px',
             },
             formatter: (val) => Math.floor(val),
           },
         },
-        colors: ['#1DB954'],
+        colors: [colorPrimary],
         grid: {
-          borderColor: 'rgba(255, 255, 255, 0.08)',
+          borderColor: colorBorderPrimary,
           strokeDashArray: 2,
           xaxis: { lines: { show: false } },
           yaxis: { lines: { show: true } },
@@ -348,9 +361,10 @@ export const useStatistic = (startDate, endDate) => {
           },
         },
         tooltip: {
-          theme: 'dark',
+          theme: isDarkMode ? 'dark' : 'light',
           style: {
             fontSize: '12px',
+            color: colorTextPrimary,
           },
           x: {
             show: true,

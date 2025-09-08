@@ -8,8 +8,7 @@
   height: 90vh;
 
   font-family: 'Poppins', sans-serif;
-
-  background: #0c0c0c;
+  background: transparent;
 }
 
 
@@ -27,9 +26,10 @@
   overflow-x: auto; /* Por si se desborda horizontalmente */
   flex: 1;
 
-  padding: 20px;
+  padding: 28px;
+  margin: 16px; /* espacio respecto a los bordes del contenedor principal */
   border-radius: 10px;
-
-  background-color: #121212;
+  background-color: var(--color-background-elevated);
+  color: var(--color-text-primary);
 }
 
