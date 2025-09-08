@@ -8,23 +8,27 @@ import DashboardMetrics from './DashboardMetrics';
 import DashboardMainChart from './DashboardMainChart';
 import DashboardBottomSection from './DashboardBottomSection';
 import { Spin, ConfigProvider } from 'antd';
+import { useTheme } from '../../../context/ThemeContext';
 
-const themeConfig = {
-  token: {
-    colorPrimary: '#1DB954',
-    colorBgBase: '#121212',
-    colorTextBase: '#f1f1f1',
-    colorBorder: '#393939',
-    colorBgContainer: '#1a1a1a',
-    colorText: '#f1f1f1',
-    colorTextSecondary: '#9CA3AF',
-    borderRadius: 8,
-    controlHeight: 40,
-    fontSize: 14,
-  },
-};
+// Usar configuración de tema global y solo ajustar mínimos si hace falta
 
 export default function PerformanceDashboard() {
+  const { antdTheme, isDarkMode } = useTheme();
+
+  // Utilidad para obtener variables CSS del tema actual
+  const getCssVar = (name) =>
+    typeof window !== 'undefined'
+      ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+      : '';
+
+  const colorPrimary = getCssVar('--color-primary') || '#1CB54A';
+  const colorSuccess = getCssVar('--color-success') || '#52c41a';
+  const colorWarning = getCssVar('--color-warning') || '#faad14';
+  const colorInfo = getCssVar('--color-info') || '#1890ff';
+  const colorTextPrimary = getCssVar('--color-text-primary') || '#333333';
+  const colorTextSecondary = getCssVar('--color-text-secondary') || '#666666';
+  const colorBorderPrimary = getCssVar('--color-border-primary') || '#e0e0e0';
+  const colorBgSecondary = getCssVar('--color-background-secondary') || '#f8f9fa';
   const [timeFilter, setTimeFilter] = useState('7días');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState([
@@ -83,28 +87,28 @@ export default function PerformanceDashboard() {
     }
   };
 
-  // Scrollbar personalizado
+  // Scrollbar personalizado (respetando variables del tema)
   const scrollbarStyles = {
     scrollbarWidth: 'thin',
-    scrollbarColor: '#1DB954 #2a2a2a',
+    scrollbarColor: `${colorPrimary} ${colorBgSecondary}`,
     '&::-webkit-scrollbar': {
       width: '8px',
       height: '8px',
     },
     '&::-webkit-scrollbar-track': {
-      background: '#2a2a2a',
+      background: colorBgSecondary,
       borderRadius: '10px',
     },
     '&::-webkit-scrollbar-thumb': {
-      backgroundColor: '#1DB954',
+      backgroundColor: colorPrimary,
       borderRadius: '10px',
     },
   };
 
   // Color según rating
   const getRatingColor = (rating) => {
-    if (rating >= 4) return '#1DB954';
-    if (rating >= 2.5) return '#F97316';
+    if (rating >= 4) return colorSuccess || colorPrimary;
+    if (rating >= 2.5) return colorWarning;
     return '#EF4444';
   };
 
@@ -130,16 +134,16 @@ export default function PerformanceDashboard() {
       style: {
         fontSize: '11px',
         fontWeight: 'bold',
-        colors: ['#fff'],
+        colors: [colorTextPrimary],
       },
       offsetX: 10,
     },
-    colors: ['#8B5CF6', '#10B981', '#06B6D4', '#F97316'],
+    colors: [colorPrimary, colorSuccess, colorInfo, colorWarning],
     xaxis: {
       categories: paymentTypes.map((payment) => payment.name),
       labels: {
         style: {
-          colors: '#9CA3AF',
+          colors: colorTextSecondary,
           fontSize: '11px',
         },
         formatter: (val) => val,
@@ -149,18 +153,18 @@ export default function PerformanceDashboard() {
     yaxis: {
       labels: {
         style: {
-          colors: '#f1f1f1',
+          colors: colorTextPrimary,
           fontSize: '12px',
           fontWeight: 500,
         },
       },
     },
     grid: {
-      borderColor: 'rgba(255, 255, 255, 0.08)',
+      borderColor: colorBorderPrimary,
       strokeDashArray: 2,
     },
     tooltip: {
-      theme: 'dark',
+      theme: isDarkMode ? 'dark' : 'light',
       y: {
         formatter: (val) =>
           `${val}% (${formatCurrency(paymentTypes.find((p) => p.percentage == val)?.value || 0)})`,
@@ -195,7 +199,7 @@ export default function PerformanceDashboard() {
   };
 
   return (
-    <ConfigProvider theme={themeConfig}>
+    <ConfigProvider theme={antdTheme}>
       <div className={Style.dashboardContainer}>
         <DashboardFilters
           timeFilter={timeFilter}

@@ -8,7 +8,6 @@
 
 import {
   Button,
-  ConfigProvider,
   Form,
   Modal,
   Radio,
@@ -23,6 +22,7 @@ import {
   Typography,
   Space,
   Divider,
+  ConfigProvider,
 } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -387,6 +387,46 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   };
 
   /**
+   * Maneja el cambio de opciones de pago desde el componente SelectPrices
+   * @param {string|number} serviceId - ID del servicio seleccionado
+   */
+  const handleServiceChange = (serviceId) => {
+    form.setFieldsValue({
+      service_id: serviceId,
+    });
+
+    // Buscar el servicio seleccionado para verificar si es "cupon sin costo"
+    if (serviceId) {
+      // Obtener las opciones de precios predeterminados
+      const fetchServiceInfo = async () => {
+        try {
+          const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
+          const prices = await getPredeterminedPrices();
+          const selectedService = prices.find(item => item.value === serviceId);
+          
+          if (selectedService) {
+            const serviceName = selectedService.label?.toLowerCase() || '';
+            
+            // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
+            if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
+              // Limpiar el campo de detalles de pago
+              form.setFieldsValue({
+                payment_type_id: '',
+              });
+              
+              console.log('🔍 Debug - Cupon sin costo detectado, limpiando payment_type_id');
+            }
+          }
+        } catch (error) {
+          console.error('Error al verificar el servicio seleccionado:', error);
+        }
+      };
+      
+      fetchServiceInfo();
+    }
+  };
+
+  /**
    * Función principal para manejar el envío del formulario
    * @description Valida los datos, prepara el payload y envía la actualización
    * @param {Object} values - Valores del formulario validados
@@ -411,13 +451,15 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       }
       
       if (
-        !values.payment ||
+        values.payment === undefined ||
+        values.payment === null ||
+        values.payment === '' ||
         isNaN(Number(values.payment)) ||
-        Number(values.payment) <= 0
+        Number(values.payment) < 0
       ) {
         notification.error({
           message: 'Error',
-          description: 'El monto es requerido y debe ser mayor a cero',
+          description: 'El monto es requerido y debe ser mayor o igual a cero',
         });
         return;
       }
@@ -599,57 +641,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            colorPrimary: '#1cb54a',
-            colorPrimaryHover: '#148235',
-            colorPrimaryActive: '#148235',
-            borderRadius: 6,
-            fontWeight: 500,
-          },
-          Table: {
-            headerBg: '#272727',
-            headerColor: '#ffffff',
-            colorBgContainer: '#272727',
-            borderColor: '#555555',
-            rowHoverBg: '#555555',
-          },
-          Radio: {
-            colorPrimary: '#1cb54a',
-          },
-          DatePicker: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextHeading: '#ffffff',
-            colorIcon: '#ffffff',
-            colorPrimary: '#1cb54a',
-            cellHoverBg: '#444444',
-            colorBgContainer: '#333333',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-          Select: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextPlaceholder: '#aaaaaa',
-            controlItemBgHover: '#444444',
-            selectorBg: '#333333',
-          },
-          Input: {
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-        },
-        token: {
-          colorBgElevated: '#333333',
-          colorTextBase: '#fff',
-        },
-      }}
-    >
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
         {/* 
           FORMULARIO PRINCIPAL
@@ -756,9 +747,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   <SelectPrices
                     value={form.getFieldValue('service_id')}
                     initialPrice={form.getFieldValue('payment')}
-                    onChange={(value) =>
-                      form.setFieldsValue({ service_id: value })
-                    }
+                    onChange={handleServiceChange}
                     onPriceChange={(price) =>
                       form.setFieldsValue({ payment: price })
                     }
@@ -813,19 +802,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                       required: true,
                       message: 'El monto es requerido',
                     },
-                    {
-                      validator: (_, value) => {
-                        if (
-                          value &&
-                          (isNaN(Number(value)) || Number(value) <= 0)
-                        ) {
-                          return Promise.reject(
-                            new Error('El monto debe ser mayor a cero'),
-                          );
-                        }
-                        return Promise.resolve();
-                      },
-                    },
+                    
                   ]}
                 >
                   <Input                   
@@ -963,7 +940,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           />
         </Modal>
       </div>
-    </ConfigProvider>
   );
 };
 

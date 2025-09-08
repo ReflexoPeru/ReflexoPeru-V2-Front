@@ -40,7 +40,11 @@ export default function AppointmentsComplete() {
       key: 'patient_id',
       width: '160px',
       render: (text, record) => {
-        return `${record.patient.paternal_lastname} ${record.patient.maternal_lastname} ${record.patient.name}`;
+        if (!record || !record.patient) return 'Sin paciente';
+        const paternal = record.patient.paternal_lastname || '';
+        const maternal = record.patient.maternal_lastname || '';
+        const name = record.patient.name || '';
+        return `${paternal} ${maternal} ${name}`.trim();
       },
     },
     {
@@ -110,7 +114,8 @@ export default function AppointmentsComplete() {
   const handleAction = (action, record) => {
     switch (action) {
       case 'history':
-        navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
+        if (!record || !record.patient || !record.patient.id) return;
+        navigate(`/Inicio/pacientes/historia/${record.patient.id}` , {
           state: { appointment: record },
         });
         break;

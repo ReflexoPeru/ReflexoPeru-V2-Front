@@ -1,5 +1,5 @@
 import React from 'react';
-import { notification, ConfigProvider, Divider } from 'antd';
+import { notification } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
 import { useNavigate } from 'react-router';
@@ -7,12 +7,12 @@ import { useNavigate } from 'react-router';
 // Definir campos del formulario con estilos personalizados
 const fields = [
   {
-    type: 'separator',
+    type: 'title',
     label: 'REGISTRAR TERAPEUTA',
   },
   {
-    type: 'subtitle',
-    label: 'Nuevo terapeuta',
+
+    type: 'separator',
   },
   {
     type: 'customRow',
@@ -89,6 +89,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
@@ -192,33 +193,15 @@ const NewTherapist = () => {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#1890ff',
-          borderRadius: 6,
-          fontSize: 16,
-        },
-        components: {
-          Form: {
-            labelFontSize: 14,
-            verticalLabelPadding: '0 0 8px',
-          },
-        },
+    <FormGenerator
+      fields={fields}
+      mode="create"
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      initialValues={{
+        document_type_id: "1", // DNI por defecto (string)
       }}
-    >
-      <FormGenerator
-        fields={fields}
-        mode="create"
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-        initialValues={{
-          document_type_id: 1,
-        }}
-        submitText="Registrar Terapeuta"
-        cancelText="Cancelar"
-      />
-    </ConfigProvider>
+    />
   );
 };
 

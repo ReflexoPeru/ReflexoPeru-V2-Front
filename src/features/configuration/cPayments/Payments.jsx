@@ -120,8 +120,10 @@ const Payments = () => {
     try {
       const payload = {
         ...values,
-        // Convertir el nombre a mayúsculas
-        name: values.name?.toUpperCase().trim(),
+        // Convertir el nombre según el tipo: mayúsculas para payment, capitalizar primera letra para price
+        name: modalType === 'payment' 
+          ? values.name?.toUpperCase().trim()
+          : values.name?.charAt(0).toUpperCase() + values.name?.slice(1).toLowerCase().trim(),
         status: values.status ? 'active' : 'inactive',
       };
 
@@ -416,8 +418,10 @@ const Payments = () => {
               className={styles.inputField}
               placeholder={`Ingrese el nombre del ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`}
               onChange={(e) => {
-                // Convertir a mayúsculas mientras se escribe
-                const value = e.target.value.toUpperCase();
+                // Solo convertir a mayúsculas para tipos de pago, para precios mantener el texto original
+                const value = modalType === 'payment' 
+                  ? e.target.value.toUpperCase()
+                  : e.target.value;
                 form.setFieldValue('name', value);
               }}
             />

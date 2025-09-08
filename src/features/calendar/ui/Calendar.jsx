@@ -135,6 +135,12 @@ const Calendario = () => {
             onNavigate={handleNavigate}
             view={view}
             onView={handleViewChange}
+            popup
+            popupOffset={{ x: 10, y: 20 }}
+            onShowMore={(eventsOnDate, dateClicked) => {
+              setDate(dateClicked);
+              setView('day');
+            }}
             messages={{
               today: 'Hoy',
               previous: 'Anterior',
@@ -163,7 +169,7 @@ const Calendario = () => {
         width={600}
       >
         {selectedEvent && (
-          <div style={{ color: 'black' }}>
+          <div style={{ color: 'var(--color-text-primary)' }}>
             <p>
               <strong>Paciente:</strong>{' '}
               {selectedEvent.details.patient_full_name}

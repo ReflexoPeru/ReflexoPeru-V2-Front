@@ -1,4 +1,4 @@
-import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
+import { Button, Space, notification, Spin } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
@@ -123,9 +123,7 @@ export default function Staff() {
             disabled={loadingDeleteId === record.id}
           >
             {loadingDeleteId === record.id ? (
-              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
-                <Spin />
-              </ConfigProvider>
+              <Spin />
             ) : (
               'Eliminar'
             )}

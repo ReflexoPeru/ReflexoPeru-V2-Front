@@ -1,58 +1,60 @@
 import React from "react";
-import { Pagination, ConfigProvider } from "antd";
+import { Pagination } from "antd";
+import { useTheme } from "../../../context/ThemeContext";
+import "./Pagination.module.css";
 
 const ModeloPagination = ({ total, current, pageSize, onChange }) => {
+    const { isDarkMode } = useTheme();
+    
     const handleChange = (page, size) => {
         onChange(page, size);
     };
     
-    
     return (
-        <ConfigProvider
-            theme={{
-                components: {
-                    Pagination: {
-                        itemActiveBg: '#0066FF',
-                        itemBg: '#333333',
-                        colorText: '#fff',
-                        colorPrimary: '#fff',
-                        colorTextDisabled: '#707070',
-                        fontFamily: 'Arial',
-                        fontSize: '14px',
-                        colorBorder: 'none'
-                    },
-                },
-            }}>
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column', 
+                alignItems: 'flex-end',
+                marginTop: '16px',
+            }}
+        >
             <div
                 style={{
-                    display: 'flex',
-                    flexDirection: 'column', 
-                    alignItems: 'flex-end',
-                    marginTop: '20px',
+                    background: isDarkMode ? '#2a2a2a' : '#ffffff',
+                    padding: '4px 8px',
+                    borderRadius: '8px',
+                    display: 'inline-block',
+                    border: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,
+                    boxShadow: isDarkMode 
+                        ? '0 2px 8px rgba(0, 0, 0, 0.2)' 
+                        : '0 2px 8px rgba(0, 0, 0, 0.08)',
+                    transition: 'all 0.3s ease'
                 }}
             >
-                <div
+                <Pagination
+                    showSizeChanger={false}
+                    current={current}
+                    total={total}
+                    pageSize={pageSize}
+                    onChange={handleChange}
                     style={{
-                        background: '#272727',
-                        //padding: '5px',
-                        borderRadius: '10px',
-                        display: 'inline-block',
+                        margin: 0
                     }}
-                >
-                    <Pagination
-                        showSizeChanger={false}
-                        current={current}
-                        total={total}
-                        pageSize={pageSize}
-                        onChange={handleChange}
-                        
-                    />
-                </div>
-                <div style={{ color: '#555555', marginTop: '10px' }}>
-                    50 / página
-                </div>
+                />
             </div>
-        </ConfigProvider>
+            <div 
+                style={{ 
+                    color: isDarkMode ? '#9CA3AF' : '#666666', 
+                    marginTop: '8px',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontSize: '12px',
+                    fontWeight: '400'
+                }}
+            >
+                {pageSize} / página
+            </div>
+        </div>
     );
 };
 

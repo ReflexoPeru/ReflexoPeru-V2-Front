@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import styles from './Toastify.module.css';
 
 const Toast = ({
@@ -10,6 +11,7 @@ const Toast = ({
   duration = 5000,
   onClose,
 }) => {
+  const { isDarkMode } = useTheme();
   const [isExiting, setIsExiting] = useState(false);
   const timeoutRef = useRef(null);
 
@@ -31,6 +33,7 @@ const Toast = ({
   return (
     <div
       className={`${styles.toast} ${styles[type]} ${isExiting ? styles.exiting : ''}`}
+      data-theme={isDarkMode ? 'dark' : 'light'}
       role="alert"
     >
       <i className={icon}></i>

@@ -5,6 +5,7 @@ import {
   PencilSimple,
   ArrowClockwise,
 } from '@phosphor-icons/react';
+import { useTheme } from '../../../context/ThemeContext';
 import styles from './reports.module.css';
 
 const ReportPreview = ({
@@ -19,7 +20,10 @@ const ReportPreview = ({
   showEditButton = false,
   onReset,
   showResetButton = false,
-}) => (
+}) => {
+  const { isDarkMode } = useTheme();
+  
+  return (
   <div className={styles.previewContainer}>
     <div className={styles.topActions}>
       <div style={{ pointerEvents: 'auto' }}>
@@ -44,7 +48,7 @@ const ReportPreview = ({
             icon={<PencilSimple size={20} weight="bold" />}
             onClick={onEdit}
             style={{
-              background: '#4CAF50',
+              background: '#1CB54A',
               border: 'none',
               color: '#fff',
               fontWeight: 600,
@@ -98,6 +102,7 @@ const ReportPreview = ({
       {!loading && !generating && !error && content}
     </div>
   </div>
-);
+  );
+};
 
 export default ReportPreview;

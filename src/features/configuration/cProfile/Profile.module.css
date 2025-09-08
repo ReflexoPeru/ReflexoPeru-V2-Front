@@ -25,7 +25,7 @@
   width: 100%;
   height: 100%;
 
-  background-color: #121212;
+  background-color: transparent;
 }
 
 .container {
@@ -45,10 +45,11 @@
   padding: 30px;
   border-radius: 12px;
 
-  color: white;
+  color: var(--color-text-primary);
 
-  background-color: #1e1e1e;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background-color: var(--color-background-primary);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-soft);
 }
 
 .title {
@@ -57,7 +58,7 @@
 
   font-size: 22px;
   font-weight: bold;
-  color: white;
+  color: var(--color-text-primary);
   text-align: center;
 }
 
@@ -65,7 +66,7 @@
   min-width: 100px;
   margin-right: 20px;
   font-size: 16px;
-  color: rgb(255, 255, 255);
+  color: var(--color-text-secondary);
 }
 
 .formRow {
@@ -89,13 +90,13 @@
 .avatarTitle {
   margin-bottom: 10px;
   font-size: 14px;
-  color: #b0b0b0;
+  color: var(--color-text-tertiary);
 }
 
 .avatarImage {
   width: 70px;
   height: 70px;
-  border: 2px solid #333;
+  border: 2px solid var(--color-border-primary);
   border-radius: 50%;
 
   object-fit: cover;
@@ -111,28 +112,28 @@
 
   width: 70px;
   height: 70px;
-  border: 2px dashed #666;
+  border: 2px dashed var(--color-border-primary);
   border-radius: 50%;
 
-  background-color: #2a2a2a;
+  background-color: var(--color-background-secondary);
 
   transition: all 0.3s ease;
 }
 
 .uploadButton:hover {
-  border-color: #4CAF50;
-  background-color: #333;
+  border-color: var(--color-primary);
+  background-color: var(--color-background-tertiary);
 }
 
 .uploadText {
   font-size: 12px;
-  color: #b0b0b0;
+  color: var(--color-text-tertiary);
 }
 
 .divider {
   height: 1px;
   margin: 20px 0;
-  background-color: #333;
+  background-color: var(--color-border-primary);
 }
 
 .formField {
@@ -144,41 +145,41 @@
 .input {
   width: 100%;
   height: 36px;
-  border: 1px solid #444 !important;
+  border: 1px solid var(--color-border-primary) !important;
   border-radius: 6px;
 
-  color: white !important;
+  color: var(--color-input-text) !important;
 
-  background-color: #2a2a2a !important;
+  background-color: var(--color-input-bg) !important;
 
   transition: border-color 0.3s ease;
 }
 
 .input::placeholder {
-  color: #666 !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 .input:focus {
-  border-color: #4CAF50 !important;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
 }
 
 .select {
   flex: 1;
   border-radius: 6px;
-  background-color: #2a2a2a !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .select > div,
 .select [class*="ant-select-selector"] {
-  border: 1px solid #444 !important;
+  border: 1px solid var(--color-border-primary) !important;
   border-radius: 6px !important;
-  color: white !important;
-  background-color: #2a2a2a !important;
+  color: var(--color-input-text) !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .select:hover [class*="ant-select-selector"] {
-  border-color: #4CAF50 !important;
+  border-color: var(--color-primary) !important;
 }
 
 .emailContainer {
@@ -197,17 +198,16 @@
 .passwordInput {
   flex: 1;
 
-  border: 1px solid #444 !important;
+  border: 1px solid var(--color-border-primary) !important;
   border-radius: 6px;
 
-  color: white !important;
-
-  background-color: #2a2a2a !important;
+  color: var(--color-input-text) !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .passwordInput .ant-input {
-  color: white !important;
-  background-color: #2a2a2a !important;
+  color: var(--color-input-text) !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .cambiarBtn {
@@ -220,17 +220,17 @@
   border: none;
   border-radius: 6px;
 
-  color: white;
+  color: var(--color-text-primary);
 
-  background-color: #558f57;
+  background-color: var(--color-primary);
 
   transition: all 0.3s ease;
 }
 
 .cambiarBtn:hover {
   transform: translateY(-1px);
-  background-color: #3d8b40 !important;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: var(--shadow-soft);
 }
 
 .saveButtonContainer {
@@ -247,17 +247,17 @@
 
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--color-text-primary);
 
-  background-color: #4CAF50 !important;
+  background-color: var(--color-primary) !important;
 
   transition: all 0.3s ease;
 }
 
 .saveButton:hover {
   transform: translateY(-1px);
-  background-color: #3d8b40 !important;
-  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: var(--shadow-medium);
 }
 
 /* Responsive adjustments */
@@ -277,7 +277,7 @@
 /* Estilos generales */
 .ant-btn-icon-only {
   padding: 10px !important;
-  background-color: #2ecc71 !important;
+  background-color: var(--color-primary) !important;
 }
 
 .avatar-upload {
@@ -287,37 +287,37 @@
 
   width: 80px !important;
   height: 80px !important;
-  border: 2px dashed #555 !important;
+  border: 2px dashed var(--color-border-primary) !important;
   border-radius: 50% !important;
 
-  color: #aaa !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 label {
-  color: #bbb !important;
+  color: var(--color-text-secondary) !important;
 }
 
 .ant-select,
 .ant-select-selector {
   height: 40px !important;
-  border: 1px solid #3a3a3a !important;
+  border: 1px solid var(--color-border-primary) !important;
   border-radius: 8px !important;
 
-  color: #fff !important;
+  color: var(--color-input-text) !important;
 
-  background-color: #1e1e1e !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .ant-select-selection-placeholder {
-  color: #aaaaaa !important;
+  color: var(--color-text-tertiary) !important;
 }
 
 input:-webkit-autofill {
-  color: white !important;
-  background-color: #2a2a2a !important;
-  -webkit-box-shadow: 0 0 0px 1000px #2a2a2a inset !important;
+  color: var(--color-input-text) !important;
+  background-color: var(--color-input-bg) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--color-input-bg) inset !important;
 
-  -webkit-text-fill-color: white !important;
+  -webkit-text-fill-color: var(--color-input-text) !important;
 }
 
 .logoRow {

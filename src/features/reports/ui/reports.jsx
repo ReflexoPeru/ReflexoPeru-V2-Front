@@ -4,16 +4,22 @@ import {
     FilePlus,
     Users,
     Wallet,
+    FileX,
+    CalendarX,
+    ChartBar,
+    Receipt,
 } from '@phosphor-icons/react';
 import { PDFViewer } from '@react-pdf/renderer';
-import { Button, Card, ConfigProvider, DatePicker, theme } from 'antd';
+import { Button, Card, DatePicker, theme } from 'antd';
 import dayjs from 'dayjs';
 import ExcelJS from 'exceljs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTheme } from '../../../context/ThemeContext';
 import DailyCashReportPDF from '../../../components/PdfTemplates/DailyCashReportPDF';
 import DailyTherapistReportPDF from '../../../components/PdfTemplates/DailyTherapistReportPDF';
 import ExcelPreviewTable from '../../../components/PdfTemplates/ExcelPreviewTable';
 import PatientsByTherapistReportPDF from '../../../components/PdfTemplates/PatientsByTherapistReportPDF';
+import EmptyState from '../../../components/Empty/EmptyState';
 import {
     useCompanyInfo,
     useSystemHook,
@@ -73,6 +79,7 @@ const Reporte = () => {
   // Nuevos estados para el modal de edición
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedCajaData, setEditedCajaData] = useState(null);
+  const { isDarkMode } = useTheme();
 
   const { companyInfo, loadingInfo, errorInfo } = useCompanyInfo();
   const { logoUrl, loading: logoLoading, error: logoError } = useSystemHook();
@@ -282,9 +289,17 @@ const Reporte = () => {
             />
           </PDFViewer>
         ) : (
-          <div className={styles.errorMsg}>
-            No hay datos para mostrar en la fecha seleccionada.
-          </div>
+          <EmptyState
+            icon="users"
+            title="No hay datos disponibles"
+            description={`No se encontraron citas de terapeutas para la fecha ${safeDate.format('DD/MM/YYYY')}. Intenta seleccionar otra fecha.`}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              margin: '20px 0',
+              minHeight: '300px'
+            }}
+          />
         )
       );
     } else if (showPreview === 'pacientesTerapeuta') {
@@ -306,9 +321,17 @@ const Reporte = () => {
             />
           </PDFViewer>
         ) : (
-          <div className={styles.errorMsg}>
-            Error: No se pudo generar el archivo porque no hay datos.
-          </div>
+          <EmptyState
+            icon="chart"
+            title="No hay pacientes registrados"
+            description={`No se encontraron pacientes atendidos por terapeutas para la fecha ${safeDate.format('DD/MM/YYYY')}. Intenta seleccionar otra fecha.`}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              margin: '20px 0',
+              minHeight: '300px'
+            }}
+          />
         );
     } else if (showPreview === 'reporteCaja') {
       loading = cajaLoading || logoLoading || loadingInfo;
@@ -334,9 +357,17 @@ const Reporte = () => {
             />
           </PDFViewer>
         ) : (
-          <div className={styles.errorMsg}>
-            No hay datos para mostrar en la fecha seleccionada.
-          </div>
+          <EmptyState
+            icon="file"
+            title="No hay transacciones registradas"
+            description={`No se encontraron transacciones de caja para la fecha ${safeDate.format('DD/MM/YYYY')}. Intenta seleccionar otra fecha.`}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              margin: '20px 0',
+              minHeight: '300px'
+            }}
+          />
         );
     } else if (showPreview === 'rangoCitas') {
       loading = rangoLoading;
@@ -351,7 +382,17 @@ const Reporte = () => {
             onPaginationChange={setExcelPagination}
           />
         ) : (
-          <div className={styles.noDataMsg}>No hay datos para mostrar</div>
+          <EmptyState
+            icon="calendar"
+            title="No hay citas en el rango seleccionado"
+            description={`No se encontraron citas entre las fechas ${range && range[0] ? range[0].format('DD/MM/YYYY') : ''} y ${range && range[1] ? range[1].format('DD/MM/YYYY') : ''}. Intenta seleccionar un rango diferente.`}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              margin: '20px 0',
+              minHeight: '300px'
+            }}
+          />
         );
       if (
         rangoData &&
@@ -427,10 +468,30 @@ const Reporte = () => {
   }
 
   return (
-    <ConfigProvider theme={themeConfig}>
-      <div className={styles.mainContainer}>
-        <Card className={styles.card}>
-          <h2 className={styles.title}>Generador de Reportes</h2>
+    <div 
+      className={styles.mainContainer}
+      style={{
+        backgroundColor: isDarkMode ? '#1a1a1a' : '#f5f5f5',
+        color: isDarkMode ? '#ffffff' : '#333333'
+      }}
+    >
+      <Card 
+        className={styles.card}
+        style={{
+          backgroundColor: isDarkMode ? '#242424' : '#ffffff',
+          borderColor: isDarkMode ? '#333333' : '#e0e0e0',
+          color: isDarkMode ? '#ffffff' : '#333333'
+        }}
+      >
+        <h2 
+          className={styles.title}
+          style={{
+            color: isDarkMode ? '#ffffff' : '#333333',
+            borderBottomColor: isDarkMode ? '#333333' : '#e0e0e0'
+          }}
+        >
+          Generador de Reportes
+        </h2>
 
           <form onSubmit={handleSubmit}>
             <ReportSelector
@@ -474,7 +535,6 @@ const Reporte = () => {
           </form>
         </Card>
       </div>
-    </ConfigProvider>
   );
 };
 

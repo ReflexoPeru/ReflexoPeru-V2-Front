@@ -1,4 +1,4 @@
-import { ConfigProvider, Select } from 'antd';
+import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getStaff } from '../../features/staff/service/staffService';
 
@@ -39,44 +39,23 @@ export function SelectTherapist({ value, onChange, ...rest }) {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            controlHeight: 40,
-            borderRadius: 6,
-            colorPrimary: '#FFFFFFFF',
-            optionSelectedBg: '#333333',
-            colorText: '#fff',
-            colorBgElevated: '#444444',
-            colorTextPlaceholder: '#aaa',
-            controlItemBgHover: '#1a1a1a',
-            selectorBg: '#444444',
-          },
-        },
-        token: {
-          colorTextBase: '#fff',
-        },
+    <Select
+      {...rest}
+      value={internalValue}
+      onChange={handleChange}
+      showSearch
+      filterOption={(input, option) =>
+        (option?.label?.props?.children ?? '')
+          .toLowerCase()
+          .includes(input.toLowerCase())
+      }
+      placeholder="Seleccionar terapeuta"
+      options={options}
+      style={{
+        width: '100%',
       }}
-    >
-      <Select
-        {...rest}
-        value={internalValue}
-        onChange={handleChange}
-        showSearch
-        filterOption={(input, option) =>
-          (option?.label?.props?.children ?? '')
-            .toLowerCase()
-            .includes(input.toLowerCase())
-        }
-        placeholder="Seleccionar terapeuta"
-        options={options}
-        style={{
-          width: '100%',
-        }}
-        allowClear
-      />
-    </ConfigProvider>
+      allowClear
+    />
   );
 }
 

@@ -17,6 +17,7 @@ import {
   CheckCircle,
 } from '@phosphor-icons/react';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { useTheme } from '../../../context/ThemeContext';
 import styles from './Profile.module.css';
 import {
   useSendVerifyCode,
@@ -254,45 +255,10 @@ const Profile = () => {
     }
   };
 
-  const theme = {
-    token: {
-      colorPrimary: '#4CAF50',
-      colorBgContainer: '#1e1e1e',
-      colorText: 'white',
-      colorTextPlaceholder: '#666',
-      colorBorder: '#444',
-      colorBgElevated: '#2a2a2a',
-      colorError: '#ff4d4f',
-    },
-    components: {
-      Modal: {
-        contentBg: 'linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%)',
-        headerBg: 'transparent',
-        titleColor: 'white',
-        colorText: '#b0b0b0',
-        borderRadiusLG: 16,
-        paddingContentHorizontal: 0,
-        paddingMD: 0,
-      },
-      Button: {
-        defaultHoverBg: 'rgba(255, 255, 255, 0.08)',
-        defaultHoverColor: 'white',
-      },
-      Input: {
-        colorBgContainer: '#2a2a2a',
-        activeBorderColor: '#4CAF50',
-        hoverBorderColor: '#4CAF50',
-        activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
-      },
-      Select: {
-        optionSelectedBg: '#333',
-        optionActiveBg: '#3a3a3a',
-      },
-    },
-  };
+  const { antdTheme } = useTheme();
 
   return (
-    <ConfigProvider theme={theme}>
+    <ConfigProvider theme={antdTheme}>
       <div className={styles.body}>
         <div className={styles.layout}>
           <aside className={styles.sidebar}>{/* Sidebar content */}</aside>
@@ -319,9 +285,9 @@ const Profile = () => {
                             height: '100px',
                             borderRadius: '50%',
                             objectFit: 'cover',
-                            border: '2px solid #4CAF50',
+                            border: '2px solid var(--color-primary)',
                             padding: '3px',
-                            backgroundColor: '#000',
+                            backgroundColor: 'transparent',
                           }}
                         />
                       ) : (
@@ -356,17 +322,17 @@ const Profile = () => {
                         onChange={handleAvatarChange}
                         style={{
                           borderRadius: '50%',
-                          border: '2px dashed #4CAF50',
+                          border: '2px dashed var(--color-primary)',
                           width: 97,
                           height: 97,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          backgroundColor: '#1a1a1a', // si estás en modo oscuro
+                          backgroundColor: 'var(--color-background-secondary)',
                           cursor: 'pointer',
                         }}
                       >
-                        <div style={{ color: '#fff', textAlign: 'center' }}>
+                        <div style={{ color: 'var(--color-text-primary)', textAlign: 'center' }}>
                           <UploadOutlined />
                           <div style={{ marginTop: 8 }}>Subir avatar</div>
                         </div>

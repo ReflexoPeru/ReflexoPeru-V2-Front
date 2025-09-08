@@ -7,10 +7,12 @@ import {
 
 export const createAppointment = async (data) => {
   try {
+    console.log('Sending appointment data to backend:', data);
     const response = await post('appointments', data);
     return response.data;
   } catch (error) {
     console.error('Error en createAppointment:', error);
+    console.error('Error response:', error.response?.data);
     throw error;
   }
 };

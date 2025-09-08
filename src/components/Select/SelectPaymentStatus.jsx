@@ -1,4 +1,4 @@
-import { ConfigProvider, Select } from 'antd';
+import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getPaymentStatuses } from './SelectsApi';
 
@@ -12,7 +12,7 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
         const formattedOptions = data.map((item) => ({
           ...item,
           value: String(item.value), // Forzar a string
-          label: <span style={{ color: '#fff' }}>{item.label}</span>,
+          label: item.label,
         }));
         setOptions(formattedOptions);
       } catch (error) {
@@ -24,39 +24,20 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
   }, []);
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            colorPrimary: '#FFFFFFFF',
-            optionSelectedBg: '#424242FF',
-            colorText: '#fff',
-            colorTextPlaceholder: '#aaa',
-            controlItemBgHover: '#2E2E2EFF',
-            selectorBg: '#444444', // fondo del input
-          },
-        },
-        token: {
-          colorTextBase: '#fff',
-        },
-      }}
-    >
-      <Select
-        style={{ width: '100%' }}
-        dropdownStyle={{ backgroundColor: '#444444' }}
-        showSearch
-        placeholder="Estado de pago"
-        options={options}
-        value={value}
-        onChange={onChange}
-        filterOption={(input, option) =>
-          (option?.label?.props?.children ?? '')
-            .toLowerCase()
-            .includes(input.toLowerCase())
-        }
-        {...rest}
-      />
-    </ConfigProvider>
+    <Select
+      style={{ width: '100%' }}
+      showSearch
+      placeholder="Estado de pago"
+      options={options}
+      value={value}
+      onChange={onChange}
+      filterOption={(input, option) =>
+        (option?.label ?? '')
+          .toLowerCase()
+          .includes(input.toLowerCase())
+      }
+      {...rest}
+    />
   );
 }
 

@@ -6,8 +6,8 @@
 
   line-height: 40px;
 
-  background-color: #1a1a1a;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-background-primary);
+  transition: all var(--transition-normal);
 }
 
 .headerContent {
@@ -15,6 +15,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  border: none;
+  outline: none;
 }
 
 .headerLeft {
@@ -30,26 +32,51 @@
   align-items: center;
   justify-content: center;
 
-  padding: 4px;
+  padding: var(--spacing-sm);
   border: none;
+  border-radius: var(--radius-md);
 
-  color: white;
-
-  background: none;
+  color: var(--color-text-primary);
+  background: var(--color-background-secondary);
+  transition: all var(--transition-fast);
 }
 
 .backButton:hover {
-  opacity: 0.8;
+  background-color: var(--color-background-tertiary);
+  transform: translateX(-2px);
 }
 
 .headerTitle {
-  margin-left: 4px;
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
+  margin-left: var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
 }
 
 .headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  line-height: 1;
+}
+
+.themeToggleContainer {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border-primary);
+  transition: all var(--transition-normal);
+}
+
+.themeToggleContainer:hover {
+  background-color: var(--color-background-tertiary);
+  box-shadow: var(--shadow-soft);
+}
+
+.timeContainer {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -58,14 +85,40 @@
 
 .headerTime {
   margin-bottom: 2px;
-  font-size: 14px;
-  font-weight: 700; 
-  color: #AAAAAA;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
 }
 
 .headerDate {
-  font-size: 12px;
-  color: #AAAAAA; 
-  text-transform: capitalize; 
-  opacity: 0.8;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  text-transform: capitalize;
+  opacity: 0.9;
+  font-family: var(--font-family);
+}
+
+.separator {
+  background-color: var(--color-border-primary);
+  transition: background-color var(--transition-normal);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .headerRight {
+    gap: var(--spacing-md);
+  }
+  
+  .timeContainer {
+    display: none;
+  }
+  
+  .headerTitle {
+    font-size: var(--font-size-md);
+  }
+  
+  .themeToggleContainer {
+    padding: var(--spacing-xs);
+  }
 }

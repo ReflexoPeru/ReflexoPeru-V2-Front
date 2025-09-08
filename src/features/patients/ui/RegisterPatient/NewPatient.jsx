@@ -9,10 +9,6 @@ const fields = [
     label: 'REGISTRAR PACIENTE',
   },
   {
-    type: 'subtitle',
-    label: 'Nuevo paciente',
-  },
-  {
     type: 'customRow',
     fields: [
       {
@@ -87,6 +83,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
@@ -140,7 +137,7 @@ const fields = [
   },
 ];
 
-const NewPatient = ({ onSubmit, onCancel }) => {
+const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const { submitNewPatient } = usePatients();
   const navigate = useNavigate();
 
@@ -177,7 +174,11 @@ const NewPatient = ({ onSubmit, onCancel }) => {
       });
 
       if (onSubmit) onSubmit(result);
-      navigate('/Inicio/pacientes');
+      
+      // Solo navegar si no es un modal
+      if (!isModal) {
+        navigate('/Inicio/pacientes');
+      }
 
       return result;
     } catch (error) {
@@ -206,7 +207,10 @@ const NewPatient = ({ onSubmit, onCancel }) => {
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    navigate('/Inicio/pacientes');
+    // Solo navegar si no es un modal
+    if (!isModal) {
+      navigate('/Inicio/pacientes');
+    }
   };
 
   return (
@@ -216,7 +220,7 @@ const NewPatient = ({ onSubmit, onCancel }) => {
       mode="create"
       onSubmit={handleSubmit}
       initialValues={{
-        document_type_id: 1,
+        document_type_id: "1", // DNI por defecto (string)
         country_id: 1,
       }}
     />

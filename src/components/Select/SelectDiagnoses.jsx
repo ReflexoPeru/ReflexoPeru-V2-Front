@@ -25,7 +25,6 @@ export function SelectDiagnoses() {
 
   return (
     <Select
-      style={{ color: '#fff' }}
       showSearch
       filterOption={(input, option) => {
         var _a;

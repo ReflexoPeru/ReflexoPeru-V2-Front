@@ -1,0 +1,476 @@
+/* ===== TIPOGRAFÍA CONSISTENTE ===== */
+
+/* Fuente principal Poppins */
+:root {
+  --font-family-primary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
+}
+
+/* Aplicar fuente consistente a toda la aplicación */
+html, body, #root {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Estilos para diferentes elementos de texto */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary) !important;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1rem; /* 16px */
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+}
+
+/* Párrafos y texto general */
+p, span, div, label {
+  font-family: var(--font-family-primary) !important;
+  line-height: 1.5;
+}
+
+/* Texto pequeño */
+small, .text-sm {
+  font-size: 0.875rem; /* 14px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Texto extra pequeño */
+.text-xs {
+  font-size: 0.75rem; /* 12px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Texto grande */
+.text-lg {
+  font-size: 1.125rem; /* 18px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Texto extra grande */
+.text-xl {
+  font-size: 1.25rem; /* 20px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Texto 2XL */
+.text-2xl {
+  font-size: 1.5rem; /* 24px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Texto 3XL */
+.text-3xl {
+  font-size: 1.875rem; /* 30px */
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Pesos de fuente */
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Alturas de línea */
+.leading-tight {
+  line-height: 1.25;
+}
+
+.leading-normal {
+  line-height: 1.5;
+}
+
+.leading-relaxed {
+  line-height: 1.75;
+}
+
+/* Estilos para elementos específicos */
+button, input, textarea, select {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Ant Design overrides para tipografía */
+.ant-typography,
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5,
+.ant-typography h6,
+.ant-typography p,
+.ant-typography span,
+.ant-typography div {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Tablas */
+.ant-table,
+.ant-table th,
+.ant-table td,
+.ant-table thead > tr > th,
+.ant-table tbody > tr > td {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Formularios */
+.ant-form,
+.ant-form-item,
+.ant-form-item-label,
+.ant-form-item-control,
+.ant-input,
+.ant-select,
+.ant-select-selector,
+.ant-picker,
+.ant-picker-input {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Botones */
+.ant-btn {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Modales */
+.ant-modal,
+.ant-modal-title,
+.ant-modal-content,
+.ant-modal-body {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Notificaciones */
+.ant-notification,
+.ant-notification-notice,
+.ant-notification-notice-message,
+.ant-notification-notice-description {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Menús */
+.ant-menu,
+.ant-menu-item,
+.ant-menu-submenu,
+.ant-menu-submenu-title {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Breadcrumbs */
+.ant-breadcrumb,
+.ant-breadcrumb-link {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Paginación */
+.ant-pagination,
+.ant-pagination-item,
+.ant-pagination-prev,
+.ant-pagination-next {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Spinners */
+.ant-spin,
+.ant-spin-text {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Tooltips */
+.ant-tooltip,
+.ant-tooltip-inner {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Popovers */
+.ant-popover,
+.ant-popover-inner,
+.ant-popover-inner-content {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Dropdowns */
+.ant-dropdown,
+.ant-dropdown-menu,
+.ant-dropdown-menu-item {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Tabs */
+.ant-tabs,
+.ant-tabs-tab,
+.ant-tabs-tab-btn {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Cards */
+.ant-card,
+.ant-card-head,
+.ant-card-head-title,
+.ant-card-body {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Listas */
+.ant-list,
+.ant-list-item,
+.ant-list-item-meta,
+.ant-list-item-meta-title,
+.ant-list-item-meta-description {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Descriptions */
+.ant-descriptions,
+.ant-descriptions-item-label,
+.ant-descriptions-item-content {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Steps */
+.ant-steps,
+.ant-steps-item-title,
+.ant-steps-item-description {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Timeline */
+.ant-timeline,
+.ant-timeline-item-content {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Alertas */
+.ant-alert,
+.ant-alert-message,
+.ant-alert-description {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Progress */
+.ant-progress,
+.ant-progress-text {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Rate */
+.ant-rate {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Slider */
+.ant-slider,
+.ant-slider-mark-text {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Switch */
+.ant-switch {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Checkbox */
+.ant-checkbox,
+.ant-checkbox-wrapper {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Radio */
+.ant-radio,
+.ant-radio-wrapper {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Upload */
+.ant-upload,
+.ant-upload-list,
+.ant-upload-list-item-name {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Transfer */
+.ant-transfer,
+.ant-transfer-list,
+.ant-transfer-list-header,
+.ant-transfer-list-content-item {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Tree */
+.ant-tree,
+.ant-tree-title {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Cascader */
+.ant-cascader,
+.ant-cascader-picker,
+.ant-cascader-menu,
+.ant-cascader-menu-item {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* DatePicker */
+.ant-picker,
+.ant-picker-input,
+.ant-picker-suffix {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* TimePicker */
+.ant-time-picker,
+.ant-time-picker-input {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Calendar */
+.ant-calendar,
+.ant-calendar-header,
+.ant-calendar-body,
+.ant-calendar-date {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Drawer */
+.ant-drawer,
+.ant-drawer-header,
+.ant-drawer-title,
+.ant-drawer-body {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Skeleton */
+.ant-skeleton,
+.ant-skeleton-title,
+.ant-skeleton-paragraph {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Empty */
+.ant-empty,
+.ant-empty-description {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Result */
+.ant-result,
+.ant-result-title,
+.ant-result-subtitle {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Statistic */
+.ant-statistic,
+.ant-statistic-title,
+.ant-statistic-content {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Anchor */
+.ant-anchor,
+.ant-anchor-link {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* BackTop */
+.ant-back-top {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Affix */
+.ant-affix {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* ConfigProvider global */
+.ant-config-provider {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem; /* 28px */
+  }
+  
+  h2 {
+    font-size: 1.375rem; /* 22px */
+  }
+  
+  h3 {
+    font-size: 1.125rem; /* 18px */
+  }
+  
+  h4 {
+    font-size: 1rem; /* 16px */
+  }
+  
+  h5 {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  h6 {
+    font-size: 0.75rem; /* 12px */
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem; /* 24px */
+  }
+  
+  h2 {
+    font-size: 1.25rem; /* 20px */
+  }
+  
+  h3 {
+    font-size: 1.125rem; /* 18px */
+  }
+  
+  h4 {
+    font-size: 1rem; /* 16px */
+  }
+  
+  h5 {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  h6 {
+    font-size: 0.75rem; /* 12px */
+  }
+}
