@@ -9,7 +9,7 @@ const Error500 = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
-    navigate('/');
+    navigate('/Inicio');
   };
   useEffect(() => {
     const cleanup = initializeParticles();
@@ -27,7 +27,6 @@ const Error500 = () => {
           src={imgerror}
           alt="Error"
           className={styles.errorImage}
-          style={{ width: '320px', maxWidth: '100%' }}
         />
         <h1 className={styles.title}>Oops!</h1>
         <p className={styles.subtitle}>

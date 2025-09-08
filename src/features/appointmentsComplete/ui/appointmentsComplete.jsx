@@ -5,7 +5,7 @@ import CustomSearch from '../../../components/Search/CustomSearch';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import { useNavigate } from 'react-router';
 import { useAppointmentsComplete } from '../hook/appointmentsCompleteHook';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { Space, Button } from 'antd';
 
 export default function AppointmentsComplete() {

@@ -22,9 +22,8 @@ import {
   Typography,
   Space,
   Divider,
-  ConfigProvider,
 } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -697,38 +696,11 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   label="Fecha de cita"
                   rules={[{ required: true, message: 'La fecha es requerida' }]}
                 >
-                  <ConfigProvider
-                    theme={{
-                      components: {
-                        DatePicker: {
-                          colorBgElevated: '#333333',
-                          colorText: '#ffffff',
-                          colorTextHeading: '#ffffff',
-                          colorIcon: '#ffffff',
-                          colorPrimary: '#1cb54a',
-                          cellHoverBg: '#444444',
-                          colorBgContainer: '#333333',
-                          colorBorder: '#555555',
-                          colorTextPlaceholder: '#aaaaaa',
-                        },
-                      },
-                      token: {
-                        colorBgElevated: '#333333',
-                        colorTextBase: '#fff',
-                      },
-                    }}
-                  >
-                    <DatePicker
-                      style={{ width: '100%' }}
-                      format="DD-MM-YYYY"
-                      placeholder="Seleccionar fecha"
-                      dropdownClassName="custom-dark-datepicker"
-                      value={form.getFieldValue('appointment_date')}
-                      onChange={(date) =>
-                        form.setFieldsValue({ appointment_date: date })
-                      }
-                    />
-                  </ConfigProvider>
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    format="DD-MM-YYYY"
+                    placeholder="Seleccionar fecha"
+                  />
                 </Form.Item>
               </Col>
             </Row>

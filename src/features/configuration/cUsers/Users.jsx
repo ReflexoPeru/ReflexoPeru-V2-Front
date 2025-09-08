@@ -47,7 +47,7 @@ const SelectRole = ({ value, onChange, ...rest }) => {
   ];
 
   const options = roles.map((role) => ({
-    label: <span style={{ color: '#fff' }}>{role.name}</span>,
+    label: <span className={styles.selectOption}>{role.name}</span>,
     value: role.id,
   }));
 
@@ -78,9 +78,7 @@ const SelectRole = ({ value, onChange, ...rest }) => {
       }
       placeholder="Seleccionar rol"
       options={options}
-      style={{
-        width: '100%',
-      }}
+      className={styles.selectContainer}
     />
   );
 };
@@ -90,8 +88,8 @@ const SelectSex = ({ value, onChange, ...rest }) => {
   const [internalValue, setInternalValue] = useState(value);
 
   const options = [
-    { label: <span style={{ color: '#fff' }}>Masculino</span>, value: 'M' },
-    { label: <span style={{ color: '#fff' }}>Femenino</span>, value: 'F' },
+    { label: <span className={styles.selectOption}>Masculino</span>, value: 'M' },
+    { label: <span className={styles.selectOption}>Femenino</span>, value: 'F' },
   ];
 
   // Sincronizar value cuando cambia el value externo

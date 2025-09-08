@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPendingAppointments } from '../service/homeService';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 
 export const useTodayAppointments = () => {
   const [appointments, setAppointments] = useState([]);

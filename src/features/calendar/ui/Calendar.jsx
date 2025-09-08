@@ -6,7 +6,7 @@ import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
 import { Modal, Spin, Flex } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useCalendar } from '../hook/calendarHook';
 
 moment.locale('es', {

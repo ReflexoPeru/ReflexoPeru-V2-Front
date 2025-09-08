@@ -6,7 +6,7 @@ import {
   deleteTherapist,
   updateTherapist,
 } from '../service/staffService';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { formatToastMessage } from '../../../utils/messageFormatter';
 

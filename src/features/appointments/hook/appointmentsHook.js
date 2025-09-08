@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createAppointment,

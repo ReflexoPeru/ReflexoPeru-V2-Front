@@ -1,6 +1,6 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import { Button, Modal, Space, Spin, notification } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomButton from '../../../components/Button/CustomButtom';

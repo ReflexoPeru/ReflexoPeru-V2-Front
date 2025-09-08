@@ -5,7 +5,7 @@ import {
   getPaginatedAppointmentsRange,
   getCompletedAppointmentsRange,
 } from '../service/calendarService';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 
 export const useCalendar = () => {
   const [events, setEvents] = useState([]);

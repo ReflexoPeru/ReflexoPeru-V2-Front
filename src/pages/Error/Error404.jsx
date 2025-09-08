@@ -27,7 +27,6 @@ const Error404 = () => {
           src={imgerror}
           alt="Error"
           className={styles.errorImage}
-          style={{ width: '320px', maxWidth: '90%' }}
         />
         <h1 className={styles.title}>404</h1>
         <p className={styles.subtitle}>

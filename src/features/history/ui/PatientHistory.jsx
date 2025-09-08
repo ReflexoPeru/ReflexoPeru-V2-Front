@@ -2,7 +2,6 @@ import { PDFViewer } from '@react-pdf/renderer';
 import {
   Button,
   Card,
-  ConfigProvider,
   DatePicker,
   Form,
   Input,
@@ -14,7 +13,7 @@ import {
   Table,
   Typography,
 } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -34,89 +33,6 @@ const { Title } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const theme = {
-  token: {
-    colorPrimary: '#4caf50',
-    colorBgContainer: '#222',
-    colorText: '#eee',
-    colorBorder: '#333',
-    colorBgElevated: '#222',
-    colorTextHeading: '#4caf50',
-    colorTextLabel: '#4caf50',
-    borderRadius: 6,
-    fontSize: 14,
-    fontFamily: 'Arial, sans-serif',
-    colorTextLightSolid: '#111',
-  },
-  components: {
-    Table: {
-      headerBg: '#272727',
-      headerColor: 'rgba(199,26,26,0.88)',
-      colorBgContainer: '#272727',
-      borderColor: '#555555',
-      rowHoverBg: '#555555',
-      cellPaddingBlock: 12,
-      cellPaddingInline: 16,
-    },
-    Radio: {
-      colorPrimary: '#4caf50',
-      colorBgContainer: '#fff',
-    },
-    Button: {
-      colorPrimary: '#4caf50',
-      colorPrimaryHover: '#388e3c',
-      colorPrimaryActive: '#2e7d32',
-      defaultBorderColor: '#333',
-      defaultColor: '#eee',
-      defaultBg: '#333',
-      dangerBorderColor: '#f44336',
-      dangerColor: '#eee',
-      dangerBg: '#f44336',
-    },
-    Input: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      colorTextDisabled: '#eee',
-      activeBorderColor: '#4caf50',
-      hoverBorderColor: '#4caf50',
-    },
-    Select: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      optionSelectedBg: '#2e7d32',
-      optionSelectedColor: '#111',
-      optionActiveBg: '#333',
-    },
-    DatePicker: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      cellActiveWithRangeBg: '#2e7d32',
-      cellHoverBg: '#333',
-      panelBg: '#222',
-      panelInputBg: '#222',
-      colorTextHeading: '#eee',
-      colorTextDescription: '#eee',
-      colorIcon: '#eee',
-      colorIconHover: '#4caf50',
-      cellBg: '#222',
-      cellColor: '#eee',
-      cellActiveBg: '#2e7d32',
-      timeColumnBg: '#222',
-    },
-    Card: {
-      colorBgContainer: '#111',
-      colorBorderSecondary: '#2e7d32',
-    },
-    Form: {
-      labelColor: '#4caf50',
-      itemMarginBottom: 16,
-      labelFontSize: 18,
-    },
-  },
-};
 
 const PatientHistory = () => {
   const [form] = Form.useForm();
@@ -376,11 +292,7 @@ const PatientHistory = () => {
 
   if (loadingAppointments || !patientHistory) {
     return (
-      <ConfigProvider
-        theme={{
-          token: { colorPrimary: '#4caf50' },
-        }}
-      >
+      <div className={styles.container}>
         <Spin
           size="large"
           tip="Cargando historial..."
@@ -391,17 +303,16 @@ const PatientHistory = () => {
             height: '60vh',
           }}
         />
-      </ConfigProvider>
+      </div>
     );
   }
 
   return (
-    <ConfigProvider theme={theme}>
       <div className={styles.container}>
         <Card className={styles.card}>
-                     <Title level={2} className={styles.title} style={{ textAlign: 'center', color: '#ffffff' }}>
-             Detalles del Historial
-           </Title>
+          <Title level={2} className={styles.title}>
+            Detalles del Historial
+          </Title>
 
           <Form
             form={form}
@@ -709,7 +620,7 @@ const PatientHistory = () => {
             dataSource={staff}
             rowKey="id"
             loading={loading}
-            scroll={{ y: 200 }}
+            scroll={{ x: 'max-content' }}
             pagination={false}
             rowClassName={() => styles.tableRow}
           />
@@ -769,7 +680,6 @@ const PatientHistory = () => {
           )}
         </Modal>
       </div>
-    </ConfigProvider>
   );
 };
 

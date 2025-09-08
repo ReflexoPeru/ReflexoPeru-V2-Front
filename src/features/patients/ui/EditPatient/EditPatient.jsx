@@ -1,5 +1,5 @@
 import { Form, Modal, notification } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';

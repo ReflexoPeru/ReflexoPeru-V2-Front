@@ -11,7 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import { PDFViewer } from '@react-pdf/renderer';
 import { Button, Card, DatePicker, theme } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import ExcelJS from 'exceljs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../../../context/ThemeContext';

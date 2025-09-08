@@ -1,11 +1,100 @@
-body {
+/* ================================================== */
+/* SYSTEM CONFIGURATION COMPONENT STYLES            */
+/* ================================================== */
+
+.noLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border: 2px dashed var(--color-border-secondary);
+  border-radius: 40%;
+  background-color: var(--color-background-tertiary);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  transition: all var(--transition-normal);
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+}
 
-  font-family: 'Montserrat', sans-serif;
+/* Estilos para el componente Upload de Ant Design */
+.uploadContainer :global(.ant-upload) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  border: 2px dashed var(--color-border-primary) !important;
+  background-color: var(--color-background-tertiary) !important;
+  cursor: pointer !important;
+  transition: all var(--transition-normal) !important;
+  color: var(--color-text-secondary) !important;
+  box-sizing: border-box !important;
+}
 
-  background-color: #121212;
+.uploadContainer :global(.ant-upload:hover) {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary-light) !important;
+  color: var(--color-primary) !important;
+}
+
+.uploadContainer {
+  position: relative;
+}
+
+.uploadContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.uploadIcon {
+  font-size: 24px;
+  margin-bottom: var(--spacing-xs);
+}
+
+.uploadLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .box {
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md);
+  }
+  
+  .logoRow {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  
+  .nameRow {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .input {
+    width: 100%;
+  }
+  
+  .changeBtn {
+    width: 100%;
+  }
+}
+
+/* Estados de carga */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--color-text-secondary);
 }
 
 .layout {
@@ -13,152 +102,198 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 100%;
   height: 100%;
-
   background-color: transparent;
+  padding: var(--spacing-lg);
 }
 
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
+  max-width: 800px;
 }
 
 .container {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .box {
-  width: 65%;
+  width: 100%;
   max-width: 650px;
-  padding: 30px;
-  border-radius: 8px;
-
-  color: white;
-
-  background-color: #1e1e1e;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-elevated);
+  border: 1px solid var(--color-border-primary);
+  box-shadow: var(--shadow-medium);
+  transition: all var(--transition-normal);
 }
 
 .section {
-  margin-bottom: 30px;
+  margin-bottom: var(--spacing-xl);
 }
 
 .label {
-  margin-right: 15px;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
+  display: block;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  transition: color var(--transition-fast);
 }
 
 .logoRow {
   display: flex;
-  gap: 20px;
-  align-items: center;
+  gap: var(--spacing-xl);
+  align-items: flex-start;
   justify-content: center;
-
-  margin-top: 10px;
+  margin-top: var(--spacing-md);
 }
 
 .logoBlock {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: var(--spacing-md);
 }
 
 .logoTitle {
-  margin-bottom: 15px;
-  color: white;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color var(--transition-fast);
 }
 
-/* .logoImage {
-  width: 60%;
-  height: 30%;
+/* Contenedor fijo para la imagen del logo */
+.logoImageContainer {
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--color-primary);
+  border-radius: 60%;
+  background-color: var(--color-background-primary);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-normal);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
 
-  padding: 4px;
-  border: 2px solid #4CAF50;
+.logoImageContainer:hover {
+  border-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
   border-radius: 50%;
-
-  object-fit: cover;
-  background-color: #000;
-
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
-} */
+}
 
 .uploadBtn {
   cursor: pointer;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  width: 80px;
-  height: 80px;
-  border: none;
+  width: 100px;
+  height: 100px;
+  border: 2px dashed var(--color-border-primary);
   border-radius: 50%;
+  background-color: var(--color-background-tertiary);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-normal);
+}
 
-  background-color: #e0e0e0;
+.uploadBtn:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: scale(1.02);
 }
 
 .uploadText {
-  margin-top: 2px;
-  font-size: 12px;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  text-align: center;
+  font-weight: var(--font-weight-medium);
 }
 
 .nameRow {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-md);
   align-items: center;
-  justify-content: center;
-
-  margin-top: 15px;
+  margin-top: var(--spacing-md);
 }
 
 .input {
-  width: 70%;
-  height: 32px;
-  padding: 0 10px;
-  border: none;
-  border-radius: 4px;
-
-  color: white;
-
-  background-color: #333;
+  flex: 1;
+  height: 40px;
+  padding: 0 var(--spacing-md);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  color: var(--color-input-text);
+  background-color: var(--color-input-bg);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
 }
 
 .input:hover {
-  background-color: #444; /* Color de fondo al hacer hover */
+  border-color: var(--color-primary-light);
+  background-color: var(--color-background-elevated);
 }
+
 .input:focus {
-  background-color: #333;
+  border-color: var(--color-primary);
+  background-color: var(--color-background-elevated);
   outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary-light);
 }
 
 .input::placeholder {
-  color: #aaa;
+  color: var(--color-text-placeholder);
 }
 
 .changeBtn {
   cursor: pointer;
-
-  height: 32px;
-  padding: 0 15px;
+  height: 40px;
+  padding: 0 var(--spacing-lg);
   border: none;
-  border-radius: 4px;
-
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   color: white;
-
-  background-color: #4CAF50;
-
-  transition: background-color 0.3s ease;
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-fast);
 }
 
 .changeBtn:hover {
   color: white;
-  background-color: #20c55f; 
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-1px);
+}
+
+.changeBtn:active {
+  background-color: var(--color-primary-active);
+  transform: translateY(0);
+  box-shadow: var(--shadow-soft);
+}
+
+.changeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }

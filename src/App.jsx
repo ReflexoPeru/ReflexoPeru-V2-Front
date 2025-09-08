@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Router from './routes/Router';
 import { ToastProvider } from './services/toastify/ToastContext';
 import { ConfigProvider } from 'antd';
+import esES from 'antd/locale/es_ES';
 import { useTheme } from './context/ThemeContext';
 
 // Componente interno que usa el tema
@@ -13,7 +14,7 @@ function AppContent() {
   const { antdTheme } = useTheme();
 
   return (
-    <ConfigProvider theme={antdTheme}>
+    <ConfigProvider theme={antdTheme} locale={esES}>
       <Router />
     </ConfigProvider>
   );

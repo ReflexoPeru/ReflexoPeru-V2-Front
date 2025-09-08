@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Typography } from 'antd';
-import dayjs from 'dayjs';
-import 'dayjs/locale/es';
+import dayjs from '../../utils/dayjsConfig';
 import { CaretLeft, ArrowLeft } from '@phosphor-icons/react';
 import styles from './Header.module.css';
 import { useNavigate } from 'react-router';
 import { useTheme } from '../../context/ThemeContext';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
-dayjs.locale('es');
+// dayjs ya está configurado globalmente
 
 const { Header } = Layout;
 const { Text } = Typography;

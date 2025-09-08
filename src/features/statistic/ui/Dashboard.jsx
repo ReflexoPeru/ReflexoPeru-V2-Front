@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
 import { useStatistic } from '../hook/useStatistic';

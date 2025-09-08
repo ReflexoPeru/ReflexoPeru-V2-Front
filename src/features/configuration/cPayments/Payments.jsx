@@ -365,6 +365,7 @@ const Payments = () => {
             data={paymentTypes}
             loading={loadingPayments}
             pagination={false}
+            maxHeight="auto"
           />
         </div>
 

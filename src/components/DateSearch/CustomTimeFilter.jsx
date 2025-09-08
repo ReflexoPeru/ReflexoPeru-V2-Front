@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { DatePicker } from 'antd';
 import es_ES from 'antd/lib/locale/es_ES';
-import dayjs from 'dayjs';
+import dayjs from '../../utils/dayjsConfig';
 import { CalendarOutlined } from '@ant-design/icons';
 
 const CustomTimeFilter = ({

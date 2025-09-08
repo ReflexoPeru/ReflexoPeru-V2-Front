@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, ConfigProvider } from 'antd';
+import { Form, Input, Button } from 'antd';
 import styles from './FirstSession.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
@@ -47,37 +47,7 @@ function FirstSession() {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Input: {
-            hoverBg: '#414141',
-            colorErrorBg: '#666666',
-            colorErrorText: '#fff',
-            colorErrorBgHover: '#414141',
-            hoverBorderColor: 'transparent',
-            activeBorderColor: 'transparent',
-            activeBg: '#666666',
-            addonBg: 'transparent',
-            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
-          },
-          Button: {
-            colorPrimary: '#1b7b46',
-            colorPrimaryHover: '#16623a',
-            colorPrimaryActive: '#144e30',
-            colorTextLightSolid: '#fff',
-            // Estilos para el loading
-            loadingBg: '#1b7b46',
-            loadingColor: '#fff',
-            loadingBorderColor: '#1b7b46',
-          },
-        },
-        token: {
-          colorPrimary: '#fff', // Color del spinner
-        },
-      }}
-    >
-      <div>
+    <div>
         <div id="particles-js" className={styles.particlesJs}></div>
         <div className={styles.loginContainer}>
           <div className={styles.loginForm}>
@@ -149,7 +119,6 @@ function FirstSession() {
           © 2025 Centro de Reflexoterapia - Todos los derechos reservados
         </div>
       </div>
-    </ConfigProvider>
   );
 }
 

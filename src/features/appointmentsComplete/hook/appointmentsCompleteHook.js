@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import {
   getPaginatedAppointmentsCompleteByDate,
   searchAppointmentsComplete,

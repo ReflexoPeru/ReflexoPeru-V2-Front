@@ -16,7 +16,7 @@ import {
   Space,
   Divider,
 } from 'antd';
-import dayjs from 'dayjs';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormComponent from '../../../../components/Form/Form';
@@ -48,12 +48,7 @@ const NewAppointment = () => {
 
   const navigate = useNavigate();
 
-  // Establecer fecha de hoy por defecto
-  useEffect(() => {
-    form.setFieldsValue({
-      appointment_date: dayjs()
-    });
-  }, [form]);
+  // La fecha por defecto se establece ahora con initialValue en el Form.Item
 
   // Debug: Monitorear cambios en selectedPatient
   useEffect(() => {
@@ -380,6 +375,7 @@ const NewAppointment = () => {
                 name="appointment_date"
                 label="Fecha de cita"
                 rules={[{ required: true, message: 'La fecha es requerida' }]}
+                initialValue={dayjs()}
               >
                 <DatePicker
                   style={{
@@ -387,11 +383,7 @@ const NewAppointment = () => {
                   }}
                   format="DD-MM-YYYY"
                   placeholder="Seleccionar fecha"
-                  defaultValue={dayjs()}
-                  onChange={(date) => {
-                    console.log('Date changed:', date);
-                    form.setFieldsValue({ appointment_date: date });
-                  }}
+                  allowClear={false}
                 />
               </Form.Item>
             </Col>
@@ -601,17 +593,22 @@ const NewAppointment = () => {
           {showHourField && (
             <Row gutter={16}>
               <Col span={24}>
-                <Form.Item name="appointment_hour">
+                <Form.Item 
+                  name="appointment_hour"
+                  getValueFromEvent={(time) => time ? time.format('HH:mm') : null}
+                  getValueProps={(value) => ({
+                    value: value ? dayjs(value, 'HH:mm') : null
+                  })}
+                >
                   <TimePicker
                     style={{
                       width: '100%'
                     }}
                     format="HH:mm"
                     placeholder="Seleccionar hora"
-                    onChange={(time, timeString) => {
-                      console.log('Time changed:', time, timeString);
-                      form.setFieldsValue({ appointment_hour: timeString });
-                    }}
+                    allowClear
+                    use12Hours={false}
+                    minuteStep={15}
                   />
                 </Form.Item>
               </Col>

@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import {
   createPatient,

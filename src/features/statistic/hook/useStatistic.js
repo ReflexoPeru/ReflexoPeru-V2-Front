@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '../../../context/ThemeContext';
 import { fetchStatisticData } from '../services/statisticService';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 
 const dayTranslations = {
   Sunday: 'Domingo',

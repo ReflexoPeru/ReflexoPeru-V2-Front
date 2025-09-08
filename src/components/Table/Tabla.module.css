@@ -37,3 +37,18 @@
   background-color: var(--color-background-tertiary) !important;
 }
 
+/* Clase para tablas sin scroll vertical */
+.noScroll .ant-table-body {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+.noScroll .ant-table-container {
+  max-height: none !important;
+}
+
+.noScroll {
+  height: auto !important;
+  max-height: none !important;
+}
+

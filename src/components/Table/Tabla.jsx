@@ -49,6 +49,12 @@ const ModeloTable = ({
 
   //Calculo simplificado de altura
   useEffect(() => {
+    // Si maxHeight es "auto", no calculamos altura fija
+    if (maxHeight === 'auto') {
+      setTableHeight('auto');
+      return;
+    }
+
     const calculateHeight = () => {
       if (!containerRef.current) return;
 
@@ -113,7 +119,7 @@ const ModeloTable = ({
       <div
         ref={containerRef}
         style={{
-          minHeight: '300px',
+          minHeight: maxHeight === 'auto' ? 'auto' : '300px',
           marginTop: '15px',
         }}
       >
@@ -125,12 +131,15 @@ const ModeloTable = ({
           }}
         >
           <Table
-            className={estilos.tableCustom}
+            className={`${estilos.tableCustom} ${maxHeight === 'auto' ? estilos.noScroll : ''}`}
             columns={centeredColumns}
             dataSource={data}
             rowKey="id"
             pagination={false}
-            scroll={{ y: tableHeight, x: 'max-content' }}
+            scroll={maxHeight === 'auto' ? { x: 'max-content' } : { 
+              y: tableHeight, 
+              x: 'max-content' 
+            }}
             rowClassName={(__, index) =>
               index % 2 === 0 ? estilos.zebraRow : ''
             }

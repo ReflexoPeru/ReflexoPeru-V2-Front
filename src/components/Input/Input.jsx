@@ -12,8 +12,7 @@ import {
   Col,
 } from 'antd';
 import esES from 'antd/locale/es_ES';
-import dayjs from 'dayjs';
-import 'dayjs/locale/es';
+import dayjs from '../../utils/dayjsConfig';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
@@ -24,8 +23,7 @@ import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
 import SelectPrices from '../Select/SelectPrices';
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
 
-// Fijar locale global en español para dayjs (utilizado por AntD DatePicker/TimePicker)
-dayjs.locale('es');
+// dayjs ya está configurado globalmente
 
 const { Option } = Select;
 

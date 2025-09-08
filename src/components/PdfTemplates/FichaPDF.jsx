@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
-import dayjs from 'dayjs';
+import dayjs from '../../utils/dayjsConfig';
 
 // Función para calcular el elemento base chino
 const calculateChineseElement = (birthDate) => {
