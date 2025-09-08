@@ -7,12 +7,8 @@ import { useNavigate } from 'react-router';
 // Definir campos del formulario con estilos personalizados
 const fields = [
   {
-    type: 'separator',
+    type: 'title',
     label: 'REGISTRAR TERAPEUTA',
-  },
-  {
-    type: 'subtitle',
-    label: 'Nuevo terapeuta',
   },
   {
     type: 'customRow',

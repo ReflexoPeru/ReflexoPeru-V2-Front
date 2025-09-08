@@ -99,6 +99,11 @@
   font-family: var(--font-family);
 }
 
+.separator {
+  background-color: var(--color-border-primary);
+  transition: background-color var(--transition-normal);
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .headerRight {

@@ -14,9 +14,7 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
       try {
         const data = await getDocumentTypes();
         const formattedOptions = data.map((item) => ({
-          label: (
-            <span style={{ color: '#fff' }}>{item.label || item.name}</span>
-          ),
+          label: item.label || item.name,
           value: String(item.value),
         }));
 
@@ -66,38 +64,19 @@ export function SelectTypeOfDocument({ value, onChange, ...rest }) {
   );
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Select: {
-            colorPrimary: '#FFFFFFFF',
-            optionSelectedBg: '#333333',
-            colorText: '#fff',
-            colorBgElevated: '#444444', // fondo del dropdown (opciones)
-            colorTextPlaceholder: '#aaa',
-            controlItemBgHover: '#1a1a1a', // hover sobre opciones
-            selectorBg: '#444444', // fondo del input
-          },
-        },
-        token: {
-          colorTextBase: '#fff', // texto blanco por defecto
-        },
+    <Select
+      {...rest}
+      value={internalValue}
+      onChange={handleChange}
+      showSearch
+      filterOption={filterOption}
+      placeholder="Tipo de documento"
+      options={options}
+      loading={loading}
+      style={{
+        width: '100%',
       }}
-    >
-      <Select
-        {...rest}
-        value={internalValue}
-        onChange={handleChange}
-        showSearch
-        filterOption={filterOption}
-        placeholder="Tipo de documento"
-        options={options}
-        loading={loading}
-        style={{
-          width: '100%',
-        }}
-      />
-    </ConfigProvider>
+    />
   );
 }
 

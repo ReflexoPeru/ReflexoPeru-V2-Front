@@ -55,44 +55,22 @@ const SelectPrices = ({
         width: '100%',
       }}
     >
-      <ConfigProvider
-        theme={{
-          components: {
-            Select: {
-              colorPrimary: '#1677ff',
-              optionSelectedBg: '#333333',
-              colorText: '#fff',
-              colorBgElevated: '#444444',
-              colorTextPlaceholder: '#aaa',
-              controlItemBgHover: '#444444',
-              selectorBg: '#444444',
-            },
-          },
-          token: {
-            colorTextBase: '#fff',
-          },
-        }}
+      <Select
+        className={styles.inputStyle}
+        onChange={handleSelectChange}
+        value={value}
+        allowClear
+        {...rest}
       >
-        <Select
-          className={styles.inputStyle}
-          dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
-          style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
-          onChange={handleSelectChange}
-          value={value}
-          allowClear
-          {...rest}
-        >
-          {prices.map((item) => (
-            <Option
-              key={item.value}
-              value={item.value}
-              style={{ color: '#fff' }}
-            >
-              {item.label}
-            </Option>
-          ))}
-        </Select>
-      </ConfigProvider>
+        {prices.map((item) => (
+          <Option
+            key={item.value}
+            value={item.value}
+          >
+            {item.label}
+          </Option>
+        ))}
+      </Select>
 
       <Input
         className={styles.inputStyle}

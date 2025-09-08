@@ -8,10 +8,7 @@ const fields = [
     type: 'title',
     label: 'REGISTRAR PACIENTE',
   },
-  {
-    type: 'subtitle',
-    label: 'Nuevo paciente',
-  },
+
   {
     type: 'customRow',
     fields: [

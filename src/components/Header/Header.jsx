@@ -65,15 +65,6 @@ const CustomHeader = ({ title, isBack = true }) => {
         </Text>
       </div>
       <div className={styles.headerRight}>
-        <div 
-          className={styles.themeToggleContainer}
-          style={{
-            backgroundColor: isDarkMode ? '#333333' : '#e9ecef',
-            border: `1px solid ${isDarkMode ? '#555555' : '#dee2e6'}`
-          }}
-        >
-          <ThemeToggle />
-        </div>
         <div className={styles.timeContainer}>
           <Text 
             className={styles.headerTime}
@@ -91,6 +82,27 @@ const CustomHeader = ({ title, isBack = true }) => {
           >
             {currentDate}
           </Text>
+        </div>
+        
+        {/* Línea de separación */}
+        <div 
+          className={styles.separator}
+          style={{
+            backgroundColor: isDarkMode ? '#444444' : '#e0e0e0',
+            width: '1px',
+            height: '40px',
+            margin: '0 16px'
+          }}
+        />
+        
+        <div 
+          className={styles.themeToggleContainer}
+          style={{
+            backgroundColor: isDarkMode ? '#333333' : '#e9ecef',
+            border: `1px solid ${isDarkMode ? '#555555' : '#dee2e6'}`
+          }}
+        >
+          <ThemeToggle />
         </div>
       </div>
     </div>

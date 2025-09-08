@@ -505,8 +505,8 @@ const NewAppointment = () => {
                 value={patientType}
                 onChange={(e) => {
                   setPatientType(e.target.value);
-                  setSelectedPatient(null);
-                }}
+            setSelectedPatient(null);
+          }}
                 style={{ color: '#ffffff' }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

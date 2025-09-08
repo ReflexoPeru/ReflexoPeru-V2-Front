@@ -165,84 +165,20 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
   );
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Cascader: {
-            colorBgElevated: '#232323',
-            colorText: '#fff',
-            colorTextPlaceholder: '#aaa',
-            colorTextDisabled: '#888',
-            controlItemBgHover: '#333',
-            colorPrimary: '#0066FF',
-            colorBorder: '#444',
-            colorIcon: '#fff',
-            colorIconHover: '#0066FF',
-            borderRadius: 10,
-            controlHeight: 38,
-            optionSelectedBg: '#222',
-            optionActiveBg: '#333',
-            colorScrollbarThumb: '#444',
-            colorScrollbarTrack: '#232323',
-            zIndexPopup: 2000,
-          },
-        },
-        token: {
-          colorTextBase: '#fff',
-        },
+    <Cascader
+      options={options}
+      loadData={loadData}
+      onChange={handleChange}
+      changeOnSelect
+      showSearch={{ filter }}
+      placeholder="Seleccione departamento / provincia / distrito"
+      style={{
+        width: '100%',
       }}
-    >
-      <Cascader
-        options={options}
-        loadData={loadData}
-        onChange={handleChange}
-        changeOnSelect
-        showSearch={{ filter }}
-        placeholder="Seleccione departamento / provincia / distrito"
-        style={{
-          width: '100%',
-          color: '#fff',
-          background: '#232323',
-          borderRadius: 10,
-          border: '1px solid #444',
-        }}
-        dropdownStyle={{
-          backgroundColor: '#232323',
-          color: '#fff',
-          borderRadius: 10,
-          border: '1px solid #444',
-        }}
-        value={cascaderValue}
-        disabled={loadingUbigeo}
-        {...rest}
-      />
-      <style>{`
-        .ant-cascader-menu {
-          background: #232323 !important;
-          color: #fff !important;
-          border-radius: 10px !important;
-        }
-        .ant-cascader-menu-item {
-          color: #fff !important;
-          border-radius: 6px !important;
-        }
-        .ant-cascader-menu-item-active, .ant-cascader-menu-item:hover {
-          background: #333 !important;
-          color: #fff !important;
-        }
-        .ant-cascader-menu-item-disabled {
-          color: #888 !important;
-        }
-        .ant-cascader-menu::-webkit-scrollbar {
-          width: 8px;
-          background: #232323;
-        }
-        .ant-cascader-menu::-webkit-scrollbar-thumb {
-          background: #444;
-          border-radius: 4px;
-        }
-      `}</style>
-    </ConfigProvider>
+      value={cascaderValue}
+      disabled={loadingUbigeo}
+      {...rest}
+    />
   );
 };
 

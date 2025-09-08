@@ -307,7 +307,7 @@ body {
 .ant-picker,
 .ant-input-number,
 .ant-textarea {
-  background-color: var(--color-background-primary) !important;
+  background-color: var(--color-background-secondary) !important;
   border-color: var(--color-border-primary) !important;
   color: var(--color-text-primary) !important;
   height: 40px !important;
@@ -326,6 +326,7 @@ body {
 .ant-textarea:focus {
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+  background-color: var(--color-background-secondary) !important;
 }
 
 .ant-input::placeholder,

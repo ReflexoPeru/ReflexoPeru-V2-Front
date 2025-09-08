@@ -1,3 +1,6 @@
 .centered-title {
   text-align: center;
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  transition: color var(--transition-normal);
 }
