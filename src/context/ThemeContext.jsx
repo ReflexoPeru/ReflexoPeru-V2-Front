@@ -2,7 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { theme } from 'antd';
 import { 
   persistLocalStorage, 
-  getLocalStorage 
+  getLocalStorage,
+  getLocalStorageString,
+  setLocalStorageString
 } from '../utils/localStorageUtility';
 
 const ThemeContext = createContext();
@@ -164,8 +166,13 @@ const getAntdThemeConfig = (isDark) => ({
 export const ThemeProvider = ({ children }) => {
   // Obtener tema del localStorage o usar 'dark' por defecto (tema actual)
   const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = getLocalStorage('theme');
-    return savedTheme ? savedTheme === 'dark' : true; // true por defecto (oscuro)
+    try {
+      const savedTheme = getLocalStorageString('theme');
+      return savedTheme ? savedTheme === 'dark' : true; // true por defecto (oscuro)
+    } catch (error) {
+      console.warn('Error al cargar tema del localStorage, usando tema oscuro por defecto:', error);
+      return true; // Tema oscuro por defecto si hay error
+    }
   });
 
   // Aplicar el atributo data-theme al documento
@@ -180,14 +187,14 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
-    persistLocalStorage('theme', newTheme ? 'dark' : 'light');
+    setLocalStorageString('theme', newTheme ? 'dark' : 'light');
   };
 
   // Función para establecer tema específico
   const setTheme = (themeName) => {
     const isDark = themeName === 'dark';
     setIsDarkMode(isDark);
-    persistLocalStorage('theme', themeName);
+    setLocalStorageString('theme', themeName);
   };
 
   // Obtener configuración de Ant Design
