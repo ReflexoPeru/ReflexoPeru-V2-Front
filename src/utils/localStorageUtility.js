@@ -44,3 +44,30 @@ export const setLocalStorageString = (key, value) => {
     console.warn(`Error al guardar ${key} en localStorage:`, error);
   }
 };
+
+// Función para limpiar un valor específico corrupto del localStorage
+export const cleanCorruptedLocalStorageItem = (key) => {
+  try {
+    const item = localStorage.getItem(key);
+    if (item !== null) {
+      try {
+        JSON.parse(item);
+        // Si se puede parsear, está bien
+        return false;
+      } catch (jsonError) {
+        // Si no se puede parsear pero es un string simple válido, también está bien
+        if (typeof item === 'string' && item.length > 0 && !item.startsWith('{') && !item.startsWith('[')) {
+          return false;
+        }
+        // Si llegamos aquí, es un JSON corrupto
+        console.warn(`Limpiando valor corrupto de localStorage para ${key}:`, item);
+        localStorage.removeItem(key);
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    console.warn(`Error al limpiar ${key} del localStorage:`, error);
+    return false;
+  }
+};
