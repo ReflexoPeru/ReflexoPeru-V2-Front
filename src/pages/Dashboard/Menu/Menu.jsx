@@ -71,7 +71,7 @@ export default function MenuDashboard() {
     },
     {
       key: '6',
-      label: <Link to="citasCompletas">Citas completas</Link>,
+      label: <Link to="citasCompletas">Citas completadas</Link>,
       icon: (
         <div className={Style.icon}>
           <CalendarCheck weight="regular" />

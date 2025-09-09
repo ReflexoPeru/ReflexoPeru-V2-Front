@@ -385,7 +385,7 @@
 
 /* === Scroll personalizado === */
 .rbc-time-view {
-  scrollbar-color: var(--primary-green) var(--bg-tertiary);
+  scrollbar-color: var(--color-primary) var(--color-background-secondary);
   scrollbar-width: thin;
   overflow-y: auto;
   max-height: 70vh;
@@ -397,17 +397,19 @@
 
 .rbc-time-view::-webkit-scrollbar-track {
   border-radius: var(--radius-sm);
-  background: var(--bg-tertiary);
+  background: var(--color-background-secondary);
 }
 
 .rbc-time-view::-webkit-scrollbar-thumb {
-  border: 2px solid var(--bg-tertiary);
+  border: 2px solid var(--color-background-secondary);
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--primary-green), var(--primary-green-hover));
+  background: var(--color-primary);
+  transition: all var(--transition-normal);
 }
 
 .rbc-time-view::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--primary-green-hover), var(--primary-green));
+  background: var(--color-primary-hover);
+  cursor: pointer;
 }
 
 /* === Modal de Ant Design === */
