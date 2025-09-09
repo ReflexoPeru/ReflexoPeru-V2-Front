@@ -211,7 +211,7 @@ export default function Appointments() {
             {loadingPrintTicketId === record.id ? (
               <Spin size="small" />
             ) : (
-              'Imprimir Boleta'
+              'Boleta'
             )}
           </Button>
           <Button
