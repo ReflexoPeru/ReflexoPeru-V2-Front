@@ -5,10 +5,10 @@
 }
 
 .inputStyle {
-  border-color: #444;
-  border-radius: 8px;
-  color: #ffffff;
-  background-color: #444444;
+  border-color: var(--color-border-primary) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-input-text) !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .icon {
@@ -29,6 +29,40 @@
   gap: 10px;
   align-items: flex-end;
   width: 100%;
+}
+
+/* Arreglar color del label Paciente */
+.patientRow :global(.ant-form-item-label > label) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+
+/* Forzar estilos para el label personalizado */
+.patientInputContainer :global(.ant-form-item-label) {
+  color: var(--color-text-primary) !important;
+}
+
+.patientInputContainer :global(.ant-form-item-label > label) {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+
+.patientInputContainer :global(.ant-form-item-label span) {
+  color: var(--color-text-primary) !important;
+}
+
+/* Clase específica para el asterisco rojo */
+.requiredAsterisk {
+  margin-right: 4px !important;
+  font-weight: bold !important;
+  color: #ff4d4f !important;
+}
+
+/* Clase específica para el texto del label */
+.labelText {
+  color: #ffffff !important;
 }
 
 .patientInputContainer {
@@ -56,4 +90,53 @@
 .checkboxItem {
   margin-bottom: 0px;
   margin-left: 2px;
+}
+
+/* Estilos para Radio Buttons azules */
+.radioGroup {
+  display: flex;
+  gap: 16px;
+}
+
+.radioButton {
+  font-size: 14px;
+  color: #262626;
+}
+
+/* Personalización global de radio buttons para que usen el tema */
+:global(.ant-radio-wrapper) {
+  font-size: var(--font-size-sm) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+:global(.ant-radio-checked .ant-radio-inner) {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-primary) !important;
+}
+
+:global(.ant-radio:hover .ant-radio-inner) {
+  border-color: var(--color-primary-hover) !important;
+}
+
+:global(.ant-radio-inner) {
+  border-color: var(--color-border-primary) !important;
+}
+
+:global(.ant-radio-checked::after) {
+  border-color: var(--color-primary) !important;
+}
+
+/* Estilos para el subtítulo */
+.patientTypeTitle {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+}
+
+.patientTypeContainer {
+  margin-bottom: 16px;
 }

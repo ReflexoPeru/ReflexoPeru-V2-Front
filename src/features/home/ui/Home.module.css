@@ -1,7 +1,9 @@
 .container {
   box-sizing: border-box;
   padding: 20px 30px;
-  color: white;
+  color: var(--color-text-primary);
+  background-color: transparent;
+  transition: color var(--transition-normal);
 }
 
 .sections {

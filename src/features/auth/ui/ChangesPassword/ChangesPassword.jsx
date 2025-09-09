@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, ConfigProvider } from 'antd';
+import { Form, Input, Button } from 'antd';
 import styles from './ChangesPassword.module.css';
 import logo from '../../../../assets/Img/Dashboard/MiniLogoReflexo.webp';
 import { User, Eye, EyeSlash } from '@phosphor-icons/react';
@@ -39,34 +39,7 @@ function ChangesPassword() {
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Input: {
-            hoverBg: 'transparent',
-            hoverBorderColor: 'transparent',
-            activeBorderColor: 'transparent',
-            activeBg: 'transparent',
-            addonBg: 'transparent',
-            fontSize: 'clamp(1rem, 2.5vw, 1.1rem)',
-          },
-          Button: {
-            colorPrimary: '#1b7b46',
-            colorPrimaryHover: '#16623a',
-            colorPrimaryActive: '#144e30',
-            colorTextLightSolid: '#fff',
-            // Estilos para el loading
-            loadingBg: '#1b7b46',
-            loadingColor: '#fff',
-            loadingBorderColor: '#1b7b46',
-          },
-        },
-        token: {
-          colorPrimary: '#fff', // Color del spinner
-        },
-      }}
-    >
-      <div>
+    <div>
         <div id="particles-js" className={styles.particlesJs}></div>
         <div className={styles.loginContainer}>
           <div className={styles.loginForm}>
@@ -175,7 +148,6 @@ function ChangesPassword() {
           © 2025 Centro de Reflexoterapia - Todos los derechos reservados
         </div>
       </div>
-    </ConfigProvider>
   );
 }
 

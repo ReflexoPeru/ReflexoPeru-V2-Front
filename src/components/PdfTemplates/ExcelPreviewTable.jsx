@@ -65,6 +65,13 @@ const ExcelPreviewTable = ({
 
   // Usar paginación controlada si se pasa, si no usar local
   const pagination = controlledPagination || localPagination;
+  
+  // Obtener los datos paginados
+  const appointments = data?.appointments || [];
+  const startIndex = (pagination.current - 1) * pagination.pageSize;
+  const endIndex = startIndex + pagination.pageSize;
+  const paginatedData = appointments.slice(startIndex, endIndex);
+
   const handleTableChange = (newPagination) => {
     if (onPaginationChange) {
       onPaginationChange(newPagination);
@@ -85,14 +92,17 @@ const ExcelPreviewTable = ({
     >
       <Table
         columns={columns}
-        dataSource={data?.appointments || []}
+        dataSource={paginatedData}
         rowKey="patient_id"
         pagination={{
           ...pagination,
+          total: appointments.length,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50', '100'],
           position: ['bottomCenter'],
-          showTotal: false,
+          showTotal: (total, range) => 
+            `${range[0]}-${range[1]} de ${total} registros`,
+          showQuickJumper: true,
         }}
         onChange={handleTableChange}
         scroll={{ x: 900, y: 500 }}

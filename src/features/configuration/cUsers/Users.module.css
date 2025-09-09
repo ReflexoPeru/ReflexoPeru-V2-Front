@@ -1,132 +1,174 @@
+/* ================================================== */
+/* USERS CONFIGURATION COMPONENT STYLES             */
+/* ================================================== */
+
 .statusEnabled {
   display: inline-block;
-
   padding: 4px 12px;
   border-radius: 16px;
-
   font-size: 12px;
   font-weight: 500;
-  color: white;
-
+  color: var(--color-text-primary);
   background-color: rgba(20, 245, 140, 0.23);
+  border: 1px solid rgba(20, 245, 140, 0.4);
+  transition: all var(--transition-fast);
 }
 
 .statusDisabled {
   display: inline-block;
-
   padding: 4px 12px;
   border-radius: 16px;
-
   font-size: 12px;
   font-weight: 500;
-  color: white;
-
+  color: var(--color-text-primary);
   background-color: rgba(255, 59, 48, 0.23);
+  border: 1px solid rgba(255, 59, 48, 0.4);
+  transition: all var(--transition-fast);
 }
+
+/* ================================================== */
+/* BOTONES DE ACCIÓN                                 */
+/* ================================================== */
 
 .editButton {
   height: 40px !important;
   border: none !important;
-  border-radius: 6px !important;
-
-  font-weight: 500 !important;
-  color: #fff !important;
-
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: white !important;
   background-color: #0066FF !important;
+  box-shadow: var(--shadow-soft) !important;
+  transition: all var(--transition-fast) !important;
 }
 
 .deactivateButton {
   height: 40px !important;
   border: none !important;
-  border-radius: 6px !important;
-
-  font-weight: 500 !important;
-  color: #fff !important;
-
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: white !important;
   background-color: #FFAA00 !important;
+  box-shadow: var(--shadow-soft) !important;
+  transition: all var(--transition-fast) !important;
 }
 
 .deleteButton {
   height: 40px !important;
   border: none !important;
-  border-radius: 6px !important;
-
-  font-weight: 500 !important;
-  color: #fff !important;
-
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: white !important;
   background-color: #FF3333 !important;
+  box-shadow: var(--shadow-soft) !important;
+  transition: all var(--transition-fast) !important;
 }
 
 .editButton:hover {
-  color: #fff !important;
+  color: white !important;
   background-color: #0052CC !important;
+  box-shadow: var(--shadow-medium) !important;
+  transform: translateY(-1px) !important;
 }
 
 .deactivateButton:hover {
-  color: #fff !important;
+  color: white !important;
   background-color: #E69500 !important;
+  box-shadow: var(--shadow-medium) !important;
+  transform: translateY(-1px) !important;
 }
 
 .deleteButton:hover {
-  color: #fff !important;
+  color: white !important;
   background-color: #E61A1A !important;
+  box-shadow: var(--shadow-medium) !important;
+  transform: translateY(-1px) !important;
 }
 
 .addButton {
   height: 40px !important;
-  border-color: #4CAF50 !important;
-  border-radius: 6px !important;
-
-  font-weight: 500 !important;
-  color: #fff !important;
-
-  background-color: #4CAF50 !important;
+  border-color: var(--color-primary) !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-medium) !important;
+  color: white !important;
+  background-color: var(--color-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+  transition: all var(--transition-fast) !important;
 }
 
 .addButton:hover {
-  border-color: #3d8b40 !important;
-  color: #fff !important;
-  background-color: #3d8b40 !important;
+  border-color: var(--color-primary-hover) !important;
+  color: white !important;
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: var(--shadow-medium) !important;
+  transform: translateY(-1px) !important;
 }
+
+/* ================================================== */
+/* LAYOUT Y CONTENEDORES                             */
+/* ================================================== */
 
 .container {
   display: flex !important;
   flex-direction: column !important;
-  gap: 5px !important;
+  gap: var(--spacing-md) !important;
   justify-content: center !important;
-
   max-width: calc(100% - 200px) !important;
   height: 100% !important;
   margin: 0 auto !important;
-  padding-top: 20px !important;
+  padding: var(--spacing-lg) !important;
+  color: var(--color-text-primary) !important;
+  transition: color var(--transition-normal) !important;
 }
 
 .sectionHeader {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  margin-bottom: 16px !important;
+  margin-bottom: var(--spacing-lg) !important;
+  padding: var(--spacing-md) 0 !important;
+  border-bottom: 1px solid var(--color-border-secondary) !important;
 }
 
 .sectionTitle {
   margin: 0 !important;
-  font-size: 20px !important;
-  font-weight: 600 !important;
+  font-size: var(--font-size-xl) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  color: var(--color-text-primary) !important;
+  transition: color var(--transition-normal) !important;
 }
+
+/* ================================================== */
+/* FORMULARIOS                                       */
+/* ================================================== */
 
 .uniformInput {
   width: 100% !important;
   height: 40px !important;
-  border-radius: 6px !important;
+  border-radius: var(--radius-md) !important;
+  border-color: var(--color-border-primary) !important;
+  background-color: var(--color-input-bg) !important;
+  color: var(--color-input-text) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.uniformInput:hover {
+  border-color: var(--color-primary-light) !important;
+}
+
+.uniformInput:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
 }
 
 .formContainer .ant-form-item {
-  margin-bottom: 16px !important;
+  margin-bottom: var(--spacing-lg) !important;
 }
 
 .formContainer .ant-form-item-label > label {
-  font-size: 14px !important;
-  color: rgba(0, 0, 0, 0.85) !important;
+  font-size: var(--font-size-sm) !important;
+  color: var(--color-text-primary) !important;
+  font-weight: var(--font-weight-medium) !important;
+  transition: color var(--transition-normal) !important;
 }
 
 .statusSwitch {
@@ -139,10 +181,40 @@
   height: 40px;
 }
 
+/* ================================================== */
+/* ESTILOS PARA SELECTS Y OPCIONES                  */
+/* ================================================== */
+
+.selectOption {
+  color: var(--color-text-primary) !important;
+}
+
+.selectContainer {
+  width: 100%;
+}
+
+/* ================================================== */
+/* RESPONSIVE DESIGN                                 */
+/* ================================================== */
+
+@media (max-width: 768px) {
+  .container {
+    max-width: calc(100% - 32px) !important;
+    padding: var(--spacing-md) !important;
+  }
+  
+  .sectionHeader {
+    flex-direction: column !important;
+    gap: var(--spacing-md) !important;
+    align-items: stretch !important;
+  }
+}
+
+/* Sobrescribir estilos de Ant Design */
 .ant-btn:not(.ant-btn-link):hover, 
 .ant-btn:not(.ant-btn-link):focus {
   border-color: transparent !important;
-  color: #fff !important;
+  color: white !important;
   background: inherit !important;
 }
 

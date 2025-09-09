@@ -5,19 +5,20 @@
     width: 100%;
     min-width: 360px; 
     padding: clamp(15px, 3vw, 25px);
-    border-radius: 20px;
+    border-radius: var(--radius-xxl);
+    border: 1px solid var(--color-border-primary);
 
-    color: white;
-
-    background-color: #1E1E1E;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: var(--color-text-primary);
+    transition: all var(--transition-normal);
 }
 
 .title {
     margin-bottom: 20px;
     font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-    font-weight: bold;
-    color: #FFFFFF;
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
+    transition: color var(--transition-normal);
 }
 
 .scrollArea {
@@ -55,18 +56,20 @@
     margin-bottom: 0.5rem;
     padding: 0.75rem 1rem;
     border-left: 3px solid transparent;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-secondary);
 
-    background-color: #2A2A2A;
+    background-color: var(--color-background-secondary);
 
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-normal);
 }
 
 .appointment:hover {
     transform: translateY(-2px);
-    border-left-color: #00C36A;
-    background-color: #333333;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-left-color: var(--color-primary);
+    background-color: var(--color-background-tertiary);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--color-primary);
 }
 
 .appointment:active {
@@ -85,10 +88,12 @@
     margin-bottom: 0.15rem;
 
     font-size: 0.95rem; 
-    font-weight: 600;
-    color: #FFFFFF;
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-family);
+    color: var(--color-text-primary);
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color var(--transition-normal);
 }
 
 .details {
@@ -98,15 +103,17 @@
     align-items: center;
 
     font-size: 0.96rem; 
-    color: #AAAAAA;
+    font-family: var(--font-family);
+    color: var(--color-text-tertiary);
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color var(--transition-normal);
 }
 
 .check {
     flex-shrink: 0;
-    color: #00C36A;
-    transition: transform 0.2s ease;
+    color: var(--color-primary);
+    transition: all var(--transition-fast);
 }
 
 .check svg {

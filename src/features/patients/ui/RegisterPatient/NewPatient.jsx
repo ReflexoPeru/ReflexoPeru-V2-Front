@@ -4,7 +4,10 @@ import { usePatients } from '../../hook/patientsHook';
 import { useNavigate } from 'react-router';
 
 const fields = [
-  { type: 'title', label: 'Nuevo Paciente' },
+  {
+    type: 'title',
+    label: 'REGISTRAR PACIENTE',
+  },
   {
     type: 'customRow',
     fields: [
@@ -25,10 +28,6 @@ const fields = [
           {
             required: true,
             message: 'Por favor ingrese el número de documento',
-          },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
           },
         ],
       },
@@ -84,6 +83,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
@@ -109,17 +109,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
-              }
-              return Promise.resolve();
+              return Promise();
             },
           }),
         ],
@@ -134,7 +124,7 @@ const fields = [
   },
   {
     name: 'ubicacion',
-    label: 'Ubicación',
+    label: 'Departamento / Provincia / Distrito',
     type: 'ubigeo',
     span: 12,
   },
@@ -147,9 +137,18 @@ const fields = [
   },
 ];
 
-const NewPatient = ({ onSubmit, onCancel }) => {
+const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const { submitNewPatient } = usePatients();
   const navigate = useNavigate();
+
+  // Filtrar el título cuando se usa en modal
+  const getFields = () => {
+    if (isModal) {
+      // Remover el primer campo que es el título "REGISTRAR PACIENTE"
+      return fields.slice(1);
+    }
+    return fields;
+  };
 
   const handleSubmit = async (formData) => {
     try {
@@ -184,7 +183,11 @@ const NewPatient = ({ onSubmit, onCancel }) => {
       });
 
       if (onSubmit) onSubmit(result);
-      navigate('/Inicio/pacientes');
+      
+      // Solo navegar si no es un modal
+      if (!isModal) {
+        navigate('/Inicio/pacientes');
+      }
 
       return result;
     } catch (error) {
@@ -213,17 +216,20 @@ const NewPatient = ({ onSubmit, onCancel }) => {
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    navigate('/Inicio/pacientes');
+    // Solo navegar si no es un modal
+    if (!isModal) {
+      navigate('/Inicio/pacientes');
+    }
   };
 
   return (
     <FormGenerator
-      fields={fields}
+      fields={getFields()}
       onCancel={handleCancel}
       mode="create"
       onSubmit={handleSubmit}
       initialValues={{
-        document_type_id: 1,
+        document_type_id: "1", // DNI por defecto (string)
         country_id: 1,
       }}
     />

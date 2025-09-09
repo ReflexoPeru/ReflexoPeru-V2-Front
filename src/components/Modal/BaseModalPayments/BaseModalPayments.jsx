@@ -6,8 +6,8 @@ import {
   Switch,
   Button,
   Space,
-  ConfigProvider,
 } from 'antd';
+import { useTheme } from '../../../context/ThemeContext';
 
 const BaseModal = ({
   visible,
@@ -22,6 +22,8 @@ const BaseModal = ({
   initialValues,
   form,
 }) => {
+  const { isDarkMode } = useTheme();
+
   React.useEffect(() => {
     if (visible && initialValues) {
       form.setFieldsValue(initialValues);
@@ -63,176 +65,91 @@ const BaseModal = ({
   }, [visible, onCancel, handleOk]);
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#4CAF50',
-          borderRadius: 8,
-          colorBgContainer: '#2a2a2a',
-          colorBgElevated: '#2a2a2a',
-          colorBorder: '#555', // Color de borde más claro
-          colorText: 'white',
-          colorTextPlaceholder: '#666',
-          colorTextDisabled: '#999999',
-          colorBgContainerDisabled: '#1a1a1a',
-          colorBorderSecondary: '#333',
-          colorError: '#ff4d4f',
+    <Modal
+      title={
+        <span style={{ 
+          color: isDarkMode ? '#ffffff' : '#333333',
+          fontFamily: 'var(--font-family)',
+          fontWeight: 600
+        }}>
+          {title}
+        </span>
+      }
+      visible={visible}
+      onCancel={onCancel}
+      footer={
+        <Space size={8}>
+          <Button
+            onClick={onCancel}
+            disabled={confirmLoading}
+            style={{
+              padding: '6px 16px',
+              height: 32,
+              borderRadius: 6,
+              border: '1px solid var(--color-primary)',
+              color: 'var(--color-primary)',
+              backgroundColor: 'transparent',
+            }}
+            className="modal-cancel-btn modal-themed"
+          >
+            {cancelText}
+          </Button>
+          <Button
+            type="primary"
+            loading={confirmLoading}
+            onClick={handleOk}
+            style={{
+              padding: '6px 16px',
+              height: 32,
+              borderRadius: 6,
+              fontWeight: 500,
+              backgroundColor: 'var(--color-primary)',
+              borderColor: 'var(--color-primary)',
+            }}
+            className="modal-ok-btn modal-themed"
+          >
+            {okText}
+          </Button>
+        </Space>
+      }
+      width={width}
+      centered
+      destroyOnClose
+      className="modal-themed"
+      styles={{
+        header: {
+          borderBottom: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,
+          padding: '8px 12px',
+          marginBottom: 8,
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#ffffff',
         },
-        components: {
-          Modal: {
-            contentBg: 'linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%)',
-            headerBg: 'transparent',
-            titleColor: 'white',
-            colorText: '#b0b0b0',
-            borderRadiusLG: 12,
-            paddingContentHorizontal: 12,
-            paddingMD: 8,
-            colorBgElevated: '#2a2a2a',
-            colorBorder: '#444',
-          },
-          Input: {
-            colorBgContainer: '#2a2a2a',
-            colorText: 'white',
-            colorTextPlaceholder: '#666',
-            colorBorder: '#555', // Borde gris por defecto
-            activeBorderColor: '#4CAF50', // Borde verde al estar activo
-            hoverBorderColor: '#666', // Borde gris ligeramente más claro al hover
-            borderRadius: 6,
-            paddingInline: 12,
-            paddingBlock: 6,
-            fontSize: 14,
-            colorBgContainerDisabled: 'rgba(76, 175, 80, 0.1)',
-            colorTextDisabled: '#666',
-            colorBorderBg: 'rgba(76, 175, 80, 0.3)',
-            activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
-            boxShadowSecondary: '0 0 0 2px rgba(76, 175, 80, 0.2)',
-          },
-          'Input.Password': {
-            colorBgContainer: '#2a2a2a',
-            colorText: 'white',
-            colorTextPlaceholder: '#666',
-            colorBorder: '#555',
-            activeBorderColor: '#4CAF50',
-            hoverBorderColor: '#666',
-            borderRadius: 6,
-            paddingInline: 12,
-            paddingBlock: 6,
-            fontSize: 14,
-            colorBgContainerDisabled: 'rgba(76, 175, 80, 0.1)',
-            colorTextDisabled: '#666',
-            colorBorderBg: 'rgba(76, 175, 80, 0.3)',
-            colorIcon: '#666666',
-            colorIconHover: '#4CAF50',
-            activeShadow: '0 0 0 2px rgba(76, 175, 80, 0.2)',
-          },
-          Switch: {
-            handleBg: '#ffffff',
-            handleSize: 14,
-            trackHeight: 20,
-            trackMinWidth: 40,
-            colorPrimary: '#4CAF50',
-            colorPrimaryHover: '#388E3C',
-          },
-          Button: {
-            defaultBg: 'transparent',
-            defaultBorderColor: '#4CAF50',
-            defaultColor: '#4CAF50',
-            defaultHoverBg: 'rgba(76, 175, 80, 0.1)',
-            defaultHoverBorderColor: '#66BB6A',
-            defaultHoverColor: '#66BB6A',
-            primaryColor: '#ffffff',
-            primaryBg: '#4CAF50',
-            primaryBorderColor: '#4CAF50',
-            primaryHoverBg: '#388E3C',
-            primaryHoverBorderColor: '#388E3C',
-            borderRadius: 6,
-            fontWeight: 500,
-            paddingInline: 16,
-            paddingBlock: 6,
-          },
-          Form: {
-            labelColor: 'white',
-            labelFontSize: 14,
-            labelRequiredMarkColor: '#ff4d4f',
-            itemMarginBottom: 12,
-          },
+        body: {
+          padding: '0 12px 8px',
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#ffffff',
+        },
+        footer: {
+          borderTop: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,
+          padding: '8px 15px',
+          marginTop: 8,
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#ffffff',
+        },
+        content: {
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#ffffff',
+        },
+        mask: {
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
         },
       }}
     >
-      <Modal
-        title={title}
-        visible={visible}
-        onCancel={onCancel}
-        footer={
-          <Space size={8}>
-            <Button
-              onClick={onCancel}
-              disabled={confirmLoading}
-              style={{
-                padding: '6px 16px',
-                height: 32,
-                borderRadius: 6,
-                border: '1px solid #4CAF50',
-                color: '#4CAF50',
-                backgroundColor: 'transparent',
-              }}
-              className="modal-cancel-btn"
-            >
-              {cancelText}
-            </Button>
-            <Button
-              type="primary"
-              loading={confirmLoading}
-              onClick={handleOk}
-              style={{
-                padding: '6px 16px',
-                height: 32,
-                borderRadius: 6,
-                fontWeight: 500,
-                backgroundColor: '#4CAF50',
-                borderColor: '#4CAF50',
-              }}
-              className="modal-ok-btn"
-            >
-              {okText}
-            </Button>
-          </Space>
-        }
-        width={width}
-        centered
-        destroyOnClose
-        styles={{
-          header: {
-            borderBottom: '1px solid #444',
-            padding: '8px 12px',
-            marginBottom: 8,
-            backgroundColor: 'transparent',
-          },
-          body: {
-            padding: '0 12px 8px',
-            backgroundColor: 'transparent',
-          },
-          footer: {
-            borderTop: '1px solid #444',
-            padding: '8px 15px',
-            marginTop: 8,
-            backgroundColor: 'transparent',
-          },
-          mask: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-          },
-        }}
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={initialValues}
+        size="small"
       >
-        <Form
-          form={form}
-          layout="vertical"
-          initialValues={initialValues}
-          size="small"
-        >
-          {children}
-        </Form>
-      </Modal>
-    </ConfigProvider>
+        {children}
+      </Form>
+    </Modal>
   );
 };
 

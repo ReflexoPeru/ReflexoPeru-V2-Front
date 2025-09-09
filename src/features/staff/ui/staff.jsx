@@ -1,4 +1,4 @@
-import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
+import { Button, Space, notification, Spin } from 'antd';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
 import CustomSearch from '../../../components/Search/CustomSearch';
@@ -123,9 +123,7 @@ export default function Staff() {
             disabled={loadingDeleteId === record.id}
           >
             {loadingDeleteId === record.id ? (
-              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
-                <Spin />
-              </ConfigProvider>
+              <Spin />
             ) : (
               'Eliminar'
             )}
@@ -152,10 +150,21 @@ export default function Staff() {
       width: '150px',
     },
     {
-      title: 'Apellidos y Nombres',
-      dataIndex: 'full_name',
+      title: 'Apellido paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido materno',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'name',
       key: 'name',
     },
+
     {
       title: 'Acciones',
       key: 'actions',
@@ -185,7 +194,7 @@ export default function Staff() {
           margin: '0 auto',
         }}
       >
-        <CustomButton text="Crear Terapeuta" onClick={handleButton} />
+        <CustomButton text="Crear Personal" onClick={handleButton} />
 
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."

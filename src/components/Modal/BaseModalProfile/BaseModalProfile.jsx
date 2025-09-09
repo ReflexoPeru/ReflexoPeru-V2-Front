@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CheckCircle,
 } from '@phosphor-icons/react';
+import { useTheme } from '../../../context/ThemeContext';
 import styles from './BaseModalProfile.module.css';
 
 const ModalBase = ({
@@ -20,6 +21,7 @@ const ModalBase = ({
   countdown,
   onResend,
 }) => {
+  const { isDarkMode } = useTheme();
   const [form] = Form.useForm();
   const [otp, setOtp] = useState('');
 
@@ -296,9 +298,28 @@ const ModalBase = ({
       centered
       width={520}
       closable={false}
-      className={styles.modalContainer}
+      className={`${styles.modalContainer} base-modal-profile-themed`}
       destroyOnClose
       forceRender
+      styles={{
+        header: {
+          backgroundColor: 'var(--color-background-primary)',
+          borderBottom: '1px solid var(--color-border-primary)',
+        },
+        body: {
+          backgroundColor: 'var(--color-background-primary)',
+          padding: '20px',
+          color: 'var(--color-text-primary)',
+        },
+        content: {
+          backgroundColor: 'var(--color-background-primary)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--color-border-primary)',
+        },
+        mask: {
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        },
+      }}
     >
       <div className={styles.modalHeader}>
         <Button

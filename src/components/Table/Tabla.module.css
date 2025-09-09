@@ -1,4 +1,54 @@
 .zebraRow {
-  background-color: #272727; /* color para filas pares */
+  background-color: var(--color-background-secondary); /* color para filas pares */
+}
+
+.tableCustom {
+  background-color: var(--color-background-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition-normal);
+}
+
+.tableCustom .ant-table-thead > tr > th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  font-weight: var(--font-weight-bold) !important;
+  font-family: var(--font-family) !important;
+}
+
+.tableCustom .ant-table-tbody > tr > td {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.tableCustom .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.tableCustom .ant-table-tbody > tr.zebraRow > td {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.tableCustom .ant-table-tbody > tr.zebraRow:hover > td {
+  background-color: var(--color-background-tertiary) !important;
+}
+
+/* Clase para tablas sin scroll vertical */
+.noScroll .ant-table-body {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+.noScroll .ant-table-container {
+  max-height: none !important;
+}
+
+.noScroll {
+  height: auto !important;
+  max-height: none !important;
 }
 

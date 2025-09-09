@@ -8,7 +8,6 @@ import {
   Form,
   Input,
   message,
-  ConfigProvider,
   Popconfirm,
 } from 'antd';
 import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
@@ -120,8 +119,10 @@ const Payments = () => {
     try {
       const payload = {
         ...values,
-        // Convertir el nombre a mayúsculas
-        name: values.name?.toUpperCase().trim(),
+        // Convertir el nombre según el tipo: mayúsculas para payment, capitalizar primera letra para price
+        name: modalType === 'payment' 
+          ? values.name?.toUpperCase().trim()
+          : values.name?.charAt(0).toUpperCase() + values.name?.slice(1).toLowerCase().trim(),
         status: values.status ? 'active' : 'inactive',
       };
 
@@ -302,54 +303,11 @@ const Payments = () => {
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#0066FF',
-          colorSuccess: '#52C41A',
-          colorWarning: '#FAAD14',
-          colorError: '#FF4D4F',
-          borderRadius: 6,
-          colorBgContainer: '#FFFFFF',
-          colorText: '#333333',
-        },
-        components: {
-          Button: {
-            primaryShadow: 'none',
-          },
-          Table: {
-            headerBg: '#FAFAFA',
-            headerColor: '#333333',
-          },
-          Button: {
-            controlHeight: 40,
-            borderRadius: 6,
-            colorPrimary: '#4CAF50',
-            colorTextLightSolid: '#ffffff',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#333333',
-          },
-          Popconfirm: {
-            borderRadius: 8,
-            padding: 12,
-          },
-          Popover: {
-            colorBgElevated: '#000',
-            colorText: '#ffffff',
-          },
-        },
-        token: {
-          colorPrimary: '#4CAF50',
-          colorText: '#ffffff',
-        },
-      }}
-    >
-      <div className={styles.container}>
+    <div className={styles.container}>
         {/* Tipos de Pago */}
         <div>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Tipos de pago</h2>
+            <h2 className={styles.sectionTitle}>Método de pago</h2>
             <Button
               type="primary"
               className={styles.addButton}
@@ -363,13 +321,14 @@ const Payments = () => {
             data={paymentTypes}
             loading={loadingPayments}
             pagination={false}
+            maxHeight="auto"
           />
         </div>
 
         {/* Precios */}
         <div>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Precios</h2>
+            <h2 className={styles.sectionTitle}>Opciones de Pago</h2>
             <Button
               type="primary"
               className={styles.addButton}
@@ -416,8 +375,10 @@ const Payments = () => {
               className={styles.inputField}
               placeholder={`Ingrese el nombre del ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`}
               onChange={(e) => {
-                // Convertir a mayúsculas mientras se escribe
-                const value = e.target.value.toUpperCase();
+                // Solo convertir a mayúsculas para tipos de pago, para precios mantener el texto original
+                const value = modalType === 'payment' 
+                  ? e.target.value.toUpperCase()
+                  : e.target.value;
                 form.setFieldValue('name', value);
               }}
             />
@@ -447,7 +408,6 @@ const Payments = () => {
           )}
         </BaseModal>
       </div>
-    </ConfigProvider>
   );
 };
 

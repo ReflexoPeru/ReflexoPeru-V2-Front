@@ -2,23 +2,28 @@ import { CheckCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
-  ConfigProvider,
   DatePicker,
   Form,
   Input,
+  Radio,
   Select,
   TimePicker,
-  theme,
+  Row,
+  Col,
 } from 'antd';
+import esES from 'antd/locale/es_ES';
+import dayjs from '../../utils/dayjsConfig';
 import styles from '../Input/Input.module.css';
 
 // Importaciones corregidas
-import { SelectTypeOfDocument } from '../Select/SelctTypeOfDocument';
+import SelectTypeOfDocument from '../Select/SelctTypeOfDocument';
 import { SelectCountries } from '../Select/SelectCountry';
 import { SelectDiagnoses } from '../Select/SelectDiagnoses';
 import { SelectPaymentStatus } from '../Select/SelectPaymentStatus';
 import SelectPrices from '../Select/SelectPrices';
 import SelectUbigeoCascader from '../Select/SelectUbigeoCascader';
+
+// dayjs ya está configurado globalmente
 
 const { Option } = Select;
 
@@ -31,6 +36,7 @@ const InputField = ({
   isPhoneField = false,
   isPhoneRequired,
   togglePhoneRequired,
+  capitalize = true,
   ...rest
 }) => {
   let inputComponent;
@@ -137,10 +143,20 @@ const InputField = ({
         <Input
           {...inputProps}
           onChange={(e) => {
-            const value = e.target.value.toUpperCase();
+            let value = e.target.value;
+            if (capitalize === true) {
+              value = value.toUpperCase();
+            } else if (capitalize === 'first') {
+              value =
+                value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+            }
             if (rest.onChange) rest.onChange(value);
-            if (form && rest.name) {
-              form.setFieldValue(rest.name, value);
+            if (
+              form &&
+              rest.name &&
+              typeof form.setFieldsValue === 'function'
+            ) {
+              form.setFieldsValue({ [rest.name]: value });
             }
           }}
         />
@@ -149,74 +165,30 @@ const InputField = ({
 
     case 'select':
       return (
-        <ConfigProvider
-          theme={{
-            components: {
-              Select: {
-                colorPrimary: '#1677ff',
-                optionSelectedBg: '#333333',
-                colorText: '#fff',
-                colorBgElevated: '#444444',
-                colorTextPlaceholder: '#aaa',
-                controlItemBgHover: '#444444',
-                selectorBg: '#444444',
-              },
-            },
-            token: {
-              colorTextBase: '#fff',
-            },
-          }}
+        <Select
+          className={styles.inputStyle}
+          {...rest}
         >
-          <Select
-            className={styles.inputStyle}
-            dropdownStyle={{ backgroundColor: '#444444', color: '#fff' }}
-            style={{ color: '#fff', backgroundColor: '#1a1a1a' }}
-            {...rest}
-          >
-            {options.map((opt) => (
-              <Option
-                key={opt.value}
-                value={opt.value}
-                style={{ color: '#fff' }}
-              >
-                {opt.label}
-              </Option>
-            ))}
-          </Select>
-        </ConfigProvider>
+          {options.map((opt) => (
+            <Option
+              key={opt.value}
+              value={opt.value}
+            >
+              {opt.label}
+            </Option>
+          ))}
+        </Select>
       );
 
     case 'date':
       inputComponent = (
-        <ConfigProvider
-          theme={{
-            components: {
-              DatePicker: {
-                colorBgElevated: '#3B3B3BFF',
-                colorText: '#ffffff',
-                colorTextHeading: '#ffffff',
-                colorIcon: '#ffffff',
-                colorPrimary: '#1cb54a',
-                colorPrimaryHover: '#148235',
-                cellHoverBg: '#333333',
-              },
-            },
+        <DatePicker
+          {...inputProps}
+          format="DD/MM/YYYY"
+          style={{
+            width: '100%',
           }}
-        >
-          <DatePicker
-            {...inputProps}
-            style={{
-              width: '100%',
-              color: '#ffffff',
-              backgroundColor: '#424242FF',
-              borderColor: '#444444',
-            }}
-            dropdownStyle={{
-              backgroundColor: '#000000',
-              color: '#ffffff',
-            }}
-          />
-        </ConfigProvider>
+        />
       );
       break;
 
@@ -249,6 +221,7 @@ const InputField = ({
           rules={[
             { required: true, message: 'El método de pago es requerido' },
           ]}
+          style={{ marginTop: 8, marginBottom: 8 }}
         >
           <SelectPaymentStatus
             value={rest.value}
@@ -323,6 +296,7 @@ const CitaComponents = ({ componentType, form, ...props }) => {
           label="Método de Pago"
           name="payment_method_id"
           rules={[{ required: true, message: 'Este campo es requerido' }]}
+          style={{ marginTop: 8, marginBottom: 8 }}
         >
           <PaymentComponent />
         </Form.Item>
@@ -345,20 +319,66 @@ const PatientField = ({
   selectedPatient,
   changeSelectedPatient,
   onOpenSelectModal,
+  required = false,
 }) => {
   const formInstance = form || Form.useFormInstance();
 
-  // Función para cambiar el texto del paciente
-
   return (
     <div className={styles.patientRow}>
-      <div className={styles.patientContainer}>
-        <div className={styles.patientInputContainer}>
+      {/* Subtítulo y opciones de Tipo de Paciente */}
+      <div
+        style={{
+          margin: '0 0 6px 0',
+          fontSize: 14,
+          fontWeight: 600,
+          color: '#ffffff',
+        }}
+      >
+        Tipos de pacientes
+      </div>
+      <Row gutter={16} align="bottom" style={{ marginBottom: 12 }}>
+        <Col span={12}>
+          <Radio.Group
+            value={patientType}
+            onChange={(e) => onPatientTypeChange(e.target.value)}
+            style={{ display: 'flex', flexDirection: 'column', gap: 6 }}
+          >
+            <Radio value="nuevo">
+              Nuevo
+            </Radio>
+            <Radio value="continuador">
+              Continuador
+            </Radio>
+          </Radio.Group>
+        </Col>
+        <Col span={12}>
+          <Button
+            type="primary"
+            className={styles.patientButton}
+            onClick={() => {
+              if (patientType === 'nuevo') {
+                onOpenCreateModal();
+              } else {
+                onOpenSelectModal();
+              }
+            }}
+          >
+            {patientType === 'nuevo'
+              ? 'Crear Paciente'
+              : 'Seleccionar Paciente'}
+          </Button>
+        </Col>
+      </Row>
+
+      {/* Campo Paciente debajo de los checkboxes */}
+      <Row gutter={16} align="bottom">
+        <Col span={24}>
           <Form.Item
             label="Paciente"
-            rules={[{ required: true, message: 'Este campo es requerido' }]}
+            rules={[{ required: required, message: 'Este campo es requerido' }]}
+            required={required}
             className={styles.formItem}
-            style={{ marginBottom: '-30px', marginTop: '-10px' }}
+            style={{ marginBottom: 8 }}
           >
             <InputField
               readonly={true}
@@ -374,37 +394,8 @@ const PatientField = ({
           <Form.Item name="patient_id" hidden>
             <Input />
           </Form.Item>
-        </div>
-
-        <div className={styles.patientButtonContainer}>
-          <Button
-            type="primary"
-            className={styles.patientButton}
-            onClick={() => {
-              if (patientType === 'nuevo') {
-                onOpenCreateModal();
-              } else {
-                onOpenSelectModal();
-              }
-            }}
-          >
-            {patientType === 'nuevo' ? 'Crear' : 'Elegir'}
-          </Button>
-        </div>
-
-        <div className={styles.checkboxColumn}>
-          {patientTypeOptions.map((option) => (
-            <Checkbox
-              key={option.value}
-              checked={patientType === option.value}
-              onChange={() => onPatientTypeChange(option.value)}
-              className={`${styles.checkbox} ${styles.checkboxItem}`}
-            >
-              {option.label}
-            </Checkbox>
-          ))}
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -415,9 +406,11 @@ const DateField = ({ form }) => {
   const handleDateChange = (date, dateString) => {
     console.log('Fecha seleccionada:', dateString);
     formInstance.setFieldsValue({
-      appointment_date: dateString,
+      appointment_date: date || null,
     });
   };
+
+  // No controlar el componente: usaremos defaultValue del DatePicker
 
   return (
     <Form.Item
@@ -425,36 +418,17 @@ const DateField = ({ form }) => {
       name="appointment_date"
       rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
+      style={{ marginBottom: 0 }}
     >
-      <ConfigProvider
-        theme={{
-          components: {
-            DatePicker: {
-              colorBgElevated: '#222222FF',
-              colorText: '#ffffff',
-              colorTextHeading: '#ffffff',
-              colorIcon: '#ffffff',
-              colorPrimary: '#1cb54a',
-              colorPrimaryHover: '#148235',
-              cellHoverBg: '#333333',
-            },
-          },
+      <DatePicker
+        format="DD/MM/YYYY"
+        style={{
+          width: '100%',
         }}
-      >
-        <DatePicker
-          style={{
-            width: '100%',
-            color: '#ffffff',
-            backgroundColor: '#333333FF',
-            borderColor: '#444444',
-          }}
-          onChange={handleDateChange}
-          dropdownStyle={{
-            backgroundColor: '#2C2C2CFF',
-            color: '#ffffff',
-          }}
-        />
-      </ConfigProvider>
+        placeholder="Seleccione una fecha"
+        onChange={handleDateChange}
+        defaultValue={dayjs()}
+      />
     </Form.Item>
   );
 };
@@ -475,33 +449,11 @@ const TimeField = ({ form }) => {
       rules={[{ required: true, message: 'Este campo es requerido' }]}
       className={styles.formItem}
     >
-      <ConfigProvider
-        theme={{
-          algorithm: theme.darkAlgorithm,
-          components: {
-            TimePicker: {
-              colorTextPlaceholder: '#AAAAAA',
-              colorBgContainer: '#333333',
-              colorText: '#FFFFFF',
-              colorBorder: '#444444',
-              hoverBorderColor: '#555555',
-              activeBorderColor: '#00AA55',
-              colorIcon: '#FFFFFF',
-              colorIconHover: '#00AA55',
-              colorBgElevated: '#121212',
-              colorPrimary: '#00AA55',
-              colorTextDisabled: '#333333',
-              colorTextHeading: '#FFFFFF',
-            },
-          },
-        }}
-      >
-        <TimePicker
-          format="HH:mm"
-          style={{ width: '100%' }}
-          onChange={handleTimeChange}
-        />
-      </ConfigProvider>
+      <TimePicker
+        format="HH:mm"
+        style={{ width: '100%' }}
+        onChange={handleTimeChange}
+      />
     </Form.Item>
   );
 };

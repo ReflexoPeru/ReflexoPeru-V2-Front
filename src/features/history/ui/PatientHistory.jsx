@@ -1,122 +1,38 @@
-import { useState, useEffect, useMemo } from 'react';
+import { PDFViewer } from '@react-pdf/renderer';
 import {
+  Button,
   Card,
-  Modal,
-  Table,
-  Radio,
+  DatePicker,
   Form,
   Input,
-  Button,
-  Select,
-  DatePicker,
-  Typography,
-  ConfigProvider,
   message,
+  Radio,
+  Select,
   Spin,
+  Table,
+  Typography,
 } from 'antd';
-import styles from './PatientHistory.module.css';
+import UniversalModal from '../../../components/Modal/UniversalModal';
+import dayjs from '../../../utils/dayjsConfig';
+import { useEffect, useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import {
-  useStaff,
-  usePatientHistory,
   usePatientAppointments,
-  useUpdatePatientHistory,
+  usePatientHistory,
+  useStaff,
   useUpdateAppointment,
+  useUpdatePatientHistory,
 } from '../hook/historyHook';
-import { updateAppointmentById } from '../service/historyService';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
-import { PDFViewer } from '@react-pdf/renderer';
-import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
+import styles from './PatientHistory.module.css';
 
 const { Title } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
-const theme = {
-  token: {
-    colorPrimary: '#4caf50',
-    colorBgContainer: '#222',
-    colorText: '#eee',
-    colorBorder: '#333',
-    colorBgElevated: '#222',
-    colorTextHeading: '#4caf50',
-    colorTextLabel: '#4caf50',
-    borderRadius: 6,
-    fontSize: 14,
-    fontFamily: 'Arial, sans-serif',
-    colorTextLightSolid: '#111',
-  },
-  components: {
-    Table: {
-      headerBg: '#272727',
-      headerColor: 'rgba(199,26,26,0.88)',
-      colorBgContainer: '#272727',
-      borderColor: '#555555',
-      rowHoverBg: '#555555',
-      cellPaddingBlock: 12,
-      cellPaddingInline: 16,
-    },
-    Radio: {
-      colorPrimary: '#4caf50',
-      colorBgContainer: '#fff',
-    },
-    Button: {
-      colorPrimary: '#4caf50',
-      colorPrimaryHover: '#388e3c',
-      colorPrimaryActive: '#2e7d32',
-      defaultBorderColor: '#333',
-      defaultColor: '#eee',
-      defaultBg: '#333',
-      dangerBorderColor: '#f44336',
-      dangerColor: '#eee',
-      dangerBg: '#f44336',
-    },
-    Input: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      colorTextDisabled: '#eee',
-      activeBorderColor: '#4caf50',
-      hoverBorderColor: '#4caf50',
-    },
-    Select: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      optionSelectedBg: '#2e7d32',
-      optionSelectedColor: '#111',
-      optionActiveBg: '#333',
-    },
-    DatePicker: {
-      colorBgContainer: '#222',
-      colorBorder: '#333',
-      colorText: '#eee',
-      cellActiveWithRangeBg: '#2e7d32',
-      cellHoverBg: '#333',
-      panelBg: '#222',
-      panelInputBg: '#222',
-      colorTextHeading: '#eee',
-      colorTextDescription: '#eee',
-      colorIcon: '#eee',
-      colorIconHover: '#4caf50',
-      cellBg: '#222',
-      cellColor: '#eee',
-      cellActiveBg: '#2e7d32',
-      timeColumnBg: '#222',
-    },
-    Card: {
-      colorBgContainer: '#111',
-      colorBorderSecondary: '#2e7d32',
-    },
-    Form: {
-      labelColor: '#4caf50',
-      itemMarginBottom: 16,
-    },
-  },
-};
 
 const PatientHistory = () => {
   const [form] = Form.useForm();
@@ -200,13 +116,16 @@ const PatientHistory = () => {
         antecedentesFamiliares: historyData?.antecedentes_familiares || '',
         alergias: historyData?.alergias || '',
 
-        // Fechas
-        fechaInicio: dayjs(),
+                 // Fechas
+         fechaInicio: appointments && appointments.length > 0 
+           ? dayjs(appointments[0].appointment_date) 
+           : dayjs(),
       });
 
       // Manejo del terapeuta con verificación segura
       if (historyData?.therapist) {
-        setTherapist(historyData.therapist.full_name || '');
+        const therapistName = `${historyData.therapist.paternal_lastname || ''} ${historyData.therapist.maternal_lastname || ''} ${historyData.therapist.name || ''}`.trim();
+        setTherapist(therapistName);
         setSelectedTherapistId(historyData.therapist.id || null);
       } else {
         setTherapist(null);
@@ -271,8 +190,9 @@ const PatientHistory = () => {
     if (selectedTherapistId) {
       const selected = staff.find((t) => t.id === selectedTherapistId);
       if (selected) {
-        setTherapist(selected.full_name);
-        form.setFieldsValue({ therapist: selected.full_name });
+        const therapistName = `${selected.paternal_lastname || ''} ${selected.maternal_lastname || ''} ${selected.name || ''}`.trim();
+        setTherapist(therapistName);
+        form.setFieldsValue({ therapist: therapistName });
       }
     }
     setIsModalVisible(false);
@@ -302,6 +222,11 @@ const PatientHistory = () => {
       return;
     }
 
+    if (!selectedAppointment?.payment_type_id) {
+      message.error('La cita seleccionada no tiene un tipo de pago válido.');
+      return;
+    }
+
     const historyPayload = {
       weight: values.pesoInicial,
       last_weight: values.ultimoPeso,
@@ -323,6 +248,13 @@ const PatientHistory = () => {
       therapist_id: selectedTherapistId,
     };
 
+    // Calcular appointment_status_id basado en la fecha de la cita
+    const appointmentDate = dayjs(selectedAppointmentDate);
+    const currentDate = dayjs();
+    const appointment_status_id = appointmentDate.isBefore(currentDate, 'day')
+      ? 2  // Completada si la fecha es anterior a hoy
+      : 1; // Pendiente si la fecha es hoy o futura
+
     const appointmentPayload = {
       appointment_date: selectedAppointmentDate,
       ailments: values.dolencias,
@@ -333,10 +265,10 @@ const PatientHistory = () => {
       observation: values.observacionesAdicionales,
       initial_date: dayjs(values.fechaInicio).format('YYYY-MM-DD'),
       final_date: dayjs(values.fechaInicio).add(5, 'day').format('YYYY-MM-DD'),
-      appointment_type: 'CC',
-      payment: '50.00',
-      appointment_status_id: 2,
-      payment_type_id: 2,
+      appointment_type: selectedAppointment?.appointment_type || 'CC',
+      payment: selectedAppointment?.payment || '50.00',
+      appointment_status_id: appointment_status_id,
+      payment_type_id: selectedAppointment?.payment_type_id || null,
       patient_id: patientHistory?.data?.patient?.id,
       therapist_id: selectedTherapistId,
     };
@@ -360,25 +292,30 @@ const PatientHistory = () => {
         <Radio
           checked={selectedTherapistId === id}
           onChange={() => handleSelectTherapist(id)}
-          style={{ color: '#ffffff' }}
         />
       ),
       width: 150,
     },
     {
-      title: 'Terapeuta',
-      dataIndex: 'full_name',
+      title: 'Apellido Paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido Materno', 
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombre',
+      dataIndex: 'name',
       key: 'name',
     },
   ];
 
   if (loadingAppointments || !patientHistory) {
     return (
-      <ConfigProvider
-        theme={{
-          token: { colorPrimary: '#4caf50' },
-        }}
-      >
+      <div className={styles.container}>
         <Spin
           size="large"
           tip="Cargando historial..."
@@ -389,12 +326,11 @@ const PatientHistory = () => {
             height: '60vh',
           }}
         />
-      </ConfigProvider>
+      </div>
     );
   }
 
   return (
-    <ConfigProvider theme={theme}>
       <div className={styles.container}>
         <Card className={styles.card}>
           <Title level={2} className={styles.title}>
@@ -408,113 +344,113 @@ const PatientHistory = () => {
             layout="vertical"
             className={styles.form}
           >
-            {/* Fila: Paciente y Observación */}
-            <div className={styles.flexRow}>
-              <Form.Item
-                name="patientName"
-                label="Paciente"
-                className={styles.flexItem}
-              >
-                <Input disabled className={styles.input} />
-              </Form.Item>
-              <Form.Item
-                name="observation"
-                label="Observación"
-                className={styles.flexItem}
-              >
-                <TextArea rows={1} className={styles.textarea} />
-              </Form.Item>
-            </div>
+            {/* Información del Paciente */}
+            <Form.Item
+              name="patientName"
+              label="Paciente"
+              className={styles.formItem}
+            >
+              <Input disabled className={styles.input} />
+            </Form.Item>
 
-            <Title level={3} className={styles.sectionTitle}>
-              Citas
-            </Title>
+            {/* Observaciones */}
+            <Form.Item
+              name="observation"
+              label="Observación"
+              className={styles.formItem}
+            >
+              <TextArea rows={3} className={styles.textarea} />
+            </Form.Item>
 
-            {/* Fila: Fecha de la Cita y Terapeuta */}
-            <div className={styles.flexRow}>
-              <Form.Item label="Fecha de la Cita" className={styles.flexItem}>
-                <Select
-                  value={selectedAppointmentDate}
-                  onChange={setSelectedAppointmentDate}
-                  className={styles.select}
-                  placeholder="Seleccione una fecha"
-                  loading={loadingAppointments}
-                >
-                  {appointmentDates.map((date) => (
-                    <Option key={date} value={date}>
-                      {dayjs(date).format('DD/MM/YYYY')}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="therapist"
-                label="Terapeuta"
-                className={styles.flexItem}
-              >
-                <div className={styles.therapistRow}>
-                  <Input
-                    disabled
-                    value={therapist || 'No se ha seleccionado terapeuta'}
-                    className={styles.input}
-                  />
-                  <Button
-                    type="primary"
-                    onClick={showTherapistModal}
-                    className={styles.selectButton}
-                  >
-                    Seleccionar
-                  </Button>
-                  {form.getFieldValue('therapist') && (
-                    <Button
-                      danger
-                      onClick={handleRemoveTherapist}
-                      className={styles.removeButton}
-                    >
-                      Eliminar
-                    </Button>
-                  )}
-                </div>
-              </Form.Item>
-            </div>
+                         <Title level={3} className={styles.sectionTitle} style={{ textAlign: 'center', color: '#ffffff' }}>
+               Citas
+             </Title>
+
+                         {/* Fecha de la Cita */}
+             <Form.Item label="Fecha de la Cita" className={styles.formItem}>
+               <Select
+                 value={selectedAppointmentDate}
+                 onChange={setSelectedAppointmentDate}
+                 className={styles.select}
+                 placeholder="Seleccione una fecha"
+                 loading={loadingAppointments}
+               >
+                 {appointmentDates.map((date) => (
+                   <Option key={date} value={date}>
+                     {dayjs(date).format('DD-MM-YYYY')}
+                   </Option>
+                 ))}
+               </Select>
+             </Form.Item>
+
+             {/* Terapeuta */}
+             <Form.Item
+               name="therapist"
+               label="Terapeuta"
+               className={styles.formItem}
+             >
+               <div className={styles.therapistRow}>
+                 <Input
+                   disabled
+                   value={therapist || 'No se ha seleccionado terapeuta'}
+                   className={styles.input}
+                 />
+                 <Button
+                   type="primary"
+                   onClick={showTherapistModal}
+                   className={styles.selectButton}
+                 >
+                   Seleccionar
+                 </Button>
+                 {form.getFieldValue('therapist') && (
+                   <Button
+                     danger
+                     onClick={handleRemoveTherapist}
+                     className={styles.removeButton}
+                   >
+                     Eliminar
+                   </Button>
+                 )}
+               </div>
+             </Form.Item>
+
+                         <div className={styles.threeColumnLayout} style={{ marginTop: '20px' }}>
+               <div className={styles.column}>
+                 <Form.Item
+                   name="diagnosticosMedicos"
+                   label="Diagnósticos médicos"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+
+               <div className={styles.column}>
+                 <Form.Item
+                   name="medicamentos"
+                   label="Medicamentos"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+
+               <div className={styles.column}>
+                 <Form.Item
+                   name="operaciones"
+                   label="Operaciones"
+                   className={styles.formItem}
+                 >
+                   <TextArea rows={3} className={styles.diagnosticTextArea} />
+                 </Form.Item>
+               </div>
+             </div>
 
             <div className={styles.threeColumnLayout}>
-              <div className={styles.column}>
-                <Form.Item
-                  name="diagnosticosMedicos"
-                  label="Diagnósticos médicos"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
-
               <div className={styles.column}>
                 <Form.Item
                   name="dolencias"
                   label="Dolencias"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
-
-              <div className={styles.column}>
-                <Form.Item
-                  name="medicamentos"
-                  label="Medicamentos"
-                  className={styles.formItem}
-                >
-                  <TextArea rows={3} className={styles.diagnosticTextArea} />
-                </Form.Item>
-              </div>
-            </div>
-
-            <div className={styles.threeColumnLayout}>
-              <div className={styles.column}>
-                <Form.Item
-                  name="operaciones"
-                  label="Operaciones"
                   className={styles.formItem}
                 >
                   <TextArea rows={3} className={styles.diagnosticTextArea} />
@@ -547,24 +483,42 @@ const PatientHistory = () => {
                 name="talla"
                 label="Talla"
                 className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
               >
-                <Input className={styles.input} />
+                <Input className={`${styles.input} ${styles.smallInput}`} />
               </Form.Item>
 
               <Form.Item
                 name="pesoInicial"
                 label="Peso Inicial"
                 className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
               >
-                <Input className={styles.input} />
+                <Input className={`${styles.input} ${styles.smallInput}`} />
               </Form.Item>
 
               <Form.Item
                 name="ultimoPeso"
                 label="Último Peso"
                 className={styles.physicalInfoItem}
+                rules={[
+                  {
+                    pattern: /^\d+(\.\d+)?$/,
+                    message: 'Solo se permiten números enteros o decimales',
+                  },
+                ]}
               >
-                <Input className={styles.input} />
+                <Input className={`${styles.input} ${styles.smallInput}`} />
               </Form.Item>
 
               <Form.Item
@@ -572,46 +526,45 @@ const PatientHistory = () => {
                 label="Testimonio"
                 className={styles.physicalInfoItem}
               >
-                <Select className={styles.select}>
+                <Select className={`${styles.select} ${styles.smallInput}`}>
                   <Option value="Sí">Sí</Option>
                   <Option value="No">No</Option>
                 </Select>
               </Form.Item>
 
-              {/* Mostrar solo si es mujer */}
-              {isFemale && (
-                <>
-                  <Form.Item
-                    name="gestacion"
-                    label="Gestación"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Select className={styles.select}>
-                      <Option value="Sí">Sí</Option>
-                      <Option value="No">No</Option>
-                    </Select>
-                  </Form.Item>
+              {/* Campos condicionales para mujeres que ahora están en la misma fila */}
+              <Form.Item
+                name="menstruacion"
+                label="Menstruación"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Select className={`${styles.select} ${styles.smallInput}`}>
+                  <Option value="Sí">Sí</Option>
+                  <Option value="No">No</Option>
+                </Select>
+              </Form.Item>
 
-                  <Form.Item
-                    name="menstruacion"
-                    label="Menstruación"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Select className={styles.select}>
-                      <Option value="Sí">Sí</Option>
-                      <Option value="No">No</Option>
-                    </Select>
-                  </Form.Item>
+              <Form.Item
+                name="gestacion"
+                label="Gestación"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Select className={`${styles.select} ${styles.smallInput}`}>
+                  <Option value="Sí">Sí</Option>
+                  <Option value="No">No</Option>
+                </Select>
+              </Form.Item>
 
-                  <Form.Item
-                    name="tipoDIU"
-                    label="Tipo DIU"
-                    className={styles.physicalInfoItem}
-                  >
-                    <Input className={styles.input} />
-                  </Form.Item>
-                </>
-              )}
+              <Form.Item
+                name="tipoDIU"
+                label="Tipo DIU"
+                className={styles.physicalInfoItem}
+                style={{ display: isFemale ? 'block' : 'none' }}
+              >
+                <Input className={`${styles.input} ${styles.smallInput}`} />
+              </Form.Item>
             </div>
 
             <div className={styles.bottomSection}>
@@ -620,7 +573,7 @@ const PatientHistory = () => {
                 label="Fecha de Inicio"
                 className={styles.startDateSection}
               >
-                <DatePicker className={styles.datePicker} format="DD-MM-YY" />
+                <DatePicker className={styles.datePicker} format="DD-MM-YYYY" />
               </Form.Item>
 
               <div className={styles.actionButtons}>
@@ -659,12 +612,15 @@ const PatientHistory = () => {
             </div>
           </Form>
         </Card>
-        <Modal
+        <UniversalModal
           title="Lista de Terapeutas"
           open={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
-          width={800}
+          width={730}
+          className="therapist-list-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
           footer={[
             <Button key="back" onClick={handleCancel}>
               Cancelar
@@ -690,17 +646,21 @@ const PatientHistory = () => {
             dataSource={staff}
             rowKey="id"
             loading={loading}
-            scroll={{ y: 200 }}
+            scroll={{ x: 'max-content' }}
             pagination={false}
             rowClassName={() => styles.tableRow}
           />
-        </Modal>
-        <Modal
+        </UniversalModal>
+        <UniversalModal
+          title="Vista Previa - Ticket"
           open={showTicketModal}
           onCancel={() => setShowTicketModal(false)}
           footer={null}
           width={420}
-          bodyStyle={{ padding: 0 }}
+          className="ticket-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
           {selectedAppointment && (
             <PDFViewer width="100%" height={600} showToolbar={true}>
@@ -717,7 +677,7 @@ const PatientHistory = () => {
                 ticket={{
                   number: selectedAppointment.ticket_number,
                   date: dayjs(selectedAppointment.appointment_date).format(
-                    'DD/MM/YYYY',
+                    'DD-MM-YYYY',
                   ),
                   patient:
                     `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
@@ -730,13 +690,17 @@ const PatientHistory = () => {
               />
             </PDFViewer>
           )}
-        </Modal>
-        <Modal
+        </UniversalModal>
+        <UniversalModal
+          title="Vista Previa - Ficha"
           open={showFichaModal}
           onCancel={() => setShowFichaModal(false)}
           footer={null}
           width={420}
-          bodyStyle={{ padding: 0 }}
+          className="ficha-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
           {selectedAppointment && patientHistory?.data && (
             <PDFViewer width="100%" height={600} showToolbar={true}>
@@ -748,9 +712,8 @@ const PatientHistory = () => {
               />
             </PDFViewer>
           )}
-        </Modal>
+        </UniversalModal>
       </div>
-    </ConfigProvider>
   );
 };
 

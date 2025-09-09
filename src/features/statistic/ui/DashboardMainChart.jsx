@@ -16,7 +16,7 @@ const DashboardMainChart = ({
       <Chart
         options={chartOptions}
         series={chartSeries}
-        type="area"
+        type="line"
         height="100%"
       />
     </div>

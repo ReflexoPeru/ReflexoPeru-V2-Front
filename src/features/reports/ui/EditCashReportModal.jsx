@@ -6,56 +6,62 @@ import {
   Button,
   Typography,
   Divider,
-  ConfigProvider,
 } from 'antd';
 import { PencilSimple, FloppyDisk, X } from '@phosphor-icons/react';
+import { useTheme } from '../../../context/ThemeContext';
 import styles from './reports.module.css';
 
 const { Text } = Typography;
 
-const customTheme = {
-  token: {
-    colorPrimary: '#4CAF50',
-    colorBgContainer: '#232323',
-    colorText: '#fff',
-    borderRadius: 12,
-    colorBorder: '#4CAF50',
-    colorTextPlaceholder: '#bbb',
-  },
-  components: {
-    Button: {
-      colorPrimary: '#4CAF50',
-      colorText: '#fff',
-      colorPrimaryHover: '#43a047',
-      colorPrimaryActive: '#388e3c',
-      borderRadius: 10,
-    },
-    Input: {
-      colorBgContainer: '#232323',
-      colorText: '#fff',
-      colorBorder: '#4CAF50',
-      borderRadius: 10,
-    },
-    Modal: {
-      colorBgElevated: '#181818',
-      colorText: '#fff',
-      borderRadius: 18,
-    },
-  },
-};
-
-const labelStyle = { color: '#bbb', fontSize: 13, fontWeight: 500 };
-const inputStyle = {
-  width: '100%',
-  height: 40,
-  fontSize: 15,
-  borderRadius: 10,
-  background: '#232323',
-  color: '#fff',
-  border: '1px solid #333',
-};
-
 const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
+  const { isDarkMode } = useTheme();
+  
+  const customTheme = {
+    token: {
+      colorPrimary: '#1CB54A',
+      colorBgContainer: isDarkMode ? '#232323' : '#ffffff',
+      colorText: isDarkMode ? '#fff' : '#333333',
+      borderRadius: 12,
+      colorBorder: '#1CB54A',
+      colorTextPlaceholder: isDarkMode ? '#bbb' : '#999999',
+    },
+    components: {
+      Button: {
+        colorPrimary: '#1CB54A',
+        colorText: '#fff',
+        colorPrimaryHover: '#148235',
+        colorPrimaryActive: '#0e5c28',
+        borderRadius: 10,
+      },
+      Input: {
+        colorBgContainer: isDarkMode ? '#232323' : '#ffffff',
+        colorText: isDarkMode ? '#fff' : '#333333',
+        colorBorder: '#1CB54A',
+        borderRadius: 10,
+      },
+      Modal: {
+        colorBgElevated: isDarkMode ? '#181818' : '#ffffff',
+        colorText: isDarkMode ? '#fff' : '#333333',
+        borderRadius: 18,
+      },
+    },
+  };
+
+  const labelStyle = { 
+    color: isDarkMode ? '#bbb' : '#666', 
+    fontSize: 13, 
+    fontWeight: 500 
+  };
+  
+  const inputStyle = {
+    width: '100%',
+    height: 40,
+    fontSize: 15,
+    borderRadius: 10,
+    background: isDarkMode ? '#232323' : '#ffffff',
+    color: isDarkMode ? '#fff' : '#333333',
+    border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
+  };
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -106,8 +112,7 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
   };
 
   return (
-    <ConfigProvider theme={customTheme}>
-      <Modal
+    <Modal
         title={
           <div style={{ paddingBottom: 8 }}>
             <div
@@ -159,9 +164,9 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
                     orientation="left"
                     style={{
                       margin: '10px 0 18px 0',
-                      color: '#4CAF50',
+                      color: '#1CB54A',
                       fontSize: 15,
-                      borderColor: '#333',
+                      borderColor: isDarkMode ? '#333' : '#e0e0e0',
                     }}
                   >
                     <Text
@@ -251,7 +256,6 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
           </div>
         </Form>
       </Modal>
-    </ConfigProvider>
   );
 };
 

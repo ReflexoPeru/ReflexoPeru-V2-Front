@@ -1,16 +1,18 @@
-import { Form, Modal, notification } from 'antd';
-import dayjs from 'dayjs';
+import { Form, notification } from 'antd';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 
-// Reutilizamos los mismos campos del formulario de creación
+// Campos idénticos al registro que funciona
 const fields = [
+
   {
     type: 'customRow',
     fields: [
       {
-        name: 'document_type',
+        name: 'document_type_id',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -26,10 +28,6 @@ const fields = [
           {
             required: true,
             message: 'Por favor ingrese el número de documento',
-          },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
           },
         ],
       },
@@ -85,6 +83,7 @@ const fields = [
         label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
@@ -110,17 +109,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
-              }
-              return Promise.resolve();
+              return Promise();
             },
           }),
         ],
@@ -135,7 +124,7 @@ const fields = [
   },
   {
     name: 'ubicacion',
-    label: 'Ubicación',
+    label: 'Departamento / Provincia / Distrito',
     type: 'ubigeo',
     span: 12,
   },
@@ -172,7 +161,7 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       name: data.name || '',
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
-      document_type:
+      document_type_id:
         data.document_type !== undefined && data.document_type !== null
           ? String(data.document_type)
           : undefined,
@@ -200,12 +189,11 @@ const EditPatient = ({ patient, onClose, onSave }) => {
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      // Convertir el tipo de documento a número y renombrar el campo
+      // Convertir el tipo de documento a número
       const dataToSend = {
         ...formData,
-        document_type_id: Number(formData.document_type),
+        document_type_id: Number(formData.document_type_id),
       };
-      delete dataToSend.document_type;
 
       // Solo enviar email si cambió
       if (formData.email === patient.email) {
@@ -237,14 +225,13 @@ const EditPatient = ({ patient, onClose, onSave }) => {
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
 
   return (
-    <Modal
+    <UniversalModal
       title={`Editar Paciente: ${modalTitle}`}
       open={true}
       onCancel={onClose}
       footer={null}
-      width={800}
-      centered
-      destroyOnClose
+      width={950}
+      className="edit-patient-modal modal-themed"
     >
       <FormGenerator
         form={form}
@@ -254,7 +241,7 @@ const EditPatient = ({ patient, onClose, onSave }) => {
         onCancel={onClose}
         loading={loading}
       />
-    </Modal>
+    </UniversalModal>
   );
 };
 

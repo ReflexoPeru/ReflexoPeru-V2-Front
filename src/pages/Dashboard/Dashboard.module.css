@@ -1,74 +1,106 @@
-*{
-    font-family: Arial, Helvetica, sans-serif;
+* {
+    font-family: var(--font-family);
 }
-.dashboardContainer{
+
+.dashboardContainer {
+    overflow: hidden; /* Evita scroll general */
     display: flex;
     flex-direction: column;
 
     box-sizing: border-box;
-    min-height: 100vh;
+    height: 100vh; /* Cambiado de min-height a height */
     padding: 15px;
 
-    color: #ffffff;
-
-    background-color: #1E1E1E;
+    color: var(--color-text-primary);
+    background-color: var(--color-background-primary);
+    transition: all var(--transition-normal);
 }
 
-.dashboardHeader{
+.dashboardHeader {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0; /* Evita que se encoja */
     gap: 5px;
     align-items: center;
 
-    & img{
+    & img {
         width: 111px;
         height: 98px;
     }
-    & p{
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 18px;
-        font-weight: bold;
+
+    & p {
+        font-family: var(--font-family);
+        font-size: var(--font-size-xl);
+        font-weight: var(--font-weight-bold);
         text-align: center;
+        color: var(--color-text-primary);
     }
 }
-.dashboardUser{
+
+.dashboardUser {
     display: flex;
+    flex-shrink: 0; /* Evita que se encoja */
     gap: 10px;
     align-items: center;
 
-    & img{
+    & img {
         border-radius: 50%;
     }
 }
 
-.dashboardUserName{
+.dashboardUserName {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    & h1{
-        font-size: 14px;
-        font-weight: bold;
+
+    & h1 {
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
     }
-    & p{
-        font-size: 12px;
-        color: #AAAAAA;
+
+    & p {
+        font-size: var(--font-size-sm);
+        color: var(--color-text-secondary);
     }
 }
-.dashboardMenu{
-    display: flex;
-    flex: 1;
-    flex-direction: column;
+
+.dashboardMenu {
+    overflow: hidden; /* Oculta scroll del contenedor */
+    flex: 1; /* Toma el espacio disponible */
+    min-height: 0; /* IMPORTANTE: Permite que el flex se comprima */
 }
-.dashboardFooter{
+
+/* Contenedor interno del menú para scroll controlado */
+.dashboardMenu > div {
+    overflow-x: hidden;
+    overflow-y: auto; /* Scroll interno solo si es necesario */
+    height: 100%;
+}
+
+/* Ocultar barra de scroll pero mantener funcionalidad */
+.dashboardMenu > div::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.dashboardMenu > div {
+    scrollbar-width: none; /* Firefox */
+
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+.dashboardFooter {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0; /* Evita que se encoja */
     align-items: center;
     justify-content: flex-end;
-    
-    & p{
+
+    & p {
         margin-top: 40px;
-        font-size: 14px;
-        color: #6B7280;
+        font-size: var(--font-size-md);
+        color: var(--color-text-tertiary);
         text-align: center;
     }
 }

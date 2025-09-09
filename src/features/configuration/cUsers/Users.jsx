@@ -10,11 +10,10 @@ import {
   Select,
   Row,
   Col,
-  ConfigProvider,
   Popconfirm,
 } from 'antd';
 import styles from './Users.module.css';
-import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
+import UniversalModal from '../../../components/Modal/UniversalModal';
 import SelectTypeOfDocument from '../../../components/Select/SelctTypeOfDocument';
 
 const { Option } = Select;
@@ -47,7 +46,7 @@ const SelectRole = ({ value, onChange, ...rest }) => {
   ];
 
   const options = roles.map((role) => ({
-    label: <span style={{ color: '#fff' }}>{role.name}</span>,
+    label: <span className={styles.selectOption}>{role.name}</span>,
     value: role.id,
   }));
 
@@ -78,9 +77,7 @@ const SelectRole = ({ value, onChange, ...rest }) => {
       }
       placeholder="Seleccionar rol"
       options={options}
-      style={{
-        width: '100%',
-      }}
+      className={styles.selectContainer}
     />
   );
 };
@@ -90,8 +87,8 @@ const SelectSex = ({ value, onChange, ...rest }) => {
   const [internalValue, setInternalValue] = useState(value);
 
   const options = [
-    { label: <span style={{ color: '#fff' }}>Masculino</span>, value: 'M' },
-    { label: <span style={{ color: '#fff' }}>Femenino</span>, value: 'F' },
+    { label: <span className={styles.selectOption}>Masculino</span>, value: 'M' },
+    { label: <span className={styles.selectOption}>Femenino</span>, value: 'F' },
   ];
 
   // Sincronizar value cuando cambia el value externo
@@ -377,49 +374,6 @@ const Users = () => {
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Input: {
-            controlHeight: 40,
-            borderRadius: 6,
-          },
-          Select: {
-            controlHeight: 40,
-            borderRadius: 6,
-            colorPrimary: '#FFFFFFFF',
-            optionSelectedBg: '#333333',
-            colorText: '#fff',
-            colorBgElevated: '#444444',
-            colorTextPlaceholder: '#aaa',
-            controlItemBgHover: '#1a1a1a',
-            selectorBg: '#444444',
-          },
-          Button: {
-            controlHeight: 40,
-            borderRadius: 6,
-            colorPrimary: '#4CAF50',
-            colorTextLightSolid: '#ffffff',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#333333',
-          },
-          Popconfirm: {
-            borderRadius: 8,
-            padding: 12,
-          },
-          Popover: {
-            colorBgElevated: '#000',
-            colorText: '#ffffff',
-          },
-        },
-        token: {
-          colorPrimary: '#4CAF50',
-          colorText: '#ffffff',
-          colorTextBase: '#fff',
-        },
-      }}
-    >
       <div className={styles.container}>
         <div className={styles.sectionHeader}>
           <h2 className={styles.sectionTitle}>Usuarios</h2>
@@ -444,18 +398,25 @@ const Users = () => {
           }}
         />
 
-        <BaseModal
-          visible={modalVisible}
+        <UniversalModal
+          open={modalVisible}
           onCancel={handleModalCancel}
           onOk={handleSubmit}
           title={
             action === 'create' ? 'Agregar nuevo usuario' : 'Editar usuario'
           }
-          form={form}
           okText={action === 'create' ? 'Crear' : 'Actualizar'}
           width={800}
-          initialValues={getInitialValues()}
+          className="users-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
         >
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={getInitialValues()}
+            onFinish={handleSubmit}
+          >
           <div className={styles.formContainer}>
             {/* Primera fila: Tipo de documento y Número de documento */}
             <Row gutter={16}>
@@ -585,7 +546,7 @@ const Users = () => {
                     className={styles.uniformInput}
                     placeholder="Seleccionar rol"
                     options={roles.map((role) => ({
-                      label: <span style={{ color: '#fff' }}>{role.name}</span>,
+                      label: <span className={styles.selectOption}>{role.name}</span>,
                       value: role.id,
                     }))}
                   />
@@ -597,11 +558,11 @@ const Users = () => {
                     placeholder="Seleccionar sexo"
                     options={[
                       {
-                        label: <span style={{ color: '#fff' }}>Masculino</span>,
+                        label: <span className={styles.selectOption}>Masculino</span>,
                         value: 'M',
                       },
                       {
-                        label: <span style={{ color: '#fff' }}>Femenino</span>,
+                        label: <span className={styles.selectOption}>Femenino</span>,
                         value: 'F',
                       },
                     ]}
@@ -614,9 +575,9 @@ const Users = () => {
               <Col span={24}></Col>
             </Row>
           </div>
-        </BaseModal>
+          </Form>
+        </UniversalModal>
       </div>
-    </ConfigProvider>
   );
 };
 

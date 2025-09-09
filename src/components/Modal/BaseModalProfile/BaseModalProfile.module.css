@@ -1,8 +1,9 @@
 
 .modalContainer {
   overflow: hidden;
-  border-radius: 16px !important;
-  background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%) !important;
+  border-radius: var(--radius-lg) !important;
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
 }
 
 .modalHeader {
@@ -24,18 +25,18 @@
   width: 40px;
   height: 40px;
   border: none !important;
-  border-radius: 8px !important;
+  border-radius: var(--radius-md) !important;
 
-  color: #b0b0b0 !important;
+  color: var(--color-text-secondary) !important;
 
   background: transparent !important;
 
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 .backButton:hover {
-  color: white !important;
-  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--color-text-primary) !important;
+  background: var(--color-background-secondary) !important;
 }
 
 .modalLogoContainer {
@@ -64,7 +65,7 @@
 
   font-size: 24px;
   font-weight: 700;
-  color: white;
+  color: var(--color-text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -74,7 +75,7 @@
 
   font-size: 16px;
   line-height: 1.6;
-  color: #b0b0b0;
+  color: var(--color-text-secondary);
 }
 
 /* Formularios dentro del modal */
@@ -88,15 +89,15 @@
   border-radius: 12px !important;
 
   font-size: 16px !important;
-  color: rgb(255, 255, 255) !important;
+  color: var(--color-input-text) !important;
 
-  background-color: #333 !important;
+  background-color: var(--color-input-bg) !important;
 }
 
 .modalInput:hover,
 .modalInput:focus {
-  border-color: #4CAF50 !important;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
 }
 
 .modalSubmitButton {
@@ -161,7 +162,7 @@
 .footerText {
   margin: 0 0 12px;
   font-size: 14px;
-  color: #b0b0b0;
+  color: var(--color-text-secondary);
 }
 
 .footerActions {

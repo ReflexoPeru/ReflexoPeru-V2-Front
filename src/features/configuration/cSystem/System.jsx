@@ -81,7 +81,7 @@ const System = () => {
 
   if (loading)
     return (
-      <div className={styles.layout}>
+      <div className={`${styles.layout} ${styles.loading}`}>
         <Spin size="large" />
       </div>
     );
@@ -98,19 +98,14 @@ const System = () => {
                 <div className={styles.logoBlock}>
                   <span className={styles.logoTitle}>Actual</span>
                   {logoUrl ? (
-                    <Image
-                      src={logoPreview || img}
-                      alt={`Logo de ${companyName}`}
-                      preview={false}
-                      style={{
-                        width: '100px',
-                        height: '100px',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                        border: '2px solid #4CAF50',
-                        padding: '3px',
-                      }}
-                    />
+                    <div className={styles.logoImageContainer}>
+                      <Image
+                        src={logoPreview || img}
+                        alt={`Logo de ${companyName}`}
+                        preview={false}
+                        className={styles.logoImage}
+                      />
+                    </div>
                   ) : (
                     <div className={styles.noLogo}>No hay logo disponible</div>
                   )}
@@ -119,8 +114,8 @@ const System = () => {
                   <span className={styles.logoTitle}>Subir nuevo</span>
                   <Upload
                     name="logo"
-                    listType="picture-circle"
-                    className="avatar-uploader"
+                    listType="picture"
+                    className={styles.uploadContainer}
                     showUploadList={false}
                     accept="image/*"
                     customRequest={({ file, onSuccess }) => {
@@ -140,29 +135,20 @@ const System = () => {
                       return isImage && isLt2M ? true : Upload.LIST_IGNORE;
                     }}
                     onChange={handleLogoChange}
-                    style={{
-                      borderRadius: '50%',
-                      border: '2px dashed #4CAF50',
-                      width: 100,
-                      height: 100,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: '#1a1a1a',
-                      cursor: 'pointer',
-                    }}
                   >
-                    {uploadingLogo ? (
-                      <div style={{ color: '#fff', textAlign: 'center' }}>
-                        <LoadingOutlined />
-                        <div style={{ marginTop: 8 }}>Subiendo...</div>
-                      </div>
-                    ) : (
-                      <div style={{ color: '#fff', textAlign: 'center' }}>
-                        <UploadOutlined />
-                        <div style={{ marginTop: 8 }}>Subir logo</div>
-                      </div>
-                    )}
+                    <div className={styles.uploadContent}>
+                      {uploadingLogo ? (
+                        <>
+                          <LoadingOutlined className={styles.uploadIcon} />
+                          <div className={styles.uploadLabel}>Subiendo...</div>
+                        </>
+                      ) : (
+                        <>
+                          <UploadOutlined className={styles.uploadIcon} />
+                          <div className={styles.uploadLabel}>Subir logo</div>
+                        </>
+                      )}
+                    </div>
                   </Upload>
                 </div>
               </div>

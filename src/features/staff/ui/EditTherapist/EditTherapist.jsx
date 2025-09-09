@@ -1,8 +1,9 @@
-import { Form, Modal, notification } from 'antd';
-import dayjs from 'dayjs';
+import { Form, notification } from 'antd';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 
 // Reutiliza los mismos fields que para crear
 const fields = [
@@ -26,10 +27,6 @@ const fields = [
           {
             required: true,
             message: 'Por favor ingrese el número de documento',
-          },
-          {
-            pattern: /^\d{8,9}$/,
-            message: 'El documento debe tener 8 dígitos',
           },
         ],
       },
@@ -81,14 +78,15 @@ const fields = [
         required: true,
       },
       {
-        name: 'personal_reference',
-        label: 'Referencia Personal',
+        name: 'occupation',
+        label: 'Ocupación',
         type: 'text',
         span: 8,
+        capitalize: 'first',
       },
     ],
   },
-  { type: 'title', label: 'Información de contacto' },
+  { type: 'title', label: 'Información de Contacto' },
   {
     type: 'customRow',
     fields: [
@@ -110,17 +108,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              if (value.length < 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener 9 dígitos'),
-                );
-              }
-              if (value.length > 9) {
-                return Promise.reject(
-                  new Error('El teléfono debe tener exactamente 9 dígitos'),
-                );
-              }
-              return Promise.resolve();
+              return Promise();
             },
           }),
         ],
@@ -134,17 +122,22 @@ const fields = [
     ],
   },
   {
-    name: 'ubicacion',
-    label: 'Ubicación',
-    type: 'ubigeo',
-    span: 12,
-  },
-  {
-    name: 'address',
-    label: 'Dirección de Domicilio',
-    type: 'text',
-    span: 12,
-    required: true,
+    type: 'customRow',
+    fields: [
+      {
+        name: 'ubicacion',
+        label: 'Departamento / Provincia / Distrito',
+        type: 'ubigeo',
+        span: 12,
+      },
+      {
+        name: 'address',
+        label: 'Dirección de Domicilio',
+        type: 'text',
+        span: 12,
+        required: true,
+      },
+    ],
   },
 ];
 
@@ -240,14 +233,13 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
     `${therapist.paternal_lastname || ''} ${therapist.maternal_lastname || ''} ${therapist.name || ''}`.trim();
 
   return (
-    <Modal
+    <UniversalModal
       title={`Editar Terapeuta: ${modalTitle}`}
       open={true}
       onCancel={onClose}
       footer={null}
-      width={800}
-      centered
-      destroyOnClose
+      width={950}
+      className="edit-therapist-modal modal-themed"
     >
       <FormGenerator
         form={form}
@@ -257,7 +249,7 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
         onCancel={onClose}
         loading={loading}
       />
-    </Modal>
+    </UniversalModal>
   );
 };
 

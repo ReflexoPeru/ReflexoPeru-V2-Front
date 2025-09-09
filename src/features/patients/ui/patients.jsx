@@ -1,4 +1,4 @@
-import { Button, Space, notification, Spin, ConfigProvider } from 'antd';
+import { Button, Space, notification, Spin } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomButton from '../../../components/Button/CustomButtom';
@@ -12,6 +12,7 @@ import InfoPatient from './InfoPatient/infopatient';
 export default function Patients() {
   const navigate = useNavigate();
   const [editingPatient, setEditingPatient] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loadingEditId, setLoadingEditId] = useState(null);
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const [patientInfo, setPatientInfo] = useState(null);
@@ -25,13 +26,13 @@ export default function Patients() {
     handleDeletePatient,
   } = usePatients();
 
-  // Nuevo handler para editar: hace GET antes de abrir el modal
+  // Handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
     setLoadingEditId(record.id);
-    setEditingPatient(record);
     try {
       const freshPatient = await getPatientById(record.id);
       setEditingPatient(freshPatient);
+      setIsEditModalOpen(true); // ← Esta línea es crucial para abrir el modal
     } catch (e) {
       notification.error({
         message: 'Error',
@@ -40,6 +41,11 @@ export default function Patients() {
     } finally {
       setLoadingEditId(null);
     }
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingPatient(null);
   };
 
   const handleDelete = async (id) => {
@@ -66,20 +72,13 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
               minWidth: 80,
+              height: '36px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: '4px',
             }}
-            onClick={async () => {
-              setLoadingEditId(record.id);
-              setEditingPatient(record);
-              try {
-                const freshPatient = await getPatientById(record.id);
-                setEditingPatient(freshPatient);
-              } finally {
-                setLoadingEditId(null); // Limpiar el loader apenas se abre el modal
-              }
-            }}
+            onClick={() => handleEdit(record)}
             disabled={loadingEditId === record.id}
           >
             {loadingEditId === record.id ? (
@@ -96,6 +95,8 @@ export default function Patients() {
               backgroundColor: '#00AA55',
               color: '#fff',
               border: 'none',
+              height: '36px',
+              borderRadius: '4px',
             }}
             onClick={() => handleInfo(record)}
           >
@@ -109,6 +110,8 @@ export default function Patients() {
               backgroundColor: '#8800CC',
               color: '#fff',
               border: 'none',
+              height: '36px',
+              borderRadius: '4px',
             }}
             onClick={() => navigate(`historia/${record.id}`)}
           >
@@ -123,17 +126,17 @@ export default function Patients() {
               color: '#fff',
               border: 'none',
               minWidth: 80,
+              height: '36px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              borderRadius: '4px',
             }}
             onClick={() => handleDelete(record.id)}
             disabled={loadingDeleteId === record.id}
           >
             {loadingDeleteId === record.id ? (
-              <ConfigProvider theme={{ token: { colorPrimary: '#fff' } }}>
-                <Spin />
-              </ConfigProvider>
+              <Spin />
             ) : (
               'Eliminar'
             )}
@@ -160,9 +163,19 @@ export default function Patients() {
       width: '150px',
     },
     {
-      title: 'Apellidos y Nombres',
-      dataIndex: 'full_name',
-      key: 'name',
+      title: 'Apellido Paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido Materno',
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombres',
+      dataIndex: 'name',
+      key: 'names',
     },
     {
       title: 'Acciones',
@@ -215,10 +228,10 @@ export default function Patients() {
       />
 
       {/* Modal de edición */}
-      {editingPatient && (
+      {editingPatient && isEditModalOpen && (
         <EditPatient
           patient={editingPatient}
-          onClose={() => setEditingPatient(null)}
+          onClose={handleCloseEditModal}
           onSave={() => handlePageChange(pagination.currentPage)}
         />
       )}

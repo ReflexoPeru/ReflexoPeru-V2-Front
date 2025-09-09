@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getPendingAppointments } from '../service/homeService';
-import dayjs from 'dayjs';
+import dayjs from '../../../utils/dayjsConfig';
 
 export const useTodayAppointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -18,19 +18,24 @@ export const useTodayAppointments = () => {
         return;
       }
 
-      // Filtrar solo las citas del día actual
+      // Obtener fecha actual en el mismo formato que el API
       const today = dayjs().format('YYYY-MM-DD');
+
+      // Filtrar citas del día actual (considerando el formato con hora)
       const todayAppointments = data.filter(
-        (item) => item.appointment_date === today,
+        (item) =>
+          item.appointment_date && item.appointment_date.startsWith(today),
       );
 
       // Formatear los datos para el componente
       const formattedAppointments = todayAppointments.map((item) => {
         return {
           name: item.full_name || ' ',
-          service: item.appointment_type,
-          time: dayjs(item.appointment_hour, 'HH:mm:ss').format('HH:mm'),
-          details: item, // Guardamos todos los detalles
+          service: item.appointment_type || 'Sin servicio',
+          time: item.appointment_hour
+            ? dayjs(item.appointment_hour, 'HH:mm:ss').format('HH:mm')
+            : 'Sin hora',
+          details: item,
         };
       });
 

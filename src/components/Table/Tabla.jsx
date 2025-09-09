@@ -2,14 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { Table, ConfigProvider, Spin } from 'antd';
 import estilos from './Tabla.module.css';
 import ModeloPagination from './Pagination/Pagination.jsx';
-import { Package } from '@phosphor-icons/react';
+import EmptyState from '../Empty/EmptyState';
+import ConsistentSpinner from '../Loading/ConsistentSpinner';
 
-
-const ModeloTable = ({ 
-  columns, 
-  data, 
-  loading = false, 
-  pagination = {} ,
+const ModeloTable = ({
+  columns,
+  data,
+  loading = false,
+  pagination = {},
   maxHeight = '60vh',
 }) => {
   const currentPage = pagination?.current || 1;
@@ -22,49 +22,59 @@ const ModeloTable = ({
 
   // Transformar columnas para centrar contenido
   const centeredColumns = columns.map((column, index, arr) => {
-  const isLast = index === arr.length - 1;
-  
-  return {
-    ...column,
-    align: 'center',
-    onCell: () => ({
-      style: {
-        textAlign: 'center',
-        background: 'inherit',
-        borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha
-        borderBottom: 'none',
-      },
-    }),
-    onHeaderCell: () => ({
-      style: {
-        textAlign: 'center',
-        background: '#272727',
-        borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha en header
-        borderBottom: 'none',
-        color: '#fff',
-      },
-    }),
-  };
-});
+    const isLast = index === arr.length - 1;
+
+    return {
+      ...column,
+      align: 'center',
+      onCell: () => ({
+        style: {
+          textAlign: 'center',
+          background: 'inherit',
+          borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha
+          borderBottom: 'none',
+        },
+      }),
+      onHeaderCell: () => ({
+        style: {
+          textAlign: 'center',
+          background: '#3b3b3b',
+          borderRight: isLast ? 'none' : '1px solid #444', // Línea vertical derecha en header
+          borderBottom: 'none',
+          color: '#fff',
+        },
+      }),
+    };
+  });
 
   //Calculo simplificado de altura
   useEffect(() => {
+    // Si maxHeight es "auto", no calculamos altura fija
+    if (maxHeight === 'auto') {
+      setTableHeight('auto');
+      return;
+    }
+
     const calculateHeight = () => {
       if (!containerRef.current) return;
-      
+
       const containerRect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const spaceFromTop = containerRect.top;
       const marginBottom = 32; // Margen para paginación y espacio respiro
-      
+
       // Altura calculada con límite máximo
       const calculatedHeight = windowHeight - spaceFromTop - marginBottom;
-      
+
       // Aplicamos el mínimo entre la altura calculada y el máximo especificado
-      const finalHeight = typeof maxHeight === 'string' && maxHeight.endsWith('vh') 
-        ? Math.min(calculatedHeight, (windowHeight * parseInt(maxHeight)) / 100)
-        : Math.min(calculatedHeight, maxHeight);
-      
+      const finalHeight =
+        typeof maxHeight === 'string' && maxHeight.endsWith('vh')
+          ? Math.min(
+              calculatedHeight,
+              (windowHeight * parseInt(maxHeight)) / 100,
+            )
+          : Math.min(calculatedHeight, maxHeight);
+
       setTableHeight(`${finalHeight}px`);
     };
 
@@ -72,7 +82,6 @@ const ModeloTable = ({
     window.addEventListener('resize', calculateHeight);
     return () => window.removeEventListener('resize', calculateHeight);
   }, [maxHeight]);
-
 
   return (
     <ConfigProvider
@@ -91,59 +100,59 @@ const ModeloTable = ({
             cellFontSize: 12,
             cellPaddingBlock: 12,
             cellPaddingInline: 16,
-            cellFontFamily: 'Arial, Helvetica, sans-serif',
+            cellFontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", sans-serif',
           },
         },
       }}
-      renderEmpty={() => {
-          <div style={{ 
-            color: '#a0a0a0', 
-            padding: '16px', 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '8px',
-          }}>
-            <Package size={40} />
-            <span>No hay datos disponibles</span>
-          </div>
-      }}
+       renderEmpty={() => (
+         <EmptyState
+           icon="package"
+           title="No hay datos disponibles"
+           description="Los datos aparecerán aquí cuando estén disponibles"
+           style={{
+             margin: '16px',
+             minHeight: '200px'
+           }}
+         />
+       )}
     >
       <div
         ref={containerRef}
         style={{
-          minHeight: '300px',
+          minHeight: maxHeight === 'auto' ? 'auto' : '300px',
           marginTop: '15px',
         }}
       >
-        <div style={{ 
+        <div
+          style={{
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            
-          }}>
-            <Table
-              className={estilos.tableCustom}
-              columns={centeredColumns}
-              dataSource={data}
-              rowKey="id"
-              pagination={false}
-              scroll={{ y: tableHeight, x: 'max-content' }}
-              rowClassName={(__, index) =>
-                index % 2 === 0 ? estilos.zebraRow : ''
-              }
-              loading={{
-                spinning: loading,
-                indicator: (
-                  <Spin 
-                    size="large" 
-                    style={{ color: '#ffffff' }} // Texto blanco
-                    tip="Cargando..."
-                  />
-                )
-              }}
-            />
+          }}
+        >
+          <Table
+            className={`${estilos.tableCustom} ${maxHeight === 'auto' ? estilos.noScroll : ''}`}
+            columns={centeredColumns}
+            dataSource={data}
+            rowKey="id"
+            pagination={false}
+            scroll={maxHeight === 'auto' ? { x: 'max-content' } : { 
+              y: tableHeight, 
+              x: 'max-content' 
+            }}
+            rowClassName={(__, index) =>
+              index % 2 === 0 ? estilos.zebraRow : ''
+            }
+            loading={{
+              spinning: loading,
+              indicator: (
+                <ConsistentSpinner
+                  size="large"
+                  tip="Cargando datos..."
+                />
+              ),
+            }}
+          />
         </div>
         <div>
           <ModeloPagination

@@ -1,4 +1,4 @@
-import { Button, Col, ConfigProvider, Form, Row } from 'antd';
+import { Button, Col, Form, Row } from 'antd';
 import { useState, forwardRef } from 'react';
 import styles from '../Form/Form.module.css';
 import InputField from '../Input/Input';
@@ -25,12 +25,14 @@ const FormComponent = forwardRef(
       onCancel = () => {},
       form: externalForm,
       onPriceChange,
+      loading: externalLoading = false,
     },
     ref,
   ) => {
     const [internalForm] = useForm();
     const form = externalForm || internalForm;
-    const [loading, setLoading] = useState(false);
+    const [internalLoadingState, setInternalLoadingState] = useState(false);
+    const loading = externalLoading || internalLoadingState;
     const [isPhoneRequired, setIsPhoneRequired] = useState(true);
     const [selectedPatient, setSelectedPatient] = useState('XD');
 
@@ -45,9 +47,28 @@ const FormComponent = forwardRef(
 
     const renderField = (field, index) => {
       if (field.type === 'title') {
+        // Solo agregar línea verde al primer título (REGISTRAR PACIENTE)
+        const isMainTitle = field.label === 'REGISTRAR PACIENTE';
         return (
           <Col span={24} key={index}>
             <h2 className={styles.title}>{field.label}</h2>
+            {isMainTitle && <div className={styles.greenSeparator}></div>}
+          </Col>
+        );
+      }
+      if (field.type === 'separator') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.title}>{field.label}</h2>
+            <div className={styles.greenSeparator} />
+          </Col>
+        );
+      }
+
+      if (field.type === 'subtitle') {
+        return (
+          <Col span={24} key={index}>
+            <h2 className={styles.subtitle}>{field.label}</h2>
           </Col>
         );
       }
@@ -55,7 +76,7 @@ const FormComponent = forwardRef(
       if (field.type === 'customRow') {
         return (
           <Col span={24} key={index}>
-            <Row gutter={[25, 0]}>
+            <Row gutter={[25, 16]}>
               {field.fields.map((subField, subIndex) =>
                 renderField(subField, `${index}-${subIndex}`),
               )}
@@ -75,6 +96,7 @@ const FormComponent = forwardRef(
               type="cita"
               componentType={field.componentType}
               form={form}
+              required={field.required}
               {...field.props}
               showHourField={showHourField}
               isPaymentRequired={isPaymentRequired}
@@ -127,10 +149,9 @@ const FormComponent = forwardRef(
             }
           >
             <InputField
+              {...field}
               type={isPhoneField ? 'phoneNumber' : field.type}
               selectedPatient={selectedPatient}
-              label={field.label}
-              options={field.options || []}
               isPhoneField={isPhoneField}
               isPhoneRequired={isPhoneRequired}
               togglePhoneRequired={togglePhoneRequired}
@@ -142,52 +163,37 @@ const FormComponent = forwardRef(
     };
 
     return (
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: '#FFFFFFFF',
-            colorBgContainer: '#444444',
-            colorText: '#FFFFFFFF',
-            colorBorder: '#444',
-            controlOutline: 'none',
-            fontFamily: 'sans-serif',
-          },
-        }}
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onSubmit}
+        className={styles.formContainer}
+        ref={ref}
       >
-        <div className={styles.container}>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={onSubmit}
-            className={styles.formContainer}
-            ref={ref}
-          >
-            <Row gutter={[20, 0]}>
-              {fields.map((field, index) => renderField(field, index))}
-            </Row>
+          <Row gutter={[20, 8]}>
+            {fields.map((field, index) => renderField(field, index))}
+          </Row>
 
-            <Form.Item className={styles.buttonGroup}>
-              <div className={styles.buttonWrapper}>
-                <Button
-                  htmlType="button"
-                  className={styles.buttonCancel}
-                  onClick={onCancel}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="primary"
-                  className={styles.buttonSubmit}
-                  loading={loading}
-                  onClick={() => form.submit()}
-                >
-                  {mode === 'edit' ? 'Actualizar' : 'Registrar'}
-                </Button>
-              </div>
-            </Form.Item>
-          </Form>
-        </div>
-      </ConfigProvider>
+          <Form.Item className={styles.buttonGroup}>
+            <div className={styles.buttonWrapper}>
+              <Button
+                htmlType="button"
+                className={styles.buttonCancel}
+                onClick={onCancel}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="primary"
+                className={styles.buttonSubmit}
+                loading={loading}
+                onClick={() => form.submit()}
+              >
+                {mode === 'edit' ? 'Actualizar' : 'Registrar'}
+              </Button>
+            </div>
+          </Form.Item>
+      </Form>
     );
   },
 );

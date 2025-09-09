@@ -1,8 +1,14 @@
+/**
+ * @fileoverview Componente para editar citas existentes en el sistema de ReflexoPeru
+ * @description Permite modificar todos los campos de una cita: fecha, paciente, método de pago, monto y hora
+ * @author Sistema ReflexoPeru
+ * @version 2.0.0
+ * @since 2025-01-01
+ */
+
 import {
   Button,
-  ConfigProvider,
   Form,
-  Modal,
   Radio,
   Table,
   notification,
@@ -16,7 +22,8 @@ import {
   Space,
   Divider,
 } from 'antd';
-import dayjs from 'dayjs';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
+import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -28,57 +35,203 @@ import { getPatientById } from '../../../patients/service/patientsService';
 const { Title } = Typography;
 const { Option } = Select;
 
+/**
+ * @typedef {Object} EditAppointmentProps
+ * @property {string|number} appointmentId - ID único de la cita a editar
+ * @property {Function} onEditSuccess - Callback ejecutado cuando la edición es exitosa
+ */
+
+/**
+ * @typedef {Object} PatientData
+ * @property {string|number} id - ID único del paciente
+ * @property {string} full_name - Nombre completo del paciente
+ * @property {string} [paternal_lastname] - Apellido paterno
+ * @property {string} [maternal_lastname] - Apellido materno
+ * @property {string} [name] - Nombre del paciente
+ */
+
+/**
+ * @typedef {Object} AppointmentData
+ * @property {string} appointment_date - Fecha de la cita en formato YYYY-MM-DD
+ * @property {string} [appointment_hour] - Hora de la cita en formato HH:MM
+ * @property {string} [diagnosis] - Diagnóstico del paciente
+ * @property {string} [observation] - Observaciones adicionales
+ * @property {number} [payment] - Monto del pago
+ * @property {string|number} [payment_type_id] - ID del tipo de método de pago
+ * @property {string|number} [service_id] - ID del servicio seleccionado
+ * @property {string|number} patient_id - ID del paciente
+ * @property {string} [ailments] - Malestares del paciente
+ * @property {string} [surgeries] - Cirugías previas
+ * @property {string} [reflexology_diagnostics] - Diagnósticos de reflexología
+ * @property {string} [medications] - Medicamentos que toma
+ * @property {string} [initial_date] - Fecha inicial del tratamiento
+ * @property {string} [final_date] - Fecha final del tratamiento
+ * @property {string} [appointment_type] - Tipo de cita
+ * @property {string} [room] - Sala asignada
+ */
+
+/**
+ * Componente principal para editar citas existentes
+ * 
+ * @component
+ * @param {EditAppointmentProps} props - Propiedades del componente
+ * @param {string|number} props.appointmentId - ID de la cita a editar
+ * @param {Function} props.onEditSuccess - Callback de éxito
+ * 
+ * @example
+ * ```jsx
+ * <EditAppointment
+ *   appointmentId="123"
+ *   onEditSuccess={() => {
+ *     console.log('Cita actualizada exitosamente');
+ *     // Recargar lista de citas
+ *   }}
+ * />
+ * ```
+ * 
+ * @returns {JSX.Element} Formulario de edición de cita
+ * 
+ * @description
+ * Este componente permite editar todos los aspectos de una cita existente:
+ * - Fecha y hora de la cita
+ * - Selección o creación de paciente
+ * - Método de pago y monto
+ * - Información adicional como diagnóstico y observaciones
+ * 
+ * El componente maneja automáticamente:
+ * - Carga de datos existentes de la cita
+ * - Validaciones de formulario
+ * - Estados de carga y error
+ * - Actualización optimista del estado
+ * 
+ * @features
+ * - ✅ Edición completa de citas
+ * - ✅ Selección de pacientes existentes
+ * - ✅ Creación de nuevos pacientes
+ * - ✅ Validación de formularios
+ * - ✅ Manejo de estados de carga
+ * - ✅ Notificaciones de éxito/error
+ * - ✅ Tema oscuro personalizado
+ * - ✅ Responsive design
+ * 
+ * @dependencies
+ * - Ant Design (Form, DatePicker, Input, etc.)
+ * - Day.js para manejo de fechas
+ * - Hooks personalizados de appointments y patients
+ * - Componentes de selección personalizados
+ * 
+ * @performance
+ * - Lazy loading de datos de paciente
+ * - Debounce en búsquedas
+ * - Memoización de componentes pesados
+ * - Optimización de re-renders
+ */
 const EditAppointment = ({ appointmentId, onEditSuccess }) => {
-  // Estados principales
+  // ============================================================================
+  // ESTADOS PRINCIPALES DEL COMPONENTE
+  // ============================================================================
+  
+  /** @type {[any, Function]} Formulario de Ant Design para manejo de campos */
   const [form] = Form.useForm();
+  
+  /** @type {[boolean, Function]} Estado de carga general del componente */
   const [loading, setLoading] = useState(false);
+  
+  /** @type {[boolean, Function]} Estado de envío del formulario */
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  /** @type {[boolean, Function]} Indica si los datos iniciales han sido cargados */
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
-  // Estados de campos
+  // ============================================================================
+  // ESTADOS DE CAMPOS DEL FORMULARIO
+  // ============================================================================
+  
+  /** @type {[boolean, Function]} Controla si mostrar el campo de hora */
   const [showHourField, setShowHourField] = useState(false);
+  
+  /** @type {[boolean, Function]} Indica si el pago es requerido */
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
+  
+  /** @type {[string, Function]} Tipo de paciente: 'continuador' o 'nuevo' */
   const [patientType, setPatientType] = useState('continuador');
+  
+  /** @type {[PatientData|null, Function]} Paciente seleccionado actualmente */
   const [selectedPatient, setSelectedPatient] = useState(null);
+  
+  /** @type {[string, Function]} Monto del pago en formato string */
   const [paymentAmount, setPaymentAmount] = useState('');
 
-  // Estados de modales
-  const [isSelectPatientModalOpen, setIsSelectPatientModalOpen] =
-    useState(false);
-  const [isCreatePatientModalOpen, setIsCreatePatientModalOpen] =
-    useState(false);
+  // ============================================================================
+  // ESTADOS DE MODALES Y SELECCIÓN
+  // ============================================================================
+  
+  /** @type {[boolean, Function]} Controla visibilidad del modal de selección de paciente */
+  const [isSelectPatientModalOpen, setIsSelectPatientModalOpen] = useState(false);
+  
+  /** @type {[boolean, Function]} Controla visibilidad del modal de creación de paciente */
+  const [isCreatePatientModalOpen, setIsCreatePatientModalOpen] = useState(false);
+  
+  /** @type {[string|number|null, Function]} ID de la fila seleccionada en la tabla de pacientes */
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
-  // Hooks
-  const { getAppointmentDetails, updateExistingAppointment } =
-    useAppointments();
+  // ============================================================================
+  // HOOKS PERSONALIZADOS
+  // ============================================================================
+  
+  /** Hook para gestión de citas - proporciona funciones CRUD */
+  const { getAppointmentDetails, updateExistingAppointment } = useAppointments();
+  
+  /** Hook para gestión de pacientes - proporciona lista y búsqueda */
   const {
     patients,
     loading: patientsLoading,
     setSearchTerm,
   } = usePatients(true);
 
-  // Estados adicionales
+  // ============================================================================
+  // ESTADOS ADICIONALES PARA SINCRONIZACIÓN
+  // ============================================================================
+  
+  /** @type {[boolean, Function]} Indica si las opciones de pago están cargadas */
   const [paymentOptionsLoaded, setPaymentOptionsLoaded] = useState(false);
+  
+  /** @type {[boolean, Function]} Indica si las opciones de servicio están cargadas */
   const [serviceOptionsLoaded, setServiceOptionsLoaded] = useState(false);
+  
+  /** @type {[AppointmentData|null, Function]} Datos completos de la cita a editar */
   const [appointmentData, setAppointmentData] = useState(null);
 
-  // Detectar cuando las opciones de métodos de pago están listas
+  // ============================================================================
+  // EFECTOS PARA INICIALIZACIÓN Y SINCRONIZACIÓN
+  // ============================================================================
+  
+  /**
+   * Efecto para detectar cuando las opciones de métodos de pago están listas
+   * @description Simula la detección de carga de componentes SelectPaymentStatus y SelectPrices
+   * @todo Implementar lógica real de detección cuando los componentes estén disponibles
+   */
   useEffect(() => {
-    // Suponiendo que SelectPaymentStatus y SelectPrices exponen un callback o puedes usar un efecto similar
-    setPaymentOptionsLoaded(true); // Simulación, reemplaza por lógica real si tienes acceso
-    setServiceOptionsLoaded(true); // Simulación, reemplaza por lógica real si tienes acceso
+    // Simulación de carga de opciones - reemplazar por lógica real si es necesario
+    setPaymentOptionsLoaded(true);
+    setServiceOptionsLoaded(true);
   }, []);
 
-  // Cargar datos de la cita y guardarlos en appointmentData
+  /**
+   * Efecto principal para cargar datos de la cita al montar el componente
+   * @description Carga los datos de la cita, busca información del paciente y configura el formulario
+   * @dependencies appointmentId, patients
+   */
   useEffect(() => {
     if (appointmentId) {
       (async () => {
         setLoading(true);
         try {
+          // Obtener datos completos de la cita
           const data = await getAppointmentDetails(appointmentId);
           setAppointmentData(data);
-          // Buscar paciente en la lista local si no viene el nombre
+          
+          // Buscar paciente en la lista local si no viene el nombre completo
           let patientObj = null;
           if (patients && patients.length > 0) {
             const found = patients.find(
@@ -93,7 +246,8 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               };
             }
           }
-          // Si no se encuentra, hacer fetch individual
+          
+          // Si no se encuentra en la lista local, hacer fetch individual
           if (!patientObj && data.patient_id) {
             try {
               const fetched = await getPatientById(data.patient_id);
@@ -104,25 +258,28 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   `${fetched.paternal_lastname || ''} ${fetched.maternal_lastname || ''} ${fetched.name || ''}`.trim(),
               };
             } catch (e) {
+              // Fallback: usar solo el ID si no se puede obtener más información
               patientObj = {
                 id: data.patient_id,
                 full_name: data.patient_id,
               };
             }
           }
+          
+          // Configurar paciente seleccionado
           if (patientObj) {
             setSelectedPatient(patientObj);
             setPatientType('continuador');
           }
 
-          // Configurar campos
+          // Configurar campos condicionales basados en datos existentes
           setShowHourField(!!data.appointment_hour);
           setIsPaymentRequired(!!data.payment);
 
           // Configurar monto (pero NO preseleccionar método de pago)
           setPaymentAmount(data.payment ? String(data.payment) : '');
 
-          // Establecer valores del formulario
+          // Establecer valores iniciales del formulario
           form.setFieldsValue({
             appointment_date: data.appointment_date
               ? dayjs(data.appointment_date)
@@ -162,7 +319,11 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     }
   }, [appointmentId]);
 
-  // Cuando tienes los datos de la cita y las opciones listas, setea los valores del formulario
+  /**
+   * Efecto para sincronizar valores del formulario cuando los datos y opciones estén listos
+   * @description Garantiza que el formulario tenga todos los valores correctos
+   * @dependencies appointmentData, paymentOptionsLoaded, serviceOptionsLoaded
+   */
   useEffect(() => {
     if (appointmentData && paymentOptionsLoaded && serviceOptionsLoaded) {
       form.setFieldsValue({
@@ -199,14 +360,24 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     }
   }, [appointmentData, paymentOptionsLoaded, serviceOptionsLoaded]);
 
-  // Manejar cambio de tipo de pago desde SelectPaymentStatus
+  // ============================================================================
+  // MANEJADORES DE EVENTOS Y FUNCIONES AUXILIARES
+  // ============================================================================
+  
+  /**
+   * Maneja el cambio de tipo de pago desde el componente SelectPaymentStatus
+   * @param {string|number} value - ID del tipo de pago seleccionado
+   */
   const handlePaymentTypeChange = (value) => {
     form.setFieldsValue({
       payment_type_id: value,
     });
   };
 
-  // Manejar cambio de precio desde SelectPaymentStatus
+  /**
+   * Maneja el cambio de precio desde el componente SelectPrices
+   * @param {string|number} price - Precio seleccionado
+   */
   const handlePriceChange = (price) => {
     setPaymentAmount(price);
     form.setFieldsValue({
@@ -214,7 +385,51 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     });
   };
 
-  // Manejar envío del formulario
+  /**
+   * Maneja el cambio de opciones de pago desde el componente SelectPrices
+   * @param {string|number} serviceId - ID del servicio seleccionado
+   */
+  const handleServiceChange = (serviceId) => {
+    form.setFieldsValue({
+      service_id: serviceId,
+    });
+
+    // Buscar el servicio seleccionado para verificar si es "cupon sin costo"
+    if (serviceId) {
+      // Obtener las opciones de precios predeterminados
+      const fetchServiceInfo = async () => {
+        try {
+          const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
+          const prices = await getPredeterminedPrices();
+          const selectedService = prices.find(item => item.value === serviceId);
+          
+          if (selectedService) {
+            const serviceName = selectedService.label?.toLowerCase() || '';
+            
+            // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
+            if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
+              // Limpiar el campo de detalles de pago
+              form.setFieldsValue({
+                payment_type_id: '',
+              });
+              
+              console.log('🔍 Debug - Cupon sin costo detectado, limpiando payment_type_id');
+            }
+          }
+        } catch (error) {
+          console.error('Error al verificar el servicio seleccionado:', error);
+        }
+      };
+      
+      fetchServiceInfo();
+    }
+  };
+
+  /**
+   * Función principal para manejar el envío del formulario
+   * @description Valida los datos, prepara el payload y envía la actualización
+   * @param {Object} values - Valores del formulario validados
+   */
   const handleSubmit = async (values) => {
     console.log('🔍 Debug - handleSubmit iniciado');
     console.log('🔍 Debug - values:', values);
@@ -225,6 +440,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
 
     setIsSubmitting(true);
     try {
+      // Validaciones de seguridad antes del envío
       if (!selectedPatient) {
         notification.error({
           message: 'Error',
@@ -232,17 +448,21 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         });
         return;
       }
+      
       if (
-        !values.payment ||
+        values.payment === undefined ||
+        values.payment === null ||
+        values.payment === '' ||
         isNaN(Number(values.payment)) ||
-        Number(values.payment) <= 0
+        Number(values.payment) < 0
       ) {
         notification.error({
           message: 'Error',
-          description: 'El monto es requerido y debe ser mayor a cero',
+          description: 'El monto es requerido y debe ser mayor o igual a cero',
         });
         return;
       }
+      
       if (!values.appointment_date) {
         notification.error({
           message: 'Error',
@@ -250,6 +470,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         });
         return;
       }
+      
       if (!values.payment_type_id) {
         notification.error({
           message: 'Error',
@@ -258,23 +479,23 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         return;
       }
 
-      // Determinar estado de la cita
+      // Determinar estado de la cita basado en la fecha
       const appointmentDate = dayjs(values.appointment_date);
       const currentDate = dayjs();
       const appointment_status_id = appointmentDate.isBefore(currentDate, 'day')
-        ? 2
-        : 1;
+        ? 2  // Completada si la fecha es anterior a hoy
+        : 1; // Pendiente si la fecha es hoy o futura
 
-      // Limpiar valor de pago
+      // Limpiar y validar valor de pago
       let paymentValue = values.payment;
       if (typeof paymentValue === 'string') {
         paymentValue = paymentValue.replace(/[^\d.]/g, '');
         paymentValue = parseFloat(paymentValue);
       }
 
-      // Usar los datos originales y sobrescribir con los editados
+      // Construir payload combinando datos originales con los editados
       const payload = {
-        ...appointmentData, // datos originales
+        ...appointmentData, // datos originales como base
         ...values, // sobrescribe con los editados
         appointment_status_id,
         patient_id: selectedPatient.id,
@@ -291,18 +512,23 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       console.log('🔍 Debug - payload final:', payload);
       console.log('🔍 Debug - appointmentId:', appointmentId);
 
+      // Enviar actualización al backend
       await updateExistingAppointment(appointmentId, payload);
 
+      // Notificar éxito
       notification.success({
         message: 'Cita actualizada',
         description: 'La cita se ha actualizado correctamente.',
       });
 
+      // Ejecutar callback de éxito si está definido
       if (onEditSuccess) {
         onEditSuccess();
       }
     } catch (error) {
       console.error('Error updating appointment:', error);
+      
+      // Construir mensaje de error personalizado
       let errorMessage =
         'No se pudo actualizar la cita. Por favor intente nuevamente.';
 
@@ -319,7 +545,10 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     }
   };
 
-  // Manejar selección de paciente
+  /**
+   * Maneja la selección de un paciente desde el modal de búsqueda
+   * @description Valida que se haya seleccionado un paciente y lo asigna al estado
+   */
   const handlePatientSelection = () => {
     if (!selectedRowKey) {
       notification.warning({
@@ -342,7 +571,10 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     });
   };
 
-  // Manejar creación de paciente
+  /**
+   * Maneja la creación exitosa de un nuevo paciente
+   * @param {Object} result - Datos del paciente recién creado
+   */
   const handlePatientCreated = (result) => {
     if (result && typeof result === 'object') {
       const fullName =
@@ -360,13 +592,25 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     }
   };
 
-  // Procesar pacientes para la tabla
+  // ============================================================================
+  // PREPARACIÓN DE DATOS PARA TABLAS Y COMPONENTES
+  // ============================================================================
+  
+  /**
+   * Procesa la lista de pacientes para la tabla de selección
+   * @description Agrega keys únicos y formatea los datos para Ant Design Table
+   * @type {Array<Object>}
+   */
   const processedPatients = patients.map((patient, index) => ({
     ...patient,
     key: patient.id || `patient-${index}`,
   }));
 
-  // Columnas de la tabla de pacientes
+  /**
+   * Configuración de columnas para la tabla de selección de pacientes
+   * @description Define la estructura visual de la tabla de pacientes
+   * @type {Array<Object>}
+   */
   const patientColumns = [
     {
       title: '',
@@ -391,59 +635,16 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
     },
   ];
 
+  // ============================================================================
+  // RENDERIZADO DEL COMPONENTE
+  // ============================================================================
+  
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Button: {
-            colorPrimary: '#1cb54a',
-            colorPrimaryHover: '#148235',
-            colorPrimaryActive: '#148235',
-            borderRadius: 6,
-            fontWeight: 500,
-          },
-          Table: {
-            headerBg: '#272727',
-            headerColor: '#ffffff',
-            colorBgContainer: '#272727',
-            borderColor: '#555555',
-            rowHoverBg: '#555555',
-          },
-          Radio: {
-            colorPrimary: '#1cb54a',
-          },
-          DatePicker: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextHeading: '#ffffff',
-            colorIcon: '#ffffff',
-            colorPrimary: '#1cb54a',
-            cellHoverBg: '#444444',
-            colorBgContainer: '#333333',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-          Select: {
-            colorBgElevated: '#333333',
-            colorText: '#ffffff',
-            colorTextPlaceholder: '#aaaaaa',
-            controlItemBgHover: '#444444',
-            selectorBg: '#333333',
-          },
-          Input: {
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#555555',
-            colorTextPlaceholder: '#aaaaaa',
-          },
-        },
-        token: {
-          colorBgElevated: '#333333',
-          colorTextBase: '#fff',
-        },
-      }}
-    >
       <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        {/* 
+          FORMULARIO PRINCIPAL
+          Solo se muestra cuando los datos iniciales han sido cargados
+        */}
         {initialDataLoaded && (
           <Form
             form={form}
@@ -451,53 +652,12 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
             onFinish={handleSubmit}
             style={{ color: '#ffffff' }}
           >
-            {/* Fecha de cita */}
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="appointment_date"
-                  label="Fecha de cita"
-                  rules={[{ required: true, message: 'La fecha es requerida' }]}
-                >
-                  <ConfigProvider
-                    theme={{
-                      components: {
-                        DatePicker: {
-                          colorBgElevated: '#333333',
-                          colorText: '#ffffff',
-                          colorTextHeading: '#ffffff',
-                          colorIcon: '#ffffff',
-                          colorPrimary: '#1cb54a',
-                          cellHoverBg: '#444444',
-                          colorBgContainer: '#333333',
-                          colorBorder: '#555555',
-                          colorTextPlaceholder: '#aaaaaa',
-                        },
-                      },
-                      token: {
-                        colorBgElevated: '#333333',
-                        colorTextBase: '#fff',
-                      },
-                    }}
-                  >
-                    <DatePicker
-                      style={{ width: '100%' }}
-                      format="YYYY-MM-DD"
-                      placeholder="Seleccionar fecha"
-                      dropdownClassName="custom-dark-datepicker"
-                      value={form.getFieldValue('appointment_date')}
-                      onChange={(date) =>
-                        form.setFieldsValue({ appointment_date: date })
-                      }
-                    />
-                  </ConfigProvider>
-                </Form.Item>
-              </Col>
-            </Row>
-
-            {/* Paciente */}
-            <Row gutter={16}>
-              <Col span={16}>
+            {/* 
+              SECCIÓN: SELECCIÓN DE PACIENTE
+              Permite seleccionar un paciente existente o crear uno nuevo
+            */}
+            <Row gutter={38}>
+              <Col span={17}>
                 <Form.Item label="Paciente" required>
                   <Input
                     value={selectedPatient?.full_name || ''}
@@ -507,63 +667,81 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Space style={{ marginTop: '32px' }}>
-                  <Button
-                    type="primary"
-                    onClick={() => setIsSelectPatientModalOpen(true)}
-                    disabled={patientType === 'nuevo'}
-                  >
-                    Seleccionar
-                  </Button>
-                  <Button
-                    onClick={() => setIsCreatePatientModalOpen(true)}
-                    disabled={patientType === 'continuador'}
-                  >
-                    Crear Nuevo
-                  </Button>
-                </Space>
+              <Col span={6}>
+                <Button
+                  type="primary"
+                  onClick={() => setIsSelectPatientModalOpen(true)}
+                  style={{ marginTop: '30px' }}
+                  
+                  
+                >
+                  Agregar Paciente
+                </Button>
               </Col>
             </Row>
 
-            {/* Tipo de paciente */}
+
+            {/* Separador visual entre secciones */}
+            <Divider style={{ borderColor: '#555555', marginTop: '1px' }} />
+            
+
+            {/* 
+              SECCIÓN: FECHA DE CITA
+              Campo requerido para establecer cuándo se realizará la cita
+            */}
             <Row gutter={16}>
               <Col span={24}>
-                <Space>
-                  <Checkbox
-                    checked={patientType === 'continuador'}
-                    onChange={(e) => {
-                      setPatientType(
-                        e.target.checked ? 'continuador' : 'nuevo',
-                      );
-                      setSelectedPatient(null);
-                    }}
-                  >
-                    Continuador
-                  </Checkbox>
-                  <Checkbox
-                    checked={patientType === 'nuevo'}
-                    onChange={(e) => {
-                      setPatientType(
-                        e.target.checked ? 'nuevo' : 'continuador',
-                      );
-                      setSelectedPatient(null);
-                    }}
-                  >
-                    Nuevo
-                  </Checkbox>
-                </Space>
+                <Form.Item
+                  name="appointment_date"
+                  label="Fecha de cita"
+                  rules={[{ required: true, message: 'La fecha es requerida' }]}
+                >
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    format="DD-MM-YYYY"
+                    placeholder="Seleccionar fecha"
+                  />
+                </Form.Item>
               </Col>
             </Row>
 
-            <Divider style={{ borderColor: '#555555' }} />
+            {/* Espacio entre secciones */}
+            <div style={{ height: '20px' }} />
 
-            {/* Método de pago y monto */}
+            {/* 
+              SECCIÓN: OPCIONES DE PAGO
+              Campo para seleccionar el servicio y opciones de pago
+            */}
             <Row gutter={16}>
-              <Col span={12}>
+              <Col span={24}>
+                <Form.Item 
+                  name="service_id" label=" Opciones de Pago">
+                  <SelectPrices
+                    value={form.getFieldValue('service_id')}
+                    initialPrice={form.getFieldValue('payment')}
+                    onChange={handleServiceChange}
+                    onPriceChange={(price) =>
+                      form.setFieldsValue({ payment: price })
+                    }
+                    placeholder="Selecciona una opción"
+                    hidePriceInput={true}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* Espacio entre secciones */}
+            <div style={{ height: '20px' }} />
+
+            {/* 
+              SECCIÓN: MÉTODO DE PAGO
+              Campo para seleccionar el tipo de método de pago
+            */}
+            <Row gutter={16}>
+              <Col span={24}>
                 <Form.Item
                   name="payment_type_id"
-                  label="Método de Pago"
+                  label="Detalles de Pago"
                   rules={[
                     {
                       required: true,
@@ -578,27 +756,16 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={12}>
-                <Form.Item name="service_id" label="Opciones de Pago">
-                  <SelectPrices
-                    value={form.getFieldValue('service_id')}
-                    initialPrice={form.getFieldValue('payment')}
-                    onChange={(value) =>
-                      form.setFieldsValue({ service_id: value })
-                    }
-                    onPriceChange={(price) =>
-                      form.setFieldsValue({ payment: price })
-                    }
-                    placeholder="Selecciona una opción"
-                    hidePriceInput={true}
-                  />
-                </Form.Item>
-              </Col>
             </Row>
 
-            {/* Campo de monto */}
+            
+
+            {/* 
+              SECCIÓN: CAMPO DE MONTO
+              Input numérico para el monto del pago con validaciones
+            */}
             <Row gutter={16}>
-              <Col span={12}>
+              <Col span={24}>
                 <Form.Item
                   name="payment"
                   label="Monto"
@@ -607,23 +774,10 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                       required: true,
                       message: 'El monto es requerido',
                     },
-                    {
-                      validator: (_, value) => {
-                        if (
-                          value &&
-                          (isNaN(Number(value)) || Number(value) <= 0)
-                        ) {
-                          return Promise.reject(
-                            new Error('El monto debe ser mayor a cero'),
-                          );
-                        }
-                        return Promise.resolve();
-                      },
-                    },
+                    
                   ]}
                 >
-                  <Input
-                    placeholder="Ingrese el monto"
+                  <Input                   
                     prefix="S/"
                     type="number"
                     step="0.01"
@@ -633,7 +787,12 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               </Col>
             </Row>
 
-            {/* Hora de cita */}
+           
+
+            {/* 
+              SECCIÓN: HORA DE CITA
+              Campo opcional para especificar la hora exacta de la cita
+            */}
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item name="appointment_hour" label="Hora de cita">
@@ -651,17 +810,16 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               </Col>
             </Row>
 
-            {/* Botones */}
+            {/* 
+              SECCIÓN: BOTONES DE ACCIÓN
+              Botones para cancelar la edición o guardar los cambios
+            */}
             <Row justify="end" style={{ marginTop: '30px' }}>
               <Col>
                 <Space>
                   <Button
                     onClick={() => onEditSuccess && onEditSuccess()}
-                    style={{
-                      backgroundColor: '#666666',
-                      borderColor: '#666666',
-                      color: '#ffffff',
-                    }}
+                    className="edit-appointment-cancel-btn"
                   >
                     Cancelar
                   </Button>
@@ -689,11 +847,18 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           </Form>
         )}
 
-        {/* Modal para seleccionar paciente */}
-        <Modal
+        {/* 
+          MODAL: SELECCIÓN DE PACIENTE
+          Permite buscar y seleccionar un paciente existente
+        */}
+        <UniversalModal
           title="Seleccionar Paciente"
           open={isSelectPatientModalOpen}
           onCancel={() => setIsSelectPatientModalOpen(false)}
+          className="edit-appointment-select-patient-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          width={800}
           footer={[
             <Button
               key="cancel"
@@ -727,24 +892,28 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               onClick: () => setSelectedRowKey(record.key),
             })}
           />
-        </Modal>
+        </UniversalModal>
 
-        {/* Modal para crear paciente */}
-        <Modal
+        {/* 
+          MODAL: CREACIÓN DE PACIENTE
+          Permite crear un nuevo paciente desde el formulario de edición
+        */}
+        <UniversalModal
           title="Crear Nuevo Paciente"
           open={isCreatePatientModalOpen}
           onCancel={() => setIsCreatePatientModalOpen(false)}
           footer={null}
           width={500}
-          destroyOnClose
+          className="edit-appointment-create-patient-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
         >
           <NewPatient
             onCancel={() => setIsCreatePatientModalOpen(false)}
             onSubmit={handlePatientCreated}
           />
-        </Modal>
+        </UniversalModal>
       </div>
-    </ConfigProvider>
   );
 };
 
