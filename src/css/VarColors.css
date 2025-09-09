@@ -17,6 +17,7 @@
   --color-background-tertiary: var(--current-bg-tertiary);
   --color-background-quaternary: var(--current-bg-quaternary);
   --color-background-elevated: var(--current-bg-elevated);
+  --color-background-layout: var(--current-bg-layout);
   
   --color-text-primary: var(--current-text-primary);
   --color-text-secondary: var(--current-text-secondary);
@@ -102,6 +103,7 @@
   --current-bg-tertiary: #f1f3f4;
   --current-bg-quaternary: #e9ecef;
   --current-bg-elevated: #ffffff;
+  --current-bg-layout: rgb(183, 184, 185);
   
   --current-text-primary: #333333;
   --current-text-secondary: #666666;
@@ -131,6 +133,7 @@
   --current-bg-tertiary: #2c2c2c;
   --current-bg-quaternary: #333333;
   --current-bg-elevated: #2a2a2a;
+  --current-bg-layout: #1a1a1a;
   
   --current-text-primary: #ffffff;
   --current-text-secondary: #e5e5e7;

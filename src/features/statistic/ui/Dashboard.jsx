@@ -7,7 +7,7 @@ import DashboardFilters from './DashboardFilters';
 import DashboardMetrics from './DashboardMetrics';
 import DashboardMainChart from './DashboardMainChart';
 import DashboardBottomSection from './DashboardBottomSection';
-import { Spin, ConfigProvider } from 'antd';
+import { Spin } from 'antd';
 import { useTheme } from '../../../context/ThemeContext';
 
 // Usar configuración de tema global y solo ajustar mínimos si hace falta
@@ -199,8 +199,7 @@ export default function PerformanceDashboard() {
   };
 
   return (
-    <ConfigProvider theme={antdTheme}>
-      <div className={Style.dashboardContainer}>
+    <div className={Style.dashboardContainer}>
         <DashboardFilters
           timeFilter={timeFilter}
           handleTimeFilterChange={handleTimeFilterChange}
@@ -244,6 +243,5 @@ export default function PerformanceDashboard() {
           </>
         )}
       </div>
-    </ConfigProvider>
   );
 }

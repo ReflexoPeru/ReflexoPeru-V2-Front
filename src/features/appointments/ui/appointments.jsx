@@ -15,6 +15,7 @@ import {
 } from '../../history/service/historyService';
 import { useAppointments } from '../hook/appointmentsHook';
 import EditAppointment from '../ui/EditAppointment/EditAppointment';
+import UniversalModal from '../../../components/Modal/UniversalModal';
 import { deleteAppointment } from '../service/appointmentsService';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
@@ -60,7 +61,7 @@ export default function Appointments() {
       title: 'Nro Ticket',
       dataIndex: 'ticket_number',
       key: 'ticket_number',
-      width: '75px',
+      width: '60px',
     },
     {
       title: 'Paciente',
@@ -118,15 +119,19 @@ export default function Appointments() {
     {
       title: 'Acciones',
       key: 'actions',
-      width: '150px',
+      width: '450px',
       render: (_, record) => (
         <Space size="small">
           <Button
+            size="small"
             style={{
               backgroundColor: '#555555',
               color: '#fff',
               border: 'none',
-              minWidth: 80,
+              minWidth: 70,
+              height: 30,
+              padding: '4px 12px',
+              fontSize: '13px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -146,20 +151,36 @@ export default function Appointments() {
             )}
           </Button>
           <Button
+            size="small"
             style={{
               backgroundColor: '#00AA55',
               color: '#fff',
               border: 'none',
+              minWidth: 90,
+              height: 30,
+              padding: '4px 12px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => handleAction('history', record)}
           >
             Rellenar Historia
           </Button>
           <Button
+            size="small"
             style={{
               backgroundColor: '#0066FF',
               color: '#fff',
               border: 'none',
+              minWidth: 70,
+              height: 30,
+              padding: '4px 12px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => handleAction('imprimir', record)}
             disabled={loadingPrintFichaId === record.id}
@@ -171,10 +192,18 @@ export default function Appointments() {
             )}
           </Button>
           <Button
+            size="small"
             style={{
               backgroundColor: '#69276F',
               color: '#fff',
               border: 'none',
+              minWidth: 100,
+              height: 30,
+              padding: '4px 12px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => handleAction('boleta', record)}
             disabled={loadingPrintTicketId === record.id}
@@ -186,10 +215,18 @@ export default function Appointments() {
             )}
           </Button>
           <Button
+            size="small"
             style={{
               backgroundColor: '#FF3333',
               color: '#fff',
               border: 'none',
+              minWidth: 70,
+              height: 30,
+              padding: '4px 12px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => handleAction('delete', record)}
             disabled={loadingDeleteId === record.id}
@@ -404,7 +441,7 @@ export default function Appointments() {
       </Modal>
 
       {/* Modal para editar cita */}
-      <Modal
+      <UniversalModal
         title="Editar Cita"
         open={isEditModalOpen}
         onCancel={() => setIsEditModalOpen(false)}
@@ -421,7 +458,7 @@ export default function Appointments() {
             }}
           />
         )}
-      </Modal>
+      </UniversalModal>
     </div>
   );
 }

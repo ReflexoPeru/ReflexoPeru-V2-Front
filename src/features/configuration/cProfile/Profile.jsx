@@ -7,7 +7,6 @@ import {
   Image,
   message,
   Form,
-  ConfigProvider,
   Input as AntdInput,
 } from 'antd';
 import {
@@ -258,8 +257,7 @@ const Profile = () => {
   const { antdTheme } = useTheme();
 
   return (
-    <ConfigProvider theme={antdTheme}>
-      <div className={styles.body}>
+    <div className={styles.body}>
         <div className={styles.layout}>
           <aside className={styles.sidebar}>{/* Sidebar content */}</aside>
 
@@ -466,7 +464,6 @@ const Profile = () => {
           loading={newPasswordLoading}
         />
       </div>
-    </ConfigProvider>
   );
 };
 

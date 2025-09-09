@@ -1,7 +1,6 @@
 import {
   Button,
   Form,
-  Modal,
   Radio,
   Table,
   notification,
@@ -16,6 +15,7 @@ import {
   Space,
   Divider,
 } from 'antd';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 import dayjs from '../../../../utils/dayjsConfig';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -649,40 +649,18 @@ const NewAppointment = () => {
         </Form>
 
         {/* MODAL SELECCIONAR CONTRIBUIDOR */}
-        <Modal
+        <UniversalModal
           title="Seleccionar Contribuidor"
           open={isModalVisible}
           centered
           width={700}
           onCancel={handleCancelSelectModal}
-          styles={{
-            header: {
-              backgroundColor: 'var(--color-background-primary)',
-              color: 'var(--color-text-primary)',
-              borderBottom: '1px solid var(--color-border-primary)'
-            },
-            body: {
-              backgroundColor: 'var(--color-background-primary)',
-              color: 'var(--color-text-primary)',
-              padding: 'var(--spacing-xl)',
-              minHeight: '500px',
-              overflow: 'hidden'
-            },
-            footer: {
-              backgroundColor: 'var(--color-background-primary)',
-              borderTop: '1px solid var(--color-border-primary)'
-            }
-          }}
+          className="select-contributor-modal modal-themed"
+          destroyOnClose={true}
           footer={[
             <Button 
               key="cancel" 
               onClick={handleCancelSelectModal}
-              style={{
-                backgroundColor: 'var(--color-background-secondary)',
-                borderColor: 'var(--color-border-primary)',
-                color: 'var(--color-text-primary)',
-                fontFamily: 'var(--font-family)'
-              }}
             >
               Cancelar
             </Button>,
@@ -747,28 +725,18 @@ const NewAppointment = () => {
               color: 'var(--color-text-primary)'
             }}
           />
-        </Modal>
+        </UniversalModal>
 
         {/* MODAL NUEVO PACIENTE */}
-        <Modal
+        <UniversalModal
           title="Crear Nuevo Paciente"
           open={isCreatePatientModalVisible}
           onCancel={handleCancelCreateModal}
           footer={null}
           width={800}
-          destroyOnClose
-          styles={{
-            header: {
-              backgroundColor: 'var(--color-background-primary)',
-              color: 'var(--color-text-primary)',
-              borderBottom: '1px solid var(--color-border-primary)'
-            },
-            body: {
-              backgroundColor: 'var(--color-background-primary)',
-              color: 'var(--color-text-primary)',
-              overflow: 'hidden'
-            }
-          }}
+          destroyOnClose={true}
+          centered={true}
+          className="create-patient-modal modal-themed"
         >
           <NewPatient
             onCancel={handleCancelCreateModal}
@@ -813,7 +781,7 @@ const NewAppointment = () => {
               }
             }}
           />
-        </Modal>
+        </UniversalModal>
       </div>
   );
 };

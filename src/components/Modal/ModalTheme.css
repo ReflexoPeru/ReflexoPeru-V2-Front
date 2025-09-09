@@ -1,0 +1,2689 @@
+/* ================================================== */
+/* CSS GLOBAL PARA TODOS LOS MODALES - ADAPTACIÓN DE TEMA */
+/* ================================================== */
+
+/* Clases para modales con tema */
+.edit-modal-themed,
+.base-modal-profile-themed,
+.universal-modal,
+.modal-themed {
+  /* Variables de Ant Design para modales */
+  --ant-color-bg-elevated: var(--color-background-primary) !important;
+  --ant-color-text: var(--color-text-primary) !important;
+  --ant-color-text-heading: var(--color-text-primary) !important;
+  --ant-color-border: var(--color-border-primary) !important;
+  --ant-border-radius: var(--radius-lg) !important;
+}
+
+/* === CONTENIDO DEL MODAL === */
+.edit-modal-themed .ant-modal-content,
+.base-modal-profile-themed .ant-modal-content,
+.universal-modal .ant-modal-content,
+.modal-themed .ant-modal-content,
+.edit-patient-modal .ant-modal-content,
+.edit-therapist-modal .ant-modal-content,
+.info-patient-modal .ant-modal-content,
+.info-therapist-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-strong) !important;
+}
+
+/* Fuerza el fondo del modal con máxima especificidad */
+.ant-modal.edit-patient-modal .ant-modal-content,
+.ant-modal.edit-therapist-modal .ant-modal-content,
+.ant-modal.info-patient-modal .ant-modal-content,
+.ant-modal.info-therapist-modal .ant-modal-content,
+.ant-modal.modal-themed .ant-modal-content,
+.ant-modal.universal-modal .ant-modal-content {
+  background: var(--color-background-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+/* === HEADER DEL MODAL === */
+.edit-modal-themed .ant-modal-header,
+.base-modal-profile-themed .ant-modal-header,
+.universal-modal .ant-modal-header,
+.modal-themed .ant-modal-header,
+.edit-patient-modal .ant-modal-header,
+.edit-therapist-modal .ant-modal-header,
+.info-patient-modal .ant-modal-header,
+.info-therapist-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Fuerza el fondo del header con máxima especificidad */
+.ant-modal.edit-patient-modal .ant-modal-header,
+.ant-modal.edit-therapist-modal .ant-modal-header,
+.ant-modal.info-patient-modal .ant-modal-header,
+.ant-modal.info-therapist-modal .ant-modal-header,
+.ant-modal.modal-themed .ant-modal-header,
+.ant-modal.universal-modal .ant-modal-header {
+  background: var(--color-background-primary) !important;
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+/* === TÍTULO DEL MODAL === */
+.edit-modal-themed .ant-modal-title,
+.base-modal-profile-themed .ant-modal-title,
+.universal-modal .ant-modal-title,
+.modal-themed .ant-modal-title,
+.edit-patient-modal .ant-modal-title,
+.edit-therapist-modal .ant-modal-title,
+.info-patient-modal .ant-modal-title,
+.info-therapist-modal .ant-modal-title {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+  background: transparent !important;
+}
+
+/* CRÍTICO: Fuerza el título con máxima especificidad */
+.ant-modal.edit-patient-modal .ant-modal-title,
+.ant-modal.edit-therapist-modal .ant-modal-title,
+.ant-modal.info-patient-modal .ant-modal-title,
+.ant-modal.info-therapist-modal .ant-modal-title,
+.ant-modal.modal-themed .ant-modal-title,
+.ant-modal.universal-modal .ant-modal-title {
+  color: var(--color-text-primary) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* CRÍTICO: Span dentro del título del modal */
+.edit-patient-modal .ant-modal-header .ant-modal-title span,
+.edit-therapist-modal .ant-modal-header .ant-modal-title span,
+.info-patient-modal .ant-modal-header .ant-modal-title span,
+.info-therapist-modal .ant-modal-header .ant-modal-title span,
+.modal-themed .ant-modal-header .ant-modal-title span,
+.universal-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  font-family: var(--font-family) !important;
+}
+
+/* === BODY DEL MODAL === */
+.edit-modal-themed .ant-modal-body,
+.base-modal-profile-themed .ant-modal-body,
+.universal-modal .ant-modal-body,
+.modal-themed .ant-modal-body,
+.edit-patient-modal .ant-modal-body,
+.edit-therapist-modal .ant-modal-body,
+.info-patient-modal .ant-modal-body,
+.info-therapist-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  padding: 20px 24px !important;
+}
+
+/* Fuerza el fondo del body con máxima especificidad */
+.ant-modal.edit-patient-modal .ant-modal-body,
+.ant-modal.edit-therapist-modal .ant-modal-body,
+.ant-modal.info-patient-modal .ant-modal-body,
+.ant-modal.info-therapist-modal .ant-modal-body,
+.ant-modal.modal-themed .ant-modal-body,
+.ant-modal.universal-modal .ant-modal-body {
+  background: var(--color-background-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+/* === FOOTER DEL MODAL === */
+.edit-modal-themed .ant-modal-footer,
+.base-modal-profile-themed .ant-modal-footer,
+.universal-modal .ant-modal-footer,
+.modal-themed .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* === BOTONES DEL MODAL === */
+.edit-modal-themed .ant-btn,
+.base-modal-profile-themed .ant-btn,
+.universal-modal .ant-btn,
+.modal-themed .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.edit-modal-themed .ant-btn-default,
+.base-modal-profile-themed .ant-btn-default,
+.universal-modal .ant-btn-default,
+.modal-themed .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-modal-themed .ant-btn-default:hover,
+.base-modal-profile-themed .ant-btn-default:hover,
+.universal-modal .ant-btn-default:hover,
+.modal-themed .ant-btn-default:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.edit-modal-themed .ant-btn-primary,
+.base-modal-profile-themed .ant-btn-primary,
+.universal-modal .ant-btn-primary,
+.modal-themed .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.edit-modal-themed .ant-btn-primary:hover,
+.base-modal-profile-themed .ant-btn-primary:hover,
+.universal-modal .ant-btn-primary:hover,
+.modal-themed .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* === BOTÓN DE CERRAR === */
+.edit-modal-themed .ant-modal-close,
+.base-modal-profile-themed .ant-modal-close,
+.universal-modal .ant-modal-close,
+.modal-themed .ant-modal-close {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.edit-modal-themed .ant-modal-close:hover,
+.base-modal-profile-themed .ant-modal-close:hover,
+.universal-modal .ant-modal-close:hover,
+.modal-themed .ant-modal-close:hover {
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* === FORMULARIOS DENTRO DEL MODAL === */
+
+/* CRÍTICO: Sobrescribe el FormGenerator dentro de modales */
+.edit-patient-modal .ant-modal-body .ant-form,
+.edit-therapist-modal .ant-modal-body .ant-form,
+.modal-themed .ant-modal-body .ant-form,
+.universal-modal .ant-modal-body .ant-form {
+  background-color: var(--color-background-primary) !important;
+  background: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* CRÍTICO: Sobrescribe la clase CSS Module formContainer del FormGenerator */
+.edit-patient-modal .ant-modal-body .ant-form[class*="formContainer"],
+.edit-therapist-modal .ant-modal-body .ant-form[class*="formContainer"],
+.modal-themed .ant-modal-body .ant-form[class*="formContainer"],
+.universal-modal .ant-modal-body .ant-form[class*="formContainer"] {
+  background-color: var(--color-background-primary) !important;
+  background: var(--color-background-primary) !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 20px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+.edit-modal-themed .ant-form-item-label > label,
+.base-modal-profile-themed .ant-form-item-label > label,
+.universal-modal .ant-form-item-label > label,
+.modal-themed .ant-form-item-label > label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.edit-modal-themed .ant-form-item-required::before,
+.base-modal-profile-themed .ant-form-item-required::before,
+.universal-modal .ant-form-item-required::before,
+.modal-themed .ant-form-item-required::before {
+  color: var(--color-error) !important;
+}
+
+.edit-modal-themed .ant-form-item-explain-error,
+.base-modal-profile-themed .ant-form-item-explain-error,
+.universal-modal .ant-form-item-explain-error,
+.modal-themed .ant-form-item-explain-error {
+  color: var(--color-error) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* === INPUTS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-input,
+.edit-modal-themed .ant-input-affix-wrapper,
+.base-modal-profile-themed .ant-input,
+.base-modal-profile-themed .ant-input-affix-wrapper,
+.universal-modal .ant-input,
+.universal-modal .ant-input-affix-wrapper,
+.modal-themed .ant-input,
+.modal-themed .ant-input-affix-wrapper {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+  font-family: var(--font-family) !important;
+}
+
+.edit-modal-themed .ant-input:focus,
+.edit-modal-themed .ant-input-affix-wrapper:focus,
+.edit-modal-themed .ant-input-affix-wrapper-focused,
+.base-modal-profile-themed .ant-input:focus,
+.base-modal-profile-themed .ant-input-affix-wrapper:focus,
+.base-modal-profile-themed .ant-input-affix-wrapper-focused,
+.universal-modal .ant-input:focus,
+.universal-modal .ant-input-affix-wrapper:focus,
+.universal-modal .ant-input-affix-wrapper-focused,
+.modal-themed .ant-input:focus,
+.modal-themed .ant-input-affix-wrapper:focus,
+.modal-themed .ant-input-affix-wrapper-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+.edit-modal-themed .ant-input::placeholder,
+.base-modal-profile-themed .ant-input::placeholder,
+.universal-modal .ant-input::placeholder,
+.modal-themed .ant-input::placeholder {
+  color: var(--color-text-placeholder) !important;
+}
+
+/* === SELECTS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-select .ant-select-selector,
+.base-modal-profile-themed .ant-select .ant-select-selector,
+.universal-modal .ant-select .ant-select-selector,
+.modal-themed .ant-select .ant-select-selector {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.edit-modal-themed .ant-select-focused .ant-select-selector,
+.base-modal-profile-themed .ant-select-focused .ant-select-selector,
+.universal-modal .ant-select-focused .ant-select-selector,
+.modal-themed .ant-select-focused .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+.edit-modal-themed .ant-select-selection-placeholder,
+.base-modal-profile-themed .ant-select-selection-placeholder,
+.universal-modal .ant-select-selection-placeholder,
+.modal-themed .ant-select-selection-placeholder {
+  color: var(--color-text-placeholder) !important;
+}
+
+/* === DATEPICKERS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-picker,
+.base-modal-profile-themed .ant-picker,
+.universal-modal .ant-picker,
+.modal-themed .ant-picker {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.edit-modal-themed .ant-picker:hover,
+.edit-modal-themed .ant-picker-focused,
+.base-modal-profile-themed .ant-picker:hover,
+.base-modal-profile-themed .ant-picker-focused,
+.universal-modal .ant-picker:hover,
+.universal-modal .ant-picker-focused,
+.modal-themed .ant-picker:hover,
+.modal-themed .ant-picker-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+/* === SWITCHES DENTRO DEL MODAL === */
+.edit-modal-themed .ant-switch,
+.base-modal-profile-themed .ant-switch,
+.universal-modal .ant-switch,
+.modal-themed .ant-switch {
+  background-color: var(--color-text-quaternary) !important;
+}
+
+.edit-modal-themed .ant-switch-checked,
+.base-modal-profile-themed .ant-switch-checked,
+.universal-modal .ant-switch-checked,
+.modal-themed .ant-switch-checked {
+  background-color: var(--color-primary) !important;
+}
+
+/* === CHECKBOXES DENTRO DEL MODAL === */
+.edit-modal-themed .ant-checkbox-wrapper,
+.base-modal-profile-themed .ant-checkbox-wrapper,
+.universal-modal .ant-checkbox-wrapper,
+.modal-themed .ant-checkbox-wrapper {
+  color: var(--color-text-primary) !important;
+}
+
+.edit-modal-themed .ant-checkbox-checked .ant-checkbox-inner,
+.base-modal-profile-themed .ant-checkbox-checked .ant-checkbox-inner,
+.universal-modal .ant-checkbox-checked .ant-checkbox-inner,
+.modal-themed .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* === RADIO BUTTONS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-radio-wrapper,
+.base-modal-profile-themed .ant-radio-wrapper,
+.universal-modal .ant-radio-wrapper,
+.modal-themed .ant-radio-wrapper {
+  color: var(--color-text-primary) !important;
+}
+
+.edit-modal-themed .ant-radio-checked .ant-radio-inner,
+.base-modal-profile-themed .ant-radio-checked .ant-radio-inner,
+.universal-modal .ant-radio-checked .ant-radio-inner,
+.modal-themed .ant-radio-checked .ant-radio-inner {
+  border-color: var(--color-primary) !important;
+}
+
+.edit-modal-themed .ant-radio-checked .ant-radio-inner::after,
+.base-modal-profile-themed .ant-radio-checked .ant-radio-inner::after,
+.universal-modal .ant-radio-checked .ant-radio-inner::after,
+.modal-themed .ant-radio-checked .ant-radio-inner::after {
+  background-color: var(--color-primary) !important;
+}
+
+/* === CASCADERS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-cascader .ant-cascader-picker,
+.base-modal-profile-themed .ant-cascader .ant-cascader-picker,
+.universal-modal .ant-cascader .ant-cascader-picker,
+.modal-themed .ant-cascader .ant-cascader-picker {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.edit-modal-themed .ant-cascader-focused .ant-cascader-picker,
+.base-modal-profile-themed .ant-cascader-focused .ant-cascader-picker,
+.universal-modal .ant-cascader-focused .ant-cascader-picker,
+.modal-themed .ant-cascader-focused .ant-cascader-picker {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+/* === TÍTULOS DENTRO DEL MODAL === */
+.edit-modal-themed h1,
+.edit-modal-themed h2,
+.edit-modal-themed h3,
+.edit-modal-themed h4,
+.edit-modal-themed h5,
+.edit-modal-themed h6,
+.base-modal-profile-themed h1,
+.base-modal-profile-themed h2,
+.base-modal-profile-themed h3,
+.base-modal-profile-themed h4,
+.base-modal-profile-themed h5,
+.base-modal-profile-themed h6,
+.universal-modal h1,
+.universal-modal h2,
+.universal-modal h3,
+.universal-modal h4,
+.universal-modal h5,
+.universal-modal h6,
+.modal-themed h1,
+.modal-themed h2,
+.modal-themed h3,
+.modal-themed h4,
+.modal-themed h5,
+.modal-themed h6 {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* === DIVIDERS DENTRO DEL MODAL === */
+.edit-modal-themed .ant-divider,
+.base-modal-profile-themed .ant-divider,
+.universal-modal .ant-divider,
+.modal-themed .ant-divider {
+  border-color: var(--color-border-primary) !important;
+}
+
+/* === TABLES DENTRO DEL MODAL === */
+.edit-modal-themed .ant-table,
+.base-modal-profile-themed .ant-table,
+.universal-modal .ant-table,
+.modal-themed .ant-table {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-modal-themed .ant-table-thead > tr > th,
+.base-modal-profile-themed .ant-table-thead > tr > th,
+.universal-modal .ant-table-thead > tr > th,
+.modal-themed .ant-table-thead > tr > th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+.edit-modal-themed .ant-table-tbody > tr > td,
+.base-modal-profile-themed .ant-table-tbody > tr > td,
+.universal-modal .ant-table-tbody > tr > td,
+.modal-themed .ant-table-tbody > tr > td {
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-modal-themed .ant-table-tbody > tr:hover > td,
+.base-modal-profile-themed .ant-table-tbody > tr:hover > td,
+.universal-modal .ant-table-tbody > tr:hover > td,
+.modal-themed .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .edit-modal-themed .ant-modal,
+  .base-modal-profile-themed .ant-modal,
+  .universal-modal .ant-modal,
+  .modal-themed .ant-modal {
+    margin: 8px !important;
+  }
+  
+  .edit-modal-themed .ant-modal-content,
+  .base-modal-profile-themed .ant-modal-content,
+  .universal-modal .ant-modal-content,
+  .modal-themed .ant-modal-content {
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .edit-modal-themed .ant-modal-header,
+  .edit-modal-themed .ant-modal-body,
+  .edit-modal-themed .ant-modal-footer,
+  .base-modal-profile-themed .ant-modal-header,
+  .base-modal-profile-themed .ant-modal-body,
+  .base-modal-profile-themed .ant-modal-footer,
+  .universal-modal .ant-modal-header,
+  .universal-modal .ant-modal-body,
+  .universal-modal .ant-modal-footer,
+  .modal-themed .ant-modal-header,
+  .modal-themed .ant-modal-body,
+  .modal-themed .ant-modal-footer {
+    padding: 16px !important;
+  }
+}
+
+/* === DESCRIPTIONS COMPONENT EN MODALES DE INFORMACIÓN === */
+.info-patient-modal .ant-descriptions,
+.info-therapist-modal .ant-descriptions {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* CRÍTICO: Forzar fondo del contenedor principal */
+.info-patient-modal .ant-descriptions .ant-descriptions-view,
+.info-therapist-modal .ant-descriptions .ant-descriptions-view {
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* CRÍTICO: Forzar tabla interna */
+.info-patient-modal .ant-descriptions .ant-descriptions-view table,
+.info-therapist-modal .ant-descriptions .ant-descriptions-view table {
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* CRÍTICO: Forzar tbody */
+.info-patient-modal .ant-descriptions .ant-descriptions-view table tbody,
+.info-therapist-modal .ant-descriptions .ant-descriptions-view table tbody {
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* CRÍTICO: Labels con máxima especificidad */
+.info-patient-modal .ant-descriptions-item-label,
+.info-therapist-modal .ant-descriptions-item-label,
+.info-patient-modal .ant-descriptions .ant-descriptions-item-label,
+.info-therapist-modal .ant-descriptions .ant-descriptions-item-label {
+  color: var(--color-primary) !important;
+  font-weight: 600 !important;
+  font-family: var(--font-family) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+/* CRÍTICO: Content con máxima especificidad */
+.info-patient-modal .ant-descriptions-item-content,
+.info-therapist-modal .ant-descriptions-item-content,
+.info-patient-modal .ant-descriptions .ant-descriptions-item-content,
+.info-therapist-modal .ant-descriptions .ant-descriptions-item-content {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+/* CRÍTICO: Filas con máxima especificidad */
+.info-patient-modal .ant-descriptions-row,
+.info-therapist-modal .ant-descriptions-row,
+.info-patient-modal .ant-descriptions .ant-descriptions-row,
+.info-therapist-modal .ant-descriptions .ant-descriptions-row {
+  background-color: var(--color-background-secondary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.info-patient-modal .ant-descriptions-row:last-child,
+.info-therapist-modal .ant-descriptions-row:last-child {
+  border-bottom: none !important;
+}
+
+/* CRÍTICO: TDs individuales */
+.info-patient-modal .ant-descriptions-item-label td,
+.info-therapist-modal .ant-descriptions-item-label td,
+.info-patient-modal .ant-descriptions-item-content td,
+.info-therapist-modal .ant-descriptions-item-content td {
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+/* CRÍTICO: Iconos en labels */
+.info-patient-modal .ant-descriptions-item-label .anticon,
+.info-therapist-modal .ant-descriptions-item-label .anticon {
+  color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Spans en labels con iconos y texto */
+.info-patient-modal .ant-descriptions-item-label span,
+.info-therapist-modal .ant-descriptions-item-label span {
+  color: var(--color-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* CRÍTICO: Texto dentro de labels */
+.info-patient-modal .ant-descriptions-item-label span .anticon,
+.info-therapist-modal .ant-descriptions-item-label span .anticon {
+  color: var(--color-primary) !important;
+  flex-shrink: 0 !important;
+}
+
+/* CRÍTICO: Texto dentro del contenido */
+.info-patient-modal .ant-descriptions-item-content span,
+.info-therapist-modal .ant-descriptions-item-content span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Elementos específicos que pueden fallar */
+.info-patient-modal .ant-descriptions-item,
+.info-therapist-modal .ant-descriptions-item {
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.info-patient-modal .ant-descriptions-item:last-child,
+.info-therapist-modal .ant-descriptions-item:last-child {
+  border-bottom: none !important;
+}
+
+/* CRÍTICO: Celdas de tabla específicas */
+.info-patient-modal .ant-descriptions-item-label.ant-descriptions-item-no-colon,
+.info-therapist-modal .ant-descriptions-item-label.ant-descriptions-item-no-colon {
+  color: var(--color-primary) !important;
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* CRÍTICO: Texto directo dentro de celdas */
+.info-patient-modal .ant-descriptions-item-content > *,
+.info-therapist-modal .ant-descriptions-item-content > * {
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Nodos de texto directo (sin elementos wrapper) */
+.info-patient-modal .ant-descriptions-item-content,
+.info-therapist-modal .ant-descriptions-item-content {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+/* CRÍTICO: Fuerza color en texto directo con máxima especificidad */
+.info-patient-modal .ant-descriptions .ant-descriptions-item-content,
+.info-therapist-modal .ant-descriptions .ant-descriptions-item-content {
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Espacios en blanco y caracteres especiales */
+.info-patient-modal .ant-descriptions-item-content::before,
+.info-therapist-modal .ant-descriptions-item-content::before,
+.info-patient-modal .ant-descriptions-item-content::after,
+.info-therapist-modal .ant-descriptions-item-content::after {
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Contenedor principal del modal */
+.info-patient-modal .ant-modal-body > div:first-child,
+.info-therapist-modal .ant-modal-body > div:first-child {
+  background-color: var(--color-background-primary) !important;
+}
+
+/* CRÍTICO: Contenedor de información del usuario */
+.info-patient-modal .ant-modal-body > div:first-child > div:last-child,
+.info-therapist-modal .ant-modal-body > div:first-child > div:last-child {
+  background-color: transparent !important;
+}
+
+/* CRÍTICO: Todos los divs internos */
+.info-patient-modal .ant-modal-body div,
+.info-therapist-modal .ant-modal-body div {
+  background-color: transparent !important;
+}
+
+/* CRÍTICO: Información del nombre y datos personales */
+.info-patient-modal .ant-modal-body > div:first-child > div:last-child > div:first-child,
+.info-therapist-modal .ant-modal-body > div:first-child > div:last-child > div:first-child {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+}
+
+.info-patient-modal .ant-modal-body > div:first-child > div:last-child > div:last-child,
+.info-therapist-modal .ant-modal-body > div:first-child > div:last-child > div:last-child {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+}
+
+/* CRÍTICO: Forzar visibilidad del contenedor de información personal */
+.info-patient-modal .ant-modal-body > div:first-child > div:last-child,
+.info-therapist-modal .ant-modal-body > div:first-child > div:last-child {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* CRÍTICO: Forzar visibilidad de todos los divs de información personal */
+.info-patient-modal .ant-modal-body > div:first-child > div:last-child > div,
+.info-therapist-modal .ant-modal-body > div:first-child > div:last-child > div {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* CRÍTICO: Reglas específicas para nombre y documento por contenido */
+.info-patient-modal div[style*="fontSize: 22"],
+.info-therapist-modal div[style*="fontSize: 22"],
+.info-patient-modal div[style*="font-size: 22"],
+.info-therapist-modal div[style*="font-size: 22"] {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.info-patient-modal div[style*="fontSize: 16"],
+.info-therapist-modal div[style*="fontSize: 16"],
+.info-patient-modal div[style*="font-size: 16"],
+.info-therapist-modal div[style*="font-size: 16"] {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+  font-size: 16px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* CRÍTICO: Solo asegurar visibilidad sin cambiar display */
+.info-patient-modal .ant-modal-body div,
+.info-therapist-modal .ant-modal-body div {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* CRÍTICO: Mantener el layout original del contenedor superior */
+.info-patient-modal .ant-modal-body > div:first-child,
+.info-therapist-modal .ant-modal-body > div:first-child {
+  /* Respetar el display: flex original del JSX */
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* CRÍTICO: Asegurar que todo el texto se adapte */
+.info-patient-modal *,
+.info-therapist-modal * {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+/* ===== INPUTS Y SELECTS EN MODALES ===== */
+/* CRÍTICO: Todos los inputs en modales */
+.modal-themed .ant-input,
+.edit-patient-modal .ant-input,
+.edit-therapist-modal .ant-input,
+.universal-modal .ant-input {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-input:hover,
+.edit-patient-modal .ant-input:hover,
+.edit-therapist-modal .ant-input:hover,
+.universal-modal .ant-input:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-secondary) !important;
+}
+
+.modal-themed .ant-input:focus,
+.edit-patient-modal .ant-input:focus,
+.edit-therapist-modal .ant-input:focus,
+.universal-modal .ant-input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-hover) !important;
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* CRÍTICO: Selects en modales */
+.modal-themed .ant-select,
+.edit-patient-modal .ant-select,
+.edit-therapist-modal .ant-select,
+.universal-modal .ant-select {
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-select .ant-select-selector,
+.edit-patient-modal .ant-select .ant-select-selector,
+.edit-therapist-modal .ant-select .ant-select-selector,
+.universal-modal .ant-select .ant-select-selector {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.modal-themed .ant-select .ant-select-selection-item,
+.edit-patient-modal .ant-select .ant-select-selection-item,
+.edit-therapist-modal .ant-select .ant-select-selection-item,
+.universal-modal .ant-select .ant-select-selection-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-select .ant-select-selection-placeholder,
+.edit-patient-modal .ant-select .ant-select-selection-placeholder,
+.edit-therapist-modal .ant-select .ant-select-selection-placeholder,
+.universal-modal .ant-select .ant-select-selection-placeholder {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-select:hover .ant-select-selector,
+.edit-patient-modal .ant-select:hover .ant-select-selector,
+.edit-therapist-modal .ant-select:hover .ant-select-selector,
+.universal-modal .ant-select:hover .ant-select-selector {
+  border-color: var(--color-primary) !important;
+}
+
+.modal-themed .ant-select.ant-select-focused .ant-select-selector,
+.edit-patient-modal .ant-select.ant-select-focused .ant-select-selector,
+.edit-therapist-modal .ant-select.ant-select-focused .ant-select-selector,
+.universal-modal .ant-select.ant-select-focused .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-hover) !important;
+}
+
+/* CRÍTICO: DatePicker en modales */
+.modal-themed .ant-picker,
+.edit-patient-modal .ant-picker,
+.edit-therapist-modal .ant-picker,
+.universal-modal .ant-picker {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-picker input,
+.edit-patient-modal .ant-picker input,
+.edit-therapist-modal .ant-picker input,
+.universal-modal .ant-picker input {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-picker:hover,
+.edit-patient-modal .ant-picker:hover,
+.edit-therapist-modal .ant-picker:hover,
+.universal-modal .ant-picker:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.modal-themed .ant-picker.ant-picker-focused,
+.edit-patient-modal .ant-picker.ant-picker-focused,
+.edit-therapist-modal .ant-picker.ant-picker-focused,
+.universal-modal .ant-picker.ant-picker-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-hover) !important;
+}
+
+/* CRÍTICO: Cascader en modales */
+.modal-themed .ant-cascader,
+.edit-patient-modal .ant-cascader,
+.edit-therapist-modal .ant-cascader,
+.universal-modal .ant-cascader {
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-cascader .ant-cascader-selector,
+.edit-patient-modal .ant-cascader .ant-cascader-selector,
+.edit-therapist-modal .ant-cascader .ant-cascader-selector,
+.universal-modal .ant-cascader .ant-cascader-selector {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.modal-themed .ant-cascader .ant-cascader-selection-item,
+.edit-patient-modal .ant-cascader .ant-cascader-selection-item,
+.edit-therapist-modal .ant-cascader .ant-cascader-selection-item,
+.universal-modal .ant-cascader .ant-cascader-selection-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: InputNumber en modales */
+.modal-themed .ant-input-number,
+.edit-patient-modal .ant-input-number,
+.edit-therapist-modal .ant-input-number,
+.universal-modal .ant-input-number {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+}
+
+.modal-themed .ant-input-number .ant-input-number-input,
+.edit-patient-modal .ant-input-number .ant-input-number-input,
+.edit-therapist-modal .ant-input-number .ant-input-number-input,
+.universal-modal .ant-input-number .ant-input-number-input {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: TextArea en modales */
+.modal-themed .ant-input[data-count],
+.edit-patient-modal .ant-input[data-count],
+.edit-therapist-modal .ant-input[data-count],
+.universal-modal .ant-input[data-count],
+.modal-themed textarea.ant-input,
+.edit-patient-modal textarea.ant-input,
+.edit-therapist-modal textarea.ant-input,
+.universal-modal textarea.ant-input {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Iconos en inputs */
+.modal-themed .anticon,
+.edit-patient-modal .anticon,
+.edit-therapist-modal .anticon,
+.universal-modal .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* ===== LABELS DE FORMULARIOS EN MODALES ===== */
+/* CRÍTICO: Labels de Form.Item en modales */
+.modal-themed .ant-form-item-label > label,
+.edit-patient-modal .ant-form-item-label > label,
+.edit-therapist-modal .ant-form-item-label > label,
+.universal-modal .ant-form-item-label > label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* CRÍTICO: Labels requeridos (asterisco) */
+.modal-themed .ant-form-item-label > label.ant-form-item-required::before,
+.edit-patient-modal .ant-form-item-label > label.ant-form-item-required::before,
+.edit-therapist-modal .ant-form-item-label > label.ant-form-item-required::before,
+.universal-modal .ant-form-item-label > label.ant-form-item-required::before {
+  color: var(--color-error) !important;
+  content: '*' !important;
+}
+
+/* CRÍTICO: Labels después del asterisco */
+.modal-themed .ant-form-item-label > label.ant-form-item-required::after,
+.edit-patient-modal .ant-form-item-label > label.ant-form-item-required::after,
+.edit-therapist-modal .ant-form-item-label > label.ant-form-item-required::after,
+.universal-modal .ant-form-item-label > label.ant-form-item-required::after {
+  content: none !important;
+}
+
+/* CRÍTICO: Contenedor del label */
+.modal-themed .ant-form-item-label,
+.edit-patient-modal .ant-form-item-label,
+.edit-therapist-modal .ant-form-item-label,
+.universal-modal .ant-form-item-label {
+  padding-bottom: 8px !important;
+}
+
+/* CRÍTICO: Mensajes de error */
+.modal-themed .ant-form-item-explain-error,
+.edit-patient-modal .ant-form-item-explain-error,
+.edit-therapist-modal .ant-form-item-explain-error,
+.universal-modal .ant-form-item-explain-error {
+  color: var(--color-error) !important;
+  font-family: var(--font-family) !important;
+  font-size: 12px !important;
+}
+
+/* CRÍTICO: Mensajes de ayuda */
+.modal-themed .ant-form-item-extra,
+.edit-patient-modal .ant-form-item-extra,
+.edit-therapist-modal .ant-form-item-extra,
+.universal-modal .ant-form-item-extra {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+  font-size: 12px !important;
+}
+
+/* CRÍTICO: Títulos de secciones en formularios */
+.modal-themed h3,
+.edit-patient-modal h3,
+.edit-therapist-modal h3,
+.universal-modal h3 {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  margin-bottom: 16px !important;
+  margin-top: 24px !important;
+}
+
+/* CRÍTICO: Labels específicos del FormGenerator (CSS Modules) */
+.modal-themed span[class*="label"],
+.edit-patient-modal span[class*="label"],
+.edit-therapist-modal span[class*="label"],
+.universal-modal span[class*="label"] {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* CRÍTICO: Todos los spans dentro de labels de Form.Item */
+.modal-themed .ant-form-item-label span,
+.edit-patient-modal .ant-form-item-label span,
+.edit-therapist-modal .ant-form-item-label span,
+.universal-modal .ant-form-item-label span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* CRÍTICO: Regla ultra específica para CSS Modules */
+.modal-themed [class*="Form_label"],
+.edit-patient-modal [class*="Form_label"],
+.edit-therapist-modal [class*="Form_label"],
+.universal-modal [class*="Form_label"] {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* CRÍTICO: Títulos del FormGenerator (CSS Modules) */
+.modal-themed h2[class*="title"],
+.edit-patient-modal h2[class*="title"],
+.edit-therapist-modal h2[class*="title"],
+.universal-modal h2[class*="title"],
+.modal-themed h2[class*="subtitle"],
+.edit-patient-modal h2[class*="subtitle"],
+.edit-therapist-modal h2[class*="subtitle"],
+.universal-modal h2[class*="subtitle"] {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  text-align: center !important;
+  margin-top: 24px !important;
+  margin-bottom: 16px !important;
+}
+
+/* CRÍTICO: Separador verde del FormGenerator */
+.modal-themed div[class*="greenSeparator"],
+.edit-patient-modal div[class*="greenSeparator"],
+.edit-therapist-modal div[class*="greenSeparator"],
+.universal-modal div[class*="greenSeparator"] {
+  background-color: var(--color-primary) !important;
+}
+
+/* ===== BOTONES EN MODALES ===== */
+/* CRÍTICO: Botón Cancelar del FormGenerator - Máxima especificidad */
+.modal-themed button[class*="buttonCancel"],
+.edit-patient-modal button[class*="buttonCancel"],
+.edit-therapist-modal button[class*="buttonCancel"],
+.universal-modal button[class*="buttonCancel"],
+.modal-themed button[class*="Form_buttonCancel"],
+.edit-patient-modal button[class*="Form_buttonCancel"],
+.edit-therapist-modal button[class*="Form_buttonCancel"],
+.universal-modal button[class*="Form_buttonCancel"],
+div[class*="modal"] button[class*="buttonCancel"],
+div[class*="modal"] button[class*="Form_buttonCancel"] {
+  background-color: #ffffff !important;
+  border: 2px solid #d9d9d9 !important;
+  color: #333333 !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 20px !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.modal-themed button[class*="buttonCancel"]:hover,
+.edit-patient-modal button[class*="buttonCancel"]:hover,
+.edit-therapist-modal button[class*="buttonCancel"]:hover,
+.universal-modal button[class*="buttonCancel"]:hover,
+.modal-themed button[class*="Form_buttonCancel"]:hover,
+.edit-patient-modal button[class*="Form_buttonCancel"]:hover,
+.edit-therapist-modal button[class*="Form_buttonCancel"]:hover,
+.universal-modal button[class*="Form_buttonCancel"]:hover,
+div[class*="modal"] button[class*="buttonCancel"]:hover,
+div[class*="modal"] button[class*="Form_buttonCancel"]:hover {
+  background-color: #f8f9fa !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.modal-themed button[class*="buttonCancel"]:active,
+.edit-patient-modal button[class*="buttonCancel"]:active,
+.edit-therapist-modal button[class*="buttonCancel"]:active,
+.universal-modal button[class*="buttonCancel"]:active,
+.modal-themed button[class*="Form_buttonCancel"]:active,
+.edit-patient-modal button[class*="Form_buttonCancel"]:active,
+.edit-therapist-modal button[class*="Form_buttonCancel"]:active,
+.universal-modal button[class*="Form_buttonCancel"]:active,
+div[class*="modal"] button[class*="buttonCancel"]:active,
+div[class*="modal"] button[class*="Form_buttonCancel"]:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* CRÍTICO: Forzar color del texto del botón Cancelar con máxima especificidad */
+.ant-modal .modal-themed button[class*="buttonCancel"],
+.ant-modal .edit-patient-modal button[class*="buttonCancel"],
+.ant-modal .edit-therapist-modal button[class*="buttonCancel"],
+.ant-modal .universal-modal button[class*="buttonCancel"],
+.ant-modal .modal-themed button[class*="Form_buttonCancel"],
+.ant-modal .edit-patient-modal button[class*="Form_buttonCancel"],
+.ant-modal .edit-therapist-modal button[class*="Form_buttonCancel"],
+.ant-modal .universal-modal button[class*="Form_buttonCancel"],
+.ant-modal div[class*="modal"] button[class*="buttonCancel"],
+.ant-modal div[class*="modal"] button[class*="Form_buttonCancel"] {
+  color: #333333 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d9d9d9 !important;
+}
+
+.ant-modal .modal-themed button[class*="buttonCancel"]:hover,
+.ant-modal .edit-patient-modal button[class*="buttonCancel"]:hover,
+.ant-modal .edit-therapist-modal button[class*="buttonCancel"]:hover,
+.ant-modal .universal-modal button[class*="buttonCancel"]:hover,
+.ant-modal .modal-themed button[class*="Form_buttonCancel"]:hover,
+.ant-modal .edit-patient-modal button[class*="Form_buttonCancel"]:hover,
+.ant-modal .edit-therapist-modal button[class*="Form_buttonCancel"]:hover,
+.ant-modal .universal-modal button[class*="Form_buttonCancel"]:hover,
+.ant-modal div[class*="modal"] button[class*="buttonCancel"]:hover,
+.ant-modal div[class*="modal"] button[class*="Form_buttonCancel"]:hover {
+  color: var(--color-primary) !important;
+  background-color: #f8f9fa !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Regla ultra específica solo para el color del texto */
+.ant-modal button[class*="buttonCancel"],
+.ant-modal button[class*="Form_buttonCancel"] {
+  color: #333333 !important;
+}
+
+.ant-modal button[class*="buttonCancel"]:hover,
+.ant-modal button[class*="Form_buttonCancel"]:hover {
+  color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Regla de emergencia - Fuerza el color en cualquier botón con texto "Cancelar" */
+button:contains("Cancelar"),
+button[type="button"]:contains("Cancelar"),
+.ant-modal button:contains("Cancelar") {
+  color: #333333 !important;
+  background-color: #ffffff !important;
+}
+
+/* CRÍTICO: Selector por contenido usando atributos */
+.ant-modal button[class*="Cancel"],
+.ant-modal button[class*="cancel"],
+.ant-modal button[class*="buttonCancel"],
+.ant-modal button[class*="Form_buttonCancel"] {
+  color: #333333 !important;
+  background-color: #ffffff !important;
+  border: 2px solid #d9d9d9 !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Forzar color en todos los elementos internos del botón */
+.ant-modal button[class*="buttonCancel"] *,
+.ant-modal button[class*="Form_buttonCancel"] *,
+.ant-modal button[class*="Cancel"] *,
+.ant-modal button[class*="cancel"] * {
+  color: inherit !important;
+}
+
+/* CRÍTICO: Botón Submit/Actualizar del FormGenerator - Máxima especificidad */
+.modal-themed button[class*="buttonSubmit"],
+.edit-patient-modal button[class*="buttonSubmit"],
+.edit-therapist-modal button[class*="buttonSubmit"],
+.universal-modal button[class*="buttonSubmit"],
+.modal-themed button[class*="Form_buttonSubmit"],
+.edit-patient-modal button[class*="Form_buttonSubmit"],
+.edit-therapist-modal button[class*="Form_buttonSubmit"],
+.universal-modal button[class*="Form_buttonSubmit"],
+div[class*="modal"] button[class*="buttonSubmit"],
+div[class*="modal"] button[class*="Form_buttonSubmit"] {
+  background-color: var(--color-primary) !important;
+  border: 2px solid var(--color-primary) !important;
+  color: #ffffff !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 20px !important;
+  border-radius: 6px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+.modal-themed button[class*="buttonSubmit"]:hover,
+.edit-patient-modal button[class*="buttonSubmit"]:hover,
+.edit-therapist-modal button[class*="buttonSubmit"]:hover,
+.universal-modal button[class*="buttonSubmit"]:hover,
+.modal-themed button[class*="Form_buttonSubmit"]:hover,
+.edit-patient-modal button[class*="Form_buttonSubmit"]:hover,
+.edit-therapist-modal button[class*="Form_buttonSubmit"]:hover,
+.universal-modal button[class*="Form_buttonSubmit"]:hover,
+div[class*="modal"] button[class*="buttonSubmit"]:hover,
+div[class*="modal"] button[class*="Form_buttonSubmit"]:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4) !important;
+}
+
+.modal-themed button[class*="buttonSubmit"]:active,
+.edit-patient-modal button[class*="buttonSubmit"]:active,
+.edit-therapist-modal button[class*="buttonSubmit"]:active,
+.universal-modal button[class*="buttonSubmit"]:active,
+.modal-themed button[class*="Form_buttonSubmit"]:active,
+.edit-patient-modal button[class*="Form_buttonSubmit"]:active,
+.edit-therapist-modal button[class*="Form_buttonSubmit"]:active,
+.universal-modal button[class*="Form_buttonSubmit"]:active,
+div[class*="modal"] button[class*="buttonSubmit"]:active,
+div[class*="modal"] button[class*="Form_buttonSubmit"]:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3) !important;
+}
+
+/* CRÍTICO: Todos los botones Ant Design en modales */
+.modal-themed .ant-btn,
+.edit-patient-modal .ant-btn,
+.edit-therapist-modal .ant-btn,
+.universal-modal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+/* CRÍTICO: Botón default/secundario */
+.modal-themed .ant-btn-default,
+.edit-patient-modal .ant-btn-default,
+.edit-therapist-modal .ant-btn-default,
+.universal-modal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.modal-themed .ant-btn-default:hover,
+.edit-patient-modal .ant-btn-default:hover,
+.edit-therapist-modal .ant-btn-default:hover,
+.universal-modal .ant-btn-default:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Botón primario */
+.modal-themed .ant-btn-primary,
+.edit-patient-modal .ant-btn-primary,
+.edit-therapist-modal .ant-btn-primary,
+.universal-modal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.modal-themed .ant-btn-primary:hover,
+.edit-patient-modal .ant-btn-primary:hover,
+.edit-therapist-modal .ant-btn-primary:hover,
+.universal-modal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* CRÍTICO: Botones deshabilitados */
+.modal-themed .ant-btn:disabled,
+.edit-patient-modal .ant-btn:disabled,
+.edit-therapist-modal .ant-btn:disabled,
+.universal-modal .ant-btn:disabled {
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-secondary) !important;
+  opacity: 0.6 !important;
+}
+
+.modal-themed h3:first-child,
+.edit-patient-modal h3:first-child,
+.edit-therapist-modal h3:first-child,
+.universal-modal h3:first-child {
+  margin-top: 0 !important;
+}
+
+/* CRÍTICO: Todos los textos dentro de formularios */
+.modal-themed .ant-form,
+.edit-patient-modal .ant-form,
+.edit-therapist-modal .ant-form,
+.universal-modal .ant-form {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Dividers en formularios */
+.modal-themed .ant-divider,
+.edit-patient-modal .ant-divider,
+.edit-therapist-modal .ant-divider,
+.universal-modal .ant-divider {
+  border-color: var(--color-border-primary) !important;
+}
+
+.modal-themed .ant-divider-inner-text,
+.edit-patient-modal .ant-divider-inner-text,
+.edit-therapist-modal .ant-divider-inner-text,
+.universal-modal .ant-divider-inner-text {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-select-arrow,
+.edit-patient-modal .ant-select-arrow,
+.edit-therapist-modal .ant-select-arrow,
+.universal-modal .ant-select-arrow {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-picker-suffix,
+.edit-patient-modal .ant-picker-suffix,
+.edit-therapist-modal .ant-picker-suffix,
+.universal-modal .ant-picker-suffix {
+  color: var(--color-text-secondary) !important;
+}
+
+/* ===== ICONOS INTERNOS DE COMPONENTES ===== */
+/* CRÍTICO: Iconos de Select - flecha dropdown */
+.modal-themed .ant-select-arrow .anticon,
+.edit-patient-modal .ant-select-arrow .anticon,
+.edit-therapist-modal .ant-select-arrow .anticon,
+.universal-modal .ant-select-arrow .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* CRÍTICO: Icono "X" para limpiar select */
+.modal-themed .ant-select-clear,
+.edit-patient-modal .ant-select-clear,
+.edit-therapist-modal .ant-select-clear,
+.universal-modal .ant-select-clear {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+}
+
+.modal-themed .ant-select-clear .anticon,
+.edit-patient-modal .ant-select-clear .anticon,
+.edit-therapist-modal .ant-select-clear .anticon,
+.universal-modal .ant-select-clear .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-select-clear:hover,
+.edit-patient-modal .ant-select-clear:hover,
+.edit-therapist-modal .ant-select-clear:hover,
+.universal-modal .ant-select-clear:hover {
+  color: var(--color-error) !important;
+}
+
+.modal-themed .ant-select-clear:hover .anticon,
+.edit-patient-modal .ant-select-clear:hover .anticon,
+.edit-therapist-modal .ant-select-clear:hover .anticon,
+.universal-modal .ant-select-clear:hover .anticon {
+  color: var(--color-error) !important;
+}
+
+/* CRÍTICO: Iconos de Cascader */
+.modal-themed .ant-cascader-picker-arrow,
+.edit-patient-modal .ant-cascader-picker-arrow,
+.edit-therapist-modal .ant-cascader-picker-arrow,
+.universal-modal .ant-cascader-picker-arrow {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-cascader-picker-clear,
+.edit-patient-modal .ant-cascader-picker-clear,
+.edit-therapist-modal .ant-cascader-picker-clear,
+.universal-modal .ant-cascader-picker-clear {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+}
+
+.modal-themed .ant-cascader-picker-clear:hover,
+.edit-patient-modal .ant-cascader-picker-clear:hover,
+.edit-therapist-modal .ant-cascader-picker-clear:hover,
+.universal-modal .ant-cascader-picker-clear:hover {
+  color: var(--color-error) !important;
+}
+
+/* CRÍTICO: Iconos de DatePicker */
+.modal-themed .ant-picker-clear,
+.edit-patient-modal .ant-picker-clear,
+.edit-therapist-modal .ant-picker-clear,
+.universal-modal .ant-picker-clear {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+}
+
+.modal-themed .ant-picker-clear:hover,
+.edit-patient-modal .ant-picker-clear:hover,
+.edit-therapist-modal .ant-picker-clear:hover,
+.universal-modal .ant-picker-clear:hover {
+  color: var(--color-error) !important;
+}
+
+.modal-themed .ant-picker-clear .anticon,
+.edit-patient-modal .ant-picker-clear .anticon,
+.edit-therapist-modal .ant-picker-clear .anticon,
+.universal-modal .ant-picker-clear .anticon {
+  color: inherit !important;
+}
+
+/* CRÍTICO: Iconos de InputNumber */
+.modal-themed .ant-input-number-handler,
+.edit-patient-modal .ant-input-number-handler,
+.edit-therapist-modal .ant-input-number-handler,
+.universal-modal .ant-input-number-handler {
+  border-color: var(--color-border-primary) !important;
+}
+
+.modal-themed .ant-input-number-handler-wrap,
+.edit-patient-modal .ant-input-number-handler-wrap,
+.edit-therapist-modal .ant-input-number-handler-wrap,
+.universal-modal .ant-input-number-handler-wrap {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.modal-themed .ant-input-number-handler .anticon,
+.edit-patient-modal .ant-input-number-handler .anticon,
+.edit-therapist-modal .ant-input-number-handler .anticon,
+.universal-modal .ant-input-number-handler .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-input-number-handler:hover .anticon,
+.edit-patient-modal .ant-input-number-handler:hover .anticon,
+.edit-therapist-modal .ant-input-number-handler:hover .anticon,
+.universal-modal .ant-input-number-handler:hover .anticon {
+  color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Dropdowns y opciones de selects */
+.ant-select-dropdown {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.ant-select-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.ant-select-item:hover {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.ant-select-item-option-selected {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Picker dropdown (DatePicker) */
+.ant-picker-dropdown {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.ant-picker-panel {
+  background-color: var(--color-background-primary) !important;
+  border: none !important;
+}
+
+.ant-picker-header {
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.ant-picker-header button {
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker-content {
+  background-color: var(--color-background-primary) !important;
+}
+
+.ant-picker-cell {
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker-cell:hover .ant-picker-cell-inner {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.ant-picker-today .ant-picker-cell-inner {
+  border: 1px solid var(--color-primary) !important;
+}
+
+/* CRÍTICO: Cascader dropdown */
+.ant-cascader-dropdown {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+.ant-cascader-menu {
+  background-color: var(--color-background-primary) !important;
+  border-right: 1px solid var(--color-border-primary) !important;
+}
+
+.ant-cascader-menu-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.ant-cascader-menu-item:hover {
+  background-color: var(--color-background-secondary) !important;
+}
+
+.ant-cascader-menu-item-active {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Iconos en los dropdowns */
+.ant-select-dropdown .anticon,
+.ant-cascader-dropdown .anticon,
+.ant-picker-dropdown .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* CRÍTICO: Iconos de expansión en cascader */
+.ant-cascader-menu-item-expand-icon,
+.ant-cascader-menu-item .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* CRÍTICO: Iconos en el calendario del DatePicker */
+.ant-picker-header-super-prev-btn,
+.ant-picker-header-prev-btn,
+.ant-picker-header-next-btn,
+.ant-picker-header-super-next-btn {
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker-header-super-prev-btn .anticon,
+.ant-picker-header-prev-btn .anticon,
+.ant-picker-header-next-btn .anticon,
+.ant-picker-header-super-next-btn .anticon {
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker-header-super-prev-btn:hover .anticon,
+.ant-picker-header-prev-btn:hover .anticon,
+.ant-picker-header-next-btn:hover .anticon,
+.ant-picker-header-super-next-btn:hover .anticon {
+  color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Iconos en inputs con prefijos/sufijos */
+.modal-themed .ant-input-prefix,
+.edit-patient-modal .ant-input-prefix,
+.edit-therapist-modal .ant-input-prefix,
+.universal-modal .ant-input-prefix {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-input-prefix .anticon,
+.edit-patient-modal .ant-input-prefix .anticon,
+.edit-therapist-modal .ant-input-prefix .anticon,
+.universal-modal .ant-input-prefix .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-input-suffix,
+.edit-patient-modal .ant-input-suffix,
+.edit-therapist-modal .ant-input-suffix,
+.universal-modal .ant-input-suffix {
+  color: var(--color-text-secondary) !important;
+}
+
+.modal-themed .ant-input-suffix .anticon,
+.edit-patient-modal .ant-input-suffix .anticon,
+.edit-therapist-modal .ant-input-suffix .anticon,
+.universal-modal .ant-input-suffix .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* CRÍTICO: Iconos de loading/spinner */
+.modal-themed .ant-spin-dot,
+.edit-patient-modal .ant-spin-dot,
+.edit-therapist-modal .ant-spin-dot,
+.universal-modal .ant-spin-dot {
+  color: var(--color-primary) !important;
+}
+
+.modal-themed .ant-spin-dot-item,
+.edit-patient-modal .ant-spin-dot-item,
+.edit-therapist-modal .ant-spin-dot-item,
+.universal-modal .ant-spin-dot-item {
+  background-color: var(--color-primary) !important;
+}
+
+/* ===== MODALES DE REGISTRO DE CITAS ===== */
+/* CRÍTICO: Modal Seleccionar Contribuidor */
+.select-contributor-modal .ant-modal-content,
+.select-contributor-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.select-contributor-modal .ant-modal-header,
+.select-contributor-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.select-contributor-modal .ant-modal-title,
+.select-contributor-modal .ant-modal-header .ant-modal-title,
+.select-contributor-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.select-contributor-modal .ant-modal-body,
+.select-contributor-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+  min-height: 500px !important;
+  overflow: hidden !important;
+}
+
+.select-contributor-modal .ant-modal-footer,
+.select-contributor-modal.ant-modal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Modal Crear Nuevo Paciente */
+.create-patient-modal .ant-modal-content,
+.create-patient-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.create-patient-modal .ant-modal-header,
+.create-patient-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.create-patient-modal .ant-modal-title,
+.create-patient-modal .ant-modal-header .ant-modal-title,
+.create-patient-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.create-patient-modal .ant-modal-body,
+.create-patient-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+  overflow: hidden !important;
+}
+
+/* CRÍTICO: Tabla en modal seleccionar contribuidor */
+.select-contributor-modal .ant-table,
+.select-contributor-modal .ant-table-container,
+.select-contributor-modal .ant-table-content,
+.select-contributor-modal .ant-table-tbody,
+.select-contributor-modal .ant-table-thead {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.select-contributor-modal .ant-table-thead > tr > th,
+.select-contributor-modal .ant-table-thead th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.select-contributor-modal .ant-table-tbody > tr > td,
+.select-contributor-modal .ant-table-tbody td {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.select-contributor-modal .ant-table-tbody > tr:hover > td,
+.select-contributor-modal .ant-table-tbody tr:hover td {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.select-contributor-modal .ant-table-tbody > tr.ant-table-row-selected > td,
+.select-contributor-modal .ant-table-tbody tr.ant-table-row-selected td {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Fila seleccionada por JavaScript inline style */
+.select-contributor-modal .ant-table-tbody tr[style*="background-color"] td {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Texto dentro de las celdas */
+.select-contributor-modal .ant-table-tbody td *,
+.select-contributor-modal .ant-table-thead th * {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+/* CRÍTICO: Radio buttons y checkboxes en tabla */
+.select-contributor-modal .ant-radio,
+.select-contributor-modal .ant-checkbox {
+  color: var(--color-text-primary) !important;
+}
+
+.select-contributor-modal .ant-radio-wrapper,
+.select-contributor-modal .ant-checkbox-wrapper {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Loading spinner en tabla */
+.select-contributor-modal .ant-spin {
+  color: var(--color-primary) !important;
+}
+
+.select-contributor-modal .ant-spin-dot {
+  color: var(--color-primary) !important;
+}
+
+.select-contributor-modal .ant-spin-dot-item {
+  background-color: var(--color-primary) !important;
+}
+
+/* CRÍTICO: Empty state de la tabla */
+.select-contributor-modal .ant-empty {
+  color: var(--color-text-secondary) !important;
+}
+
+.select-contributor-modal .ant-empty-description {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: CustomSearch en modal contribuidor */
+.select-contributor-modal .ant-input {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.select-contributor-modal .ant-input:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.select-contributor-modal .ant-input:focus,
+.select-contributor-modal .ant-input-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.select-contributor-modal .ant-input::placeholder {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.select-contributor-modal .ant-input-group-addon {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.select-contributor-modal .ant-input-search-button {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.select-contributor-modal .ant-input-search-button:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+.select-contributor-modal .anticon {
+  color: var(--color-text-secondary) !important;
+}
+
+/* CRÍTICO: Botones en footer del modal */
+.select-contributor-modal .ant-btn,
+.create-patient-modal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.select-contributor-modal .ant-btn-default,
+.create-patient-modal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.select-contributor-modal .ant-btn-default:hover,
+.create-patient-modal .ant-btn-default:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.select-contributor-modal .ant-btn-primary,
+.create-patient-modal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.select-contributor-modal .ant-btn-primary:hover,
+.create-patient-modal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* ===== MODAL LISTA DE TERAPEUTAS (HISTORY) ===== */
+/* CRÍTICO: Modal Lista de Terapeutas */
+.therapist-list-modal .ant-modal-content,
+.therapist-list-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.therapist-list-modal .ant-modal-header,
+.therapist-list-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.therapist-list-modal .ant-modal-title,
+.therapist-list-modal .ant-modal-header .ant-modal-title,
+.therapist-list-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.therapist-list-modal .ant-modal-body,
+.therapist-list-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.therapist-list-modal .ant-modal-footer,
+.therapist-list-modal.ant-modal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Tabla en modal lista de terapeutas */
+.therapist-list-modal .ant-table,
+.therapist-list-modal .ant-table-container,
+.therapist-list-modal .ant-table-content,
+.therapist-list-modal .ant-table-tbody,
+.therapist-list-modal .ant-table-thead {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.therapist-list-modal .ant-table-thead > tr > th,
+.therapist-list-modal .ant-table-thead th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.therapist-list-modal .ant-table-tbody > tr > td,
+.therapist-list-modal .ant-table-tbody td {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.therapist-list-modal .ant-table-tbody > tr:hover > td,
+.therapist-list-modal .ant-table-tbody tr:hover td {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.therapist-list-modal .ant-table-tbody > tr.ant-table-row-selected > td,
+.therapist-list-modal .ant-table-tbody tr.ant-table-row-selected td {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Texto dentro de las celdas */
+.therapist-list-modal .ant-table-tbody td *,
+.therapist-list-modal .ant-table-thead th * {
+  color: inherit !important;
+  font-family: inherit !important;
+}
+
+/* CRÍTICO: Radio buttons en tabla de terapeutas */
+.therapist-list-modal .ant-radio {
+  color: var(--color-text-primary) !important;
+}
+
+.therapist-list-modal .ant-radio-wrapper {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.therapist-list-modal .ant-radio-inner {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+.therapist-list-modal .ant-radio-checked .ant-radio-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.therapist-list-modal .ant-radio-checked .ant-radio-inner::after {
+  background-color: #ffffff !important;
+}
+
+/* CRÍTICO: CustomSearch en modal terapeutas */
+.therapist-list-modal .ant-input {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.therapist-list-modal .ant-input:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.therapist-list-modal .ant-input:focus,
+.therapist-list-modal .ant-input-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.therapist-list-modal .ant-input::placeholder {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Botones en footer del modal terapeutas */
+.therapist-list-modal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.therapist-list-modal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.therapist-list-modal .ant-btn-default:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.therapist-list-modal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.therapist-list-modal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+.therapist-list-modal .ant-btn-primary:disabled {
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-secondary) !important;
+  opacity: 0.6 !important;
+}
+
+/* ===== MODALES DE EDITAR CITA ===== */
+/* CRÍTICO: Botón Cancelar en EditAppointment - MISMO TAMAÑO QUE BOTÓN PRIMARIO */
+.edit-appointment-cancel-btn,
+button.edit-appointment-cancel-btn {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 500 !important;
+  height: 40px !important;
+  min-width: 80px !important;
+  padding: 8px 24px !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.5715 !important;
+  font-size: 14px !important;
+  text-align: center !important;
+}
+
+.edit-appointment-cancel-btn:hover,
+button.edit-appointment-cancel-btn:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.edit-appointment-cancel-btn:active,
+button.edit-appointment-cancel-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02) !important;
+}
+
+/* CRÍTICO: Forzar color del texto dentro del botón */
+.edit-appointment-cancel-btn *,
+button.edit-appointment-cancel-btn * {
+  color: inherit !important;
+}
+
+/* CRÍTICO: Botón Primario en EditAppointment - MISMO TAMAÑO QUE CANCELAR */
+.edit-appointment-cancel-btn + .ant-btn-primary,
+.edit-appointment-cancel-btn + button[type="primary"],
+button[type="primary"]:has(+ .edit-appointment-cancel-btn),
+.ant-btn-primary:has(+ .edit-appointment-cancel-btn),
+.ant-space .ant-btn-primary {
+  height: 40px !important;
+  min-width: 80px !important;
+  padding: 8px 24px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.5715 !important;
+  text-align: center !important;
+}
+
+/* CRÍTICO: Asegurar que todos los botones en Space tengan el mismo tamaño */
+.ant-space .ant-btn,
+.ant-space button {
+  height: 40px !important;
+  min-width: 80px !important;
+  padding: 8px 24px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.5715 !important;
+  text-align: center !important;
+}
+
+/* CRÍTICO: Modal Seleccionar Paciente en EditAppointment */
+.edit-appointment-select-patient-modal .ant-modal-content,
+.edit-appointment-select-patient-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-modal-header,
+.edit-appointment-select-patient-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.edit-appointment-select-patient-modal .ant-modal-title,
+.edit-appointment-select-patient-modal .ant-modal-header .ant-modal-title,
+.edit-appointment-select-patient-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.edit-appointment-select-patient-modal .ant-modal-body,
+.edit-appointment-select-patient-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-modal-footer,
+.edit-appointment-select-patient-modal.ant-modal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Tabla en modal seleccionar paciente (EditAppointment) */
+.edit-appointment-select-patient-modal .ant-table,
+.edit-appointment-select-patient-modal .ant-table-container,
+.edit-appointment-select-patient-modal .ant-table-content,
+.edit-appointment-select-patient-modal .ant-table-tbody,
+.edit-appointment-select-patient-modal .ant-table-thead {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-table-thead > tr > th,
+.edit-appointment-select-patient-modal .ant-table-thead th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-table-tbody > tr > td,
+.edit-appointment-select-patient-modal .ant-table-tbody td {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  border-color: var(--color-border-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-table-tbody > tr:hover > td,
+.edit-appointment-select-patient-modal .ant-table-tbody tr:hover td {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-table-tbody > tr.ant-table-row-selected > td,
+.edit-appointment-select-patient-modal .ant-table-tbody tr.ant-table-row-selected td {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: CustomSearch en modal seleccionar paciente */
+.edit-appointment-select-patient-modal .ant-input {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-input:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-input:focus,
+.edit-appointment-select-patient-modal .ant-input-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+/* CRÍTICO: Botones en footer del modal seleccionar paciente */
+.edit-appointment-select-patient-modal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-btn-default:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.edit-appointment-select-patient-modal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.edit-appointment-select-patient-modal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* CRÍTICO: Modal Crear Nuevo Paciente en EditAppointment */
+.edit-appointment-create-patient-modal .ant-modal-content,
+.edit-appointment-create-patient-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.edit-appointment-create-patient-modal .ant-modal-header,
+.edit-appointment-create-patient-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.edit-appointment-create-patient-modal .ant-modal-title,
+.edit-appointment-create-patient-modal .ant-modal-header .ant-modal-title,
+.edit-appointment-create-patient-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.edit-appointment-create-patient-modal .ant-modal-body,
+.edit-appointment-create-patient-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* ===== MODAL DE USUARIOS (CONFIGURACIÓN) ===== */
+/* CRÍTICO: Modal Usuarios */
+.users-modal .ant-modal-content,
+.users-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.users-modal .ant-modal-header,
+.users-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.users-modal .ant-modal-title,
+.users-modal .ant-modal-header .ant-modal-title,
+.users-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.users-modal .ant-modal-body,
+.users-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.users-modal .ant-modal-footer,
+.users-modal.ant-modal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Formulario en modal usuarios */
+.users-modal .ant-form {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.users-modal .ant-form-item-label > label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+}
+
+.users-modal .ant-form-item-label > label.ant-form-item-required::before {
+  color: var(--color-error) !important;
+  content: '*' !important;
+}
+
+.users-modal .ant-form-item-label > label.ant-form-item-required::after {
+  content: none !important;
+}
+
+.users-modal .ant-form-item-explain-error {
+  color: var(--color-error) !important;
+  font-family: var(--font-family) !important;
+  font-size: 12px !important;
+}
+
+/* CRÍTICO: Inputs en modal usuarios */
+.users-modal .ant-input {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  height: 40px !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.users-modal .ant-input:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.users-modal .ant-input:focus,
+.users-modal .ant-input-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.users-modal .ant-input::placeholder {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Selects en modal usuarios */
+.users-modal .ant-select {
+  height: 40px !important;
+}
+
+.users-modal .ant-select .ant-select-selector {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  height: 40px !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.users-modal .ant-select .ant-select-selection-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  line-height: 38px !important;
+}
+
+.users-modal .ant-select .ant-select-selection-placeholder {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+  line-height: 38px !important;
+}
+
+.users-modal .ant-select:hover .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.users-modal .ant-select-focused .ant-select-selector,
+.users-modal .ant-select.ant-select-focused .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.users-modal .ant-select-arrow {
+  color: var(--color-text-secondary) !important;
+}
+
+.users-modal .ant-select-clear {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+}
+
+.users-modal .ant-select-clear:hover {
+  color: var(--color-error) !important;
+}
+
+/* CRÍTICO: Dropdowns de selects */
+.ant-select-dropdown .ant-select-item {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.ant-select-dropdown .ant-select-item:hover {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.ant-select-dropdown .ant-select-item-option-selected {
+  background-color: rgba(76, 175, 80, 0.15) !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Botones en footer del modal usuarios */
+.users-modal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+  height: 40px !important;
+  padding: 8px 24px !important;
+}
+
+.users-modal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.users-modal .ant-btn-default:hover {
+  background-color: var(--color-background-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.users-modal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border: 1px solid var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.users-modal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* ===== MODAL DE CALENDARIO ===== */
+/* CRÍTICO: Modal Calendario */
+.calendar-modal .ant-modal-content,
+.calendar-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.calendar-modal .ant-modal-header,
+.calendar-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+.calendar-modal .ant-modal-title,
+.calendar-modal .ant-modal-header .ant-modal-title,
+.calendar-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.calendar-modal .ant-modal-body,
+.calendar-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 20px 24px !important;
+  color: var(--color-text-primary) !important;
+}
+
+.calendar-modal .ant-modal-footer,
+.calendar-modal.ant-modal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Contenido del modal calendario */
+.calendar-modal .ant-modal-body div {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.calendar-modal .ant-modal-body p {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 0 0 16px 0 !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.calendar-modal .ant-modal-body p:hover {
+  margin: 0 -16px 16px -16px !important;
+  padding: 12px 16px !important;
+  border-radius: var(--radius-sm) !important;
+  background: rgba(76, 175, 80, 0.1) !important;
+}
+
+.calendar-modal .ant-modal-body p:last-child {
+  margin-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+.calendar-modal .ant-modal-body strong {
+  display: inline-block !important;
+  min-width: 140px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--color-primary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-family: var(--font-family) !important;
+}
+
+/* ===== MODAL DE TICKET ===== */
+/* CRÍTICO: Modal de ticket - contenido principal */
+.ticket-modal .ant-modal-content,
+.ticket-modal.ant-modal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+/* CRÍTICO: Modal de ticket - header */
+.ticket-modal .ant-modal-header,
+.ticket-modal.ant-modal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* CRÍTICO: Modal de ticket - título */
+.ticket-modal .ant-modal-title,
+.ticket-modal .ant-modal-header .ant-modal-title,
+.ticket-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+/* CRÍTICO: Títulos de modales de edición - MÁS GRANDES */
+.edit-patient-modal .ant-modal-title,
+.edit-therapist-modal .ant-modal-title,
+.edit-patient-modal .ant-modal-header .ant-modal-title,
+.edit-therapist-modal .ant-modal-header .ant-modal-title,
+.edit-patient-modal .ant-modal-header .ant-modal-title span,
+.edit-therapist-modal .ant-modal-header .ant-modal-title span {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 700 !important;
+  font-size: 22px !important;
+}
+
+/* CRÍTICO: Modal de ticket - body */
+.ticket-modal .ant-modal-body,
+.ticket-modal.ant-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Modal de ticket - PDFViewer debe ocupar todo el espacio */
+.ticket-modal .ant-modal-body > div,
+.ticket-modal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* CRÍTICO: Asegurar que el PDFViewer no tenga restricciones de espacio */
+.ticket-modal iframe,
+.ticket-modal canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+/* CRÍTICO: Modal de ticket - mask */
+.ticket-modal + .ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* CRÍTICO: Sobrescribir estilos específicos de Ant Design */
+.info-patient-modal .ant-descriptions-item-content,
+.info-therapist-modal .ant-descriptions-item-content,
+.info-patient-modal .ant-descriptions-item-content *,
+.info-therapist-modal .ant-descriptions-item-content * {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Avatar e iconos principales */
+.info-patient-modal .ant-avatar,
+.info-therapist-modal .ant-avatar {
+  background: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.info-patient-modal .ant-avatar .anticon,
+.info-therapist-modal .ant-avatar .anticon {
+  color: #ffffff !important;
+}
+
+/* CRÍTICO: Botones del footer */
+.info-patient-modal .ant-modal-footer .ant-btn,
+.info-therapist-modal .ant-modal-footer .ant-btn {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.info-patient-modal .ant-modal-footer .ant-btn:hover,
+.info-therapist-modal .ant-modal-footer .ant-btn:hover {
+  background: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  color: #ffffff !important;
+}
+

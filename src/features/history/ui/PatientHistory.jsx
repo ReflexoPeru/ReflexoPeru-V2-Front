@@ -6,13 +6,13 @@ import {
   Form,
   Input,
   message,
-  Modal,
   Radio,
   Select,
   Spin,
   Table,
   Typography,
 } from 'antd';
+import UniversalModal from '../../../components/Modal/UniversalModal';
 import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useMemo, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -124,7 +124,8 @@ const PatientHistory = () => {
 
       // Manejo del terapeuta con verificación segura
       if (historyData?.therapist) {
-        setTherapist(historyData.therapist.full_name || '');
+        const therapistName = `${historyData.therapist.paternal_lastname || ''} ${historyData.therapist.maternal_lastname || ''} ${historyData.therapist.name || ''}`.trim();
+        setTherapist(therapistName);
         setSelectedTherapistId(historyData.therapist.id || null);
       } else {
         setTherapist(null);
@@ -189,8 +190,9 @@ const PatientHistory = () => {
     if (selectedTherapistId) {
       const selected = staff.find((t) => t.id === selectedTherapistId);
       if (selected) {
-        setTherapist(selected.full_name);
-        form.setFieldsValue({ therapist: selected.full_name });
+        const therapistName = `${selected.paternal_lastname || ''} ${selected.maternal_lastname || ''} ${selected.name || ''}`.trim();
+        setTherapist(therapistName);
+        form.setFieldsValue({ therapist: therapistName });
       }
     }
     setIsModalVisible(false);
@@ -220,6 +222,11 @@ const PatientHistory = () => {
       return;
     }
 
+    if (!selectedAppointment?.payment_type_id) {
+      message.error('La cita seleccionada no tiene un tipo de pago válido.');
+      return;
+    }
+
     const historyPayload = {
       weight: values.pesoInicial,
       last_weight: values.ultimoPeso,
@@ -241,6 +248,13 @@ const PatientHistory = () => {
       therapist_id: selectedTherapistId,
     };
 
+    // Calcular appointment_status_id basado en la fecha de la cita
+    const appointmentDate = dayjs(selectedAppointmentDate);
+    const currentDate = dayjs();
+    const appointment_status_id = appointmentDate.isBefore(currentDate, 'day')
+      ? 2  // Completada si la fecha es anterior a hoy
+      : 1; // Pendiente si la fecha es hoy o futura
+
     const appointmentPayload = {
       appointment_date: selectedAppointmentDate,
       ailments: values.dolencias,
@@ -251,10 +265,10 @@ const PatientHistory = () => {
       observation: values.observacionesAdicionales,
       initial_date: dayjs(values.fechaInicio).format('YYYY-MM-DD'),
       final_date: dayjs(values.fechaInicio).add(5, 'day').format('YYYY-MM-DD'),
-      appointment_type: 'CC',
-      payment: '50.00',
-      appointment_status_id: 2,
-      payment_type_id: 2,
+      appointment_type: selectedAppointment?.appointment_type || 'CC',
+      payment: selectedAppointment?.payment || '50.00',
+      appointment_status_id: appointment_status_id,
+      payment_type_id: selectedAppointment?.payment_type_id || null,
       patient_id: patientHistory?.data?.patient?.id,
       therapist_id: selectedTherapistId,
     };
@@ -278,14 +292,23 @@ const PatientHistory = () => {
         <Radio
           checked={selectedTherapistId === id}
           onChange={() => handleSelectTherapist(id)}
-          style={{ color: '#ffffff' }}
         />
       ),
       width: 150,
     },
     {
-      title: 'Terapeuta',
-      dataIndex: 'full_name',
+      title: 'Apellido Paterno',
+      dataIndex: 'paternal_lastname',
+      key: 'paternal_lastname',
+    },
+    {
+      title: 'Apellido Materno', 
+      dataIndex: 'maternal_lastname',
+      key: 'maternal_lastname',
+    },
+    {
+      title: 'Nombre',
+      dataIndex: 'name',
       key: 'name',
     },
   ];
@@ -589,12 +612,15 @@ const PatientHistory = () => {
             </div>
           </Form>
         </Card>
-        <Modal
+        <UniversalModal
           title="Lista de Terapeutas"
           open={isModalVisible}
           onOk={handleOk}
           onCancel={handleCancel}
-          width={800}
+          width={730}
+          className="therapist-list-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
           footer={[
             <Button key="back" onClick={handleCancel}>
               Cancelar
@@ -624,13 +650,17 @@ const PatientHistory = () => {
             pagination={false}
             rowClassName={() => styles.tableRow}
           />
-        </Modal>
-        <Modal
+        </UniversalModal>
+        <UniversalModal
+          title="Vista Previa - Ticket"
           open={showTicketModal}
           onCancel={() => setShowTicketModal(false)}
           footer={null}
           width={420}
-          bodyStyle={{ padding: 0 }}
+          className="ticket-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
           {selectedAppointment && (
             <PDFViewer width="100%" height={600} showToolbar={true}>
@@ -660,13 +690,17 @@ const PatientHistory = () => {
               />
             </PDFViewer>
           )}
-        </Modal>
-        <Modal
+        </UniversalModal>
+        <UniversalModal
+          title="Vista Previa - Ficha"
           open={showFichaModal}
           onCancel={() => setShowFichaModal(false)}
           footer={null}
           width={420}
-          bodyStyle={{ padding: 0 }}
+          className="ficha-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
           {selectedAppointment && patientHistory?.data && (
             <PDFViewer width="100%" height={600} showToolbar={true}>
@@ -678,7 +712,7 @@ const PatientHistory = () => {
               />
             </PDFViewer>
           )}
-        </Modal>
+        </UniversalModal>
       </div>
   );
 };

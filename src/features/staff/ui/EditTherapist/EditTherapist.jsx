@@ -1,8 +1,9 @@
-import { Form, Modal, notification } from 'antd';
+import { Form, notification } from 'antd';
 import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { useStaff } from '../../hook/staffHook';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 
 // Reutiliza los mismos fields que para crear
 const fields = [
@@ -232,14 +233,13 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
     `${therapist.paternal_lastname || ''} ${therapist.maternal_lastname || ''} ${therapist.name || ''}`.trim();
 
   return (
-    <Modal
+    <UniversalModal
       title={`Editar Terapeuta: ${modalTitle}`}
       open={true}
       onCancel={onClose}
       footer={null}
       width={950}
-      centered
-      destroyOnClose
+      className="edit-therapist-modal modal-themed"
     >
       <FormGenerator
         form={form}
@@ -249,7 +249,7 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
         onCancel={onClose}
         loading={loading}
       />
-    </Modal>
+    </UniversalModal>
   );
 };
 

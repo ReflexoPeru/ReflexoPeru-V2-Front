@@ -4,7 +4,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
-import { Modal, Spin, Flex } from 'antd';
+import { Spin, Flex } from 'antd';
+import UniversalModal from '../../../components/Modal/UniversalModal';
 import { LoadingOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useCalendar } from '../hook/calendarHook';
@@ -47,11 +48,11 @@ const Calendario = () => {
   const getEventColor = (statusId) => {
     switch (statusId) {
       case 1:
-        return '#FFA500';
+        return 'var(--color-warning)';
       case 2:
-        return '#4CAF50';
+        return 'var(--color-primary)';
       default:
-        return '#888';
+        return 'var(--color-text-tertiary)';
     }
   };
 
@@ -160,13 +161,15 @@ const Calendario = () => {
         </div>
       </div>
 
-      <Modal
+      <UniversalModal
         title="Detalles de la Cita"
         open={modalVisible}
         onCancel={handleModalClose}
         footer={null}
-        maskClosable={true}
         width={600}
+        className="calendar-modal modal-themed"
+        destroyOnClose={true}
+        centered={true}
       >
         {selectedEvent && (
           <div style={{ color: 'var(--color-text-primary)' }}>
@@ -211,7 +214,7 @@ const Calendario = () => {
             </p>
           </div>
         )}
-      </Modal>
+      </UniversalModal>
     </div>
   );
 };

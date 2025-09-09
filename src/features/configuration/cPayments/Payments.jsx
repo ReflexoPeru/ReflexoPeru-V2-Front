@@ -8,7 +8,6 @@ import {
   Form,
   Input,
   message,
-  ConfigProvider,
   Popconfirm,
 } from 'antd';
 import BaseModal from '../../../components/Modal/BaseModalPayments/BaseModalPayments';
@@ -304,50 +303,7 @@ const Payments = () => {
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#0066FF',
-          colorSuccess: '#52C41A',
-          colorWarning: '#FAAD14',
-          colorError: '#FF4D4F',
-          borderRadius: 6,
-          colorBgContainer: '#FFFFFF',
-          colorText: '#333333',
-        },
-        components: {
-          Button: {
-            primaryShadow: 'none',
-          },
-          Table: {
-            headerBg: '#FAFAFA',
-            headerColor: '#333333',
-          },
-          Button: {
-            controlHeight: 40,
-            borderRadius: 6,
-            colorPrimary: '#4CAF50',
-            colorTextLightSolid: '#ffffff',
-            colorBgContainer: '#333333',
-            colorText: '#ffffff',
-            colorBorder: '#333333',
-          },
-          Popconfirm: {
-            borderRadius: 8,
-            padding: 12,
-          },
-          Popover: {
-            colorBgElevated: '#000',
-            colorText: '#ffffff',
-          },
-        },
-        token: {
-          colorPrimary: '#4CAF50',
-          colorText: '#ffffff',
-        },
-      }}
-    >
-      <div className={styles.container}>
+    <div className={styles.container}>
         {/* Tipos de Pago */}
         <div>
           <div className={styles.sectionHeader}>
@@ -452,7 +408,6 @@ const Payments = () => {
           )}
         </BaseModal>
       </div>
-    </ConfigProvider>
   );
 };
 

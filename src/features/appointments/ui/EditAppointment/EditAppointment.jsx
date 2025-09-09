@@ -9,7 +9,6 @@
 import {
   Button,
   Form,
-  Modal,
   Radio,
   Table,
   notification,
@@ -23,6 +22,7 @@ import {
   Space,
   Divider,
 } from 'antd';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import CustomSearch from '../../../../components/Search/CustomSearch';
@@ -819,11 +819,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                 <Space>
                   <Button
                     onClick={() => onEditSuccess && onEditSuccess()}
-                    style={{
-                      backgroundColor: '#666666',
-                      borderColor: '#666666',
-                      color: '#ffffff',
-                    }}
+                    className="edit-appointment-cancel-btn"
                   >
                     Cancelar
                   </Button>
@@ -855,10 +851,14 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           MODAL: SELECCIÓN DE PACIENTE
           Permite buscar y seleccionar un paciente existente
         */}
-        <Modal
+        <UniversalModal
           title="Seleccionar Paciente"
           open={isSelectPatientModalOpen}
           onCancel={() => setIsSelectPatientModalOpen(false)}
+          className="edit-appointment-select-patient-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
+          width={800}
           footer={[
             <Button
               key="cancel"
@@ -892,25 +892,27 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               onClick: () => setSelectedRowKey(record.key),
             })}
           />
-        </Modal>
+        </UniversalModal>
 
         {/* 
           MODAL: CREACIÓN DE PACIENTE
           Permite crear un nuevo paciente desde el formulario de edición
         */}
-        <Modal
+        <UniversalModal
           title="Crear Nuevo Paciente"
           open={isCreatePatientModalOpen}
           onCancel={() => setIsCreatePatientModalOpen(false)}
           footer={null}
           width={500}
-          destroyOnClose
+          className="edit-appointment-create-patient-modal modal-themed"
+          destroyOnClose={true}
+          centered={true}
         >
           <NewPatient
             onCancel={() => setIsCreatePatientModalOpen(false)}
             onSubmit={handlePatientCreated}
           />
-        </Modal>
+        </UniversalModal>
       </div>
   );
 };

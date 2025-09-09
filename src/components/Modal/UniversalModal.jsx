@@ -1,9 +1,13 @@
+import React from 'react';
 import { Modal } from 'antd';
-import { useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-// components/Modal/EditModal.jsx
+import styles from './UniversalModal.module.css';
 
-const EditModal = ({
+/**
+ * Modal universal que se adapta automáticamente al tema global
+ * Reemplaza todos los modales personalizados para garantizar consistencia
+ */
+const UniversalModal = ({
   title,
   open,
   onCancel,
@@ -14,15 +18,19 @@ const EditModal = ({
   cancelText = 'Cancelar',
   loading = false,
   destroyOnClose = true,
+  centered = true,
+  footer = undefined, // Si es null, no muestra footer
+  className = '',
+  ...otherProps
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   // Manejar eventos de teclado
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (event) => {
       if (!open) return;
 
-      if (event.key === 'Enter') {
+      if (event.key === 'Enter' && onOk) {
         event.preventDefault();
         onOk();
       } else if (event.key === 'Escape') {
@@ -47,7 +55,7 @@ const EditModal = ({
           color: 'var(--color-text-primary)',
           fontFamily: 'var(--font-family)',
           fontWeight: 600,
-          fontSize: '16px'
+          fontSize: '18px'
         }}>
           {title}
         </span>
@@ -59,33 +67,36 @@ const EditModal = ({
       okText={okText}
       cancelText={cancelText}
       destroyOnClose={destroyOnClose}
+      centered={centered}
+      footer={footer}
+      className={`${styles.universalModal} universal-modal ${className}`}
       okButtonProps={{ loading }}
-      className="edit-modal-themed"
       styles={{
         header: {
-          backgroundColor: 'var(--color-background-primary)',
-          borderBottom: '1px solid var(--color-border-primary)',
-          padding: '16px 24px',
+          backgroundColor: 'var(--color-background-primary) !important',
+          borderBottom: '1px solid var(--color-border-primary) !important',
+          padding: '16px 24px !important',
         },
         body: {
-          backgroundColor: 'var(--color-background-primary)',
-          padding: '20px 24px',
-          color: 'var(--color-text-primary)',
+          backgroundColor: 'var(--color-background-primary) !important',
+          padding: '20px 24px !important',
+          color: 'var(--color-text-primary) !important',
         },
         footer: {
-          backgroundColor: 'var(--color-background-primary)',
-          borderTop: '1px solid var(--color-border-primary)',
-          padding: '16px 24px',
+          backgroundColor: 'var(--color-background-primary) !important',
+          borderTop: '1px solid var(--color-border-primary) !important',
+          padding: '16px 24px !important',
         },
         content: {
-          backgroundColor: 'var(--color-background-primary)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--color-border-primary)',
+          backgroundColor: 'var(--color-background-primary) !important',
+          borderRadius: 'var(--radius-lg) !important',
+          border: '1px solid var(--color-border-primary) !important',
         },
         mask: {
           backgroundColor: 'rgba(0, 0, 0, 0.6)',
         },
       }}
+      {...otherProps}
     >
       <div style={{
         backgroundColor: 'var(--color-background-primary)',
@@ -98,4 +109,4 @@ const EditModal = ({
   );
 };
 
-export default EditModal;
+export default UniversalModal;

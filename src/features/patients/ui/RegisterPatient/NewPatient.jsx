@@ -141,6 +141,15 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const { submitNewPatient } = usePatients();
   const navigate = useNavigate();
 
+  // Filtrar el título cuando se usa en modal
+  const getFields = () => {
+    if (isModal) {
+      // Remover el primer campo que es el título "REGISTRAR PACIENTE"
+      return fields.slice(1);
+    }
+    return fields;
+  };
+
   const handleSubmit = async (formData) => {
     try {
       if (
@@ -215,7 +224,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
 
   return (
     <FormGenerator
-      fields={fields}
+      fields={getFields()}
       onCancel={handleCancel}
       mode="create"
       onSubmit={handleSubmit}

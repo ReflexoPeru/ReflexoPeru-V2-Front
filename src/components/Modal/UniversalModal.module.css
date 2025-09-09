@@ -1,0 +1,253 @@
+/* Estilos específicos para el Modal Universal que garantizan adaptación de tema */
+
+.universalModal {
+  /* Asegurar que el modal use las variables de tema */
+  --ant-color-bg-elevated: var(--color-background-primary) !important;
+  --ant-color-text: var(--color-text-primary) !important;
+  --ant-color-text-heading: var(--color-text-primary) !important;
+  --ant-color-border: var(--color-border-primary) !important;
+  --ant-border-radius: var(--radius-lg) !important;
+}
+
+/* Contenido del modal */
+.universalModal .ant-modal-content {
+  background-color: var(--color-background-primary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-strong) !important;
+}
+
+/* Header del modal */
+.universalModal .ant-modal-header {
+  background-color: var(--color-background-primary) !important;
+  border-bottom: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* Título del modal */
+.universalModal .ant-modal-title {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
+
+/* Body del modal */
+.universalModal .ant-modal-body {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+  padding: 20px 24px !important;
+}
+
+/* Footer del modal */
+.universalModal .ant-modal-footer {
+  background-color: var(--color-background-primary) !important;
+  border-top: 1px solid var(--color-border-primary) !important;
+  padding: 16px 24px !important;
+}
+
+/* Botones del modal */
+.universalModal .ant-btn {
+  font-family: var(--font-family) !important;
+  border-radius: var(--radius-md) !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.universalModal .ant-btn-default {
+  background-color: var(--color-background-secondary) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.universalModal .ant-btn-default:hover {
+  background-color: var(--color-background-tertiary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.universalModal .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.universalModal .ant-btn-primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* Botón de cerrar */
+.universalModal .ant-modal-close {
+  color: var(--color-text-secondary) !important;
+  background-color: transparent !important;
+  border: none !important;
+  transition: all var(--transition-normal) !important;
+}
+
+.universalModal .ant-modal-close:hover {
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* Formularios dentro del modal */
+.universalModal .ant-form-item-label > label {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  font-weight: var(--font-weight-medium) !important;
+}
+
+.universalModal .ant-form-item-required::before {
+  color: var(--color-error) !important;
+}
+
+.universalModal .ant-form-item-explain-error {
+  color: var(--color-error) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* Inputs dentro del modal */
+.universalModal .ant-input,
+.universalModal .ant-input-affix-wrapper {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+  font-family: var(--font-family) !important;
+}
+
+.universalModal .ant-input:focus,
+.universalModal .ant-input-affix-wrapper:focus,
+.universalModal .ant-input-affix-wrapper-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+.universalModal .ant-input::placeholder {
+  color: var(--color-text-placeholder) !important;
+}
+
+/* Selects dentro del modal */
+.universalModal .ant-select .ant-select-selector {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.universalModal .ant-select-focused .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+.universalModal .ant-select-selection-placeholder {
+  color: var(--color-text-placeholder) !important;
+}
+
+/* DatePickers dentro del modal */
+.universalModal .ant-picker {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.universalModal .ant-picker:hover,
+.universalModal .ant-picker-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+/* Switches dentro del modal */
+.universalModal .ant-switch {
+  background-color: var(--color-text-quaternary) !important;
+}
+
+.universalModal .ant-switch-checked {
+  background-color: var(--color-primary) !important;
+}
+
+/* Checkboxes dentro del modal */
+.universalModal .ant-checkbox-wrapper {
+  color: var(--color-text-primary) !important;
+}
+
+.universalModal .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* Radio buttons dentro del modal */
+.universalModal .ant-radio-wrapper {
+  color: var(--color-text-primary) !important;
+}
+
+.universalModal .ant-radio-checked .ant-radio-inner {
+  border-color: var(--color-primary) !important;
+}
+
+.universalModal .ant-radio-checked .ant-radio-inner::after {
+  background-color: var(--color-primary) !important;
+}
+
+/* Cascaders dentro del modal */
+.universalModal .ant-cascader .ant-cascader-picker {
+  background-color: var(--color-input-bg) !important;
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-input-text) !important;
+}
+
+.universalModal .ant-cascader-focused .ant-cascader-picker {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+/* Titles dentro del modal */
+.universalModal h1,
+.universalModal h2,
+.universalModal h3,
+.universalModal h4,
+.universalModal h5,
+.universalModal h6 {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* Dividers dentro del modal */
+.universalModal .ant-divider {
+  border-color: var(--color-border-primary) !important;
+}
+
+/* Tables dentro del modal */
+.universalModal .ant-table {
+  background-color: var(--color-background-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.universalModal .ant-table-thead > tr > th {
+  background-color: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border-primary) !important;
+}
+
+.universalModal .ant-table-tbody > tr > td {
+  border-color: var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.universalModal .ant-table-tbody > tr:hover > td {
+  background-color: var(--color-background-secondary) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .universalModal .ant-modal {
+    margin: 8px !important;
+  }
+  
+  .universalModal .ant-modal-content {
+    border-radius: var(--radius-md) !important;
+  }
+  
+  .universalModal .ant-modal-header,
+  .universalModal .ant-modal-body,
+  .universalModal .ant-modal-footer {
+    padding: 16px !important;
+  }
+}

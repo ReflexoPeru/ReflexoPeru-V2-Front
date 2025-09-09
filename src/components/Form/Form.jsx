@@ -25,12 +25,14 @@ const FormComponent = forwardRef(
       onCancel = () => {},
       form: externalForm,
       onPriceChange,
+      loading: externalLoading = false,
     },
     ref,
   ) => {
     const [internalForm] = useForm();
     const form = externalForm || internalForm;
-    const [loading, setLoading] = useState(false);
+    const [internalLoadingState, setInternalLoadingState] = useState(false);
+    const loading = externalLoading || internalLoadingState;
     const [isPhoneRequired, setIsPhoneRequired] = useState(true);
     const [selectedPatient, setSelectedPatient] = useState('XD');
 

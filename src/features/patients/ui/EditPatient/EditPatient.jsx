@@ -1,16 +1,18 @@
-import { Form, Modal, notification } from 'antd';
+import { Form, notification } from 'antd';
 import dayjs from '../../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import FormGenerator from '../../../../components/Form/Form';
 import { usePatients } from '../../hook/patientsHook';
+import UniversalModal from '../../../../components/Modal/UniversalModal';
 
-// Reutilizamos los mismos campos del formulario de creación
+// Campos idénticos al registro que funciona
 const fields = [
+
   {
     type: 'customRow',
     fields: [
       {
-        name: 'document_type',
+        name: 'document_type_id',
         label: 'Tipo de Documento',
         type: 'typeOfDocument',
         span: 8,
@@ -159,7 +161,7 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       name: data.name || '',
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
-      document_type:
+      document_type_id:
         data.document_type !== undefined && data.document_type !== null
           ? String(data.document_type)
           : undefined,
@@ -187,12 +189,11 @@ const EditPatient = ({ patient, onClose, onSave }) => {
   const handleSubmit = async (formData) => {
     try {
       setLoading(true);
-      // Convertir el tipo de documento a número y renombrar el campo
+      // Convertir el tipo de documento a número
       const dataToSend = {
         ...formData,
-        document_type_id: Number(formData.document_type),
+        document_type_id: Number(formData.document_type_id),
       };
-      delete dataToSend.document_type;
 
       // Solo enviar email si cambió
       if (formData.email === patient.email) {
@@ -224,14 +225,13 @@ const EditPatient = ({ patient, onClose, onSave }) => {
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
 
   return (
-    <Modal
+    <UniversalModal
       title={`Editar Paciente: ${modalTitle}`}
       open={true}
       onCancel={onClose}
       footer={null}
       width={950}
-      centered
-      destroyOnClose
+      className="edit-patient-modal modal-themed"
     >
       <FormGenerator
         form={form}
@@ -241,7 +241,7 @@ const EditPatient = ({ patient, onClose, onSave }) => {
         onCancel={onClose}
         loading={loading}
       />
-    </Modal>
+    </UniversalModal>
   );
 };
 

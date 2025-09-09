@@ -18,7 +18,7 @@ import {
   AddressBook, // Alternativa para Terapeutas
   Wrench,
 } from '@phosphor-icons/react';
-import { ConfigProvider, Menu } from 'antd';
+import { Menu } from 'antd';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 
@@ -200,44 +200,20 @@ export default function MenuDashboard() {
   ////////////////////////////////////////////////////////
   return (
     <>
-      <ConfigProvider
-         theme={{
-           components: {
-             Menu: {
-               itemMarginInline: 0,
-               iconSize: 18,
-               itemColor: isDarkMode ? '#ffffff' : '#333333',
-               itemHoverColor: isDarkMode ? '#ffffff' : '#333333',
-               itemHoverBg: 'rgba(28, 181, 74, 0.15)',
-               itemSelectedColor: '#ffffff',
-               itemSelectedBg: '#1CB54A',
-               itemActiveBg: '#1CB54A',
-               subMenuItemSelectedColor: '#1CB54A',
-               // Aumentar el tamaño de la letra
-               fontSize: 15, // Tamaño base aumentado
-             },
-             menuItem: {
-               color: isDarkMode ? '#ffffff' : '#333333',
-               backgroundColor: isDarkMode ? '#1E1E1E' : '#ffffff',
-             },
-           },
-           token: {
-             colorBgBase: isDarkMode ? '#1E1E1E' : '#ffffff',
-           },
-         }}
-      >
-        <Menu
-          mode={isMenuMode ? 'inline' : 'vertical'}
-          items={items}
-          style={{
-            borderInlineEnd: 'none',
-            backgroundColor: isDarkMode ? '#1E1E1E' : '#ffffff',
-          }}
-          defaultSelectedKeys={['1']}
-          openKeys={stateOpenKeys}
-          onOpenChange={onOpenChange}
-        />
-      </ConfigProvider>
+      <Menu
+        theme={isDarkMode ? 'dark' : 'light'}
+        mode={isMenuMode ? 'inline' : 'vertical'}
+        defaultSelectedKeys={['1']}
+        style={{
+          height: '100%',
+          borderRight: 0,
+          fontFamily: 'var(--font-family)',
+          backgroundColor: 'transparent',
+        }}
+        items={items}
+        openKeys={stateOpenKeys}
+        onOpenChange={onOpenChange}
+      />
     </>
   );
 }
