@@ -109,10 +109,12 @@ export const useDailyCashReport = () => {
       const res = await getDailyCash(formattedDate);
       setData(res);
 
-      if (Array.isArray(res) && res.length === 0) {
+      if (res && typeof res === 'object' && Object.keys(res).length === 0) {
         showToast('warning', 'No se encontraron datos para generar el reporte.');
-      } else {
+      } else if (res && Object.keys(res).length > 0) {
         showToast('success', 'Reporte generado exitosamente.');
+      } else {
+        showToast('warning', 'No se encontraron datos para generar el reporte.');
       }
     } catch (err) {
       setError(err);

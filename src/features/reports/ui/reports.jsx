@@ -341,7 +341,7 @@ const Reporte = () => {
       const dataToShow = editedCajaData || cajaData;
 
       content =
-        dataToShow && dataToShow.appointments && dataToShow.appointments.length > 0 ? (
+        dataToShow && Object.keys(dataToShow).length > 0 ? (
           <PDFViewer
             key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
             width="100%"
