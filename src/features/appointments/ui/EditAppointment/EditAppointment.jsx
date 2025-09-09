@@ -874,7 +874,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               Seleccionar
             </Button>,
           ]}
-          width={500}
         >
           <CustomSearch
             placeholder="Buscar por Apellido/Nombre o DNI..."
