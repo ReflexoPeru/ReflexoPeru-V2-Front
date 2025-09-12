@@ -84,6 +84,10 @@ function ChangesPassword() {
                   <Input
                     type={passwordVisible ? 'text' : 'password'}
                     placeholder="Contraseña"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                   />
                 </div>
               </Form.Item>
@@ -127,6 +131,10 @@ function ChangesPassword() {
                   <Input
                     type={passwordVisible2 ? 'text' : 'password'}
                     placeholder="Repite tu contraseña"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
                   />
                 </div>
               </Form.Item>

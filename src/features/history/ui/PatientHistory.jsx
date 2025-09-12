@@ -50,15 +50,25 @@ const PatientHistory = () => {
   const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm } = useStaff();
-  const { data: patientHistory } = usePatientHistory(id);
+  const { data: patientHistory, refetch: refetchHistory } = usePatientHistory(id);
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
   const {
     appointments,
     lastAppointment,
     loadingAppointments,
     appointmentsError,
+    refetchAppointments,
   } = usePatientAppointments(id);
-  const { updateHistory, loading: updatingHistory } = useUpdatePatientHistory();
+  
+  // Función para refrescar todos los datos
+  const refreshAllData = async () => {
+    await Promise.all([
+      refetchHistory(),
+      refetchAppointments()
+    ]);
+  };
+  
+  const { updateHistory, loading: updatingHistory } = useUpdatePatientHistory(id, refreshAllData);
   const { updateAppointment } = useUpdateAppointment();
 
   // MEMORIZAR LAS FECHAS DE CITAS
@@ -274,9 +284,16 @@ const PatientHistory = () => {
     };
 
     try {
-      await updateHistory(historyId, historyPayload);
-      await updateAppointment(appointmentId, appointmentPayload);
-      navigate(-1);
+      const historyResult = await updateHistory(historyId, historyPayload);
+      const appointmentResult = await updateAppointment(appointmentId, appointmentPayload);
+      
+      // Solo navegar si ambas actualizaciones fueron exitosas
+      if (historyResult.success && appointmentResult.success) {
+        // Esperar un momento para que se refresquen los datos
+        setTimeout(() => {
+          navigate(-1);
+        }, 1000);
+      }
     } catch (e) {
       console.error('Error actualizando historial y cita:', e);
     }

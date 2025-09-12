@@ -22,10 +22,15 @@ export const createUser = async (userData) => {
       ...userData,
       country_id: 183, // Perú por defecto
     };
+    
+    console.log('Datos recibidos en createUser:', userData);
+    console.log('Payload final a enviar:', payload);
+    
     const res = await post('users', payload);
     return res.data;
   } catch (error) {
     console.error('Error en createUser:', error);
+    console.error('Error response data:', error.response?.data);
     throw error;
   }
 };

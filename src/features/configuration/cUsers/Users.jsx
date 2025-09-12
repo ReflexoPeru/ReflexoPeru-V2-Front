@@ -226,7 +226,7 @@ const Users = () => {
 
     // Establecer valores por defecto después de abrir el modal
     setTimeout(() => {
-      form.setFieldsValue({
+      const defaultValues = {
         document_number: '',
         name: '',
         paternal_lastname: '',
@@ -238,9 +238,11 @@ const Users = () => {
         account_statement: true,
         document_type_id: undefined,
         role_id: undefined,
-        password: '',
-      });
-    }, 0);
+      };
+      
+      console.log('Estableciendo valores por defecto:', defaultValues);
+      form.setFieldsValue(defaultValues);
+    }, 100);
   };
 
   const handleDeactivate = async (record) => {
@@ -267,6 +269,8 @@ const Users = () => {
 
   const handleSubmit = async (values) => {
     try {
+      console.log('Valores del formulario:', values);
+      
       const payload = {
         document_number: values.document_number?.trim(),
         name: capitalizeFirstLetter(values.name?.trim()),
@@ -285,6 +289,8 @@ const Users = () => {
         role_id: values.role_id,
       };
 
+      console.log('Payload a enviar:', payload);
+
       if (action === 'create') {
         await addUser(payload);
         message.success('Usuario creado exitosamente');
@@ -295,6 +301,8 @@ const Users = () => {
 
       handleModalCancel();
     } catch (error) {
+      console.error('Error completo:', error);
+      console.error('Error response:', error.response?.data);
       message.error(
         error.response?.data?.message || 'Error al procesar la solicitud',
       );
@@ -401,7 +409,7 @@ const Users = () => {
         <UniversalModal
           open={modalVisible}
           onCancel={handleModalCancel}
-          onOk={handleSubmit}
+          onOk={() => form.submit()}
           title={
             action === 'create' ? 'Agregar nuevo usuario' : 'Editar usuario'
           }

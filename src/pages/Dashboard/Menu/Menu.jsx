@@ -20,7 +20,7 @@ import {
 } from '@phosphor-icons/react';
 import { Menu } from 'antd';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useLocation } from 'react-router';
 
 import { useAuth } from '../../../routes/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
@@ -30,6 +30,7 @@ export default function MenuDashboard() {
   const { isDarkMode } = useTheme();
   const [isMenuMode, setIsMenuMode] = useState(window.innerHeight > 804);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -40,6 +41,29 @@ export default function MenuDashboard() {
 
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Función simple para obtener las claves seleccionadas (solo resaltado)
+  const getSelectedKeys = () => {
+    const currentPath = location.pathname;
+    
+    // Verificar elementos del submenú de configuraciones
+    if (currentPath === '/configPagos') return ['33'];
+    if (currentPath === '/configPerfil') return ['16'];
+    if (currentPath === '/configSistema') return ['17'];
+    if (currentPath === '/configUser') return ['14'];
+    
+    // Elementos principales del menú
+    if (currentPath === '/Inicio' || currentPath === '/' || currentPath === '') return ['1'];
+    if (currentPath === '/pacientes') return ['3'];
+    if (currentPath === '/citas') return ['5'];
+    if (currentPath === '/citasCompletas') return ['6'];
+    if (currentPath === '/terapeutas') return ['8'];
+    if (currentPath === '/reportes') return ['9'];
+    if (currentPath === '/calendar') return ['10'];
+    if (currentPath === '/estadisticas') return ['11'];
+    
+    return [];
+  };
 
   const items = [
     {

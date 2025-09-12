@@ -175,12 +175,25 @@ export const ThemeProvider = ({ children }) => {
     }
   });
 
-  // Aplicar el atributo data-theme al documento
+  // Aplicar el atributo data-theme al documento con transición suave
   useEffect(() => {
-    document.documentElement.setAttribute(
-      'data-theme', 
-      isDarkMode ? 'dark' : 'light'
-    );
+    // Agregar clase de transición antes del cambio
+    document.documentElement.classList.add('theme-transitioning');
+    
+    // Pequeño delay para que la transición se vea
+    const timeoutId = setTimeout(() => {
+      document.documentElement.setAttribute(
+        'data-theme', 
+        isDarkMode ? 'dark' : 'light'
+      );
+      
+      // Remover clase de transición después del cambio
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 300);
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
   }, [isDarkMode]);
 
   // Función para alternar tema

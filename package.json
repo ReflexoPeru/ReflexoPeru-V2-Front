@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run copy-config",
+    "copy-config": "cp public/.htaccess dist/ && cp public/web.config dist/ && cp public/_redirects dist/",
     "lint": "npx biome check --fix",
     "preview": "vite preview",
     "stylelint": "npx stylelint \"**/*.{css,scss,sass}\" --fix"

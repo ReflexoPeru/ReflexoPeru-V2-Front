@@ -83,15 +83,39 @@
   font-size: 12px !important;
 }
 
-/* Animaciones */
+/* Animaciones premium */
 @keyframes iconPulse {
   0% { transform: scale(1); }
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
 
+@keyframes switchSlide {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes themeGlow {
+  0% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(28, 181, 74, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0); }
+}
+
 .icon.active {
-  animation: iconPulse 0.3s ease-in-out;
+  animation: iconPulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.switch {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.switch:hover {
+  animation: switchSlide 0.3s ease-in-out;
+}
+
+.toggleWrapper:active {
+  animation: themeGlow 0.6s ease-out;
 }
 
 /* Responsive */

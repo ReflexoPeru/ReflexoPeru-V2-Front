@@ -16,3 +16,69 @@ html,body,#root{
 .ant-table-tbody > tr > td {
   font-size: 13.8px !important;
 }
+
+/* ================================================== */
+/* TRANSICIONES PREMIUM PARA CAMBIO DE TEMA           */
+/* ================================================== */
+
+/* Transición global para cambio de tema */
+.theme-transitioning * {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    fill 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    stroke 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Transición específica para elementos críticos */
+.theme-transitioning body {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-transitioning .ant-layout {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-transitioning .ant-menu {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-transitioning .ant-card {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-transitioning .ant-input {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.theme-transitioning .ant-button {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Animación de fade para el cambio de tema */
+@keyframes themeFadeIn {
+  from {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.theme-transitioning {
+  animation: themeFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -40,15 +40,17 @@
     transform: translateX(2px) !important;
 }
 
-/* Item activo */
+/* Item activo - Verde pastel */
 :global(.ant-menu-item-selected) {
-    background-color: var(--color-primary) !important;
-    color: #ffffff !important;
+    background-color: #c8e6c9 !important; /* Verde pastel claro */
+    color: #2e7d32 !important; /* Verde oscuro para contraste */
     font-weight: 600 !important;
+    border-left: 4px solid #4caf50 !important;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
 }
 
 :global(.ant-menu-item-selected:hover) {
-    background-color: var(--color-primary-hover) !important;
+    background-color: #4caf50 !important;
     color: #ffffff !important;
     transform: translateX(2px) !important;
 }
@@ -107,20 +109,56 @@
     margin: 0 !important;
 }
 
-/* Submenu item activo */
-:global(.ant-menu-submenu .ant-menu-item-selected) {
-    background-color: var(--color-primary) !important;
+/* Submenu item activo - Verde pastel */
+:global(.ant-menu-submenu .ant-menu-item-selected),
+:global(.ant-menu-submenu .ant-menu .ant-menu-item-selected) {
+    background-color: #c8e6c9 !important; /* Verde pastel claro */
+    color: #2e7d32 !important; /* Verde oscuro para contraste */
+    border-left: 4px solid #4caf50 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+}
+
+:global(.ant-menu-submenu .ant-menu-item-selected::before),
+:global(.ant-menu-submenu .ant-menu .ant-menu-item-selected::before) {
+    color: #2e7d32 !important;
+    font-weight: bold !important;
+}
+
+:global(.ant-menu-submenu .ant-menu-item-selected:hover),
+:global(.ant-menu-submenu .ant-menu .ant-menu-item-selected:hover) {
+    background-color: #4caf50 !important;
     color: #ffffff !important;
     border-left-color: #ffffff !important;
 }
 
-:global(.ant-menu-submenu .ant-menu-item-selected::before) {
+:global(.ant-menu-submenu .ant-menu-item-selected:hover::before),
+:global(.ant-menu-submenu .ant-menu .ant-menu-item-selected:hover::before) {
     color: #ffffff !important;
 }
 
-:global(.ant-menu-submenu .ant-menu-item-selected:hover) {
-    background-color: var(--color-primary-hover) !important;
+/* Selectores adicionales para submenú - Verde pastel */
+:global(.ant-menu-submenu .ant-menu .ant-menu-item.ant-menu-item-selected) {
+    background-color: #c8e6c9 !important;
+    color: #2e7d32 !important;
+    border-left: 4px solid #4caf50 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2) !important;
+}
+
+:global(.ant-menu-submenu .ant-menu .ant-menu-item.ant-menu-item-selected:hover) {
+    background-color: #4caf50 !important;
+    color: #ffffff !important;
     border-left-color: #ffffff !important;
+}
+
+:global(.ant-menu-submenu .ant-menu .ant-menu-item.ant-menu-item-selected::before) {
+    color: #2e7d32 !important;
+    font-weight: bold !important;
+}
+
+:global(.ant-menu-submenu .ant-menu .ant-menu-item.ant-menu-item-selected:hover::before) {
+    color: #ffffff !important;
 }
 
 /* Iconos más pequeños */
@@ -149,5 +187,37 @@
 :global(.ant-menu) {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+}
+
+/* Tema oscuro - Verde pastel */
+:global(.ant-menu-dark .ant-menu-item-selected) {
+    background-color: #2e4a3e !important; /* Verde pastel oscuro */
+    color: #a5d6a7 !important; /* Verde claro para contraste */
+    border-left-color: #66bb6a !important;
+}
+
+:global(.ant-menu-dark .ant-menu-item-selected:hover) {
+    background-color: #66bb6a !important;
+    color: #ffffff !important;
+}
+
+:global(.ant-menu-dark .ant-menu-submenu .ant-menu-item-selected) {
+    background-color: #2e4a3e !important; /* Verde pastel oscuro */
+    color: #a5d6a7 !important; /* Verde claro para contraste */
+    border-left-color: #66bb6a !important;
+}
+
+:global(.ant-menu-dark .ant-menu-submenu .ant-menu-item-selected:hover) {
+    background-color: #66bb6a !important;
+    color: #ffffff !important;
+    border-left-color: #ffffff !important;
+}
+
+:global(.ant-menu-dark .ant-menu-submenu .ant-menu-item-selected::before) {
+    color: #a5d6a7 !important;
+}
+
+:global(.ant-menu-dark .ant-menu-submenu .ant-menu-item-selected:hover::before) {
+    color: #ffffff !important;
 }
 

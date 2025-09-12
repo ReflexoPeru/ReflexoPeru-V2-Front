@@ -18,29 +18,29 @@ export const usePatientHistory = (patientId) => {
   const [error, setError] = useState(null);
   const { showToast } = useToast();
 
+  const fetchData = async () => {
+    if (!patientId) return;
+
+    setLoading(true);
+    try {
+      const response = await getPatientHistoryById(patientId);
+      setData(response);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (!patientId) return;
-
-      setLoading(true);
-      try {
-        const response = await getPatientHistoryById(patientId);
-        setData(response);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [patientId]);
 
-  return { data, loading, error };
+  return { data, loading, error, refetch: fetchData };
 };
 
 //ACTUALIZAR DATOS DE HISTORIA DEL PACIENTE
-export const useUpdatePatientHistory = () => {
+export const useUpdatePatientHistory = (patientId, onSuccess) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { showToast } = useToast();
@@ -54,6 +54,12 @@ export const useUpdatePatientHistory = () => {
         'Historia clínica actualizada correctamente',
       );
       setError(null);
+      
+      // Llamar callback de éxito si existe
+      if (onSuccess) {
+        onSuccess();
+      }
+      
       return {
         success: true,
         message: 'Historia clínica actualizada correctamente',
@@ -167,33 +173,33 @@ export const usePatientAppointments = (patientId) => {
   const [appointmentsError, setError] = useState(null);
   const { showToast } = useToast();
 
-  useEffect(() => {
+  const fetchAppointments = async () => {
     if (!patientId) return;
 
-    const fetchAppointments = async () => {
-      setLoading(true);
-      try {
-        const response = await getAppointmentsByPatientId(patientId);
-        // Ordenar citas por fecha descendente
-        const sortedAppointments = [...response].sort(
-          (a, b) => new Date(b.appointment_date) - new Date(a.appointment_date),
-        );
-        setAppointments(sortedAppointments);
-        // Establecer la última cita (primera del array ordenado)
-        setLastAppointment(sortedAppointments[0] || null);
-        setError(null);
-        showToast('busquedaPaciente');
-      } catch (error) {
-        console.error('Error al cargar las citas del paciente:', error);
-        setAppointments([]);
-        setLastAppointment(null);
-        setError(error);
-        showToast('pacienteNoEncontrado');
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    try {
+      const response = await getAppointmentsByPatientId(patientId);
+      // Ordenar citas por fecha descendente
+      const sortedAppointments = [...response].sort(
+        (a, b) => new Date(b.appointment_date) - new Date(a.appointment_date),
+      );
+      setAppointments(sortedAppointments);
+      // Establecer la última cita (primera del array ordenado)
+      setLastAppointment(sortedAppointments[0] || null);
+      setError(null);
+      showToast('busquedaPaciente');
+    } catch (error) {
+      console.error('Error al cargar las citas del paciente:', error);
+      setAppointments([]);
+      setLastAppointment(null);
+      setError(error);
+      showToast('pacienteNoEncontrado');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAppointments();
   }, [patientId]);
 
@@ -202,6 +208,7 @@ export const usePatientAppointments = (patientId) => {
     lastAppointment,
     loadingAppointments,
     appointmentsError,
+    refetchAppointments: fetchAppointments,
   };
 };
 
