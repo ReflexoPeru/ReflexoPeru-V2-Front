@@ -10,7 +10,7 @@ const ModeloTable = ({
   data,
   loading = false,
   pagination = {},
-  maxHeight = '60vh',
+  maxHeight = '65vh',
 }) => {
   const currentPage = pagination?.current || 1;
   const pageSize = pagination?.pageSize || 10;

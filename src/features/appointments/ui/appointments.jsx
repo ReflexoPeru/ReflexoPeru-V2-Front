@@ -61,7 +61,7 @@ export default function Appointments() {
       title: 'Nro Ticket',
       dataIndex: 'ticket_number',
       key: 'ticket_number',
-      width: '60px',
+      width: '70px',
     },
     {
       title: 'Paciente',
@@ -82,6 +82,7 @@ export default function Appointments() {
     {
       title: 'Fecha cita',
       dataIndex: 'appointment_date',
+      width: '70px',
       key: 'appointment_date',
       render: (date) => {
         if (!date) return '-';
@@ -110,7 +111,7 @@ export default function Appointments() {
       title: 'Creación de cita',
       dataIndex: 'created_at',
       key: 'created_at',
-      width: '150px',
+      width: '130px',
       render: (date) => {
         if (!date) return '-';
         return dayjs(date).format('DD-MM-YYYY HH:mm:ss');
@@ -361,8 +362,8 @@ export default function Appointments() {
     <div
       style={{
         height: '100%',
-        paddingTop: '50px',
-        maxWidth: 'calc(100% - 200px)',
+        paddingTop: '2.5%',
+        maxWidth: 'calc(100% - 70px)',
       }}
     >
       <div

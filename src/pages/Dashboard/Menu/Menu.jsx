@@ -129,15 +129,19 @@ export default function MenuDashboard() {
         </div>
       ),
     },
-    {
-      key: '11',
-      label: <Link to="estadisticas">Estadísticas</Link>,
-      icon: (
-        <div className={Style.icon}>
-          <ChartLine weight="regular" /> {/* o <ChartBar /> */}
-        </div>
-      ),
-    },
+    ...(userRole === 1
+      ? [
+          {
+            key: '11',
+            label: <Link to="estadisticas">Estadísticas</Link>,
+            icon: (
+              <div className={Style.icon}>
+                <ChartLine weight="regular" /> {/* o <ChartBar /> */}
+              </div>
+            ),
+          },
+        ]
+      : []),
     {
       key: '12',
       label: 'Configuraciones',

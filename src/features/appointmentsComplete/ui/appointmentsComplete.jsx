@@ -136,8 +136,8 @@ export default function AppointmentsComplete() {
     <div
       style={{
         height: '100%',
-        paddingTop: '50px',
-        maxWidth: 'calc(100% - 200px)',
+        paddingTop: '2.5%',
+        maxWidth: 'calc(100% - 70px)',
       }}
     >
       <div

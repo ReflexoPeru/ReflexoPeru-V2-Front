@@ -95,7 +95,8 @@ const router = createBrowserRouter([
           },
           {
             path: 'estadisticas',
-            element: <Dashboard />,
+            element: <ProtectedRoute allowedRoles={[1]} />,
+            children: [{ index: true, element: <Dashboard /> }],
           },
           {
             path: 'terapeutas',
