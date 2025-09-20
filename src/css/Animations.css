@@ -1,0 +1,529 @@
+/* ================================================== */
+/* SISTEMA DE ANIMACIONES PREMIUM - REFLEXO PERU V2  */
+/* ================================================== */
+
+/* ================================================== */
+/* ANIMACIONES DE ENTRADA Y SALIDA                   */
+/* ================================================== */
+
+/* Animaciones de página */
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animaciones de tarjetas */
+@keyframes cardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cardBounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes cardGlow {
+  0% { box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  100% { box-shadow: 0 8px 40px rgba(28, 181, 74, 0.2); }
+}
+
+@keyframes cardHover {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-5px) rotate(1deg); }
+}
+
+/* ================================================== */
+/* MICRO-INTERACCIONES                               */
+/* ================================================== */
+
+/* Botones premium */
+@keyframes buttonPress {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes buttonGlow {
+  0% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(28, 181, 74, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0); }
+}
+
+@keyframes buttonShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Inputs interactivos */
+@keyframes inputFocus {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+@keyframes labelFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-20px); }
+}
+
+@keyframes inputGlow {
+  0% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0.4); }
+  100% { box-shadow: 0 0 0 4px rgba(28, 181, 74, 0.1); }
+}
+
+/* ================================================== */
+/* EFECTOS DE CARGA Y ESTADOS                        */
+/* ================================================== */
+
+/* Skeleton loading */
+@keyframes skeletonPulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* Loading states */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% { transform: translateY(0); }
+  40%, 43% { transform: translateY(-30px); }
+  70% { transform: translateY(-15px); }
+  90% { transform: translateY(-4px); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* ================================================== */
+/* EFECTOS DE HOVER Y FOCUS                          */
+/* ================================================== */
+
+/* Focus ring */
+@keyframes focusRing {
+  0% { box-shadow: 0 0 0 0 rgba(28, 181, 74, 0.4); }
+  100% { box-shadow: 0 0 0 4px rgba(28, 181, 74, 0.1); }
+}
+
+/* Hover effects */
+@keyframes hoverScale {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+@keyframes hoverRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(5deg); }
+}
+
+@keyframes hoverFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+/* ================================================== */
+/* ANIMACIONES DE DATOS Y GRÁFICOS                    */
+/* ================================================== */
+
+/* Gráficos */
+@keyframes chartGrow {
+  0% { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes chartFadeIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes chartLineDraw {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Contadores */
+@keyframes counterUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes numberCount {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* ================================================== */
+/* EFECTOS DE NOTIFICACIONES                         */
+/* ================================================== */
+
+/* Notificaciones */
+@keyframes notificationSlideIn {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes notificationSlideOut {
+  0% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes notificationBounce {
+  0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); }
+  40%, 43% { transform: translate3d(0, -30px, 0); }
+  70% { transform: translate3d(0, -15px, 0); }
+  90% { transform: translate3d(0, -4px, 0); }
+}
+
+/* ================================================== */
+/* EFECTOS DE NAVEGACIÓN                             */
+/* ================================================== */
+
+/* Menú */
+@keyframes menuSlideIn {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes menuItemBounce {
+  0% { transform: translateX(-20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes menuItemHover {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(5px); }
+}
+
+/* Breadcrumbs */
+@keyframes breadcrumbSlide {
+  0% { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* ================================================== */
+/* EFECTOS DE TEMA                                    */
+/* ================================================== */
+
+/* Transición de tema */
+@keyframes themeTransition {
+  0% { opacity: 1; }
+  50% { opacity: 0.8; }
+  100% { opacity: 1; }
+}
+
+/* ================================================== */
+/* EFECTOS ESPECIALES                                */
+/* ================================================== */
+
+/* Efectos de partículas */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(28, 181, 74, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(28, 181, 74, 0.8); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes wobble {
+  0% { transform: translateX(0%); }
+  15% { transform: translateX(-25%) rotate(-5deg); }
+  30% { transform: translateX(20%) rotate(3deg); }
+  45% { transform: translateX(-15%) rotate(-3deg); }
+  60% { transform: translateX(10%) rotate(2deg); }
+  75% { transform: translateX(-5%) rotate(-1deg); }
+  100% { transform: translateX(0%); }
+}
+
+/* ================================================== */
+/* ANIMACIONES ESPECÍFICAS PARA COMPONENTES          */
+/* ================================================== */
+
+/* Botones animados */
+.animated-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(28, 181, 74, 0.3);
+}
+
+.animated-button:active {
+  transform: translateY(0);
+}
+
+/* Inputs animados */
+.animated-input {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-input .ant-input {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animated-input .ant-input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(28, 181, 74, 0.1);
+}
+
+/* Loaders avanzados */
+.advanced-loader.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+.loader-small {
+  font-size: 12px;
+}
+
+.loader-medium {
+  font-size: 14px;
+}
+
+.loader-large {
+  font-size: 16px;
+}
+
+/* Animación de progress */
+@keyframes progress {
+  0% { width: 0%; }
+  100% { width: var(--progress-width, 100%); }
+}
+
+.animate-progress {
+  animation: progress 2s ease-in-out;
+}
+
+/* Animación de wave */
+@keyframes wave {
+  0%, 100% { height: 20px; }
+  50% { height: 40px; }
+}
+
+/* ================================================== */
+/* CLASES DE UTILIDAD                                 */
+/* ================================================== */
+
+/* Animaciones de entrada */
+.animate-fade-in {
+  animation: pageFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in {
+  animation: pageSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-up {
+  animation: pageSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-zoom-in {
+  animation: pageZoomIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones de tarjetas */
+.animate-card-enter {
+  animation: cardSlideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-card-bounce {
+  animation: cardBounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones de botones */
+.animate-button-press {
+  animation: buttonPress 0.2s ease;
+}
+
+.animate-button-glow {
+  animation: buttonGlow 0.6s ease;
+}
+
+/* Animaciones de carga */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.animate-skeleton {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.animate-skeleton-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: skeletonShimmer 1.5s infinite;
+}
+
+/* Animaciones de hover */
+.animate-hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-hover-scale:hover {
+  animation: hoverScale 0.3s ease;
+}
+
+.animate-hover-float {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-hover-float:hover {
+  animation: hoverFloat 0.3s ease;
+}
+
+/* Animaciones de gráficos */
+.animate-chart-grow {
+  animation: chartGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-chart-fade {
+  animation: chartFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones de notificaciones */
+.animate-notification-enter {
+  animation: notificationSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-notification-exit {
+  animation: notificationSlideOut 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Animaciones especiales */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-wobble {
+  animation: wobble 1s ease-in-out;
+}
+
+/* ================================================== */
+/* RESPETO POR PREFERENCIAS DE ACCESIBILIDAD         */
+/* ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ================================================== */
+/* EFECTOS DE TRANSICIÓN GLOBAL                      */
+/* ================================================== */
+
+/* Transiciones suaves globales */
+* {
+  transition: 
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Evitar transiciones en elementos que no las necesitan */
+.no-transition,
+.no-transition *,
+.ant-spin,
+.ant-spin * {
+  transition: none !important;
+}

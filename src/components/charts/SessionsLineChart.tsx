@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import dayjs from 'dayjs';
 import { ChartRange, ChartRangeType } from '../../constants/chartRanges';
@@ -11,6 +11,7 @@ import {
   ChartDataPoint 
 } from '../../lib/chartUtils';
 import ChartSummary from './ChartSummary';
+import { usePageAnimation, useCounterAnimation } from '../../hooks/usePageAnimation';
 
 /**
  * Props para el componente SessionsLineChart
@@ -54,6 +55,10 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
   // Obtener colores del tema
   const colors = useMemo(() => getChartColors(isDarkMode), [isDarkMode]);
   
+  // Animaciones
+  const { isVisible, animationClass } = usePageAnimation('slide-up', 100);
+  const [animatedStats, setAnimatedStats] = useState({ average: 0, max: 0, min: 0 });
+  
   // Transformar datos según el rango seleccionado
   const chartData = useMemo(() => {
     if (!data || !data.sesiones) {
@@ -74,6 +79,21 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
     
     return { total, average, max, min };
   }, [chartData]);
+
+  // Animar estadísticas cuando cambien
+  useEffect(() => {
+    if (isVisible && stats.average > 0) {
+      const timer = setTimeout(() => {
+        setAnimatedStats({
+          average: stats.average,
+          max: stats.max,
+          min: stats.min
+        });
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, stats]);
   
   // Preparar datos para Recharts con índice único
   const tremorData = useMemo(() => {
@@ -121,7 +141,7 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
   
   return (
     <div 
-      className="rounded-2xl p-6 shadow-2xl"
+      className={`rounded-2xl p-6 shadow-2xl animate-card-enter ${isVisible ? animationClass : ''}`}
       style={{
         backgroundColor: colors.background,
         border: `2px solid ${colors.primary}20`,
@@ -146,14 +166,14 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
         </h3>
       </div>
 
-      {/* Resumen con tarjetas visuales */}
-      <ChartSummary
-        rangeLabel={subtitle || 'Período seleccionado'}
-        average={stats.average}
-        max={stats.max}
-        min={stats.min}
-        isDarkMode={isDarkMode}
-      />
+        {/* Resumen con tarjetas visuales */}
+        <ChartSummary
+          rangeLabel={subtitle || 'Período seleccionado'}
+          average={animatedStats.average}
+          max={animatedStats.max}
+          min={animatedStats.min}
+          isDarkMode={isDarkMode}
+        />
       
       {/* Gráfico Recharts */}
       <div 

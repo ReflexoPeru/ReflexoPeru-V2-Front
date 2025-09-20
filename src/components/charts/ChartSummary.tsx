@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, TrendUp, TrendUp as TrendingUp, TrendDown } from 'phosphor-react';
+import { useCounterAnimation } from '../../hooks/usePageAnimation';
 
 interface ChartSummaryProps {
   /** Etiqueta del rango de tiempo (ej. "Últimas 4 semanas") */
@@ -25,6 +26,10 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
   min,
   isDarkMode = true
 }) => {
+  // Animaciones de contador
+  const animatedAverage = useCounterAnimation(average, 1500, true);
+  const animatedMax = useCounterAnimation(max, 1800, true);
+  const animatedMin = useCounterAnimation(min, 2000, true);
   // Colores del tema
   const colors = {
     background: isDarkMode ? '#1a1a1a' : '#ffffff',
@@ -37,7 +42,7 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 animate-slide-up">
       {/* Container de tarjetas en fila horizontal */}
       <div 
         className="flex gap-4"
@@ -52,7 +57,7 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
       >
         {/* Tarjeta del Rango */}
         <div 
-          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105"
+          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
           style={{
             backgroundColor: colors.cardBackground,
             borderColor: colors.primary + '30',
@@ -97,9 +102,9 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
           </div>
         </div>
 
-        {/* Tarjeta del Promedio */}
-        <div 
-          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105"
+            {/* Tarjeta del Promedio */}
+            <div 
+              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
           style={{
             backgroundColor: colors.cardBackground,
             borderColor: colors.primary + '30',
@@ -131,21 +136,21 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
               >
                 Promedio
               </div>
-              <div 
-                className="text-lg font-bold mt-1"
-                style={{ 
-                  color: colors.text
-                }}
-              >
-                {average.toFixed(1)}
-              </div>
+                  <div 
+                    className="text-lg font-bold mt-1 animate-counter-up"
+                    style={{ 
+                      color: colors.text
+                    }}
+                  >
+                    {animatedAverage.toFixed(1)}
+                  </div>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta del Máximo */}
-        <div 
-          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105"
+            {/* Tarjeta del Máximo */}
+            <div 
+              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
           style={{
             backgroundColor: colors.cardBackground,
             borderColor: colors.primary + '30',
@@ -177,21 +182,21 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
               >
                 Máximo
               </div>
-              <div 
-                className="text-lg font-bold mt-1"
-                style={{ 
-                  color: colors.text
-                }}
-              >
-                {max}
-              </div>
+                  <div 
+                    className="text-lg font-bold mt-1 animate-counter-up"
+                    style={{ 
+                      color: colors.text
+                    }}
+                  >
+                    {animatedMax}
+                  </div>
             </div>
           </div>
         </div>
 
-        {/* Tarjeta del Mínimo */}
-        <div 
-          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105"
+            {/* Tarjeta del Mínimo */}
+            <div 
+              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
           style={{
             backgroundColor: colors.cardBackground,
             borderColor: colors.primary + '30',
@@ -223,14 +228,14 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
               >
                 Mínimo
               </div>
-              <div 
-                className="text-lg font-bold mt-1"
-                style={{ 
-                  color: colors.text
-                }}
-              >
-                {min || 0}
-              </div>
+                  <div 
+                    className="text-lg font-bold mt-1 animate-counter-up"
+                    style={{ 
+                      color: colors.text
+                    }}
+                  >
+                    {animatedMin || 0}
+                  </div>
             </div>
           </div>
         </div>

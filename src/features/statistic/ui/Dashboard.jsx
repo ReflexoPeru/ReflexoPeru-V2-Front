@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { usePageAnimation } from '../../../hooks/usePageAnimation';
 import dayjs from '../../../utils/dayjsConfig';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
@@ -36,6 +37,9 @@ export default function PerformanceDashboard() {
     dayjs().subtract(6, 'day').startOf('day'),
     dayjs().endOf('day'),
   ]);
+  
+  // Animaciones
+  const { isVisible, animationClass } = usePageAnimation('fade', 50);
 
   const {
     chartSeries,
@@ -201,7 +205,7 @@ export default function PerformanceDashboard() {
   };
 
   return (
-    <div className={Style.dashboardContainer}>
+    <div className={`${Style.dashboardContainer} animate-fade-in ${isVisible ? animationClass : ''}`}>
         <DashboardFilters
           timeFilter={timeFilter}
           handleTimeFilterChange={handleTimeFilterChange}
