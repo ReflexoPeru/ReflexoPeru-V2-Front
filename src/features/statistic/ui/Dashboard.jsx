@@ -5,8 +5,9 @@ import Style from './Statistic.module.css';
 import { useStatistic } from '../hook/useStatistic';
 import DashboardFilters from './DashboardFilters';
 import DashboardMetrics from './DashboardMetrics';
-import DashboardMainChart from './DashboardMainChart';
 import DashboardBottomSection from './DashboardBottomSection';
+import SessionsLineChart from '../../../components/charts/SessionsLineChart';
+import { ChartRange } from '../../../constants/chartRanges';
 import { Spin } from 'antd';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -50,7 +51,24 @@ export default function PerformanceDashboard() {
     totalEarnings,
     loading,
     formatCurrency,
+    rawData
   } = useStatistic(dateRange[0], dateRange[1]);
+
+  // Función para mapear filtros de tiempo a rangos de Tremor
+  const mapTimeFilterToChartRange = (filter) => {
+    switch (filter) {
+      case '7días':
+        return ChartRange.WEEK;
+      case '28días':
+        return ChartRange.MONTH;
+      case '3meses':
+        return ChartRange.THREE_MONTHS;
+      case '1año':
+        return ChartRange.YEAR;
+      default:
+        return ChartRange.CUSTOM;
+    }
+  };
 
   const handleTimeFilterChange = (e) => {
     const value = e.target.value;
@@ -87,23 +105,7 @@ export default function PerformanceDashboard() {
     }
   };
 
-  // Scrollbar personalizado (respetando variables del tema)
-  const scrollbarStyles = {
-    scrollbarWidth: 'thin',
-    scrollbarColor: `${colorPrimary} ${colorBgSecondary}`,
-    '&::-webkit-scrollbar': {
-      width: '8px',
-      height: '8px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: colorBgSecondary,
-      borderRadius: '10px',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      backgroundColor: colorPrimary,
-      borderRadius: '10px',
-    },
-  };
+  // Scrollbar personalizado usando clases CSS
 
   // Color según rating
   const getRatingColor = (rating) => {
@@ -223,12 +225,16 @@ export default function PerformanceDashboard() {
               formatCurrency={formatCurrency}
               Style={Style}
             />
-            <DashboardMainChart
-              chartOptions={chartOptions}
-              chartSeries={chartSeries}
-              Style={Style}
-              getDateRangeSubtitle={getDateRangeSubtitle}
-              Chart={Chart}
+            
+            <SessionsLineChart
+              data={rawData}
+              range={mapTimeFilterToChartRange(timeFilter)}
+              startDate={dateRange[0]}
+              endDate={dateRange[1]}
+              title="Indicación de Sesiones"
+              subtitle={getDateRangeSubtitle()}
+              isDarkMode={isDarkMode}
+              height={400}
             />
             <DashboardBottomSection
               Style={Style}
@@ -238,7 +244,6 @@ export default function PerformanceDashboard() {
               therapistPerformance={therapistPerformance}
               formatCurrency={formatCurrency}
               getRatingColor={getRatingColor}
-              scrollbarStyles={scrollbarStyles}
             />
           </>
         )}

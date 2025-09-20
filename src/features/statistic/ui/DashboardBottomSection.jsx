@@ -8,7 +8,6 @@ const DashboardBottomSection = ({
   therapistPerformance,
   formatCurrency,
   getRatingColor,
-  scrollbarStyles,
   pieSeries,
   pieOptions,
   filteredTherapists,
@@ -36,8 +35,8 @@ const DashboardBottomSection = ({
         {therapistPerformance.length} terapeutas en el período
       </p>
       <div
-        className={Style.therapistsTableContainer}
-        style={{ maxHeight: '400px', overflowY: 'auto', ...scrollbarStyles }}
+        className={`${Style.therapistsTableContainer} ${Style.customScrollbar}`}
+        style={{ maxHeight: '400px', overflowY: 'auto' }}
       >
         <div className={Style.tableHeader}>
           <span style={{ flex: '2', minWidth: 0 }}>Terapeuta</span>

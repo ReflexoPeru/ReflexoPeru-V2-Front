@@ -15,11 +15,8 @@ const dayTranslations = {
 
 export const useStatistic = (startDate, endDate) => {
   const { isDarkMode } = useTheme();
-  const [chartSeries, setChartSeries] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [pieSeries, setPieSeries] = useState([]);
   const [pieOptions, setPieOptions] = useState({});
-  const [chartOptions, setChartOptions] = useState({});
   const [therapistPerformance, setTherapistPerformance] = useState([]);
   const [paymentTypes, setPaymentTypes] = useState([]);
   const [monthlySessions, setMonthlySessions] = useState([]);
@@ -29,6 +26,7 @@ export const useStatistic = (startDate, endDate) => {
   const [totalPatients, setTotalPatients] = useState(0);
   const [totalEarnings, setTotalEarnings] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [rawData, setRawData] = useState(null);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-PE', {
@@ -53,6 +51,9 @@ export const useStatistic = (startDate, endDate) => {
       const colorBorderPrimary = getCssVar('--color-border-primary') || '#e0e0e0';
 
       const data = await fetchStatisticData(startDate, endDate);
+      
+      // Guardar los datos raw para el nuevo gráfico (usar data.data que es la estructura real)
+      setRawData(data.data);
 
       // Calcular totales para las métricas
       const sessionsTotal = Object.values(data.data.sesiones).reduce(
@@ -226,15 +227,7 @@ export const useStatistic = (startDate, endDate) => {
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, years, totalSessions);
       }
 
-      setCategories(dateCategories);
-
-      // Configurar series de gráfico de sesiones
-      setChartSeries([
-        {
-          name: 'Sesiones',
-          data: mappedSessionsData,
-        },
-      ]);
+      // Datos ya procesados para el nuevo gráfico
 
       // Configurar series de ingresos mensuales
       setMonthlySessions([
@@ -271,119 +264,7 @@ export const useStatistic = (startDate, endDate) => {
         },
       ]);
 
-      // Configurar opciones del gráfico principal
-      setChartOptions({
-        chart: {
-          type: 'line',
-          height: '100%',
-          toolbar: { show: false },
-          zoom: { enabled: false },
-          background: 'transparent',
-          animations: {
-            enabled: true,
-            easing: 'easeinout',
-            speed: 800,
-          },
-        },
-        stroke: {
-          curve: 'straight',
-          width: 3,
-          colors: [colorPrimary],
-        },
-        markers: {
-          size: 6,
-          colors: [colorPrimary],
-          strokeWidth: 2,
-          strokeColors: isDarkMode ? '#141414' : '#ffffff',
-          hover: {
-            size: 8,
-            sizeOffset: 2,
-          },
-        },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: 1,
-            type: 'vertical',
-            opacityFrom: 0.3,
-            opacityTo: 0.05,
-            colorStops: [
-              {
-                offset: 0,
-                color: colorPrimary,
-                opacity: 0.3,
-              },
-              {
-                offset: 50,
-                color: colorPrimary,
-                opacity: 0.15,
-              },
-              {
-                offset: 100,
-                color: colorPrimary,
-                opacity: 0.05,
-              },
-            ],
-          },
-        },
-        xaxis: {
-          categories: dateCategories,
-          labels: {
-            style: {
-              colors: colorTextSecondary,
-              fontSize: '11px',
-              fontWeight: 500,
-            },
-          },
-          axisBorder: { show: false },
-          axisTicks: { show: false },
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: colorTextSecondary,
-              fontSize: '11px',
-            },
-            formatter: (val) => Math.floor(val),
-          },
-        },
-        colors: [colorPrimary],
-        grid: {
-          borderColor: colorBorderPrimary,
-          strokeDashArray: 2,
-          xaxis: { lines: { show: false } },
-          yaxis: { lines: { show: true } },
-          padding: {
-            top: 10,
-            bottom: 10,
-            left: 10,
-            right: 10,
-          },
-        },
-        tooltip: {
-          theme: isDarkMode ? 'dark' : 'light',
-          style: {
-            fontSize: '12px',
-            color: colorTextPrimary,
-          },
-          x: {
-            show: true,
-            formatter: (val) => {
-              if (daysDiff <= 1) return `Hora: ${val}`;
-              if (daysDiff <= 7) return `Día: ${val}`;
-              if (daysDiff <= 30) return `${val}`;
-              if (daysDiff <= 365) return `${val}`;
-              return `Año: ${val}`;
-            },
-          },
-          y: {
-            formatter: (val) => `${val} sesiones`,
-          },
-          marker: {
-            show: true,
-          },
-        },
-      });
+      // Configuración del gráfico anterior eliminada
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -396,11 +277,8 @@ export const useStatistic = (startDate, endDate) => {
   }, [startDate, endDate]);
 
   return {
-    chartSeries,
-    categories,
     pieSeries,
     pieOptions,
-    chartOptions,
     therapistPerformance,
     paymentTypes,
     monthlySessions,
@@ -411,5 +289,6 @@ export const useStatistic = (startDate, endDate) => {
     totalEarnings,
     loading,
     formatCurrency,
+    rawData,
   };
 };
