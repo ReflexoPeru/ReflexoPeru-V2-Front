@@ -99,7 +99,7 @@ function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
 
 /**
  * Transforma datos para vista mensual (30 días)
- * Muestra: Mar, Mié, etc. con fecha debajo
+ * Muestra fechas reales en formato DD/MM con mes y año como sublabel
  */
 function transformMonthData(sessionsData: SessionData): ChartDataPoint[] {
   const today = dayjs();
@@ -113,8 +113,8 @@ function transformMonthData(sessionsData: SessionData): ChartDataPoint[] {
     result.push({
       date: dateStr,
       sessions,
-      label: date.format('ddd'),
-      sublabel: date.format('DD/MM')
+      label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
+      sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
     });
   }
   
@@ -123,7 +123,7 @@ function transformMonthData(sessionsData: SessionData): ChartDataPoint[] {
 
 /**
  * Transforma datos para vista trimestral (90 días)
- * Muestra cada 3 días para optimizar visualización
+ * Muestra fechas reales cada 3 días para optimizar visualización
  */
 function transformThreeMonthsData(sessionsData: SessionData): ChartDataPoint[] {
   const today = dayjs();
@@ -137,8 +137,8 @@ function transformThreeMonthsData(sessionsData: SessionData): ChartDataPoint[] {
     result.push({
       date: dateStr,
       sessions,
-      label: date.format('ddd'),
-      sublabel: date.format('DD/MM')
+      label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
+      sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
     });
   }
   
@@ -213,17 +213,29 @@ function transformCustomDailyData(
 ): ChartDataPoint[] {
   const result: ChartDataPoint[] = [];
   let current = startDate;
+  const daysDiff = endDate.diff(startDate, 'day');
   
   while (current.isBefore(endDate) || current.isSame(endDate, 'day')) {
     const dateStr = current.format('YYYY-MM-DD');
     const sessions = sessionsData[dateStr] || 0;
     
-    result.push({
-      date: dateStr,
-      sessions,
-      label: current.format('ddd'),
-      sublabel: current.format('DD/MM')
-    });
+    // Si el rango es mayor a 7 días, mostrar fechas reales en lugar de días de la semana
+    if (daysDiff > 7) {
+      result.push({
+        date: dateStr,
+        sessions,
+        label: current.format('DD/MM'), // Mostrar fecha en formato DD/MM
+        sublabel: current.format('MMM YYYY') // Mostrar mes y año como sublabel
+      });
+    } else {
+      // Para rangos de 7 días o menos, mantener el formato original
+      result.push({
+        date: dateStr,
+        sessions,
+        label: current.format('ddd'),
+        sublabel: current.format('DD/MM')
+      });
+    }
     
     current = current.add(1, 'day');
   }
@@ -253,11 +265,12 @@ function transformCustomWeeklyData(
       current = current.add(1, 'day');
     }
     
+    const startDateForLabel = current.subtract(3, 'day');
     result.push({
       date: dateStr,
       sessions,
-      label: current.subtract(3, 'day').format('ddd'),
-      sublabel: current.subtract(3, 'day').format('DD/MM')
+      label: startDateForLabel.format('DD/MM'), // Mostrar fecha en formato DD/MM
+      sublabel: startDateForLabel.format('MMM YYYY') // Mostrar mes y año como sublabel
     });
   }
   

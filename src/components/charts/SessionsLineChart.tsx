@@ -274,7 +274,7 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
               }}
             />
             <Line
-              type="monotone"
+              type="linear"
               dataKey="Sesiones"
               stroke={colors.primary}
               strokeWidth={4}
