@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import dayjs from 'dayjs';
 import { ChartRange, ChartRangeType } from '../../constants/chartRanges';
 import { 
@@ -188,7 +188,7 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
         }}
       >
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
+          <AreaChart
             data={tremorData}
             margin={{
               top: 20,
@@ -273,20 +273,27 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
                 return dataPoint ? `${label} • ${dataPoint.sublabel}` : label;
               }}
             />
-            <Line
+            <defs>
+              <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={colors.primary} stopOpacity={0.8}/>
+                <stop offset="95%" stopColor={colors.primary} stopOpacity={0.1}/>
+              </linearGradient>
+            </defs>
+            <Area
               type="linear"
               dataKey="Sesiones"
               stroke={colors.primary}
-              strokeWidth={4}
+              strokeWidth={3}
+              fill="url(#colorSessions)"
               dot={{
                 fill: colors.primary,
-                strokeWidth: 3,
+                strokeWidth: 2,
                 stroke: colors.background,
-                r: 7,
+                r: 5,
                 filter: `drop-shadow(0 2px 8px ${colors.primary}50)`
               }}
               activeDot={{
-                r: 10,
+                r: 8,
                 stroke: colors.primary,
                 strokeWidth: 3,
                 fill: colors.background,
@@ -295,7 +302,7 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
                 }
               }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
       
