@@ -6,6 +6,7 @@ import {
   getAppointmentsByPatientId,
   updatePatientHistoryById,
   updateAppointmentById,
+  createPatientHistory,
 } from '../service/historyService';
 import { message } from 'antd';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
@@ -17,6 +18,7 @@ export const usePatientHistory = (patientId) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { showToast } = useToast();
+  const [autoCreated, setAutoCreated] = useState(false);
 
   const fetchData = async () => {
     if (!patientId) return;
@@ -24,9 +26,62 @@ export const usePatientHistory = (patientId) => {
     setLoading(true);
     try {
       const response = await getPatientHistoryById(patientId);
-      setData(response);
+      // Si el backend responde sin data válida y aún no creamos, auto-crear
+      const hasHistory = Boolean(response?.data?.id);
+      const saysNotFound = typeof response?.message === 'string' && response.message.toLowerCase().includes('no se encontró historial');
+      if (!hasHistory && !autoCreated && saysNotFound) {
+        const creationPayload = {
+          testimony: null,
+          private_observation: null,
+          observation: null,
+          height: '',
+          weight: '',
+          last_weight: null,
+          menstruation: null,
+          diu_type: null,
+          gestation: null,
+          patient_id: patientId,
+        };
+        try {
+          await createPatientHistory(creationPayload);
+          setAutoCreated(true);
+          const afterCreate = await getPatientHistoryById(patientId);
+          setData(afterCreate);
+        } catch (e) {
+          // Si falla la creación, al menos setear el response inicial
+          setData(response);
+        }
+      } else {
+        setData(response);
+      }
     } catch (err) {
-      setError(err);
+      // Si el back respondió 404 o mensaje de no encontrado, intentar crear una vez
+      const backendMsg = err?.response?.data?.message || '';
+      const notFound = typeof backendMsg === 'string' && backendMsg.toLowerCase().includes('no se encontró historial');
+      if (!autoCreated && notFound) {
+        try {
+          const creationPayload = {
+            testimony: null,
+            private_observation: null,
+            observation: null,
+            height: '',
+            weight: '',
+            last_weight: null,
+            menstruation: null,
+            diu_type: null,
+            gestation: null,
+            patient_id: patientId,
+          };
+          await createPatientHistory(creationPayload);
+          setAutoCreated(true);
+          const afterCreate = await getPatientHistoryById(patientId);
+          setData(afterCreate);
+        } catch (e) {
+          setError(err);
+        }
+      } else {
+        setError(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -48,7 +103,54 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
   const updateHistory = async (historyId, data) => {
     setLoading(true);
     try {
-      await updatePatientHistoryById(historyId, data);
+      // Si no hay historyId, crear primero para habilitar el flujo
+      if (!historyId) {
+        const creationPayload = {
+          patient_id: patientId,
+          // Crear con valores nulos; luego se actualizará con PATCH
+          weight: null,
+          last_weight: null,
+          current_weight: null,
+          height: null,
+          testimony: null,
+          gestation: null,
+          menstruation: null,
+          private_observation: null,
+          observation: null,
+          diagnosticos_medicos: null,
+          operaciones: null,
+          medicamentos: null,
+          dolencias: null,
+          diagnosticos_reflexologia: null,
+          observaciones_adicionales: null,
+          antecedentes_familiares: null,
+          alergias: null,
+          use_contraceptive_method: null,
+          contraceptive_method_id: null,
+          diu_type_id: null,
+        };
+        const created = await createPatientHistory(creationPayload);
+        historyId = created?.data?.id || created?.id;
+      }
+      // Asegurar booleans y números correctos antes de enviar
+      const normalized = {
+        ...data,
+        use_contraceptive_method:
+          typeof data.use_contraceptive_method === 'boolean'
+            ? data.use_contraceptive_method
+            : data.use_contraceptive_method === 'Sí'
+              ? true
+              : data.use_contraceptive_method === 'No'
+                ? false
+                : null,
+        contraceptive_method_id:
+          data.use_contraceptive_method ? (data.contraceptive_method_id ?? null) : null,
+        diu_type_id:
+          data.use_contraceptive_method && Number(data.contraceptive_method_id) === 4
+            ? (data.diu_type_id ?? null)
+            : null,
+      };
+      await updatePatientHistoryById(historyId, normalized);
       showToast(
         'actualizarHistoria',
         'Historia clínica actualizada correctamente',

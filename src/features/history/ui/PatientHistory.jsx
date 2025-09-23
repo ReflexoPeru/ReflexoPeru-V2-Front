@@ -110,7 +110,7 @@ const PatientHistory = () => {
         talla: historyData?.height || '',
         pesoInicial: historyData?.weight || '',
         ultimoPeso: historyData?.last_weight || '',
-        pesoHoy: historyData?.actual_weight || '',
+        pesoHoy: historyData?.current_weight || '',
 
         // Información médica
         testimonio: historyData?.testimony ? 'Sí' : 'No',
@@ -182,6 +182,12 @@ const PatientHistory = () => {
       form.resetFields();
       setTherapist(null);
       setSelectedTherapistId(null);
+      // Precargar nombre del paciente desde la cita cuando no hay historial
+      const apPatient = appointmentFromState?.patient;
+      if (apPatient) {
+        const fullName = `${apPatient?.paternal_lastname || ''} ${apPatient?.maternal_lastname || ''} ${apPatient?.name || ''}`.trim();
+        form.setFieldsValue({ patientName: fullName });
+      }
     }
   }, [patientHistory, form]);
 
@@ -265,9 +271,9 @@ const PatientHistory = () => {
     const appointmentId = selectedAppointment?.id;
 
 
-    if (!historyId || !appointmentId) {
-      
-      message.error('Falta el ID del historial o la cita.');
+    // Requiere appointmentId, pero si no hay historyId solo actualizaremos si el back lo permite (ej. Peso Hoy)
+    if (!appointmentId) {
+      message.error('Falta el ID de la cita.');
       return;
     }
 
@@ -285,7 +291,7 @@ const PatientHistory = () => {
     const historyPayload = {
       weight: toFixed3(values.pesoInicial),
       last_weight: toFixed3(values.ultimoPeso),
-      actual_weight: toFixed3(values.pesoHoy),
+      current_weight: toFixed3(values.pesoHoy),
       height: toFixed3(values.talla),
       observation: values.observation,
       private_observation: values.observationPrivate,
@@ -301,17 +307,19 @@ const PatientHistory = () => {
       gestation: values.gestacion === 'Sí',
       menstruation: values.menstruacion === 'Sí',
       use_contraceptive_method: useContraceptiveMethodState,
-      contraceptive_method_id: useContraceptiveMethodState ? contraceptiveMethodId : null,
-      diu_type_id: useContraceptiveMethodState && contraceptiveMethodLabel === 'DIU' ? diuTypeId : null,
+      contraceptive_method_id: useContraceptiveMethodState ? (contraceptiveMethodId ?? null) : null,
+      diu_type_id: useContraceptiveMethodState && Number(contraceptiveMethodId) === DIU_METHOD_ID ? (diuTypeId ?? null) : null,
       therapist_id: selectedTherapistId,
     };
 
     // Calcular appointment_status_id basado en la fecha de la cita
     const appointmentDate = dayjs(selectedAppointmentDate);
     const currentDate = dayjs();
-    const appointment_status_id = appointmentDate.isBefore(currentDate, 'day')
-      ? 2  // Completada si la fecha es anterior a hoy
-      : 1; // Pendiente si la fecha es hoy o futura
+    // Regla: si hay terapeuta seleccionado -> Completada. Si no, por fecha (<= hoy = Completada)
+    const hasTherapist = Boolean(selectedTherapistId);
+    const appointment_status_id = hasTherapist || appointmentDate.isBefore(currentDate, 'day') || appointmentDate.isSame(currentDate, 'day')
+      ? 2  // Completada
+      : 1; // Pendiente
 
     const appointmentPayload = {
       appointment_date: selectedAppointmentDate,
@@ -326,7 +334,7 @@ const PatientHistory = () => {
       appointment_type: selectedAppointment?.appointment_type || 'CC',
       payment: selectedAppointment?.payment || '50.00',
       appointment_status_id: appointment_status_id,
-      patient_id: patientHistory?.data?.patient?.id,
+      patient_id: patientHistory?.data?.patient?.id || appointmentFromState?.patient?.id,
       therapist_id: selectedTherapistId,
     };
 
@@ -386,7 +394,7 @@ const PatientHistory = () => {
     },
   ];
 
-  if (loadingAppointments || !patientHistory) {
+  if (loadingAppointments) {
     return (
       <div className={styles.container}>
         <Spin
@@ -616,7 +624,7 @@ const PatientHistory = () => {
                 name="menstruacion"
                 label="Menstruación"
                 className={styles.physicalInfoItem}
-                style={{ display: isFemale ? 'block' : 'none' }}
+                style={{ display: (isFemale || appointmentFromState?.patient?.sex === 'F') ? 'block' : 'none' }}
               >
                 <Select className={`${styles.select} ${styles.smallInput}`}>
                   <Option value="Sí">Sí</Option>
@@ -628,7 +636,7 @@ const PatientHistory = () => {
                 name="gestacion"
                 label="Gestación"
                 className={styles.physicalInfoItem}
-                style={{ display: isFemale ? 'block' : 'none' }}
+                style={{ display: (isFemale || appointmentFromState?.patient?.sex === 'F') ? 'block' : 'none' }}
               >
                 <Select className={`${styles.select} ${styles.smallInput}`}>
                   <Option value="Sí">Sí</Option>
@@ -637,7 +645,7 @@ const PatientHistory = () => {
               </Form.Item>
 
               {/* Métodos Anticonceptivos */}
-              {isFemale && useContraceptiveMethodState === null && (
+              {(isFemale || appointmentFromState?.patient?.sex === 'F') && useContraceptiveMethodState === null && (
                 <Form.Item
                   name="use_contraceptive_method"
                   label="¿Usa método anticonceptivo?"
@@ -671,11 +679,12 @@ const PatientHistory = () => {
                   className={`${styles.select}`}
                   value={contraceptiveMethodId}
                   onChange={(value, option) => {
-                    setContraceptiveMethodId(value ?? null);
+                    const numericValue = value === undefined || value === null ? null : Number(value);
+                    setContraceptiveMethodId(numericValue);
                     const label = option?.children || '';
                     setContraceptiveMethodLabel(label);
-                    form.setFieldsValue({ contraceptive_method_id: value ?? null });
-                    if (value !== DIU_METHOD_ID) {
+                    form.setFieldsValue({ contraceptive_method_id: numericValue });
+                    if (numericValue !== DIU_METHOD_ID) {
                       setDiuTypeId(null);
                       form.setFieldsValue({ diu_type_id: null });
                     }
@@ -687,14 +696,15 @@ const PatientHistory = () => {
                 name="diu_type_id"
                 label="Tipo DIU"
                 className={`${styles.physicalInfoItem} ${styles.diuItem}`}
-                style={{ display: isFemale && useContraceptiveMethodState === true && contraceptiveMethodId === DIU_METHOD_ID ? 'block' : 'none' }}
+                style={{ display: isFemale && useContraceptiveMethodState === true && Number(contraceptiveMethodId) === DIU_METHOD_ID ? 'block' : 'none' }}
               >
                 <SelectDiuType
                   className={`${styles.select}`}
                   value={diuTypeId}
                   onChange={(value) => {
-                    setDiuTypeId(value ?? null);
-                    form.setFieldsValue({ diu_type_id: value ?? null });
+                    const numericValue = value === undefined || value === null ? null : Number(value);
+                    setDiuTypeId(numericValue);
+                    form.setFieldsValue({ diu_type_id: numericValue });
                   }}
                 />
               </Form.Item>

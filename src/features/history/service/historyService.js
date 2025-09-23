@@ -1,4 +1,4 @@
-import { get, patch } from '../../../services/api/Axios/MethodsGeneral';
+import { get, patch, post } from '../../../services/api/Axios/MethodsGeneral';
 
 //CONSEGUIR EL HISTORIAL DE UN PACIENTE POR ID
 export const getPatientHistoryById = async (patientId) => {
@@ -47,6 +47,18 @@ export const getStaff = async (page = 1, perPage = 10) => {
         throw error;
     }
 };
+
+// CREAR HISTORIAL DE UN PACIENTE CUANDO NO EXISTE
+export const createPatientHistory = async (data) => {
+    try {
+        const response = await post('histories', data);
+        return response.data;
+    } catch (error) {
+        console.error('Error en createPatientHistory:', error);
+        throw error;
+    }
+}
+
 
 export const searchStaff = async (term) => {
     try {

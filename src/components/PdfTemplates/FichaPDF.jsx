@@ -41,17 +41,17 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: 'bold',
-    fontSize: 10,
-    marginBottom: 2,
+    fontSize: 11,
+    marginBottom: 4,
     marginTop: 10,
   },
   label: {
     fontWeight: 'bold',
-    fontSize: 9,
+    fontSize: 10,
   },
   field: {
-    fontSize: 11,
-    marginBottom: 2,
+    fontSize: 12,
+    marginBottom: 3,
   },
   line: {
     borderBottomWidth: 1,
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   nameLabel: {
     fontWeight: 'bold',
-    fontSize: 8,
+    fontSize: 9,
   },
   nameUnderline: {
     borderBottomWidth: 1,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   codeLabel: {
     fontWeight: 'bold',
-    fontSize: 8,
+    fontSize: 9,
   },
   codeUnderline: {
     borderBottomWidth: 1,
@@ -189,6 +189,13 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
     ) : (
       <View style={underlineStyle} />
     );
+
+  // Datos opcionales: peso hoy y anticoncepción
+  const pesoHoy = historia?.current_weight ?? historia?.actual_weight ?? '';
+  const metodoAnticonceptivoNombre = historia?.contraceptive_method?.name ?? null;
+  const metodoAnticonceptivoId = historia?.contraceptive_method_id ?? null;
+  const isDiu = metodoAnticonceptivoNombre === 'DIU' || Number(metodoAnticonceptivoId) === 4;
+  const tipoDiuNombre = historia?.diu_type?.name ?? null;
 
   return (
     <Document>
@@ -336,13 +343,25 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           }}
         >
           <Text style={styles.label}>P.A:</Text>
-          <View style={styles.shortUnderline} />
-          <View style={styles.shortUnderline} />
+          {renderField(historia.last_weight, styles.fieldUnderline)}
           <Text style={styles.label}> KG /</Text>
           <Text style={[styles.label, { marginLeft: 4 }]}>
             {dayjs().format('DD/MM/YYYY')}
           </Text>
         </View>
+        {/* Peso Hoy (solo si existe) */}
+        {pesoHoy ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 8,
+            }}
+          >
+            <Text style={styles.label}>P. HOY:</Text>
+            <Text style={[styles.field, { marginLeft: 4 }]}>{pesoHoy} KG</Text>
+          </View>
+        ) : null}
         <View
           style={{
             flexDirection: 'row',
@@ -360,6 +379,25 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         <View style={styles.blockBig}>
           {renderField(cita.reflexology_diagnostics, styles.blockText)}
         </View>
+        {/* Anticoncepción (solo si hay datos) */}
+        {historia?.use_contraceptive_method && (metodoAnticonceptivoNombre || metodoAnticonceptivoId) ? (
+          <View style={{ marginTop: 6 }}>
+            <Text style={styles.sectionTitle}>MÉTODO ANTICONCEPTIVO</Text>
+            <View style={styles.line} />
+            <View style={styles.block}>
+              <Text style={styles.label}>
+                Método: <Text style={styles.field}>{metodoAnticonceptivoNombre || (metodoAnticonceptivoId ? `ID ${metodoAnticonceptivoId}` : '')}</Text>
+              </Text>
+            </View>
+            {isDiu && (tipoDiuNombre || historia?.diu_type_id) ? (
+              <View style={styles.block}>
+                <Text style={styles.label}>
+                  Tipo DIU: <Text style={styles.field}>{tipoDiuNombre || `ID ${historia?.diu_type_id}`}</Text>
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
         {/* Firma del terapeuta */}
         <View style={styles.firma}>
           <Text style={{ fontSize: 9 }}>Firma del terapeuta:</Text>

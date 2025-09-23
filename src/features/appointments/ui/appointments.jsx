@@ -239,6 +239,15 @@ export default function Appointments() {
     },
   ];
 
+  // Ocultar citas completadas en la tabla
+  const isCompleted = (status) => {
+    const v = typeof status === 'string' ? status.toUpperCase() : status;
+    return v === 2 || v === 'COMPLETADA';
+  };
+  const visibleAppointments = Array.isArray(appointments)
+    ? appointments.filter((a) => !isCompleted(a.appointment_status_id))
+    : appointments;
+
   const handleAction = async (action, record) => {
     switch (action) {
       case 'edit':
@@ -393,7 +402,7 @@ export default function Appointments() {
 
       <ModeloTable
         columns={columns}
-        data={appointments}
+        data={visibleAppointments}
         loading={loading}
         pagination={{
           current: pagination.currentPage,
