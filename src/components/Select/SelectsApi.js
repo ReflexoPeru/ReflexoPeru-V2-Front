@@ -10,6 +10,8 @@ const apiCache = {
   paymentStatuses: null,
   predeterminedPrices: null,
   diagnoses: null,
+  contraceptiveMethods: null,
+  diuTypes: null,
 };
 
 // Función para limpiar el caché
@@ -141,5 +143,39 @@ export const getDiagnoses = async () => {
     })) || [];
 
   apiCache.diagnoses = data;
+  return data;
+};
+
+// Métodos anticonceptivos
+export const getContraceptiveMethods = async () => {
+  if (apiCache.contraceptiveMethods) {
+    return apiCache.contraceptiveMethods;
+  }
+
+  const response = await get('contraceptive-methods');
+  const data =
+    (response?.data?.data || [])?.map((item) => ({
+      value: item.id,
+      label: item.name,
+    })) || [];
+
+  apiCache.contraceptiveMethods = data;
+  return data;
+};
+
+// Tipos de DIU
+export const getDiuTypes = async () => {
+  if (apiCache.diuTypes) {
+    return apiCache.diuTypes;
+  }
+
+  const response = await get('diu-types');
+  const data =
+    (response?.data?.data || [])?.map((item) => ({
+      value: item.id,
+      label: item.name,
+    })) || [];
+
+  apiCache.diuTypes = data;
   return data;
 };

@@ -28,6 +28,8 @@ import {
   useUpdatePatientHistory,
 } from '../hook/historyHook';
 import styles from './PatientHistory.module.css';
+import SelectContraceptiveMethod from '../../../components/Select/SelectContraceptiveMethod';
+import SelectDiuType from '../../../components/Select/SelectDiuType';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -45,9 +47,12 @@ const PatientHistory = () => {
   const [loadingTicket, setLoadingTicket] = useState(false);
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [metodoAnticonceptivo, setMetodoAnticonceptivo] = useState('');
-  const [tipoDIU, setTipoDIU] = useState('');
-  const [otroTipoDIU, setOtroTipoDIU] = useState('');
   const [usaAnticonceptivo, setUsaAnticonceptivo] = useState('');
+  const [useContraceptiveMethodState, setUseContraceptiveMethodState] = useState(null); // true | false | null
+  const [contraceptiveMethodId, setContraceptiveMethodId] = useState(null);
+  const [contraceptiveMethodLabel, setContraceptiveMethodLabel] = useState('');
+  const [diuTypeId, setDiuTypeId] = useState(null);
+  const DIU_METHOD_ID = 4; // Mostrar select de tipo DIU solo si el método es DIU
 
   const { id } = useParams();
   const location = useLocation();
@@ -105,6 +110,7 @@ const PatientHistory = () => {
         talla: historyData?.height || '',
         pesoInicial: historyData?.weight || '',
         ultimoPeso: historyData?.last_weight || '',
+        pesoHoy: historyData?.actual_weight || '',
 
         // Información médica
         testimonio: historyData?.testimony ? 'Sí' : 'No',
@@ -120,10 +126,10 @@ const PatientHistory = () => {
           : undefined,
         
         // Métodos anticonceptivos
-        usaAnticonceptivo: isFemale ? (historyData?.metodo_anticonceptivo ? 'Sí' : 'No') : undefined,
-        metodoAnticonceptivo: isFemale ? historyData?.metodo_anticonceptivo || '' : undefined,
-        tipoDIU: isFemale ? historyData?.tipo_diu || '' : undefined,
-        otroTipoDIU: isFemale ? historyData?.otro_tipo_diu || '' : undefined,
+        // Nuevo esquema basado en IDs
+        use_contraceptive_method: isFemale ? (historyData?.use_contraceptive_method ?? null) : undefined,
+        contraceptive_method_id: isFemale ? (historyData?.contraceptive_method_id ?? null) : undefined,
+        diu_type_id: isFemale ? (historyData?.diu_type_id ?? null) : undefined,
 
         // Campos adicionales
         diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
@@ -151,35 +157,24 @@ const PatientHistory = () => {
         setSelectedTherapistId(null);
       }
 
-      // Configurar estados para métodos anticonceptivos
+      // Configurar estados para métodos anticonceptivos (nuevo esquema)
       if (isFemale) {
-        const metodo = historyData?.metodo_anticonceptivo || '';
-        const tipoDIU = historyData?.tipo_diu || '';
-        const otroTipoDIU = historyData?.otro_tipo_diu || '';
-        
-        const usaAnticonceptivoValue = metodo ? 'Sí' : 'No';
-        let tipoDIUValue = tipoDIU;
-        let otroTipoDIUValue = otroTipoDIU;
-        
-        // Si hay un tipo de DIU personalizado que no está en las opciones predefinidas,
-        // establecerlo como "Otro" y poner el valor en otroTipoDIU
-        if (tipoDIU && !['DIU de cobre', 'DIU hormonal (levonorgestrel)', 'No sabe / No recuerda'].includes(tipoDIU)) {
-          tipoDIUValue = 'Otro';
-          otroTipoDIUValue = tipoDIU;
-        }
-        
-        // Configurar estados locales
-        setUsaAnticonceptivo(usaAnticonceptivoValue);
-        setMetodoAnticonceptivo(metodo);
-        setTipoDIU(tipoDIUValue);
-        setOtroTipoDIU(otroTipoDIUValue);
-        
-        // Sincronizar con el formulario
+        const useMethod = historyData?.use_contraceptive_method ?? null;
+        setUseContraceptiveMethodState(useMethod);
+
+        const methodId = historyData?.contraceptive_method_id ?? null;
+        const diuId = historyData?.diu_type_id ?? null;
+        setContraceptiveMethodId(methodId);
+        setDiuTypeId(diuId);
+
+        // Para compatibilidad visual con estados existentes
+        setUsaAnticonceptivo(useMethod === true ? 'Sí' : useMethod === false ? 'No' : '');
+        setMetodoAnticonceptivo(methodId ? String(methodId) : '');
+
         form.setFieldsValue({
-          usaAnticonceptivo: usaAnticonceptivoValue,
-          metodoAnticonceptivo: metodo,
-          tipoDIU: tipoDIUValue,
-          otroTipoDIU: otroTipoDIUValue
+          use_contraceptive_method: useMethod,
+          contraceptive_method_id: methodId,
+          diu_type_id: diuId,
         });
       }
     } else {
@@ -262,8 +257,6 @@ const PatientHistory = () => {
   };
 
   const onFinish = async (values) => {
-    console.log('🚀 onFinish ejecutándose...', values);
-    console.log('📝 Valores del formulario:', values);
     
     const historyId = patientHistory?.data?.id;
     const selectedAppointment = appointments.find(
@@ -271,25 +264,29 @@ const PatientHistory = () => {
     );
     const appointmentId = selectedAppointment?.id;
 
-    console.log('📋 IDs:', { historyId, appointmentId, selectedAppointmentDate });
-    console.log('💰 Payment Type ID:', selectedAppointment?.payment_type_id);
 
     if (!historyId || !appointmentId) {
-      console.error('❌ Falta el ID del historial o la cita');
+      
       message.error('Falta el ID del historial o la cita.');
       return;
     }
 
     // Verificar si la cita tiene payment_type_id válido
     if (!selectedAppointment?.payment_type_id) {
-      console.warn('⚠️ La cita no tiene payment_type_id válido');
+      
       // No enviar payment_type_id si no existe
     }
 
+    const toFixed3 = (val) =>
+      val === undefined || val === null || val === '' || isNaN(Number(val))
+        ? ''
+        : Number(val).toFixed(3);
+
     const historyPayload = {
-      weight: values.pesoInicial,
-      last_weight: values.ultimoPeso,
-      height: values.talla,
+      weight: toFixed3(values.pesoInicial),
+      last_weight: toFixed3(values.ultimoPeso),
+      actual_weight: toFixed3(values.pesoHoy),
+      height: toFixed3(values.talla),
       observation: values.observation,
       private_observation: values.observationPrivate,
       diagnosticos_medicos: values.diagnosticosMedicos,
@@ -303,9 +300,9 @@ const PatientHistory = () => {
       testimony: values.testimonio === 'Sí',
       gestation: values.gestacion === 'Sí',
       menstruation: values.menstruacion === 'Sí',
-      metodo_anticonceptivo: values.usaAnticonceptivo === 'Sí' ? values.metodoAnticonceptivo : '',
-      tipo_diu: values.usaAnticonceptivo === 'Sí' && values.tipoDIU === 'Otro' ? values.otroTipoDIU : (values.usaAnticonceptivo === 'Sí' ? values.tipoDIU : ''),
-      otro_tipo_diu: values.usaAnticonceptivo === 'Sí' && values.tipoDIU === 'Otro' ? values.otroTipoDIU : '',
+      use_contraceptive_method: useContraceptiveMethodState,
+      contraceptive_method_id: useContraceptiveMethodState ? contraceptiveMethodId : null,
+      diu_type_id: useContraceptiveMethodState && contraceptiveMethodLabel === 'DIU' ? diuTypeId : null,
       therapist_id: selectedTherapistId,
     };
 
@@ -333,37 +330,27 @@ const PatientHistory = () => {
       therapist_id: selectedTherapistId,
     };
 
-    // Solo agregar payment_type_id si existe y es válido
-    if (selectedAppointment?.payment_type_id) {
-      appointmentPayload.payment_type_id = selectedAppointment.payment_type_id;
-      console.log('✅ Incluyendo payment_type_id:', selectedAppointment.payment_type_id);
-    } else {
-      console.log('⚠️ No se incluye payment_type_id (no existe o no es válido)');
-    }
+    // No enviar payment_type_id desde esta pantalla (se gestiona en el flujo de pagos)
 
     try {
-      console.log('💾 Enviando datos de historial...', historyPayload);
       const historyResult = await updateHistory(historyId, historyPayload);
-      console.log('✅ Resultado historial:', historyResult);
       
-      console.log('💾 Enviando datos de cita...', appointmentPayload);
       const appointmentResult = await updateAppointment(appointmentId, appointmentPayload);
-      console.log('✅ Resultado cita:', appointmentResult);
       
       // Solo navegar si ambas actualizaciones fueron exitosas
       if (historyResult.success && appointmentResult.success) {
-        console.log('🎉 Ambos updates exitosos, navegando...');
+        
         message.success('Cambios guardados exitosamente');
         // Esperar un momento para que se refresquen los datos
         setTimeout(() => {
           navigate(-1);
         }, 1000);
       } else {
-        console.error('❌ Error en las actualizaciones:', { historyResult, appointmentResult });
+        
         message.error('Error al guardar los cambios');
       }
     } catch (e) {
-      console.error('❌ Error actualizando historial y cita:', e);
+      
       message.error('Error al guardar los cambios: ' + e.message);
     }
   };
@@ -427,7 +414,7 @@ const PatientHistory = () => {
             form={form}
             onFinish={onFinish}
             onFinishFailed={(errorInfo) => {
-              console.log('❌ Validación del formulario falló:', errorInfo);
+              
             }}
             autoComplete="off"
             layout="vertical"
@@ -649,94 +636,66 @@ const PatientHistory = () => {
                 </Select>
               </Form.Item>
 
-              {/* Métodos Anticonceptivos - Todo en una fila horizontal */}
-              <Form.Item
-                name="usaAnticonceptivo"
-                label="¿Usa método anticonceptivo?"
-                className={styles.physicalInfoItem}
-                style={{ display: isFemale ? 'block' : 'none' }}
-              >
-                <Radio.Group 
-                  onChange={(e) => {
-                    setUsaAnticonceptivo(e.target.value);
-                    if (e.target.value === 'No') {
-                      form.setFieldsValue({ metodoAnticonceptivo: '', tipoDIU: '', otroTipoDIU: '' });
-                      setMetodoAnticonceptivo('');
-                      setTipoDIU('');
-                      setOtroTipoDIU('');
-                    }
-                  }}
+              {/* Métodos Anticonceptivos */}
+              {isFemale && useContraceptiveMethodState === null && (
+                <Form.Item
+                  name="use_contraceptive_method"
+                  label="¿Usa método anticonceptivo?"
+                  className={styles.physicalInfoItem}
                 >
-                  <Radio value="Sí">Sí</Radio>
-                  <Radio value="No">No</Radio>
-                </Radio.Group>
-              </Form.Item>
+                  <Radio.Group
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setUseContraceptiveMethodState(val);
+                      if (!val) {
+                        setContraceptiveMethodId(null);
+                        setDiuTypeId(null);
+                        setContraceptiveMethodLabel('');
+                        form.setFieldsValue({ contraceptive_method_id: null, diu_type_id: null });
+                      }
+                    }}
+                  >
+                    <Radio value={true}>Sí</Radio>
+                    <Radio value={false}>No</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              )}
 
-              {/* Método Anticonceptivo - Solo visible si responde Sí */}
               <Form.Item
-                name="metodoAnticonceptivo"
+                name="contraceptive_method_id"
                 label="Método"
-                className={styles.physicalInfoItem}
-                style={{ display: isFemale && usaAnticonceptivo === 'Sí' ? 'block' : 'none' }}
+                className={`${styles.physicalInfoItem} ${styles.methodItem}`}
+                style={{ display: isFemale && useContraceptiveMethodState === true ? 'block' : 'none' }}
               >
-                <Select 
-                  className={`${styles.select} ${styles.smallInput}`}
-                  placeholder="Seleccione"
-                  onChange={(value) => {
-                    setMetodoAnticonceptivo(value);
-                    if (value !== 'DIU') {
-                      form.setFieldsValue({ tipoDIU: '', otroTipoDIU: '' });
-                      setTipoDIU('');
-                      setOtroTipoDIU('');
+                <SelectContraceptiveMethod
+                  className={`${styles.select}`}
+                  value={contraceptiveMethodId}
+                  onChange={(value, option) => {
+                    setContraceptiveMethodId(value ?? null);
+                    const label = option?.children || '';
+                    setContraceptiveMethodLabel(label);
+                    form.setFieldsValue({ contraceptive_method_id: value ?? null });
+                    if (value !== DIU_METHOD_ID) {
+                      setDiuTypeId(null);
+                      form.setFieldsValue({ diu_type_id: null });
                     }
                   }}
-                >
-                  <Option value="Anticonceptivos orales">Anticonceptivos orales</Option>
-                  <Option value="Inyección">Inyección</Option>
-                  <Option value="Implante subdérmico">Implante subdérmico</Option>
-                  <Option value="Condón">Condón</Option>
-                  <Option value="DIU">DIU</Option>
-                  <Option value="Ligadura tubárica">Ligadura tubárica</Option>
-                  <Option value="Otro">Otro</Option>
-                </Select>
+                />
               </Form.Item>
 
-              {/* Tipo de DIU - Solo visible si selecciona DIU */}
               <Form.Item
-                name="tipoDIU"
+                name="diu_type_id"
                 label="Tipo DIU"
-                className={styles.physicalInfoItem}
-                style={{ display: isFemale && usaAnticonceptivo === 'Sí' && metodoAnticonceptivo === 'DIU' ? 'block' : 'none' }}
+                className={`${styles.physicalInfoItem} ${styles.diuItem}`}
+                style={{ display: isFemale && useContraceptiveMethodState === true && contraceptiveMethodId === DIU_METHOD_ID ? 'block' : 'none' }}
               >
-                <Select 
-                  className={`${styles.select} ${styles.smallInput}`}
-                  placeholder="Seleccione tipo"
+                <SelectDiuType
+                  className={`${styles.select}`}
+                  value={diuTypeId}
                   onChange={(value) => {
-                    setTipoDIU(value);
-                    if (value !== 'Otro') {
-                      form.setFieldsValue({ otroTipoDIU: '' });
-                      setOtroTipoDIU('');
-                    }
+                    setDiuTypeId(value ?? null);
+                    form.setFieldsValue({ diu_type_id: value ?? null });
                   }}
-                >
-                  <Option value="DIU de cobre">DIU de cobre</Option>
-                  <Option value="DIU hormonal (levonorgestrel)">DIU hormonal (levonorgestrel)</Option>
-                  <Option value="No sabe / No recuerda">No sabe / No recuerda</Option>
-                  <Option value="Otro">Otro</Option>
-                </Select>
-              </Form.Item>
-
-              {/* Input para otro tipo de DIU - Solo visible si selecciona "Otro" */}
-              <Form.Item
-                name="otroTipoDIU"
-                label="Especifique"
-                className={styles.physicalInfoItem}
-                style={{ display: isFemale && usaAnticonceptivo === 'Sí' && metodoAnticonceptivo === 'DIU' && tipoDIU === 'Otro' ? 'block' : 'none' }}
-              >
-                <Input 
-                  className={`${styles.input} ${styles.smallInput}`}
-                  placeholder="Tipo de DIU"
-                  onChange={(e) => setOtroTipoDIU(e.target.value)}
                 />
               </Form.Item>
             </div>

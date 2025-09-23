@@ -195,6 +195,32 @@
   max-width: 150px;
 }
 
+/* Ensanchar y alinear selects de método anticonceptivo y tipo DIU */
+.physicalInfoRow .physicalInfoItem[name="contraceptive_method_id"],
+.physicalInfoRow .physicalInfoItem[name="diu_type_id"],
+.methodItem,
+.diuItem {
+  flex: 0 0 auto;
+  max-width: none;
+}
+
+.physicalInfoRow .physicalInfoItem[name="contraceptive_method_id"] .ant-select,
+.physicalInfoRow .physicalInfoItem[name="diu_type_id"] .ant-select {
+  min-width: 260px;
+  width: 320px;
+}
+
+.physicalInfoRow .physicalInfoItem[name="contraceptive_method_id"],
+.methodItem { margin-right: 16px; }
+.physicalInfoRow .physicalInfoItem[name="diu_type_id"],
+.diuItem { margin-left: 0; }
+
+/* Evitar solapamiento forzando display inline-block y alineación vertical */
+.methodItem, .diuItem {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .bottomSection {
   display: flex;
   align-items: flex-end;
@@ -413,23 +439,18 @@
 /* ================================================== */
 
 /* Ancho específico para los 3 selects de métodos anticonceptivos - MÁS LARGOS */
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select,
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select {
   min-width: 700px !important;
   width: 700px !important;
 }
 
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select-selector {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector {
   min-width: 700px !important;
   width: 700px !important;
 }
 
 /* Ajustar el contenedor para acomodar los selects más largos */
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"],
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"],
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] {
   flex: 0 0 700px !important;
   margin: 0 5px !important;
   max-width: 700px !important;
@@ -437,9 +458,7 @@
 }
 
 /* Efectos de entrada para campos de métodos anticonceptivos */
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"],
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"],
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] {
   animation: slideInFromRight 0.4s ease-out;
   transition: all 0.3s ease;
 }
@@ -452,8 +471,7 @@
 }
 
 /* Estilos mejorados para selects de métodos anticonceptivos */
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select {
   background-color: var(--color-background-secondary) !important;
   border: 2px solid var(--color-border-primary) !important;
   border-radius: 8px !important;
@@ -461,38 +479,17 @@
   transition: all 0.3s ease !important;
 }
 
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select:hover,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select:hover {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select:hover {
   border-color: var(--color-primary) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
   transform: translateY(-1px);
 }
 
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-focused,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select-focused {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-focused {
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1) !important;
 }
 
-/* Estilos mejorados para input de especificar */
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input {
-  background-color: var(--color-background-secondary) !important;
-  border: 2px solid var(--color-border-primary) !important;
-  border-radius: 8px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.3s ease !important;
-}
-
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input:hover {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
-  transform: translateY(-1px);
-}
-
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1) !important;
-}
 
 /* Animación de entrada */
 @keyframes slideInFromRight {
@@ -507,9 +504,7 @@
 }
 
 /* Efecto de pulso para campos activos */
-.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"]:focus-within,
-.physicalInfoRow .physicalInfoItem[name="tipoDIU"]:focus-within,
-.physicalInfoRow .physicalInfoItem[name="otroTipoDIU"]:focus-within {
+.physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"]:focus-within {
   animation: pulse 0.6s ease-in-out;
 }
 
@@ -527,22 +522,17 @@
 
 /* Responsividad para selects más largos */
 @media (max-width: 1600px) {
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select {
     min-width: 600px !important;
     width: 600px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select-selector {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector {
     min-width: 600px !important;
     width: 600px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"],
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"],
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] {
     flex: 0 0 600px !important;
     margin: 0 5px !important;
     max-width: 600px !important;
@@ -551,22 +541,17 @@
 }
 
 @media (max-width: 1400px) {
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select {
     min-width: 500px !important;
     width: 500px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select-selector {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector {
     min-width: 500px !important;
     width: 500px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"],
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"],
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] {
     flex: 0 0 500px !important;
     margin: 0 5px !important;
     max-width: 500px !important;
@@ -575,22 +560,17 @@
 }
 
 @media (max-width: 1200px) {
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select,
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] .ant-input {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select {
     min-width: 400px !important;
     width: 400px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector,
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"] .ant-select-selector {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] .ant-select-selector {
     min-width: 400px !important;
     width: 400px !important;
   }
   
-  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"],
-  .physicalInfoRow .physicalInfoItem[name="tipoDIU"],
-  .physicalInfoRow .physicalInfoItem[name="otroTipoDIU"] {
+  .physicalInfoRow .physicalInfoItem[name="metodoAnticonceptivo"] {
     flex: 0 0 400px !important;
     margin: 0 5px !important;
     max-width: 400px !important;
