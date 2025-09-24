@@ -17,6 +17,7 @@ import {
   FileDoc, // Alternativa para Configuraciones
   AddressBook, // Alternativa para Terapeutas
   Wrench,
+  Heart, // Métodos Anticonceptivos
 } from '@phosphor-icons/react';
 import { Menu } from 'antd';
 import { useEffect, useState } from 'react';
@@ -51,6 +52,7 @@ export default function MenuDashboard() {
     if (currentPath === '/configPerfil') return ['16'];
     if (currentPath === '/configSistema') return ['17'];
     if (currentPath === '/configUser') return ['14'];
+    if (currentPath === '/configContraceptive') return ['34'];
     
     // Elementos principales del menú
     if (currentPath === '/Inicio' || currentPath === '/' || currentPath === '') return ['1'];
@@ -157,6 +159,11 @@ export default function MenuDashboard() {
                 key: '33',
                 label: <Link to="configPagos">Pagos</Link>,
                 icon: <CurrencyDollar weight="regular" />,
+              },
+              {
+                key: '34',
+                label: <Link to="configContraceptive">Métodos Anticonceptivos</Link>,
+                icon: <Heart weight="regular" />,
               },
             ]
           : []),

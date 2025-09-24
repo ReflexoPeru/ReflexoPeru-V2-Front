@@ -21,6 +21,7 @@ const BaseModal = ({
   width = 520,
   initialValues,
   form,
+  className = 'modal-themed',
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -115,7 +116,7 @@ const BaseModal = ({
       width={width}
       centered
       destroyOnClose
-      className="modal-themed"
+      className={className}
       styles={{
         header: {
           borderBottom: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,

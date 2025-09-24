@@ -38,6 +38,8 @@ export default function View() {
     title = 'Configuración de Usuarios';
   if (matchPath('/Inicio/configPerfil', path))
     title = 'Configuración de Perfil';
+  if (matchPath('/Inicio/configContraceptive', path))
+    title = 'Métodos Anticonceptivos';
 
   return (
     <div className={Style.Container}>

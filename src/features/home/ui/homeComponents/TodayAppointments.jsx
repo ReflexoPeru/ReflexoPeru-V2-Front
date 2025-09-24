@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './TodayAppointments.module.css';
-import { CheckCircle } from '@phosphor-icons/react';
+import { Clock } from '@phosphor-icons/react';
 import { useTodayAppointments } from '../../hook/homeHook';
 import { Spin } from 'antd';
 import { useTheme } from '../../../../context/ThemeContext';
@@ -44,7 +44,7 @@ const TodayAppointments = () => {
                 <div className={styles.details}></div>
               </div>
               <div className={styles.check}>
-                <CheckCircle size={22} />
+                <Clock size={22} />
               </div>
             </div>
           ))
@@ -68,7 +68,7 @@ const TodayAppointments = () => {
               transition: 'all var(--transition-normal)'
             }}
           >
-            <CheckCircle 
+            <Clock 
               size={48} 
               color="#1CB54A" 
               style={{ 
