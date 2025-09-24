@@ -160,6 +160,18 @@ const styles = StyleSheet.create({
     borderTop: `1px solid #e0e0e0`,
     paddingTop: 8,
   },
+  noDataContainer: {
+    padding: 40,
+    textAlign: 'center',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  noDataText: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic',
+  },
 });
 
 const DailyCashReportPDF = ({
@@ -169,14 +181,60 @@ const DailyCashReportPDF = ({
   companyInfo,
   isEdited = false,
 }) => {
-  const rows = Object.values(data || {});
+  // Manejar la nueva estructura de datos del backend
+  const processData = (rawData) => {
+    if (!rawData) return { rows: [], totalGeneral: 0, totalCitas: 0 };
+    
+    // Si viene con la estructura antigua (Object.values)
+    if (rawData && typeof rawData === 'object' && !rawData.report && !rawData.debug) {
+      const rows = Object.values(rawData);
+      const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
+      const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
+      return { rows, totalGeneral, totalCitas };
+    }
+    
+    // Si viene con la nueva estructura (report: [], debug: {...})
+    if (rawData.report && Array.isArray(rawData.report)) {
+      // Si report está vacío pero hay datos en debug.sample_appointments
+      if (rawData.report.length === 0 && rawData.debug && rawData.debug.sample_appointments) {
+        const appointments = rawData.debug.sample_appointments;
+        const paymentTypes = {};
+        
+        // Agrupar por tipo de pago
+        appointments.forEach(appointment => {
+          const paymentType = appointment.payment_type_id || 'SIN_PAGO';
+          if (!paymentTypes[paymentType]) {
+            paymentTypes[paymentType] = {
+              name: paymentType,
+              countAppointment: 0,
+              payment: 0,
+              total: 0
+            };
+          }
+          paymentTypes[paymentType].countAppointment += 1;
+          paymentTypes[paymentType].payment = parseFloat(appointment.payment || 0);
+          paymentTypes[paymentType].total += parseFloat(appointment.payment || 0);
+        });
+        
+        const rows = Object.values(paymentTypes);
+        const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
+        const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
+        return { rows, totalGeneral, totalCitas };
+      }
+      
+      // Si report tiene datos
+      const rows = rawData.report;
+      const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
+      const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
+      return { rows, totalGeneral, totalCitas };
+    }
+    
+    return { rows: [], totalGeneral: 0, totalCitas: 0 };
+  };
+
+  const { rows, totalGeneral, totalCitas } = processData(data);
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
-  const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
-  const totalCitas = rows.reduce(
-    (acc, row) => acc + (row.countAppointment || 0),
-    0,
-  );
   const promedioPorCita =
     totalCitas > 0 ? (totalGeneral / totalCitas).toFixed(2) : 0;
 
@@ -231,43 +289,51 @@ const DailyCashReportPDF = ({
 
         <View style={styles.divider} />
 
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={[styles.headerCell, { flex: 2 }]}>Método de Pago</Text>
-            <Text style={[styles.headerCell, { flex: 1, textAlign: 'center' }]}>
-              Citas
-            </Text>
-            <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
-              Monto
-            </Text>
-            <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
-              Total
-            </Text>
-          </View>
-          {rows.map((row, idx) => (
-            <View
-              style={[styles.tableRow, idx % 2 !== 0 ? styles.rowOdd : {}]}
-              key={row.name}
-            >
-              <Text style={[styles.tableCell, styles.cellMethod]}>
-                {row.name}
+        {rows.length > 0 ? (
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={[styles.headerCell, { flex: 2 }]}>Método de Pago</Text>
+              <Text style={[styles.headerCell, { flex: 1, textAlign: 'center' }]}>
+                Citas
               </Text>
-              <Text style={[styles.tableCell, styles.cellCount]}>
-                {row.countAppointment}
+              <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
+                Monto
               </Text>
-              <Text style={[styles.tableCell, styles.cellAmount]}>
-                S/ {row.payment.toFixed(2)}
-              </Text>
-              <Text style={[styles.tableCell, styles.cellAmount]}>
-                S/ {row.total.toFixed(2)}
+              <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
+                Total
               </Text>
             </View>
-          ))}
-          <View style={styles.tableFooter}>
-            <Text style={styles.footerLabel}>Total General:</Text>
-            <Text style={styles.footerValue}>S/ {totalGeneral.toFixed(2)}</Text>
+            {rows.map((row, idx) => (
+              <View
+                style={[styles.tableRow, idx % 2 !== 0 ? styles.rowOdd : {}]}
+                key={row.name}
+              >
+                <Text style={[styles.tableCell, styles.cellMethod]}>
+                  {row.name}
+                </Text>
+                <Text style={[styles.tableCell, styles.cellCount]}>
+                  {row.countAppointment}
+                </Text>
+                <Text style={[styles.tableCell, styles.cellAmount]}>
+                  S/ {row.payment.toFixed(2)}
+                </Text>
+                <Text style={[styles.tableCell, styles.cellAmount]}>
+                  S/ {row.total.toFixed(2)}
+                </Text>
+              </View>
+            ))}
+            <View style={styles.tableFooter}>
+              <Text style={styles.footerLabel}>Total General:</Text>
+              <Text style={styles.footerValue}>S/ {totalGeneral.toFixed(2)}</Text>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.noDataContainer}>
+            <Text style={styles.noDataText}>
+              No se encontraron transacciones para esta fecha
+            </Text>
+          </View>
+        )}
 
         <Text style={styles.footer}>
           {clinicName} - Documento generado automáticamente.

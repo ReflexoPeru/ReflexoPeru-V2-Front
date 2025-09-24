@@ -340,23 +340,31 @@ const Reporte = () => {
       // Usar datos editados si están disponibles, sino usar los datos originales
       const dataToShow = editedCajaData || cajaData;
 
-      content =
-        dataToShow && Object.keys(dataToShow).length > 0 ? (
-          <PDFViewer
-            key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
-            width="100%"
-            height="95%"
-            style={pdfViewerStyle}
-          >
-            <DailyCashReportPDF
-              data={dataToShow}
-              date={safeDate}
-              logoUrl={logoUrl}
-              companyInfo={companyInfo}
-              isEdited={!!editedCajaData}
-            />
-          </PDFViewer>
-        ) : (
+      // Verificar si hay datos válidos para mostrar
+      const hasValidData = dataToShow && (
+        // Estructura antigua: objeto con propiedades
+        (typeof dataToShow === 'object' && !dataToShow.report && !dataToShow.debug && Object.keys(dataToShow).length > 0) ||
+        // Estructura nueva: report con datos o debug con sample_appointments
+        (dataToShow.report && dataToShow.report.length > 0) ||
+        (dataToShow.debug && dataToShow.debug.sample_appointments && dataToShow.debug.sample_appointments.length > 0)
+      );
+
+      content = hasValidData ? (
+        <PDFViewer
+          key={`caja-${safeDate.format('YYYY-MM-DD')}-${editedCajaData ? 'edited' : 'original'}`}
+          width="100%"
+          height="95%"
+          style={pdfViewerStyle}
+        >
+          <DailyCashReportPDF
+            data={dataToShow}
+            date={safeDate}
+            logoUrl={logoUrl}
+            companyInfo={companyInfo}
+            isEdited={!!editedCajaData}
+          />
+        </PDFViewer>
+      ) : (
           <EmptyState
             icon="file"
             title="No hay transacciones registradas"
