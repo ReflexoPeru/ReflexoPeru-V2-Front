@@ -45,10 +45,10 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
     loadDepartments();
   }, []);
 
-  // Cargar y anidar todo el árbol de ubigeo según los IDs SOLO si el value está completo (modo edición)
+  // Cargar y anidar todo el árbol de ubigeo según los IDs (modo edición o preselección)
   useEffect(() => {
     const loadFullUbigeoTree = async () => {
-      if (value && value.region_id && value.province_id && value.district_id) {
+      if (value && value.region_id && value.province_id) {
         setLoadingUbigeo(true);
         // 1. Cargar departamentos
         const departamentos = await getDepartaments();
@@ -67,21 +67,33 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
         );
         let provinceNode = {
           label: provinceOption ? provinceOption.name : value.province_id,
-                value: String(value.province_id),
-                isLeaf: false,
+          value: String(value.province_id),
+          isLeaf: false,
         };
-        // 3. Cargar distritos
-        const distritos = await getDistricts(value.province_id);
-        const districtOption = distritos.find(
-          (d) => String(d.id) === String(value.district_id),
-        );
-        let districtNode = {
-          label: districtOption ? districtOption.name : value.district_id,
-                    value: String(value.district_id),
-                    isLeaf: true,
-        };
+        
+        // 3. Cargar distritos solo si hay district_id
+        if (value.district_id) {
+          const distritos = await getDistricts(value.province_id);
+          const districtOption = distritos.find(
+            (d) => String(d.id) === String(value.district_id),
+          );
+          let districtNode = {
+            label: districtOption ? districtOption.name : value.district_id,
+            value: String(value.district_id),
+            isLeaf: true,
+          };
+          provinceNode.children = [districtNode];
+        } else {
+          // Si no hay district_id, cargar todos los distritos para que el usuario pueda seleccionar
+          const distritos = await getDistricts(value.province_id);
+          provinceNode.children = distritos.map((d) => ({
+            label: d.name,
+            value: String(d.id),
+            isLeaf: true,
+          }));
+        }
+        
         // Anidar
-        provinceNode.children = [districtNode];
         regionNode.children = [provinceNode];
         // Armar el árbol completo
         const optionsTree = departamentos.map((d) => ({
@@ -94,16 +106,21 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
               : undefined,
         }));
         setOptions(optionsTree);
-        setCascaderValue([
-            String(value.region_id),
-            String(value.province_id),
-            String(value.district_id),
-          ]);
+        
+        // Establecer el valor del cascader
+        const cascaderValue = [
+          String(value.region_id),
+          String(value.province_id),
+        ];
+        if (value.district_id) {
+          cascaderValue.push(String(value.district_id));
+        }
+        setCascaderValue(cascaderValue);
         setLoadingUbigeo(false);
       }
     };
-    // Solo ejecutar si el value está completo (modo edición)
-    if (value && value.region_id && value.province_id && value.district_id) {
+    // Ejecutar si hay region_id y province_id
+    if (value && value.region_id && value.province_id) {
       loadFullUbigeoTree();
     }
   }, [value]);

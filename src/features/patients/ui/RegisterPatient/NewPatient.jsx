@@ -231,6 +231,11 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       initialValues={{
         document_type_id: "1", // DNI por defecto (string)
         country_id: 1,
+        ubicacion: {
+          region_id: 15, // Lima
+          province_id: 1501, // Lima
+          district_id: null, // El usuario seleccionará el distrito
+        },
       }}
     />
   );

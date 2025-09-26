@@ -37,6 +37,12 @@ const fields = [
           },
         ],
       },
+      {
+        name: 'therapist_card',
+        label: 'Carnet de Terapeuta',
+        type: 'text',
+        span: 8,
+      },
     ],
   },
   {
@@ -200,6 +206,11 @@ const NewTherapist = () => {
       onCancel={handleCancel}
       initialValues={{
         document_type_id: "1", // DNI por defecto (string)
+        ubicacion: {
+          region_id: 15, // Lima
+          province_id: 1501, // Lima
+          district_id: null, // El usuario seleccionará el distrito
+        },
       }}
     />
   );

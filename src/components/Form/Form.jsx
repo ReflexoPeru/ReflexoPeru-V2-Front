@@ -26,6 +26,7 @@ const FormComponent = forwardRef(
       form: externalForm,
       onPriceChange,
       loading: externalLoading = false,
+      initialValues = {},
     },
     ref,
   ) => {
@@ -156,6 +157,7 @@ const FormComponent = forwardRef(
               isPhoneRequired={isPhoneRequired}
               togglePhoneRequired={togglePhoneRequired}
               onPriceChange={onPriceChange}
+              form={form}
             />
           </Form.Item>
         </Col>
@@ -169,6 +171,7 @@ const FormComponent = forwardRef(
         onFinish={onSubmit}
         className={styles.formContainer}
         ref={ref}
+        initialValues={initialValues}
       >
           <Row gutter={[20, 8]}>
             {fields.map((field, index) => renderField(field, index))}

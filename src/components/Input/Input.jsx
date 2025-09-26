@@ -37,9 +37,13 @@ const InputField = ({
   isPhoneRequired,
   togglePhoneRequired,
   capitalize = true,
+  name,
   ...rest
 }) => {
   let inputComponent;
+  
+  // Obtener el valor del formulario si no se pasa explícitamente
+  const fieldValue = rest.value !== undefined ? rest.value : (form && name ? form.getFieldValue(name) : undefined);
 
   const inputProps = {
     className: styles.inputStyle,
@@ -58,7 +62,7 @@ const InputField = ({
             { required: true, message: 'Por favor seleccione la ubicación' },
           ]}
         >
-          <SelectUbigeoCascader value={rest.value} onChange={rest.onChange} />
+          <SelectUbigeoCascader value={fieldValue} onChange={rest.onChange} />
         </Form.Item>
       );
 
@@ -108,7 +112,7 @@ const InputField = ({
 
     case 'typeOfDocument':
       return (
-        <SelectTypeOfDocument value={rest.value} onChange={rest.onChange} />
+        <SelectTypeOfDocument value={fieldValue} onChange={rest.onChange} />
       );
 
     case 'selectPrices':
@@ -184,7 +188,7 @@ const InputField = ({
       inputComponent = (
         <DatePicker
           {...inputProps}
-          format="DD/MM/YYYY"
+          format="DD-MM-YYYY"
           style={{
             width: '100%',
           }}
