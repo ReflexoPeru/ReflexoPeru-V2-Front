@@ -192,6 +192,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
 
   // Datos opcionales: peso hoy y anticoncepción
   const pesoHoy = historia?.current_weight ?? historia?.actual_weight ?? '';
+  const hasPesoHoy = pesoHoy !== null && pesoHoy !== undefined && `${pesoHoy}` !== '';
   const metodoAnticonceptivoNombre = historia?.contraceptive_method?.name ?? null;
   const metodoAnticonceptivoId = historia?.contraceptive_method_id ?? null;
   const isDiu = metodoAnticonceptivoNombre === 'DIU' || Number(metodoAnticonceptivoId) === 4;
@@ -345,23 +346,21 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           <Text style={styles.label}>P.A:</Text>
           {renderField(historia.last_weight, styles.fieldUnderline)}
           <Text style={styles.label}> KG /</Text>
-          <Text style={[styles.label, { marginLeft: 4 }]}>
+        </View>
+        {/* Peso Hoy (siempre mostrar, con línea si no hay dato) */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+          }}
+        >
+          <Text style={styles.label}>P. HOY:</Text>
+          {renderField(hasPesoHoy ? `${pesoHoy} KG` : '', styles.fieldUnderline)}
+          <Text style={[styles.label, { marginLeft: 8 }]}>
             {dayjs().format('DD/MM/YYYY')}
           </Text>
         </View>
-        {/* Peso Hoy (solo si existe) */}
-        {pesoHoy ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 8,
-            }}
-          >
-            <Text style={styles.label}>P. HOY:</Text>
-            <Text style={[styles.field, { marginLeft: 4 }]}>{pesoHoy} KG</Text>
-          </View>
-        ) : null}
         <View
           style={{
             flexDirection: 'row',
