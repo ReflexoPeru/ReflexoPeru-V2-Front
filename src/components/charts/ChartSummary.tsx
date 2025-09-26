@@ -36,7 +36,7 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
     cardBackground: isDarkMode ? '#2a2a2a' : '#f8f9fa',
     text: isDarkMode ? '#ffffff' : '#1a1a1a',
     textSecondary: isDarkMode ? '#a0a0a0' : '#666666',
-    primary: '#00FF7F',
+    primary: isDarkMode ? '#ffffff' : '#1a1a1a',
     border: isDarkMode ? '#333333' : '#e0e0e0',
     shadow: isDarkMode ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.1)'
   };
@@ -57,34 +57,32 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
       >
         {/* Tarjeta del Rango */}
         <div 
-          className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
+          className="px-4 py-3 rounded-lg border transition-all duration-200"
           style={{
-            backgroundColor: colors.cardBackground,
-            borderColor: colors.primary + '30',
-            boxShadow: `0 4px 12px ${colors.shadow}`,
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderRadius: '8px',
             minWidth: '160px',
             flexShrink: 0
           }}
         >
           <div className="flex items-center space-x-3">
             <div 
-              className="p-2 rounded-lg"
+              className="p-2 rounded"
               style={{
-                backgroundColor: colors.primary + '20',
-                border: `1px solid ${colors.primary}40`
+                backgroundColor: '#f5f5f5',
+                border: '1px solid #e0e0e0'
               }}
             >
               <Calendar 
                 size={20} 
                 weight="bold" 
-                color={colors.primary}
+                color="#666666"
               />
             </div>
             <div>
               <div 
-                className="text-xs font-semibold uppercase tracking-wide"
+                className="text-xs font-medium"
                 style={{ color: colors.text }}
               >
                 Período
@@ -92,8 +90,7 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
               <div 
                 className="text-sm font-bold mt-1"
                 style={{ 
-                  color: colors.primary,
-                  textShadow: `0 1px 3px ${colors.primary}40`
+                  color: colors.text
                 }}
               >
                 {rangeLabel}
@@ -104,40 +101,38 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
 
             {/* Tarjeta del Promedio */}
             <div 
-              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
+              className="px-4 py-3 rounded-lg border transition-all duration-200"
           style={{
-            backgroundColor: colors.cardBackground,
-            borderColor: colors.primary + '30',
-            boxShadow: `0 4px 12px ${colors.shadow}`,
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderRadius: '8px',
             minWidth: '120px',
             flexShrink: 0
           }}
         >
           <div className="flex items-center space-x-3">
             <div 
-              className="p-2 rounded-lg"
+              className="p-2 rounded"
               style={{
-                backgroundColor: colors.primary + '20',
-                border: `1px solid ${colors.primary}40`
+                backgroundColor: '#f5f5f5',
+                border: '1px solid #e0e0e0'
               }}
             >
               <TrendUp 
                 size={20} 
                 weight="bold" 
-                color={colors.primary}
+                color="#666666"
               />
             </div>
             <div>
               <div 
-                className="text-xs font-semibold uppercase tracking-wide"
+                className="text-xs font-medium"
                 style={{ color: colors.text }}
               >
                 Promedio
               </div>
                   <div 
-                    className="text-lg font-bold mt-1 animate-counter-up"
+                    className="text-lg font-bold mt-1"
                     style={{ 
                       color: colors.text
                     }}
@@ -150,40 +145,38 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
 
             {/* Tarjeta del Máximo */}
             <div 
-              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
+              className="px-4 py-3 rounded-lg border transition-all duration-200"
           style={{
-            backgroundColor: colors.cardBackground,
-            borderColor: colors.primary + '30',
-            boxShadow: `0 4px 12px ${colors.shadow}`,
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderRadius: '8px',
             minWidth: '120px',
             flexShrink: 0
           }}
         >
           <div className="flex items-center space-x-3">
             <div 
-              className="p-2 rounded-lg"
+              className="p-2 rounded"
               style={{
-                backgroundColor: colors.primary + '20',
-                border: `1px solid ${colors.primary}40`
+                backgroundColor: '#f5f5f5',
+                border: '1px solid #e0e0e0'
               }}
             >
               <TrendingUp 
                 size={20} 
                 weight="bold" 
-                color={colors.primary}
+                color="#666666"
               />
             </div>
             <div>
               <div 
-                className="text-xs font-semibold uppercase tracking-wide"
+                className="text-xs font-medium"
                 style={{ color: colors.text }}
               >
                 Máximo
               </div>
                   <div 
-                    className="text-lg font-bold mt-1 animate-counter-up"
+                    className="text-lg font-bold mt-1"
                     style={{ 
                       color: colors.text
                     }}
@@ -196,40 +189,38 @@ const ChartSummary: React.FC<ChartSummaryProps> = ({
 
             {/* Tarjeta del Mínimo */}
             <div 
-              className="px-4 py-3 rounded-2xl border-2 transition-all duration-200 hover:scale-105 animate-card-enter"
+              className="px-4 py-3 rounded-lg border transition-all duration-200"
           style={{
-            backgroundColor: colors.cardBackground,
-            borderColor: colors.primary + '30',
-            boxShadow: `0 4px 12px ${colors.shadow}`,
-            backdropFilter: 'blur(10px)',
-            borderRadius: '16px',
+            backgroundColor: colors.background,
+            borderColor: colors.border,
+            borderRadius: '8px',
             minWidth: '120px',
             flexShrink: 0
           }}
         >
           <div className="flex items-center space-x-3">
             <div 
-              className="p-2 rounded-lg"
+              className="p-2 rounded"
               style={{
-                backgroundColor: colors.primary + '20',
-                border: `1px solid ${colors.primary}40`
+                backgroundColor: '#f5f5f5',
+                border: '1px solid #e0e0e0'
               }}
             >
               <TrendDown 
                 size={20} 
                 weight="bold" 
-                color={colors.primary}
+                color="#666666"
               />
             </div>
             <div>
               <div 
-                className="text-xs font-semibold uppercase tracking-wide"
+                className="text-xs font-medium"
                 style={{ color: colors.text }}
               >
                 Mínimo
               </div>
                   <div 
-                    className="text-lg font-bold mt-1 animate-counter-up"
+                    className="text-lg font-bold mt-1"
                     style={{ 
                       color: colors.text
                     }}

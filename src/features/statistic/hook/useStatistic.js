@@ -106,12 +106,12 @@ export const useStatistic = (startDate, endDate) => {
         const distributedData = [];
         
         if (apiValues.length === 0) {
-          // Si no hay datos, crear un patrón realista
+          // Si no hay datos, crear un patrón realista (excluyendo domingos)
           const baseValue = Math.max(1, Math.floor(totalSessions / totalCategories));
           for (let i = 0; i < totalCategories; i++) {
             const variation = Math.floor(Math.random() * baseValue * 0.3);
-            const isWeekend = i === 5 || i === 6; // Sábado y Domingo
-            const multiplier = isWeekend ? 1.2 : 1;
+            const isSaturday = i === 5; // Solo sábado (domingo ya excluido)
+            const multiplier = isSaturday ? 1.2 : 1;
             distributedData.push(Math.max(0, baseValue + variation) * multiplier);
           }
           return distributedData;
@@ -127,8 +127,16 @@ export const useStatistic = (startDate, endDate) => {
         }
         
         // Mapear datos de la API
-        if (totalCategories === 7) {
-          // Para días de la semana
+        if (totalCategories === 6) {
+          // Para días de la semana (excluyendo domingo)
+          const diasSemanaIngles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          diasSemanaIngles.forEach((dia, index) => {
+            if (apiData[dia]) {
+              distributedData[index] = Number(apiData[dia]);
+            }
+          });
+        } else if (totalCategories === 7) {
+          // Para días de la semana (incluyendo domingo - mantener compatibilidad)
           const diasSemanaIngles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
           diasSemanaIngles.forEach((dia, index) => {
             if (apiData[dia]) {
@@ -187,19 +195,19 @@ export const useStatistic = (startDate, endDate) => {
           }
         });
       } else if (daysDiff <= 7) {
-        // 7 días - mostrar días de la semana fijos en español
-        const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        // 6 días - mostrar días de la semana fijos en español (excluyendo domingo)
+        const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
         dateCategories = diasSemana;
         
         // Usar datos reales de la API y distribuir inteligentemente
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
-        mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 7, totalSessions);
+        mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 6, totalSessions);
       } else if (daysDiff <= 30) {
-        // 28 días - mostrar 4 semanas fijas
+        // 28 días - mostrar 4 semanas fijas (excluyendo domingos)
         for (let i = 0; i < 4; i++) {
           dateCategories.push(`Semana ${i + 1}`);
         }
-        // Distribuir datos de la API en 4 semanas
+        // Distribuir datos de la API en 4 semanas (excluyendo domingos)
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 4, totalSessions);
       } else if (daysDiff <= 365) {

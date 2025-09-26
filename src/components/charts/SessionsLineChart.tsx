@@ -150,7 +150,7 @@ const SessionsLineChart: React.FC<SessionsLineChartProps> = ({
       }}
     >
       {/* Título del gráfico */}
-      <div className="mb-4">
+      <div className="mb-4" style={{ marginLeft: '24px', marginTop: '24px', marginRight: '24px' }}>
         <h3 
           className="text-lg font-bold truncate"
           style={{ 

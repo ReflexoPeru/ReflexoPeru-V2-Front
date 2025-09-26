@@ -3,6 +3,7 @@ import { usePageAnimation } from '../../../hooks/usePageAnimation';
 import dayjs from '../../../utils/dayjsConfig';
 import Chart from 'react-apexcharts';
 import Style from './Statistic.module.css';
+import './StatisticOverrides.css';
 import { useStatistic } from '../hook/useStatistic';
 import DashboardFilters from './DashboardFilters';
 import DashboardMetrics from './DashboardMetrics';

@@ -65,8 +65,8 @@ export function transformSessionDataForRange(
 }
 
 /**
- * Transforma datos para vista semanal (7 días)
- * Muestra: Lunes, Martes, etc. con fecha debajo
+ * Transforma datos para vista semanal (6 días - excluyendo domingos)
+ * Muestra: Lunes, Martes, etc. con fecha debajo (sin domingo)
  */
 function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
   
@@ -79,12 +79,11 @@ function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
   const startOfWeek = today.startOf('week').add(1, 'day'); // Lunes
   const result: ChartDataPoint[] = [];
   
-  
-  for (let i = 0; i < 7; i++) {
+  // Solo mostrar 6 días (Lunes a Sábado), excluyendo domingo
+  for (let i = 0; i < 6; i++) {
     const date = startOfWeek.add(i, 'day');
     const dateStr = date.format('YYYY-MM-DD');
     const sessions = sessionsData[dateStr] || 0;
-    
     
     result.push({
       date: dateStr,
@@ -98,7 +97,7 @@ function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
 }
 
 /**
- * Transforma datos para vista mensual (30 días)
+ * Transforma datos para vista mensual (30 días, excluyendo domingos)
  * Muestra fechas reales en formato DD/MM con mes y año como sublabel
  */
 function transformMonthData(sessionsData: SessionData): ChartDataPoint[] {
@@ -107,22 +106,26 @@ function transformMonthData(sessionsData: SessionData): ChartDataPoint[] {
   
   for (let i = 29; i >= 0; i--) {
     const date = today.subtract(i, 'day');
-    const dateStr = date.format('YYYY-MM-DD');
-    const sessions = sessionsData[dateStr] || 0;
     
-    result.push({
-      date: dateStr,
-      sessions,
-      label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
-      sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
-    });
+    // Excluir domingos (day() === 0)
+    if (date.day() !== 0) {
+      const dateStr = date.format('YYYY-MM-DD');
+      const sessions = sessionsData[dateStr] || 0;
+      
+      result.push({
+        date: dateStr,
+        sessions,
+        label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
+        sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
+      });
+    }
   }
   
   return result;
 }
 
 /**
- * Transforma datos para vista trimestral (90 días)
+ * Transforma datos para vista trimestral (90 días, excluyendo domingos)
  * Muestra fechas reales cada 3 días para optimizar visualización
  */
 function transformThreeMonthsData(sessionsData: SessionData): ChartDataPoint[] {
@@ -131,15 +134,19 @@ function transformThreeMonthsData(sessionsData: SessionData): ChartDataPoint[] {
   
   for (let i = 89; i >= 0; i -= 3) {
     const date = today.subtract(i, 'day');
-    const dateStr = date.format('YYYY-MM-DD');
-    const sessions = sessionsData[dateStr] || 0;
     
-    result.push({
-      date: dateStr,
-      sessions,
-      label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
-      sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
-    });
+    // Excluir domingos (day() === 0)
+    if (date.day() !== 0) {
+      const dateStr = date.format('YYYY-MM-DD');
+      const sessions = sessionsData[dateStr] || 0;
+      
+      result.push({
+        date: dateStr,
+        sessions,
+        label: date.format('DD/MM'), // Mostrar fecha en formato DD/MM
+        sublabel: date.format('MMM YYYY') // Mostrar mes y año como sublabel
+      });
+    }
   }
   
   return result;
@@ -204,7 +211,7 @@ function transformCustomData(
 }
 
 /**
- * Transforma datos personalizados día por día
+ * Transforma datos personalizados día por día (excluyendo domingos)
  */
 function transformCustomDailyData(
   sessionsData: SessionData,
@@ -216,25 +223,28 @@ function transformCustomDailyData(
   const daysDiff = endDate.diff(startDate, 'day');
   
   while (current.isBefore(endDate) || current.isSame(endDate, 'day')) {
-    const dateStr = current.format('YYYY-MM-DD');
-    const sessions = sessionsData[dateStr] || 0;
-    
-    // Si el rango es mayor a 7 días, mostrar fechas reales en lugar de días de la semana
-    if (daysDiff > 7) {
-      result.push({
-        date: dateStr,
-        sessions,
-        label: current.format('DD/MM'), // Mostrar fecha en formato DD/MM
-        sublabel: current.format('MMM YYYY') // Mostrar mes y año como sublabel
-      });
-    } else {
-      // Para rangos de 7 días o menos, mantener el formato original
-      result.push({
-        date: dateStr,
-        sessions,
-        label: current.format('ddd'),
-        sublabel: current.format('DD/MM')
-      });
+    // Excluir domingos (day() === 0)
+    if (current.day() !== 0) {
+      const dateStr = current.format('YYYY-MM-DD');
+      const sessions = sessionsData[dateStr] || 0;
+      
+      // Si el rango es mayor a 7 días, mostrar fechas reales en lugar de días de la semana
+      if (daysDiff > 7) {
+        result.push({
+          date: dateStr,
+          sessions,
+          label: current.format('DD/MM'), // Mostrar fecha en formato DD/MM
+          sublabel: current.format('MMM YYYY') // Mostrar mes y año como sublabel
+        });
+      } else {
+        // Para rangos de 7 días o menos, mantener el formato original
+        result.push({
+          date: dateStr,
+          sessions,
+          label: current.format('ddd'),
+          sublabel: current.format('DD/MM')
+        });
+      }
     }
     
     current = current.add(1, 'day');
@@ -244,7 +254,7 @@ function transformCustomDailyData(
 }
 
 /**
- * Transforma datos personalizados cada 3 días (para rangos medianos)
+ * Transforma datos personalizados cada 3 días (para rangos medianos, excluyendo domingos)
  */
 function transformCustomWeeklyData(
   sessionsData: SessionData,
@@ -255,23 +265,35 @@ function transformCustomWeeklyData(
   let current = startDate;
   
   while (current.isBefore(endDate, 'day') || current.isSame(endDate, 'day')) {
+    // Saltar domingos
+    if (current.day() === 0) {
+      current = current.add(1, 'day');
+      continue;
+    }
+    
     const dateStr = current.format('YYYY-MM-DD');
     let sessions = 0;
+    let daysCounted = 0;
     
-    // Sumar sesiones de los próximos 3 días
+    // Sumar sesiones de los próximos 3 días (excluyendo domingos)
     for (let i = 0; i < 3 && (current.isBefore(endDate, 'day') || current.isSame(endDate, 'day')); i++) {
-      const dayStr = current.format('YYYY-MM-DD');
-      sessions += sessionsData[dayStr] || 0;
+      if (current.day() !== 0) { // No contar domingos
+        const dayStr = current.format('YYYY-MM-DD');
+        sessions += sessionsData[dayStr] || 0;
+        daysCounted++;
+      }
       current = current.add(1, 'day');
     }
     
-    const startDateForLabel = current.subtract(3, 'day');
-    result.push({
-      date: dateStr,
-      sessions,
-      label: startDateForLabel.format('DD/MM'), // Mostrar fecha en formato DD/MM
-      sublabel: startDateForLabel.format('MMM YYYY') // Mostrar mes y año como sublabel
-    });
+    if (daysCounted > 0) {
+      const startDateForLabel = current.subtract(daysCounted, 'day');
+      result.push({
+        date: dateStr,
+        sessions,
+        label: startDateForLabel.format('DD/MM'), // Mostrar fecha en formato DD/MM
+        sublabel: startDateForLabel.format('MMM YYYY') // Mostrar mes y año como sublabel
+      });
+    }
   }
   
   return result;

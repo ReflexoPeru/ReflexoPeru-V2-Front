@@ -1,0 +1,93 @@
+/* Overrides para Ant Design en el dashboard de estadísticas */
+
+/* Filtros de tiempo - Radio Buttons */
+.ant-radio-group .ant-radio-button-wrapper {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+  border-color: var(--color-border-primary) !important;
+  background: var(--color-background-secondary) !important;
+  font-size: 14px !important;
+  height: 40px !important;
+  line-height: 38px !important;
+  padding: 0 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-radio-group .ant-radio-button-wrapper:hover {
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-primary) !important;
+  background: var(--color-background-secondary) !important;
+}
+
+.ant-radio-group .ant-radio-button-wrapper-checked {
+  color: var(--color-background-primary) !important;
+  font-weight: 700 !important;
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: none !important;
+}
+
+.ant-radio-group .ant-radio-button-wrapper-checked:hover {
+  color: var(--color-background-primary) !important;
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-radio-group .ant-radio-button-wrapper-checked:focus {
+  color: var(--color-background-primary) !important;
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* Botón personalizado */
+.ant-btn {
+  color: var(--color-text-primary) !important;
+  font-weight: 600 !important;
+  border-color: var(--color-border-primary) !important;
+  background: var(--color-background-secondary) !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  font-size: 14px !important;
+}
+
+.ant-btn:hover {
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary-light) !important;
+}
+
+.ant-btn-primary {
+  color: var(--color-background-primary) !important;
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-btn-primary:hover {
+  color: var(--color-background-primary) !important;
+  background: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+}
+
+/* DatePicker */
+.ant-picker {
+  border-color: var(--color-border-primary) !important;
+  background: var(--color-background-secondary) !important;
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-picker-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px var(--color-primary-light) !important;
+}
+
+.ant-picker-input > input {
+  color: var(--color-text-primary) !important;
+}
+
+.ant-picker-input > input::placeholder {
+  color: var(--color-text-secondary) !important;
+}
