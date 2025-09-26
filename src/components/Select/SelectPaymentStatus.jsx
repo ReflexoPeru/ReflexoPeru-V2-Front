@@ -31,6 +31,7 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
       options={options}
       value={value}
       onChange={onChange}
+      allowClear
       filterOption={(input, option) =>
         (option?.label ?? '')
           .toLowerCase()

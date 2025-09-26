@@ -39,6 +39,7 @@ const NewAppointment = () => {
     useState(false);
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState('');
+  const [isCustomRate, setIsCustomRate] = useState(false);
 
   const { submitNewAppointment } = useAppointments();
   const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
@@ -85,7 +86,7 @@ const NewAppointment = () => {
       service_id: serviceId,
     });
 
-    // Buscar el servicio seleccionado para verificar si es "cupon sin costo"
+    // Buscar el servicio seleccionado para verificar si es "cupon sin costo" o "tarifa personalizada"
     if (serviceId) {
       // Obtener las opciones de precios predeterminados
       const fetchServiceInfo = async () => {
@@ -96,6 +97,18 @@ const NewAppointment = () => {
           
           if (selectedService) {
             const serviceName = selectedService.label?.toLowerCase() || '';
+            
+            // Verificar si es "tarifa personalizada"
+            if (serviceName.includes('tarifa personalizada')) {
+              setIsCustomRate(true);
+              form.setFieldsValue({
+                payment: '', // Limpiar el monto
+                payment_type_id: '', // Limpiar método de pago
+              });
+              console.log('🔍 Debug - Tarifa personalizada detectada, limpiando campos');
+            } else {
+              setIsCustomRate(false);
+            }
             
             // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
@@ -113,6 +126,8 @@ const NewAppointment = () => {
       };
       
       fetchServiceInfo();
+    } else {
+      setIsCustomRate(false);
     }
   };
 
@@ -160,20 +175,8 @@ const NewAppointment = () => {
       return;
     }
     
-    if (!values.payment_type_id) {
-      notification.error({
-        message: 'Error',
-        description: 'El tipo de pago es requerido',
-      });
-      return;
-    }
-    if (!paymentValue) {
-      notification.error({
-        message: 'Error',
-        description: 'El monto de pago es requerido',
-      });
-      return;
-    }
+    // payment_type_id es opcional
+    // payment es opcional también
 
     setIsSubmitting(true);
 
@@ -203,8 +206,8 @@ const NewAppointment = () => {
           : {}),
         appointment_status_id: appointment_status_id,
         patient_id: selectedPatient.id,
-        payment: paymentValue,
-        payment_type_id: Number(values.payment_type_id), // Convertir a número
+        ...(paymentValue && { payment: paymentValue }), // Solo incluir si existe
+        ...(values.payment_type_id && { payment_type_id: Number(values.payment_type_id) }), // Solo incluir si existe
         service_id: Number(values.service_id), // Usar service_id del formulario
       };
       
@@ -514,10 +517,7 @@ const NewAppointment = () => {
                 name="payment_type_id"
                 label="Método de Pago"
                 rules={[
-                  {
-                    required: true,
-                    message: 'El método de pago es requerido',
-                  },
+                  
                 ]}
               >
                 <SelectPaymentStatus
@@ -544,23 +544,8 @@ const NewAppointment = () => {
                 name="payment"
                 label="Monto"
                 rules={[
-                  {
-                    required: true,
-                    message: 'El monto es requerido',
-                  },
-                  {
-                    validator: (_, value) => {
-                      if (
-                        value &&
-                        (isNaN(Number(value)) || Number(value) <= 0)
-                      ) {
-                        return Promise.reject(
-                          new Error('El monto debe ser mayor a cero'),
-                        );
-                      }
-                      return Promise.resolve();
-                    },
-                  },
+                  
+                  
                 ]}
               >
                 <Input                   
@@ -568,6 +553,12 @@ const NewAppointment = () => {
                   type="number"
                   step="0.01"
                   min="0"
+                  readOnly={!isCustomRate}
+                  placeholder={isCustomRate ? "Ingrese el monto" : "Seleccione una opción de pago"}
+                  style={{
+                    backgroundColor: isCustomRate ? 'var(--color-background-primary)' : 'var(--color-background-secondary)',
+                    cursor: isCustomRate ? 'text' : 'not-allowed'
+                  }}
                 />
               </Form.Item>
             </Col>
