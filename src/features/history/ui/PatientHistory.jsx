@@ -645,13 +645,14 @@ const PatientHistory = () => {
               </Form.Item>
 
               {/* Métodos Anticonceptivos */}
-              {(isFemale || appointmentFromState?.patient?.sex === 'F') && useContraceptiveMethodState === null && (
+              {(isFemale || appointmentFromState?.patient?.sex === 'F') && (
                 <Form.Item
                   name="use_contraceptive_method"
                   label="¿Usa método anticonceptivo?"
                   className={styles.physicalInfoItem}
                 >
                   <Radio.Group
+                    value={useContraceptiveMethodState}
                     onChange={(e) => {
                       const val = e.target.value;
                       setUseContraceptiveMethodState(val);

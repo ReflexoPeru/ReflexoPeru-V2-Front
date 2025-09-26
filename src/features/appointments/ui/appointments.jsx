@@ -407,8 +407,11 @@ export default function Appointments() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 50,
+          pageSize: pagination.pageSize,
           onChange: handlePageChange,
+          showSizeChanger: false,
+          showQuickJumper: true,
+          showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} citas`,
         }}
       />
 

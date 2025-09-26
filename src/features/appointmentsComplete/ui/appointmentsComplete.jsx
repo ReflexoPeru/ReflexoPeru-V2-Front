@@ -78,18 +78,7 @@ export default function AppointmentsComplete() {
       key: 'appointment_hour',
       width: '60px',
     },
-    {
-      title: 'Metodo Pago',
-      key: 'payment_type',
-      width: '100px',
-      render: (_, record) => record.payment_type?.name || 'Sin método',
-    },
-    {
-      title: 'Pago',
-      dataIndex: 'payment',
-      key: 'payment',
-      width: '70px',
-    },
+    
     {
       title: 'Acciones',
       key: 'actions',
@@ -170,8 +159,11 @@ export default function AppointmentsComplete() {
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
-          pageSize: 50,
+          pageSize: pagination.pageSize,
           onChange: handlePageChange,
+          showSizeChanger: false,
+          showQuickJumper: true,
+          showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} citas`,
         }}
       />
     </div>

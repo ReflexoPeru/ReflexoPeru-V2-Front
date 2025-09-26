@@ -59,19 +59,27 @@ export const searchAppointments = async (term) => {
   }
 };
 
-export const getPaginatedAppointmentsByDate = async (date, perPage = 100) => {
+export const getPaginatedAppointmentsByDate = async (date, perPage = 10, page = 1) => {
   try {
     const res = await get(
-      `appointments/paginated?per_page=${perPage}&date=${date}`,
+      `appointments/paginated?per_page=${perPage}&date=${date}&page=${page}`,
     );
-    const data = Array.isArray(res.data)
-      ? res.data
-      : res.data.items || res.data.data || [];
-    const total = res.data.total || data.length;
+    
+    // El backend devuelve la estructura con current_page, data, total, etc.
+    const data = res.data?.data || [];
+    const total = res.data?.total || 0;
+    const currentPage = res.data?.current_page || 1;
+    const lastPage = res.data?.last_page || 1;
 
-    return { data, total };
+    return { 
+      data, 
+      total, 
+      currentPage, 
+      lastPage,
+      perPage: res.data?.per_page || perPage
+    };
   } catch (error) {
-    console.error('❌ Error al obtener citas completadas:', error);
+    console.error('❌ Error al obtener citas paginadas:', error);
     throw error;
   }
 };

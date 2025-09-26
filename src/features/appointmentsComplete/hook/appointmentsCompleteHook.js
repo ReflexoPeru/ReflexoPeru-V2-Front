@@ -56,7 +56,9 @@ export const useAppointmentsComplete = () => {
       setAppointmentsComplete(response.data || []);
       setPagination((prev) => ({
         ...prev,
+        currentPage: response.currentPage || 1,
         totalItems: response.total || 0,
+        pageSize: response.perPage || prev.pageSize,
       }));
     } catch (error) {
       if (error.name !== 'AbortError') {
