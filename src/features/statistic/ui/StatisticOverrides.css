@@ -39,8 +39,8 @@
   border-color: var(--color-primary) !important;
 }
 
-/* Botón personalizado */
-.ant-btn {
+/* Botón personalizado - Solo para el dashboard */
+.dashboardContainer .ant-btn {
   color: var(--color-text-primary) !important;
   font-weight: 600 !important;
   border-color: var(--color-border-primary) !important;
@@ -50,19 +50,19 @@
   font-size: 14px !important;
 }
 
-.ant-btn:hover {
+.dashboardContainer .ant-btn:hover {
   color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
   background: var(--color-primary-light) !important;
 }
 
-.ant-btn-primary {
+.dashboardContainer .ant-btn-primary {
   color: var(--color-background-primary) !important;
   background: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
 }
 
-.ant-btn-primary:hover {
+.dashboardContainer .ant-btn-primary:hover {
   color: var(--color-background-primary) !important;
   background: var(--color-primary-hover) !important;
   border-color: var(--color-primary-hover) !important;

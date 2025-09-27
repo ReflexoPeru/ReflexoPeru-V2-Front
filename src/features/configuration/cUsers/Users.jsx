@@ -174,7 +174,7 @@ const Users = () => {
       user_name: '',
       sex: undefined,
       account_statement: true,
-      document_type_id: undefined,
+      document_type_id: 1, // DNI preseleccionado
       role_id: undefined,
       password: '',
     };
@@ -236,7 +236,7 @@ const Users = () => {
         user_name: '',
         sex: undefined,
         account_statement: true,
-        document_type_id: undefined,
+        document_type_id: 1, // DNI preseleccionado
         role_id: undefined,
       };
       
@@ -490,9 +490,6 @@ const Users = () => {
                 <Form.Item
                   name="maternal_lastname"
                   label="Apellido materno"
-                  rules={[
-                    { required: true, message: 'Este campo es requerido' },
-                  ]}
                 >
                   <Input
                     className={styles.uniformInput}
@@ -526,9 +523,6 @@ const Users = () => {
                 <Form.Item
                   name="phone"
                   label="Teléfono"
-                  rules={[
-                    { required: true, message: 'Este campo es requerido' },
-                  ]}
                 >
                   <Input className={styles.uniformInput} />
                 </Form.Item>
