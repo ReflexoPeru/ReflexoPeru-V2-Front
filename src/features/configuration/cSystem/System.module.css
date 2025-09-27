@@ -297,3 +297,43 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* Contenedor de botones de confirmación para logo */
+.logoConfirmButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+/* Botón de confirmar */
+.confirmButton {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.confirmButton:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Botón de cancelar */
+.cancelButton {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+  color: white !important;
+}
+
+.cancelButton:hover {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  opacity: 0.9;
+}

@@ -71,27 +71,13 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
           isLeaf: false,
         };
         
-        // 3. Cargar distritos solo si hay district_id
-        if (value.district_id) {
-          const distritos = await getDistricts(value.province_id);
-          const districtOption = distritos.find(
-            (d) => String(d.id) === String(value.district_id),
-          );
-          let districtNode = {
-            label: districtOption ? districtOption.name : value.district_id,
-            value: String(value.district_id),
-            isLeaf: true,
-          };
-          provinceNode.children = [districtNode];
-        } else {
-          // Si no hay district_id, cargar todos los distritos para que el usuario pueda seleccionar
-          const distritos = await getDistricts(value.province_id);
-          provinceNode.children = distritos.map((d) => ({
-            label: d.name,
-            value: String(d.id),
-            isLeaf: true,
-          }));
-        }
+        // 3. Cargar TODOS los distritos siempre para permitir cambios
+        const distritos = await getDistricts(value.province_id);
+        provinceNode.children = distritos.map((d) => ({
+          label: d.name,
+          value: String(d.id),
+          isLeaf: true,
+        }));
         
         // Anidar
         regionNode.children = [provinceNode];
@@ -144,6 +130,12 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
   // Cuando el usuario selecciona, cargar hijos normalmente
   const loadData = async (selectedOptions) => {
     const targetOption = selectedOptions[selectedOptions.length - 1];
+    
+    // Si ya tiene children, no recargar
+    if (targetOption.children) {
+      return;
+    }
+    
     targetOption.loading = true;
     try {
       if (selectedOptions.length === 1) {
@@ -186,7 +178,6 @@ const SelectUbigeoCascader = ({ value, onChange, ...rest }) => {
       options={options}
       loadData={loadData}
       onChange={handleChange}
-      changeOnSelect
       showSearch={{ filter }}
       placeholder="Seleccione departamento / provincia / distrito"
       style={{

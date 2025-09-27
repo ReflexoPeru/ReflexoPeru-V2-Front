@@ -41,6 +41,9 @@ const Profile = () => {
   const [avatar, setAvatar] = useState(
     photoUrl || '/src/assets/Img/MiniLogoReflexo.webp',
   );
+  const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showConfirmButton, setShowConfirmButton] = useState(false);
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
@@ -99,22 +102,43 @@ const Profile = () => {
     }
   }, [photoUrl]);
 
-  const handleAvatarChange = async ({ file }) => {
+  const handleAvatarChange = ({ file }) => {
     if (file.status !== 'done') return;
 
     const newFile = file.originFileObj;
     if (!newFile) return;
 
+    // Solo mostrar preview, no subir automáticamente
     const reader = new FileReader();
-    reader.onload = (e) => setAvatar(e.target.result);
+    reader.onload = (e) => {
+      setPreviewAvatar(e.target.result);
+      setSelectedFile(newFile);
+      setShowConfirmButton(true);
+    };
     reader.readAsDataURL(newFile);
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!selectedFile) return;
 
     try {
-      await uploadAvatar(newFile);
+      await uploadAvatar(selectedFile);
+      setAvatar(previewAvatar);
+      setPreviewAvatar(null);
+      setSelectedFile(null);
+      setShowConfirmButton(false);
       refetchPhoto();
+      message.success('Avatar actualizado correctamente');
     } catch (err) {
       console.error('Error capturado en el componente:', err);
+      message.error('Error al subir el avatar');
     }
+  };
+
+  const handleCancelUpload = () => {
+    setPreviewAvatar(null);
+    setSelectedFile(null);
+    setShowConfirmButton(false);
   };
 
   const handleOpenEmailModal = () => {
@@ -275,7 +299,7 @@ const Profile = () => {
                     <div className={styles.logoBlock}>
                       {avatar ? (
                         <Image
-                          src={avatar}
+                          src={previewAvatar || avatar}
                           alt="Avatar del usuario"
                           preview={false}
                           style={{
@@ -283,7 +307,7 @@ const Profile = () => {
                             height: '100px',
                             borderRadius: '50%',
                             objectFit: 'cover',
-                            border: '2px solid var(--color-primary)',
+                            border: previewAvatar ? '2px dashed var(--color-primary)' : '2px solid var(--color-primary)',
                             padding: '3px',
                             backgroundColor: 'transparent',
                           }}
@@ -291,6 +315,21 @@ const Profile = () => {
                       ) : (
                         <div className={styles.noLogo}>
                           No hay avatar disponible
+                        </div>
+                      )}
+                      {previewAvatar && (
+                        <div style={{ 
+                          fontSize: '12px', 
+                          color: 'var(--color-text-secondary)', 
+                          textAlign: 'center',
+                          marginTop: '5px',
+                          fontWeight: '600',
+                          backgroundColor: 'var(--color-background-secondary)',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          border: '1px solid var(--color-border-primary)'
+                        }}>
+                          Vista previa
                         </div>
                       )}
                     </div>
@@ -337,6 +376,26 @@ const Profile = () => {
                       </Upload>
                     </div>
                   </div>
+                  
+                  {/* Botones de confirmación/cancelación */}
+                  {showConfirmButton && (
+                    <div className={styles.avatarConfirmButtons}>
+                      <Button
+                        type="primary"
+                        onClick={handleConfirmUpload}
+                        loading={uploading}
+                        className={styles.confirmButton}
+                      >
+                        Confirmar subida
+                      </Button>
+                      <Button
+                        onClick={handleCancelUpload}
+                        className={styles.cancelButton}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.divider}></div>

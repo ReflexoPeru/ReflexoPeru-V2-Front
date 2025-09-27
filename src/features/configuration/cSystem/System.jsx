@@ -19,6 +19,9 @@ const System = () => {
     useUploadCompanyLogo();
   const [companyName, setCompanyName] = useState('');
   const [logoPreview, setLogoPreview] = useState(null);
+  const [previewLogo, setPreviewLogo] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showConfirmButton, setShowConfirmButton] = useState(false);
 
   //Establecer nombre de la empresa desde el contexto
   useEffect(() => {
@@ -58,25 +61,42 @@ const System = () => {
   };
 
   //CAMBIAR EL LOGO
-  const handleLogoChange = async (info) => {
+  const handleLogoChange = (info) => {
     if (info.file.status === 'done') {
       const file = info.file.originFileObj;
       if (!file) return;
 
-      // Vista previa local inmediata
+      // Solo mostrar preview, no subir automáticamente
       const reader = new FileReader();
       reader.onload = (e) => {
-        setLogoPreview(e.target.result);
+        setPreviewLogo(e.target.result);
+        setSelectedFile(file);
+        setShowConfirmButton(true);
       };
       reader.readAsDataURL(file);
-
-      await uploadLogo(file);
-      try {
-        await refetchCompanyLogo();
-      } catch (err) {
-        console.error('Error al refrescar datos de empresa', err);
-      }
     }
+  };
+
+  const handleConfirmUpload = async () => {
+    if (!selectedFile) return;
+
+    try {
+      await uploadLogo(selectedFile);
+      setPreviewLogo(null);
+      setSelectedFile(null);
+      setShowConfirmButton(false);
+      await refetchCompanyLogo();
+      message.success('Logo actualizado correctamente');
+    } catch (err) {
+      console.error('Error al subir logo:', err);
+      message.error('Error al subir el logo');
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setPreviewLogo(null);
+    setSelectedFile(null);
+    setShowConfirmButton(false);
   };
 
   if (loading)
@@ -100,14 +120,32 @@ const System = () => {
                   {logoUrl ? (
                     <div className={styles.logoImageContainer}>
                       <Image
-                        src={logoPreview || img}
+                        src={previewLogo || logoPreview || img}
                         alt={`Logo de ${companyName}`}
                         preview={false}
                         className={styles.logoImage}
+                        style={{
+                          border: previewLogo ? '2px dashed var(--color-primary)' : '2px solid var(--color-primary)',
+                        }}
                       />
                     </div>
                   ) : (
                     <div className={styles.noLogo}>No hay logo disponible</div>
+                  )}
+                  {previewLogo && (
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: 'var(--color-text-secondary)', 
+                      textAlign: 'center',
+                      marginTop: '5px',
+                      fontWeight: '600',
+                      backgroundColor: 'var(--color-background-secondary)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      border: '1px solid var(--color-border-primary)'
+                    }}>
+                      Vista previa
+                    </div>
                   )}
                 </div>
                 <div className={styles.logoBlock}>
@@ -152,6 +190,26 @@ const System = () => {
                   </Upload>
                 </div>
               </div>
+              
+              {/* Botones de confirmación/cancelación */}
+              {showConfirmButton && (
+                <div className={styles.logoConfirmButtons}>
+                  <Button
+                    type="primary"
+                    onClick={handleConfirmUpload}
+                    loading={uploadingLogo}
+                    className={styles.confirmButton}
+                  >
+                    Confirmar subida
+                  </Button>
+                  <Button
+                    onClick={handleCancelUpload}
+                    className={styles.cancelButton}
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Nombre */}

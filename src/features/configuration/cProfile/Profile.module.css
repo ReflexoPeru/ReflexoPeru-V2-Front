@@ -41,7 +41,7 @@
 
 .card {
   width: 650px;
-  height: 650px;
+  min-height: 650px;
   padding: 30px;
   border-radius: 12px;
 
@@ -220,23 +220,25 @@
   border: none;
   border-radius: 6px;
 
-  color: var(--color-text-primary);
+  color: white !important;
 
-  background-color: var(--color-primary);
+  background-color: var(--color-primary) !important;
 
   transition: all 0.3s ease;
 }
 
 .cambiarBtn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   background-color: var(--color-primary-hover) !important;
-  box-shadow: var(--shadow-soft);
+  color: white !important;
+  box-shadow: var(--shadow-medium);
 }
 
 .saveButtonContainer {
   display: flex;
   justify-content: center;
   margin-top: 30px;
+  margin-bottom: 20px;
 }
 
 .saveButton {
@@ -255,9 +257,9 @@
 }
 
 .saveButton:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
   background-color: var(--color-primary-hover) !important;
-  box-shadow: var(--shadow-medium);
+  box-shadow: var(--shadow-large);
 }
 
 /* Responsive adjustments */
@@ -334,4 +336,49 @@ input:-webkit-autofill {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* Estilos para la sección de avatar */
+.section {
+  margin-bottom: 20px;
+}
+
+/* Contenedor de botones de confirmación */
+.avatarConfirmButtons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+/* Botón de confirmar */
+.confirmButton {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.confirmButton:hover {
+  background-color: var(--color-primary-hover) !important;
+  border-color: var(--color-primary-hover) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Botón de cancelar */
+.cancelButton {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+  color: white !important;
+}
+
+.cancelButton:hover {
+  background-color: var(--color-error) !important;
+  border-color: var(--color-error) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  opacity: 0.9;
 }

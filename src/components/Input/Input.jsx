@@ -1,4 +1,4 @@
-import { CheckCircleFilled } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 import {
   Button,
   Checkbox,
@@ -10,6 +10,7 @@ import {
   TimePicker,
   Row,
   Col,
+  Tooltip,
 } from 'antd';
 import esES from 'antd/locale/es_ES';
 import dayjs from '../../utils/dayjsConfig';
@@ -262,16 +263,47 @@ const InputField = ({
     return (
       <div className={styles.inputWrapper}>
         {phoneInput}
-        <CheckCircleFilled
-          onClick={togglePhoneRequired}
-          title={
-            isPhoneRequired
-              ? 'Teléfono obligatorio (clic para hacerlo opcional)'
-              : 'Teléfono opcional (clic para hacerlo obligatorio)'
-          }
-          className={styles.icon}
-          style={{ color: isPhoneRequired ? '#FFF' : '#aaa' }}
-        />
+        {isPhoneRequired ? (
+          <Tooltip 
+            title="Teléfono obligatorio (clic para hacerlo opcional)" 
+            placement="top"
+            color="#333333"
+            overlayInnerStyle={{
+              color: '#ffffff',
+              backgroundColor: '#333333',
+              border: '1px solid #555555'
+            }}
+          >
+            <CheckCircleFilled
+              onClick={togglePhoneRequired}
+              className={styles.icon}
+              style={{ 
+                color: 'var(--color-primary)',
+                backgroundColor: 'var(--color-primary-light)'
+              }}
+            />
+          </Tooltip>
+        ) : (
+          <Tooltip 
+            title="Teléfono opcional (clic para hacerlo obligatorio)" 
+            placement="top"
+            color="#333333"
+            overlayInnerStyle={{
+              color: '#ffffff',
+              backgroundColor: '#333333',
+              border: '1px solid #555555'
+            }}
+          >
+            <CloseCircleFilled
+              onClick={togglePhoneRequired}
+              className={styles.icon}
+              style={{ 
+                color: 'var(--color-text-tertiary)',
+                backgroundColor: 'var(--color-background-tertiary)'
+              }}
+            />
+          </Tooltip>
+        )}
       </div>
     );
   }
