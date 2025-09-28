@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { theme } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   persistLocalStorage, 
   getLocalStorage,
@@ -175,10 +176,16 @@ export const ThemeProvider = ({ children }) => {
     }
   });
 
+  // Estado para controlar la animación de transición
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   // Aplicar el atributo data-theme al documento con transición suave
   useEffect(() => {
     // Agregar clase de transición antes del cambio
     document.documentElement.classList.add('theme-transitioning');
+    
+    // Activar overlay de transición
+    setIsTransitioning(true);
     
     // Pequeño delay para que la transición se vea
     const timeoutId = setTimeout(() => {
@@ -190,6 +197,7 @@ export const ThemeProvider = ({ children }) => {
       // Remover clase de transición después del cambio
       setTimeout(() => {
         document.documentElement.classList.remove('theme-transitioning');
+        setIsTransitioning(false);
       }, 300);
     }, 50);
 
@@ -219,10 +227,35 @@ export const ThemeProvider = ({ children }) => {
     toggleTheme,
     setTheme,
     antdTheme,
+    isTransitioning,
   };
 
   return (
     <ThemeContext.Provider value={value}>
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+            }}
+          >
+          </motion.div>
+        )}
+      </AnimatePresence>
       {children}
     </ThemeContext.Provider>
   );
