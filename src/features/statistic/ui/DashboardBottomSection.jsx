@@ -13,7 +13,6 @@ const DashboardBottomSection = ({
   filteredTherapists,
 }) => (
   <div className={Style.bottomSection}>
-    {/* Distribución de pagos */}
     <div className={Style.paymentSection}>
       <h3 className={Style.sectionTitle}>Distribución de Pagos</h3>
       <p className={Style.sectionSubtitle}>
@@ -28,7 +27,6 @@ const DashboardBottomSection = ({
         />
       </div>
     </div>
-    {/* Rendimiento de terapeutas */}
     <div className={Style.therapistsSection}>
       <h3 className={Style.sectionTitle}>Rendimiento de Terapeutas</h3>
       <p className={Style.sectionSubtitle}>

@@ -2,9 +2,10 @@ import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getPaymentStatuses } from './SelectsApi';
 
-export function SelectPaymentStatus({ value, onChange, ...rest }) {
+export function SelectPaymentStatus({ value, onChange, defaultValue = null, ...rest }) {
   const [options, setOptions] = useState([]);
 
+  // Cargar métodos de pago solo una vez al montar el componente
   useEffect(() => {
     const fetchPaymentStatuses = async () => {
       try {
@@ -21,7 +22,18 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
     };
 
     fetchPaymentStatuses();
-  }, []);
+  }, []); // Solo se ejecuta una vez al montar
+
+  // Preseleccionar valor por defecto solo cuando se cargan las opciones
+  useEffect(() => {
+    if (options.length > 0 && defaultValue && !value) {
+      const selectedOption = options.find(item => item.value === String(defaultValue));
+      if (selectedOption) {
+        console.log('Auto-selecting default payment method:', selectedOption);
+        if (onChange) onChange(String(defaultValue));
+      }
+    }
+  }, [options, defaultValue, value]); // Solo cuando cambian las opciones o los valores relevantes
 
   return (
     <Select
@@ -29,7 +41,7 @@ export function SelectPaymentStatus({ value, onChange, ...rest }) {
       showSearch
       placeholder="Estado de pago"
       options={options}
-      value={value}
+      value={value || defaultValue}
       onChange={onChange}
       allowClear
       filterOption={(input, option) =>

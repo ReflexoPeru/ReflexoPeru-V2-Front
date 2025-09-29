@@ -1,53 +1,64 @@
 // mockData.js
 export const mockData = {
-  large: {
-    chartSeries: [
-      {
-        name: 'Sesiones',
-        data: [20, 25, 22, 24, 28],
-      },
-    ],
-    categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY'],
-    pieSeries: [10, 15, 5],
-    pieOptions: {
-      labels: ['Efectivo', 'Yape', 'Cupon'],
+  data: {
+    sesiones: {
+      Monday: 5,
+      Tuesday: 8,
+      Wednesday: 12,
+      Thursday: 15,
+      Friday: 10,
+      Saturday: 7,
     },
-    chartOptions: {
-      xaxis: {
-        categories: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY'],
-      },
+    metricas: {
+      ttlganancias: 1250.50,
+      ttlpacientes: 45,
     },
-    therapistPerformance: [
+    terapeutas: [
       {
         id: 1,
-        name: 'Teresa Lopez',
-        data: [15],
+        terapeuta: 'LOPEZ, TERESA MARIA',
+        sesiones: 25,
+        ingresos: 750.00,
+        raiting: 4.5,
       },
       {
         id: 2,
-        name: 'Carlos Mendoza',
-        data: [12],
+        terapeuta: 'MENDOZA, CARLOS ALBERTO',
+        sesiones: 18,
+        ingresos: 540.00,
+        raiting: 4.2,
       },
       {
         id: 3,
-        name: 'Ana Ramirez',
-        data: [18],
+        terapeuta: 'RAMIREZ, ANA LUCIA',
+        sesiones: 22,
+        ingresos: 660.00,
+        raiting: 4.8,
       },
-    ],
-    paymentTypes: {
-      efectivo: 10,
-      yape: 15,
-      cupon: 5,
-    },
-    monthlySessions: [
       {
-        name: 'Ingresos',
-        data: [1200, 1500, 1300, 1400, 1600],
+        id: 4,
+        terapeuta: 'TORRES, MANUEL JOSE',
+        sesiones: 15,
+        ingresos: 450.00,
+        raiting: 3.9,
       },
     ],
-    patientTypes: {
-      cc: 12,
-      c: 2,
+    tipos_pago: {
+      Efectivo: 450,
+      Yape: 320,
+      Transferencia: 280,
+      Cupón: 200,
+    },
+    ingresos: {
+      '2024-01': 1200,
+      '2024-02': 1500,
+      '2024-03': 1300,
+      '2024-04': 1400,
+      '2024-05': 1600,
+    },
+    tipos_pacientes: {
+      c: 25,
+      cc: 20,
     },
   },
 };

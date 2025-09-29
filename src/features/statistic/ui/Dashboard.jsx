@@ -8,49 +8,29 @@ import { useStatistic } from '../hook/useStatistic';
 import DashboardFilters from './DashboardFilters';
 import DashboardMetrics from './DashboardMetrics';
 import DashboardBottomSection from './DashboardBottomSection';
+import SkeletonLoading from './SkeletonLoading';
+import ChartSkeleton from './ChartSkeleton';
 import SessionsLineChart from '../../../components/charts/SessionsLineChart';
 import { ChartRange } from '../../../constants/chartRanges';
 import { Spin } from 'antd';
 import { useTheme } from '../../../context/ThemeContext';
 
-// Usar configuración de tema global y solo ajustar mínimos si hace falta
-
 export default function PerformanceDashboard() {
-  const { antdTheme, isDarkMode } = useTheme();
-
-  // Utilidad para obtener variables CSS del tema actual
-  const getCssVar = (name) =>
-    typeof window !== 'undefined'
-      ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-      : '';
-
-  const colorPrimary = getCssVar('--color-primary') || '#1CB54A';
-  const colorSuccess = getCssVar('--color-success') || '#52c41a';
-  const colorWarning = getCssVar('--color-warning') || '#faad14';
-  const colorInfo = getCssVar('--color-info') || '#1890ff';
-  const colorTextPrimary = getCssVar('--color-text-primary') || '#333333';
-  const colorTextSecondary = getCssVar('--color-text-secondary') || '#666666';
-  const colorBorderPrimary = getCssVar('--color-border-primary') || '#e0e0e0';
-  const colorBgSecondary = getCssVar('--color-background-secondary') || '#f8f9fa';
+  const { isDarkMode } = useTheme();
   const [timeFilter, setTimeFilter] = useState('7días');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState(() => {
     const today = dayjs();
-    const weekday = today.day(); // 0=Dom,1=Lun,...6=Sáb
-    const monday = today.subtract((weekday + 6) % 7, 'day').startOf('day');
+    const monday = today.startOf('week').startOf('day');
     const saturday = monday.add(5, 'day').endOf('day');
     return [monday, saturday];
   });
   
-  // Animaciones
   const { isVisible, animationClass } = usePageAnimation('fade', 50);
 
   const {
-    chartSeries,
-    categories,
     pieSeries,
     pieOptions,
-    chartOptions,
     therapistPerformance,
     paymentTypes,
     monthlySessions,
@@ -61,6 +41,17 @@ export default function PerformanceDashboard() {
     formatCurrency,
     rawData
   } = useStatistic(dateRange[0], dateRange[1]);
+
+  // Debug logs
+  console.log('📊 Dashboard Debug:', {
+    loading,
+    hasRawData: !!rawData,
+    rawDataKeys: rawData ? Object.keys(rawData) : [],
+    rawDataStructure: rawData,
+    totalSessions,
+    totalPatients,
+    totalEarnings
+  });
 
   // Función para mapear filtros de tiempo a rangos de Tremor
   const mapTimeFilterToChartRange = (filter) => {
@@ -83,8 +74,7 @@ export default function PerformanceDashboard() {
     setTimeFilter(value);
     setShowDatePicker(false);
     const today = dayjs();
-    const weekday = today.day(); // 0=Dom,1=Lun,...6=Sáb
-    const monday = today.subtract((weekday + 6) % 7, 'day').startOf('day');
+    const monday = today.startOf('week').startOf('day');
     const saturday = monday.add(5, 'day').endOf('day');
     let startDate = monday;
     let endDate = saturday;
@@ -94,9 +84,8 @@ export default function PerformanceDashboard() {
         endDate = today.endOf('day');
         break;
       case '7días':
-        // Lunes a Sábado de la semana actual
-        startDate = startOfWeekMonday;
-        endDate = endOfSaturday;
+        startDate = monday;
+        endDate = saturday;
         break;
       case '28días':
         startDate = today.endOf('day').subtract(27, 'day').startOf('day');
@@ -122,17 +111,12 @@ export default function PerformanceDashboard() {
       setTimeFilter('personalizado');
     }
   };
-
-  // Scrollbar personalizado usando clases CSS
-
-  // Color según rating
   const getRatingColor = (rating) => {
-    if (rating >= 4) return colorSuccess || colorPrimary;
-    if (rating >= 2.5) return colorWarning;
+    if (rating >= 4) return '#52c41a';
+    if (rating >= 2.5) return '#faad14';
     return '#EF4444';
   };
 
-  // Configuración del gráfico de distribución de pagos
   const paymentDistributionOptions = {
     chart: {
       type: 'bar',
@@ -154,16 +138,16 @@ export default function PerformanceDashboard() {
       style: {
         fontSize: '11px',
         fontWeight: 'bold',
-        colors: [colorTextPrimary],
+        colors: ['#333333'],
       },
       offsetX: 10,
     },
-    colors: [colorPrimary, colorSuccess, colorInfo, colorWarning],
+    colors: ['#1CB54A', '#52c41a', '#1890ff', '#faad14'],
     xaxis: {
       categories: paymentTypes.map((payment) => payment.name),
       labels: {
         style: {
-          colors: colorTextSecondary,
+          colors: ['#666666'],
           fontSize: '11px',
         },
         formatter: (val) => val,
@@ -173,14 +157,14 @@ export default function PerformanceDashboard() {
     yaxis: {
       labels: {
         style: {
-          colors: colorTextPrimary,
+          colors: ['#333333'],
           fontSize: '12px',
           fontWeight: 500,
         },
       },
     },
     grid: {
-      borderColor: colorBorderPrimary,
+      borderColor: '#e0e0e0',
       strokeDashArray: 2,
     },
     tooltip: {
@@ -230,41 +214,43 @@ export default function PerformanceDashboard() {
           Style={Style}
           dayjs={dayjs}
         />
+        <DashboardMetrics
+          totalSessions={totalSessions}
+          totalPatients={totalPatients}
+          totalEarnings={totalEarnings}
+          formatCurrency={formatCurrency}
+          Style={Style}
+          dateRangeSubtitle={getDateRangeSubtitle()}
+        />
+        
         {loading ? (
-          <div className={Style.loadingContainer}>
-            <Spin size="large" />
-          </div>
+          <ChartSkeleton />
         ) : (
-          <>
-            <DashboardMetrics
-              totalSessions={totalSessions}
-              totalPatients={totalPatients}
-              totalEarnings={totalEarnings}
-              formatCurrency={formatCurrency}
-              Style={Style}
-            />
-            
-            <SessionsLineChart
-              data={rawData}
-              range={mapTimeFilterToChartRange(timeFilter)}
-              startDate={dateRange[0]}
-              endDate={dateRange[1]}
-              title="Indicación de Sesiones"
-              subtitle={getDateRangeSubtitle()}
-              isDarkMode={isDarkMode}
-              height={400}
-            />
-            <DashboardBottomSection
-              key={`bottom-${dateRange[0].valueOf()}-${dateRange[1].valueOf()}`}
-              Style={Style}
-              paymentDistributionOptions={paymentDistributionOptions}
-              paymentDistributionSeries={paymentDistributionSeries}
-              Chart={Chart}
-              therapistPerformance={therapistPerformance}
-              formatCurrency={formatCurrency}
-              getRatingColor={getRatingColor}
-            />
-          </>
+          <SessionsLineChart
+            data={rawData}
+            range={mapTimeFilterToChartRange(timeFilter)}
+            startDate={dateRange[0]}
+            endDate={dateRange[1]}
+            title="Indicación de Sesiones"
+            subtitle={getDateRangeSubtitle()}
+            isDarkMode={isDarkMode}
+            height={400}
+          />
+        )}
+        
+        {loading ? (
+          <SkeletonLoading />
+        ) : (
+          <DashboardBottomSection
+            key={`bottom-${dateRange[0].valueOf()}-${dateRange[1].valueOf()}`}
+            Style={Style}
+            paymentDistributionOptions={paymentDistributionOptions}
+            paymentDistributionSeries={paymentDistributionSeries}
+            Chart={Chart}
+            therapistPerformance={therapistPerformance}
+            formatCurrency={formatCurrency}
+            getRatingColor={getRatingColor}
+          />
         )}
       </div>
   );

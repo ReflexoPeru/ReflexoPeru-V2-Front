@@ -49,13 +49,14 @@
   grid-template-columns: 1fr 1fr 1.8fr;
   gap: 15px;
   height: 80px;
-  margin-bottom: 16px;
+  margin-bottom: 52px; 
 }
 
 .smallMetricCard {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 
   height: 100%;
   padding: 12px 16px; 
@@ -68,61 +69,157 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(6, 95, 70, 0.1) 0%, rgba(6, 78, 59, 0.1) 100%);
+  border: 1px solid rgba(6, 95, 70, 0.2);
+}
+
+.iconContainer svg {
+  color: #065f46;
+}
+
+/* Contenedor de texto para tarjetas pequeñas */
+.smallMetricCard .metricContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.smallMetricCard .metricTitle {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #065f46;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.2;
+}
+
+.smallMetricCard .metricValue {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  color: #064e3b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Tema oscuro para iconos */
+[data-theme="dark"] .iconContainer {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.15) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .iconContainer svg {
+  color: #22c55e;
+}
+
 .smallMetricCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .metricTitle {
-  margin: 0 0 4px 0;
+  margin: 0 0 8px 0;
 
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  color: #065f46; 
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .metricValue {
-  font-size: 20px; 
-  font-weight: 700;
+  font-size: 28px; 
+  font-weight: 800;
   line-height: 1;
-  color: var(--color-text-primary);
+  color: #064e3b; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .earningsCard {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+
+  padding: 16px 24px; 
+  border: 2px solid #065f46;
+  border-radius: 12px;
+
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  box-shadow: 0 4px 12px rgba(6, 95, 70, 0.15);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.earningsIconContainer {
+  display: flex;
+  align-items: center;
   justify-content: center;
-
-  padding: 12px 20px; 
-  border: 1px solid var(--color-primary);
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   border-radius: 10px;
+  background: linear-gradient(135deg, rgba(6, 95, 70, 0.15) 0%, rgba(6, 78, 59, 0.15) 100%);
+  border: 1px solid rgba(6, 95, 70, 0.3);
+}
 
-  background: var(--color-background-elevated);
-  box-shadow: var(--shadow-soft);
+.earningsContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.earningsIconContainer svg {
+  color: #065f46;
+}
+
+/* Tema oscuro para icono de ganancias */
+[data-theme="dark"] .earningsIconContainer {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+[data-theme="dark"] .earningsIconContainer svg {
+  color: #22c55e;
 }
 
 .earningsCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(29, 185, 84, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(6, 95, 70, 0.25);
 }
 
 .earningsValue {
-  margin: 2px 0;
+  margin: 4px 0 8px 0;
 
-  font-size: 24px; 
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-size: 32px; 
+  font-weight: 800;
+  color: #064e3b;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .earningsSubtitle {
   margin: 0;
-  font-size: 9px;
-  color: var(--color-text-secondary);
-  opacity: 0.8;
+  font-size: 10px;
+  font-weight: 600;
+  color: #065f46;
+  opacity: 0.9;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0.3px;
 }
 
 .mainChartSection {
@@ -417,4 +514,199 @@
 
 .customScrollbar::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-primary-hover, var(--color-primary));
+}
+
+/* Skeleton Loading Styles */
+.sectionTitleSkeleton {
+  margin-bottom: 8px;
+}
+
+.sectionSubtitleSkeleton {
+  margin-bottom: 20px;
+}
+
+.paymentChartSkeleton {
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.chartSkeletonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 20px;
+}
+
+.chartBarSkeleton {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.therapistsTableSkeleton {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+.tableHeaderSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tableRowSkeleton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tableRowSkeleton:last-child {
+  border-bottom: none;
+}
+
+.skeletonBar {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Chart Skeleton Styles */
+.chartSkeletonWrapper {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.chartTitleSkeleton {
+  margin-bottom: 8px;
+}
+
+.chartSubtitleSkeleton {
+  margin-bottom: 24px;
+}
+
+.chartSummarySkeleton {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 0 20px;
+}
+
+.summaryCardSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.summaryIconSkeleton {
+  margin-bottom: 8px;
+}
+
+.summaryTextSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chartAreaSkeleton {
+  position: relative;
+  height: 300px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.chartYAxisSkeleton {
+  position: absolute;
+  left: 10px;
+  top: 20px;
+  bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40px;
+}
+
+.yAxisLabelSkeleton {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.chartLinesSkeleton {
+  position: absolute;
+  left: 60px;
+  right: 20px;
+  top: 20px;
+  bottom: 40px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chartLineSkeleton {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
+}
+
+.chartPointSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.chartXAxisSkeleton {
+  position: absolute;
+  left: 60px;
+  right: 20px;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+}
+
+.xAxisLabelSkeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.chartLoadingIndicator {
+  margin-top: 16px;
+  text-align: center;
 }

@@ -492,6 +492,7 @@ const NewAppointment = () => {
                 <SelectPrices
                   value={form.getFieldValue('service_id')}
                   initialPrice={form.getFieldValue('payment')}
+                  defaultValue={12} // Preseleccionar id 12
                   onChange={handleServiceChange}
                   onPriceChange={(price) => {
                     form.setFieldsValue({ payment: price });
@@ -522,6 +523,7 @@ const NewAppointment = () => {
               >
                 <SelectPaymentStatus
                   value={form.getFieldValue('payment_type_id')}
+                  defaultValue={9} // Preseleccionar id 9
                   onChange={(value) =>
                     form.setFieldsValue({ payment_type_id: value })
                   }

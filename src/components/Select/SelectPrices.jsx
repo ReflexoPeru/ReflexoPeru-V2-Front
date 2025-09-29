@@ -11,11 +11,13 @@ const SelectPrices = ({
   onPriceChange,
   value,
   initialPrice = '',
+  defaultValue = null,
   ...rest
 }) => {
   const [prices, setPrices] = useState([]);
   const [inputPrice, setInputPrice] = useState(initialPrice);
 
+  // Cargar precios solo una vez al montar el componente
   useEffect(() => {
     const fetchPrices = async () => {
       const priceOptions = await getPredeterminedPrices();
@@ -23,7 +25,20 @@ const SelectPrices = ({
       setPrices(priceOptions);
     };
     fetchPrices();
-  }, []);
+  }, []); // Solo se ejecuta una vez al montar
+
+  // Preseleccionar valor por defecto solo cuando se cargan los precios
+  useEffect(() => {
+    if (prices.length > 0 && defaultValue && !value) {
+      const selectedOption = prices.find(item => item.value === defaultValue);
+      if (selectedOption) {
+        console.log('Auto-selecting default price option:', selectedOption);
+        setInputPrice(selectedOption.price || '');
+        if (onChange) onChange(defaultValue);
+        if (onPriceChange) onPriceChange(selectedOption.price || '');
+      }
+    }
+  }, [prices, defaultValue, value]); // Solo cuando cambian los precios o los valores relevantes
 
   // Si cambia el initialPrice desde el padre, actualizar el input
   useEffect(() => {
@@ -58,7 +73,7 @@ const SelectPrices = ({
       <Select
         className={styles.inputStyle}
         onChange={handleSelectChange}
-        value={value}
+        value={value || defaultValue}
         allowClear
         {...rest}
       >

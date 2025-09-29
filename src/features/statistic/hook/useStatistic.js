@@ -38,53 +38,43 @@ export const useStatistic = (startDate, endDate) => {
 
   const loadData = async () => {
     setLoading(true);
-    // Limpiar estados dependientes para evitar mostrar datos del rango anterior
     setPaymentTypes([]);
     setTherapistPerformance([]);
     try {
-      // Obtener variables de tema actuales
-      const getCssVar = (name) =>
-        typeof window !== 'undefined'
-          ? getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-          : '';
-
-      const colorPrimary = getCssVar('--color-primary') || '#1CB54A';
-      const colorTextPrimary = getCssVar('--color-text-primary') || '#333333';
-      const colorTextSecondary = getCssVar('--color-text-secondary') || '#666666';
-      const colorBorderPrimary = getCssVar('--color-border-primary') || '#e0e0e0';
+      const colorPrimary = '#1CB54A';
 
       const data = await fetchStatisticData(startDate, endDate);
       
-      // Guardar los datos raw para el nuevo gráfico (usar data.data que es la estructura real)
+      console.log('📊 Debug - Datos recibidos:', data);
+      console.log('📊 Debug - Fechas:', { startDate: startDate.format('YYYY-MM-DD'), endDate: endDate.format('YYYY-MM-DD') });
+      console.log('📊 Debug - Terapeutas raw:', data.data?.terapeutas);
+      
       setRawData(data.data);
 
-      // Calcular totales para las métricas
-      const sessionsTotal = Object.values(data.data.sesiones).reduce(
+      const sessionsTotal = Math.round(Object.values(data.data.sesiones).reduce(
         (acc, val) => acc + Number(val),
         0,
-      );
+      ));
       const earningsTotal = Number(data.data.metricas.ttlganancias);
-      const patientsTotal = Number(data.data.metricas.ttlpacientes);
+      const patientsTotal = Math.round(Number(data.data.metricas.ttlpacientes));
 
       setTotalSessions(sessionsTotal);
       setTotalPatients(patientsTotal);
       setTotalEarnings(earningsTotal);
 
-      // Procesar datos de terapeutas (ordenados por sesiones)
       const sortedTherapists = [...data.data.terapeutas]
         .sort((a, b) => b.sesiones - a.sesiones)
         .map((therapist) => ({
           id: therapist.id,
-          name: therapist.terapeuta.split(',')[0].trim(), // Mostrar solo el apellido
-          fullName: therapist.terapeuta, // Guardar nombre completo para tooltip
-          sessions: therapist.sesiones,
+          name: therapist.terapeuta.split(',')[0].trim(),
+          fullName: therapist.terapeuta,
+          sessions: Math.round(therapist.sesiones),
           income: therapist.ingresos,
           rating: therapist.raiting,
         }));
 
+      console.log('📊 Debug - Terapeutas procesados:', sortedTherapists);
       setTherapistPerformance(sortedTherapists);
-
-      // Procesar tipos de pago (convertir a porcentajes)
       const totalPayments = Object.values(data.data.tipos_pago).reduce(
         (acc, val) => acc + Number(val),
         0,
@@ -101,37 +91,28 @@ export const useStatistic = (startDate, endDate) => {
       );
 
       setPaymentTypes(paymentPercentages);
-
-      // Función para distribuir datos de manera inteligente
       const distributeDataIntelligently = (apiData, totalCategories, totalSessions) => {
         const apiValues = Object.values(apiData).map(Number);
         const apiKeys = Object.keys(apiData);
         const distributedData = [];
         
         if (apiValues.length === 0) {
-          // Si no hay datos, crear un patrón realista (excluyendo domingos)
           const baseValue = Math.max(1, Math.floor(totalSessions / totalCategories));
           for (let i = 0; i < totalCategories; i++) {
             const variation = Math.floor(Math.random() * baseValue * 0.3);
-            const isSaturday = i === 5; // Solo sábado (domingo ya excluido)
+            const isSaturday = i === 5;
             const multiplier = isSaturday ? 1.2 : 1;
             distributedData.push(Math.max(0, baseValue + variation) * multiplier);
           }
           return distributedData;
         }
-        
-        // Distribuir datos existentes de manera inteligente
         const totalApiSessions = apiValues.reduce((sum, val) => sum + val, 0);
         const remainingSessions = Math.max(0, totalSessions - totalApiSessions);
         
-        // Crear distribución base
         for (let i = 0; i < totalCategories; i++) {
           distributedData.push(0);
         }
-        
-        // Mapear datos de la API
         if (totalCategories === 6) {
-          // Para días de la semana (excluyendo domingo)
           const diasSemanaIngles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
           diasSemanaIngles.forEach((dia, index) => {
             if (apiData[dia]) {
@@ -139,7 +120,6 @@ export const useStatistic = (startDate, endDate) => {
             }
           });
         } else if (totalCategories === 7) {
-          // Para días de la semana (incluyendo domingo - mantener compatibilidad)
           const diasSemanaIngles = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
           diasSemanaIngles.forEach((dia, index) => {
             if (apiData[dia]) {
@@ -147,7 +127,6 @@ export const useStatistic = (startDate, endDate) => {
             }
           });
         } else {
-          // Para otros períodos, distribuir proporcionalmente
           const dataPerCategory = Math.floor(totalApiSessions / totalCategories);
           const remainder = totalApiSessions % totalCategories;
           
@@ -156,7 +135,6 @@ export const useStatistic = (startDate, endDate) => {
           }
         }
         
-        // Distribuir sesiones restantes de manera realista
         if (remainingSessions > 0) {
           const baseDistribution = Math.floor(remainingSessions / totalCategories);
           const extraDistribution = remainingSessions % totalCategories;
@@ -170,51 +148,41 @@ export const useStatistic = (startDate, endDate) => {
         
         return distributedData;
       };
-
-      // Determinar formato de categorías según el rango de fechas
       const daysDiff = endDate.diff(startDate, 'day');
       let dateCategories = [];
       let mappedSessionsData = [];
 
       if (daysDiff <= 1) {
-        // 24 horas - mostrar las 24 horas fijas con distribución inteligente
         for (let i = 0; i < 24; i++) {
           const hour = dayjs().subtract(23 - i, 'hour').format('HH:mm');
           dateCategories.push(hour);
         }
-        // Distribuir las sesiones totales en 24 horas de manera realista
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently({}, 24, totalSessions);
         
-        // Ajustar para horarios de trabajo (más sesiones en horario laboral)
         mappedSessionsData = mappedSessionsData.map((value, index) => {
           const hour = index;
           if (hour >= 8 && hour <= 18) {
-            return Math.floor(value * 1.5); // Más sesiones en horario laboral
+            return Math.floor(value * 1.5);
           } else if (hour >= 19 && hour <= 21) {
-            return Math.floor(value * 1.2); // Algo más en la tarde
+            return Math.floor(value * 1.2);
           } else {
-            return Math.floor(value * 0.3); // Menos en la noche/madrugada
+            return Math.floor(value * 0.3);
           }
         });
       } else if (daysDiff <= 7) {
-        // 6 días - mostrar días de la semana fijos en español (excluyendo domingo)
         const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
         dateCategories = diasSemana;
         
-        // Usar datos reales de la API y distribuir inteligentemente
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 6, totalSessions);
       } else if (daysDiff <= 30) {
-        // 28 días - mostrar 4 semanas fijas (excluyendo domingos)
         for (let i = 0; i < 4; i++) {
           dateCategories.push(`Semana ${i + 1}`);
         }
-        // Distribuir datos de la API en 4 semanas (excluyendo domingos)
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 4, totalSessions);
       } else if (daysDiff <= 365) {
-        // Hasta 1 año - mostrar 12 meses fijos hacia atrás desde hoy
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         
@@ -224,11 +192,9 @@ export const useStatistic = (startDate, endDate) => {
           const año = mes.year();
           dateCategories.push(`${mesNombre} ${año}`);
         }
-        // Distribuir datos de la API en 12 meses
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, 12, totalSessions);
       } else {
-        // Más de 1 año - mostrar años fijos
         const years = endDate.diff(startDate, 'year') + 1;
         for (let i = 0; i < years; i++) {
           const año = dayjs(startDate).add(i, 'year').format('YYYY');
@@ -237,10 +203,6 @@ export const useStatistic = (startDate, endDate) => {
         const totalSessions = Object.values(data.data.sesiones).reduce((sum, val) => sum + Number(val), 0);
         mappedSessionsData = distributeDataIntelligently(data.data.sesiones, years, totalSessions);
       }
-
-      // Datos ya procesados para el nuevo gráfico
-
-      // Configurar series de ingresos mensuales
       setMonthlySessions([
         {
           name: 'Ingresos',
@@ -248,7 +210,6 @@ export const useStatistic = (startDate, endDate) => {
         },
       ]);
 
-      // Configurar gráfico de pastel (tipos de pacientes)
       setPieSeries([
         Number(data.data.tipos_pacientes.c),
         Number(data.data.tipos_pacientes.cc),
@@ -258,8 +219,6 @@ export const useStatistic = (startDate, endDate) => {
         labels: ['Nuevos', 'Continuadores'],
         colors: [colorPrimary, '#10B981'],
       });
-
-      // Configurar métricas
       setMetricsSeries([
         {
           name: 'Ingresos',
@@ -274,8 +233,6 @@ export const useStatistic = (startDate, endDate) => {
           data: [patientsTotal],
         },
       ]);
-
-      // Configuración del gráfico anterior eliminada
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
