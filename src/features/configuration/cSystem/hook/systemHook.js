@@ -27,8 +27,12 @@ export const useSystemHook = () => {
     try {
       const blob = await getCompanyLogo(controller.signal);
 
-      const url = URL.createObjectURL(blob);
-      setLogoUrl(url);
+      // Convertir blob a base64 para React PDF
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoUrl(reader.result);
+      };
+      reader.readAsDataURL(blob);
     } catch (err) {
       setError(err);
     } finally {
@@ -40,7 +44,7 @@ export const useSystemHook = () => {
     fetchLogo();
     return () => {
       abortControllerRef.current?.abort();
-      if (logoUrl) URL.revokeObjectURL(logoUrl); //  Limpieza
+      // No necesitamos revocar URL ya que ahora es base64
     };
   }, [fetchLogo]);
 

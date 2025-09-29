@@ -7,9 +7,8 @@ import {
   StyleSheet,
   Image,
 } from '@react-pdf/renderer';
-
-const defaultLogo = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
 const defaultClinicName = 'Reflexo Perú';
+const LOGO_URL = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
 
 // Paleta de colores pastel
 const pastelGreen = '#95e472';
@@ -19,7 +18,7 @@ const lightBackground = '#f8f9fa';
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
-    padding: 30,
+    padding: 50,
     fontFamily: 'Helvetica',
     fontSize: 9,
   },
@@ -136,7 +135,7 @@ const PatientsByTherapistReportPDF = ({ data, date, logoUrl, companyInfo }) => {
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
   const clinicName = companyInfo?.company_name || defaultClinicName;
-  const logo = logoUrl || defaultLogo;
+  const logo = LOGO_URL;
 
   return (
     <Document>

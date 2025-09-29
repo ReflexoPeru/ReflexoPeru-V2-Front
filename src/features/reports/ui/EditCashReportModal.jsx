@@ -1,54 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Modal,
   Form,
   InputNumber,
   Button,
   Typography,
   Divider,
+  Space,
 } from 'antd';
-import { PencilSimple, FloppyDisk, X } from '@phosphor-icons/react';
+import { PencilSimple, FloppyDisk } from '@phosphor-icons/react';
 import { useTheme } from '../../../context/ThemeContext';
-import styles from './reports.module.css';
+import UniversalModal from '../../../components/Modal/UniversalModal';
 
 const { Text } = Typography;
 
 const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
   const { isDarkMode } = useTheme();
-  
-  const customTheme = {
-    token: {
-      colorPrimary: '#1CB54A',
-      colorBgContainer: isDarkMode ? '#232323' : '#ffffff',
-      colorText: isDarkMode ? '#fff' : '#333333',
-      borderRadius: 12,
-      colorBorder: '#1CB54A',
-      colorTextPlaceholder: isDarkMode ? '#bbb' : '#999999',
-    },
-    components: {
-      Button: {
-        colorPrimary: '#1CB54A',
-        colorText: '#fff',
-        colorPrimaryHover: '#148235',
-        colorPrimaryActive: '#0e5c28',
-        borderRadius: 10,
-      },
-      Input: {
-        colorBgContainer: isDarkMode ? '#232323' : '#ffffff',
-        colorText: isDarkMode ? '#fff' : '#333333',
-        colorBorder: '#1CB54A',
-        borderRadius: 10,
-      },
-      Modal: {
-        colorBgElevated: isDarkMode ? '#181818' : '#ffffff',
-        colorText: isDarkMode ? '#fff' : '#333333',
-        borderRadius: 18,
-      },
-    },
-  };
 
   const labelStyle = { 
-    color: isDarkMode ? '#bbb' : '#666', 
+    color: 'var(--color-text-secondary)', 
     fontSize: 13, 
     fontWeight: 500 
   };
@@ -58,9 +27,9 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
     height: 40,
     fontSize: 15,
     borderRadius: 10,
-    background: isDarkMode ? '#232323' : '#ffffff',
-    color: isDarkMode ? '#fff' : '#333333',
-    border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
+    background: 'var(--color-background-secondary)',
+    color: 'var(--color-text-primary)',
+    border: '1px solid var(--color-border-primary)',
   };
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -112,34 +81,21 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
   };
 
   return (
-    <Modal
-        title={
-          <div style={{ paddingBottom: 8 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                fontSize: 20,
-              }}
-            >
-              <PencilSimple size={20} color="#4CAF50" />
-              <span style={{ color: '#fff', fontWeight: 600 }}>
-                Editar Caja
-              </span>
-            </div>
-          </div>
-        }
-        open={visible}
-        onCancel={handleCancel}
-        footer={null}
-        width={500}
-        className={styles.editModal}
-        style={{ top: 60, padding: 0, background: '#181818', borderRadius: 18 }}
-        destroyOnClose
-      >
+    <UniversalModal
+      title={
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <PencilSimple size={20} color="var(--color-primary)" />
+          <span>Editar Caja</span>
+        </div>
+      }
+      open={visible}
+      onCancel={handleCancel}
+      width={500}
+      footer={null}
+      destroyOnClose
+    >
         <div style={{ marginBottom: 10, marginTop: 2 }}>
-          <Text strong style={{ color: '#4CAF50', fontSize: 14 }}>
+          <Text strong style={{ color: 'var(--color-primary)', fontSize: 14 }}>
             {date?.format('DD/MM/YYYY')}
           </Text>
           <Text
@@ -148,7 +104,7 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
               display: 'block',
               marginTop: 2,
               fontSize: 12,
-              color: '#bbb',
+              color: 'var(--color-text-secondary)',
             }}
           >
             Modifica los valores para simular diferentes escenarios
@@ -164,15 +120,15 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
                     orientation="left"
                     style={{
                       margin: '10px 0 18px 0',
-                      color: '#1CB54A',
+                      color: 'var(--color-primary)',
                       fontSize: 15,
-                      borderColor: isDarkMode ? '#333' : '#e0e0e0',
+                      borderColor: 'var(--color-border-primary)',
                     }}
                   >
                     <Text
                       strong
                       style={{
-                        color: '#4CAF50',
+                        color: 'var(--color-primary)',
                         fontSize: 15,
                         letterSpacing: 1,
                       }}
@@ -228,34 +184,47 @@ const EditCashReportModal = ({ visible, onCancel, onSave, data, date }) => {
               marginTop: 18,
             }}
           >
-            <Button
-              type="primary"
-              icon={<FloppyDisk size={20} />}
-              onClick={handleSave}
-              loading={loading}
-              size="large"
-              style={{
-                marginTop: 10,
-                backgroundColor: '#4CAF50',
-                borderColor: '#4CAF50',
-                borderRadius: 7,
-                fontSize: 16,
-                height: 37,
-                padding: '0 28px',
-                boxShadow: '0 2px 8px 0 #0002',
-                fontWeight: 500,
-                transition: 'all 0.2s',
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = '#43a047')
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = '#4CAF50')}
-            >
-              Aplicar
-            </Button>
+            <Space>
+              <Button
+                onClick={handleCancel}
+                style={{
+                  padding: '6px 16px',
+                  height: 37,
+                  borderRadius: 7,
+                  border: '1px solid var(--color-primary)',
+                  color: 'var(--color-primary)',
+                  backgroundColor: 'transparent',
+                  fontSize: 16,
+                  fontWeight: 500,
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="primary"
+                icon={<FloppyDisk size={20} />}
+                onClick={handleSave}
+                loading={loading}
+                size="large"
+                style={{
+                  marginTop: 10,
+                  backgroundColor: 'var(--color-primary)',
+                  borderColor: 'var(--color-primary)',
+                  borderRadius: 7,
+                  fontSize: 16,
+                  height: 37,
+                  padding: '0 28px',
+                  boxShadow: '0 2px 8px 0 rgba(0,0,0,0.1)',
+                  fontWeight: 500,
+                  transition: 'all 0.2s',
+                }}
+              >
+                Aplicar
+              </Button>
+            </Space>
           </div>
         </Form>
-      </Modal>
+    </UniversalModal>
   );
 };
 
