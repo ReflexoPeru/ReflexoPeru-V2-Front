@@ -34,10 +34,13 @@ export default function PerformanceDashboard() {
   const colorBgSecondary = getCssVar('--color-background-secondary') || '#f8f9fa';
   const [timeFilter, setTimeFilter] = useState('7días');
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateRange, setDateRange] = useState([
-    dayjs().subtract(6, 'day').startOf('day'),
-    dayjs().endOf('day'),
-  ]);
+  const [dateRange, setDateRange] = useState(() => {
+    const today = dayjs();
+    const weekday = today.day(); // 0=Dom,1=Lun,...6=Sáb
+    const monday = today.subtract((weekday + 6) % 7, 'day').startOf('day');
+    const saturday = monday.add(5, 'day').endOf('day');
+    return [monday, saturday];
+  });
   
   // Animaciones
   const { isVisible, animationClass } = usePageAnimation('fade', 50);
@@ -79,28 +82,38 @@ export default function PerformanceDashboard() {
     const value = e.target.value;
     setTimeFilter(value);
     setShowDatePicker(false);
-    const today = dayjs().endOf('day');
-    let startDate = today;
+    const today = dayjs();
+    const weekday = today.day(); // 0=Dom,1=Lun,...6=Sáb
+    const monday = today.subtract((weekday + 6) % 7, 'day').startOf('day');
+    const saturday = monday.add(5, 'day').endOf('day');
+    let startDate = monday;
+    let endDate = saturday;
     switch (value) {
       case '24horas':
-        startDate = today.subtract(1, 'day');
+        startDate = today.subtract(1, 'day').startOf('day');
+        endDate = today.endOf('day');
         break;
       case '7días':
-        startDate = today.subtract(6, 'day').startOf('day');
+        // Lunes a Sábado de la semana actual
+        startDate = startOfWeekMonday;
+        endDate = endOfSaturday;
         break;
       case '28días':
-        startDate = today.subtract(27, 'day').startOf('day');
+        startDate = today.endOf('day').subtract(27, 'day').startOf('day');
+        endDate = today.endOf('day');
         break;
       case '3meses':
         startDate = today.subtract(2, 'month').startOf('month');
+        endDate = today.endOf('day');
         break;
       case '1año':
         startDate = today.subtract(11, 'month').startOf('month');
+        endDate = today.endOf('day');
         break;
       default:
         return;
     }
-    setDateRange([startDate, today]);
+    setDateRange([startDate, endDate]);
   };
 
   const handleDateRangeChange = (dates) => {
@@ -242,6 +255,7 @@ export default function PerformanceDashboard() {
               height={400}
             />
             <DashboardBottomSection
+              key={`bottom-${dateRange[0].valueOf()}-${dateRange[1].valueOf()}`}
               Style={Style}
               paymentDistributionOptions={paymentDistributionOptions}
               paymentDistributionSeries={paymentDistributionSeries}

@@ -38,6 +38,9 @@ export const useStatistic = (startDate, endDate) => {
 
   const loadData = async () => {
     setLoading(true);
+    // Limpiar estados dependientes para evitar mostrar datos del rango anterior
+    setPaymentTypes([]);
+    setTherapistPerformance([]);
     try {
       // Obtener variables de tema actuales
       const getCssVar = (name) =>

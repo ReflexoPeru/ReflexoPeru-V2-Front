@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   CheckCircle,
 } from '@phosphor-icons/react';
+import { UserCircle } from '@phosphor-icons/react';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useTheme } from '../../../context/ThemeContext';
 import styles from './Profile.module.css';
@@ -38,9 +39,7 @@ const Profile = () => {
     loading: profileLoading,
   } = useUser();
 
-  const [avatar, setAvatar] = useState(
-    photoUrl || '/src/assets/Img/MiniLogoReflexo.webp',
-  );
+  const [avatar, setAvatar] = useState(photoUrl || null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
@@ -297,11 +296,12 @@ const Profile = () => {
                   <label className={styles.label}>Avatar:</label>
                   <div className={styles.logoRow}>
                     <div className={styles.logoBlock}>
-                      {avatar ? (
+                      {avatar || previewAvatar ? (
                         <Image
                           src={previewAvatar || avatar}
                           alt="Avatar del usuario"
                           preview={false}
+                          onError={() => setAvatar(null)}
                           style={{
                             width: '100px',
                             height: '100px',
@@ -313,8 +313,8 @@ const Profile = () => {
                           }}
                         />
                       ) : (
-                        <div className={styles.noLogo}>
-                          No hay avatar disponible
+                        <div className={styles.avatarPlaceholder} aria-label="Sin avatar">
+                          <UserCircle size={72} weight="duotone" />
                         </div>
                       )}
                       {previewAvatar && (

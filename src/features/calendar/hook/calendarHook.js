@@ -33,9 +33,13 @@ export const useCalendar = () => {
         completedPromise,
       ]);
 
+      console.log('Datos recibidos del backend:', { pendingData, completedData });
+
       // Mapear eventos pendientes
-      let pendingEvents = Array.isArray(pendingData)
-        ? pendingData.map((item) => {
+      let pendingEvents = [];
+      if (Array.isArray(pendingData)) {
+        pendingEvents = pendingData.map((item) => {
+          try {
             const start = dayjs(
               `${item.appointment_date}T${item.appointment_hour}`,
             );
@@ -80,16 +84,24 @@ export const useCalendar = () => {
                 payment_type_name,
               },
             };
-          })
-        : [];
+          } catch (error) {
+            console.error('Error mapeando evento pendiente:', error, item);
+            return null;
+          }
+        }).filter(Boolean);
+      }
 
       // Mapear eventos completados
-      let completedEvents = Array.isArray(completedData.data)
-        ? completedData.data.map((item) => {
-            const start = item.appointment_hour
-              ? dayjs(`${item.appointment_date}T${item.appointment_hour}`)
-              : dayjs(item.appointment_date);
+      let completedEvents = [];
+      if (Array.isArray(completedData?.data)) {
+        completedEvents = completedData.data.map((item) => {
+          try {
+            // Construir la fecha y hora correctamente
+            const appointmentDate = item.appointment_date ? item.appointment_date.split(' ')[0] : '';
+            const appointmentHour = item.appointment_hour || '09:00:00';
+            const start = dayjs(`${appointmentDate}T${appointmentHour}`);
             const end = start.add(1, 'hour');
+            
             const patient_first_name = item.patient
               ? item.patient.name || ''
               : '';
@@ -102,9 +114,10 @@ export const useCalendar = () => {
             const payment_type_name = item.payment_type
               ? item.payment_type.name
               : '';
+            
             return {
               id: item.id,
-              title: item.appointment_type || '',
+              title: item.appointment_type || 'Cita',
               start: start.toDate(),
               end: end.toDate(),
               details: {
@@ -130,12 +143,24 @@ export const useCalendar = () => {
                 payment_type_name,
               },
             };
-          })
-        : [];
+          } catch (error) {
+            console.error('Error mapeando evento completado:', error, item);
+            return null;
+          }
+        }).filter(Boolean);
+      }
 
       // Unir ambos orígenes de eventos
-      setEvents([...pendingEvents, ...completedEvents]);
+      const allEvents = [...pendingEvents, ...completedEvents];
+      console.log('Eventos mapeados:', { 
+        pendingEvents: pendingEvents.length, 
+        completedEvents: completedEvents.length, 
+        total: allEvents.length,
+        sampleEvent: allEvents[0]
+      });
+      setEvents(allEvents);
     } catch (error) {
+      console.error('Error al cargar eventos del calendario:', error);
       setError(error);
     } finally {
       setLoading(false);

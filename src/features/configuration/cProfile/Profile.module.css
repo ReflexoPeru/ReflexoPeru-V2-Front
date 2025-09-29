@@ -338,6 +338,19 @@ input:-webkit-autofill {
   justify-content: center;
 }
 
+.avatarPlaceholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-primary);
+  padding: 3px;
+  color: var(--color-text-primary);
+  background-color: var(--color-background-secondary);
+}
+
 /* Estilos para la sección de avatar */
 .section {
   margin-bottom: 20px;
