@@ -39,7 +39,7 @@ const fields = [
       },
       {
         name: 'therapist_card',
-        label: 'Carnet de Terapeuta',
+        label: 'Codigo de Terapeuta',
         type: 'text',
         span: 8,
       },

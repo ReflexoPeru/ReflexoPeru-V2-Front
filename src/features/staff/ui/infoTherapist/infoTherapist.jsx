@@ -149,6 +149,16 @@ const InfoTherapist = ({ therapist, open, onClose }) => {
             {therapist.document_type?.name || 'Documento'}:{' '}
             {therapist.document_number || '-'}
           </div>
+          {therapist.code && (
+            <div style={{ 
+              color: 'var(--color-text-secondary)', 
+              fontSize: 16,
+              fontFamily: 'var(--font-family)',
+              marginTop: 4
+            }}>
+              Código Terapeuta: {therapist.code}
+            </div>
+          )}
         </div>
       </div>
       <Descriptions

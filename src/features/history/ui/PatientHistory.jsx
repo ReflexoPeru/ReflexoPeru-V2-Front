@@ -1,4 +1,4 @@
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 import {
   Button,
   Card,
@@ -227,6 +227,8 @@ const PatientHistory = () => {
     }
   }, [appointmentFromState, lastAppointment]);
 
+
+
   // Función para abrir el modal
   const showTherapistModal = () => {
     setIsModalVisible(true);
@@ -288,10 +290,15 @@ const PatientHistory = () => {
         ? ''
         : Number(val).toFixed(3);
 
+    // Lógica del peso: Si hay peso hoy, mover el peso anterior al peso anterior y el peso hoy al peso anterior
+    const pesoAnteriorActual = patientHistory?.data?.current_weight || patientHistory?.data?.last_weight || '';
+    const nuevoPesoAnterior = values.pesoHoy ? pesoAnteriorActual : toFixed3(values.ultimoPeso);
+    const nuevoPesoHoy = values.pesoHoy ? toFixed3(values.pesoHoy) : '';
+
     const historyPayload = {
       weight: toFixed3(values.pesoInicial),
-      last_weight: toFixed3(values.ultimoPeso),
-      current_weight: toFixed3(values.pesoHoy),
+      last_weight: nuevoPesoAnterior,
+      current_weight: nuevoPesoHoy,
       height: toFixed3(values.talla),
       observation: values.observation,
       private_observation: values.observationPrivate,
@@ -349,6 +356,15 @@ const PatientHistory = () => {
       if (historyResult.success && appointmentResult.success) {
         
         message.success('Cambios guardados exitosamente');
+        
+        // Si se guardó un peso hoy, limpiar el campo para la próxima consulta
+        if (values.pesoHoy) {
+          form.setFieldsValue({
+            pesoHoy: '',
+            ultimoPeso: values.pesoHoy, // El peso hoy se convierte en peso anterior
+          });
+        }
+        
         // Esperar un momento para que se refresquen los datos
         setTimeout(() => {
           navigate(-1);
@@ -593,7 +609,7 @@ const PatientHistory = () => {
 
               <Form.Item
                 name="ultimoPeso"
-                label="Último Peso"
+                label="Peso Anterior"
                 className={styles.physicalInfoItem}
                 rules={[
                   {
@@ -847,7 +863,7 @@ const PatientHistory = () => {
           styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
           {selectedAppointment && patientHistory?.data && (
-            <PDFViewer width="100%" height={600} showToolbar={true}>
+            <PDFViewer width="95%" height={800} showToolbar={true}>
               <FichaPDF
                 cita={selectedAppointment}
                 paciente={patientHistory.data.patient}

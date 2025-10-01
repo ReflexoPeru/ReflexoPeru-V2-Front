@@ -28,11 +28,11 @@ const calculateChineseElement = (birthDate) => {
 
 const styles = StyleSheet.create({
   page: {
-    width: 260, // Un poco más amplio
-    height: 750, // Más largo, tipo A4 angosto
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingHorizontal: 18,
+    width: 260,
+    height: 750,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
     fontFamily: 'Helvetica',
     backgroundColor: '#fff',
     display: 'flex',
@@ -41,48 +41,57 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontWeight: 'bold',
-    fontSize: 11,
-    marginBottom: 4,
-    marginTop: 10,
+    fontSize: 9,
+    marginBottom: 2,
+    marginTop: 4,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    fontFamily: 'Helvetica-Bold',
   },
   label: {
     fontWeight: 'bold',
-    fontSize: 10,
+    fontSize: 9,
+    letterSpacing: 0.3,
+    color: '#000000',
+    fontFamily: 'Helvetica-Bold',
   },
   field: {
-    fontSize: 12,
-    marginBottom: 3,
+    fontSize: 10,
+    marginBottom: 1,
+    letterSpacing: 0.2,
+    color: '#000000',
+    lineHeight: 1.2,
   },
   line: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    marginVertical: 6,
+    marginVertical: 3,
     width: '100%',
   },
   underline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 120,
-    marginLeft: 4,
-    marginRight: 4,
-    height: 12,
+    minWidth: 100,
+    marginLeft: 3,
+    marginRight: 3,
+    height: 10,
     display: 'inline-block',
   },
   fieldUnderline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 60,
-    marginLeft: 4,
-    marginRight: 4,
-    height: 14,
+    minWidth: 50,
+    marginLeft: 3,
+    marginRight: 3,
+    height: 10,
     display: 'inline-block',
   },
   block: {
-    minHeight: 18,
-    marginBottom: 6,
+    minHeight: 12,
+    marginBottom: 3,
     paddingTop: 1,
     paddingBottom: 1,
     display: 'flex',
@@ -90,90 +99,94 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   blockBig: {
-    minHeight: 24,
-    marginBottom: 8,
-    paddingTop: 1,
-    paddingBottom: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start',
-  },
-  blockSmall: {
-    minHeight: 10,
-    marginBottom: 4,
-    paddingTop: 1,
-    paddingBottom: 1,
+    minHeight: 29,
+    marginBottom: 11,
+    paddingTop: 4,
+    paddingBottom: 4,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
   },
   blockText: {
-    minHeight: 10,
+    minHeight: 8,
     marginBottom: 1,
     textAlign: 'left',
+    fontSize: 10,
+    letterSpacing: 0.2,
+    color: '#000000',
+    lineHeight: 1.3,
   },
   firma: {
-    marginTop: 16,
+    marginTop: 8,
     fontSize: 9,
     flexDirection: 'row',
     alignItems: 'center',
+    letterSpacing: 0.3,
+    color: '#000000',
+    fontFamily: 'Helvetica-Bold',
   },
   firmaLinea: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 120,
-    marginLeft: 4,
-    marginRight: 4,
-    height: 14,
+    minWidth: 100,
+    marginLeft: 3,
+    marginRight: 3,
+    height: 10,
     display: 'inline-block',
   },
   shortUnderline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 30,
+    minWidth: 25,
     marginLeft: 2,
     marginRight: 2,
-    height: 12,
+    height: 10,
     display: 'inline-block',
   },
   tinyUnderline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 18,
+    minWidth: 15,
     marginLeft: 2,
     marginRight: 2,
-    height: 12,
+    height: 10,
     display: 'inline-block',
   },
   nameLabel: {
     fontWeight: 'bold',
     fontSize: 9,
+    letterSpacing: 0.4,
+    color: '#000000',
+    fontFamily: 'Helvetica-Bold',
   },
   nameUnderline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 160,
-    marginLeft: 4,
-    marginRight: 16,
-    height: 12,
+    minWidth: 140,
+    marginLeft: 3,
+    marginRight: 12,
+    height: 10,
     display: 'inline-block',
   },
   codeLabel: {
     fontWeight: 'bold',
     fontSize: 9,
+    letterSpacing: 0.4,
+    color: '#000000',
+    fontFamily: 'Helvetica-Bold',
   },
   codeUnderline: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#000',
     borderBottomStyle: 'solid',
-    minWidth: 60,
-    marginLeft: 4,
-    marginRight: 4,
-    height: 12,
+    minWidth: 50,
+    marginLeft: 3,
+    marginRight: 3,
+    height: 10,
     display: 'inline-block',
   },
 });
@@ -188,6 +201,14 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
       <Text style={styles.field}>{value}</Text>
     ) : (
       <View style={underlineStyle} />
+    );
+
+  // Helper para renderizar secciones siempre con línea si vacío
+  const renderSectionField = (value) =>
+    value ? (
+      <Text style={styles.blockText}>{value}</Text>
+    ) : (
+      <View style={{ height: 10, borderBottomWidth: 0.5, borderBottomColor: '#000', borderBottomStyle: 'solid' }} />
     );
 
   // Datos opcionales: peso hoy y anticoncepción
@@ -214,18 +235,18 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           <Text style={[styles.codeLabel, { marginLeft: 4 }]}>COD:</Text>
           <View style={styles.codeUnderline} />
         </View>
-        <View style={{ flexDirection: 'row', marginBottom: 4 }}>
+        <View style={{ flexDirection: 'row', marginBottom: 3 }}>
           <Text style={styles.label}>
-            Fecha:{' '}
+            FECHA:{' '}
             <Text style={styles.field}>
               {formatDate(cita.appointment_date)}
             </Text>
           </Text>
-          <Text style={[styles.field, { marginLeft: 6 }]}>
+          <Text style={[styles.field, { marginLeft: 4 }]}>
             ({cita.ticket_number ? cita.ticket_number : 'S/N'})
           </Text>
         </View>
-        <View style={{ marginBottom: 8 }}>
+        <View style={{ marginBottom: 4 }}>
           <Text style={styles.label}>
             N° VISITAS:{' '}
             <Text style={styles.field}>
@@ -243,29 +264,29 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 8,
+            marginBottom: 4,
           }}
         >
           <Text style={styles.label}>DNI:</Text>
           {renderField(paciente.document_number, styles.fieldUnderline)}
-          <Text style={[styles.label, { marginLeft: 12 }]}>H:</Text>
+          <Text style={[styles.label, { marginLeft: 8 }]}>H:</Text>
           {renderField(cita.appointment_hour, styles.fieldUnderline)}
         </View>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 8,
+            marginBottom: 4,
           }}
         >
-          <Text style={styles.label}>Ocupación:</Text>
+          <Text style={styles.label}>OCUPACIÓN:</Text>
           {renderField(paciente.ocupation, styles.fieldUnderline)}
         </View>
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 8,
+            marginBottom: 4,
           }}
         >
           <Text style={styles.label}>VISITA PRIMERA:</Text>
@@ -275,7 +296,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 8,
+            marginBottom: 4,
           }}
         >
           <Text style={styles.label}>ULTIMA:</Text>
@@ -285,7 +306,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: 8,
+            marginBottom: 4,
           }}
         >
           <Text style={styles.label}>NAC:</Text>
@@ -304,83 +325,54 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         <Text style={styles.sectionTitle}>DIAGNOSTICO MEDICO</Text>
         <View style={styles.line} />
         <View style={styles.blockBig}>
-          {renderField(cita.diagnosis, styles.blockText)}
+          {renderSectionField(cita.diagnosis)}
         </View>
         {/* Medicamentos */}
         <Text style={styles.sectionTitle}>MEDICAMENTOS</Text>
         <View style={styles.line} />
         <View style={styles.blockBig}>
-          {renderField(cita.medications, styles.blockText)}
+          {renderSectionField(cita.medications)}
         </View>
         {/* Operaciones */}
         <Text style={styles.sectionTitle}>OPERACIONES</Text>
-        <View style={styles.line} />
         <View style={styles.blockBig}>
-          {renderField(cita.surgeries, styles.blockText)}
+          {renderSectionField(cita.surgeries)}
         </View>
         {/* Dolencias */}
         <Text style={styles.sectionTitle}>DOLENCIAS</Text>
         <View style={styles.line} />
         <View style={styles.blockBig}>
-          {renderField(cita.ailments, styles.blockText)}
+          {renderSectionField(cita.ailments)}
         </View>
-        {/* PI, PA, T, Diagnóstico Reflexológico */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}
-        >
-          <Text style={styles.label}>P.I:</Text>
-          {renderField(historia.weight, styles.fieldUnderline)}
-          <Text style={styles.label}> KG /</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}
-        >
-          <Text style={styles.label}>P.A:</Text>
-          {renderField(historia.last_weight, styles.fieldUnderline)}
-          <Text style={styles.label}> KG /</Text>
-        </View>
-        {/* Peso Hoy (siempre mostrar, con línea si no hay dato) */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}
-        >
-          <Text style={styles.label}>P. HOY:</Text>
-          {renderField(hasPesoHoy ? `${pesoHoy} KG` : '', styles.fieldUnderline)}
-          <Text style={[styles.label, { marginLeft: 8 }]}>
-            {dayjs().format('DD/MM/YYYY')}
-          </Text>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginBottom: 8,
-          }}
-        >
-          <Text style={styles.label}>T:</Text>
-          <View style={styles.tinyUnderline} />
-          <View style={styles.tinyUnderline} />
-          <Text style={styles.label}> 0.0</Text>
-        </View>
-        <Text style={styles.sectionTitle}>DIAGNOSTICOS REFLEXOLOGICO</Text>
-        <View style={styles.line} />
-        <View style={styles.blockBig}>
-          {renderField(cita.reflexology_diagnostics, styles.blockText)}
-        </View>
-        {/* Anticoncepción (solo si hay datos) */}
-        {historia?.use_contraceptive_method && (metodoAnticonceptivoNombre || metodoAnticonceptivoId) ? (
-          <View style={{ marginTop: 6 }}>
+        {/* Campos para mujeres */}
+        {paciente.sex === 'F' && (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 6,
+                marginTop: 6,
+              }}
+            >
+              <Text style={styles.label}>GESTANDO SI/NO:</Text>
+              {renderField(historia.gestation ? 'SI' : 'NO', styles.fieldUnderline)}
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 6,
+              }}
+            >
+              <Text style={styles.label}>MENSTRUANDO SI/NO:</Text>
+              {renderField(historia.menstruation ? 'SI' : 'NO', styles.fieldUnderline)}
+            </View>
+          </>
+        )}
+        {/* Anticoncepción (solo si es mujer) */}
+        {paciente.sex === 'F' && (
+          <View style={{ marginTop: 4, marginBottom: 6 }}>
             <Text style={styles.sectionTitle}>MÉTODO ANTICONCEPTIVO</Text>
             <View style={styles.line} />
             <View style={styles.block}>
@@ -393,10 +385,73 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
                 <Text style={styles.label}>
                   Tipo DIU: <Text style={styles.field}>{tipoDiuNombre || `ID ${historia?.diu_type_id}`}</Text>
                 </Text>
+                <View style={styles.line} />
               </View>
-            ) : null}
+            ) : (
+              <View style={styles.block}>
+                <Text style={styles.label}>
+                  Tipo DIU: <Text style={styles.field}></Text>
+                </Text>
+                <View style={styles.line} />
+              </View>
+            )}
           </View>
-        ) : null}
+        )}
+        {/* PESO INICIAL, PESO ANTERIOR, PESO HOY, TALLA */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 6,
+          }}
+        >
+          <Text style={styles.label}>PESO INICIAL:</Text>
+          {renderField(historia.weight, styles.fieldUnderline)}
+          <Text style={styles.label}> KG /</Text>
+          <Text style={[styles.label, { marginLeft: 6 }]}>
+            {formatDate(cita.appointment_date)}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 6,
+          }}
+        >
+          <Text style={styles.label}>PESO ANTERIOR:</Text>
+          {renderField(historia.last_weight, styles.fieldUnderline)}
+          <Text style={styles.label}> KG /</Text>
+        </View>
+        {/* Peso Hoy (siempre mostrar, con línea si no hay dato) */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 6,
+          }}
+        >
+          <Text style={styles.label}>PESO HOY:</Text>
+          {renderField(hasPesoHoy ? `${pesoHoy} KG` : '', styles.fieldUnderline)}
+          <Text style={[styles.label, { marginLeft: 6 }]}>
+            {dayjs().format('DD/MM/YYYY')}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 8,
+          }}
+        >
+          <Text style={styles.label}>TALLA:</Text>
+          {renderField(historia.height ? `${historia.height} m` : '', styles.fieldUnderline)}
+        </View>
+        <Text style={styles.sectionTitle}>DIAGNOSTICOS REFLEXOLOGICO</Text>
+        <View style={styles.line} />
+        <View style={styles.blockBig}>
+          {renderSectionField(cita.reflexology_diagnostics)}
+        </View>
         {/* Firma del terapeuta */}
         <View style={styles.firma}>
           <Text style={{ fontSize: 9 }}>Firma del terapeuta:</Text>

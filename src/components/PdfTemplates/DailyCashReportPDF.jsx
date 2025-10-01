@@ -8,7 +8,7 @@ import {
   Image,
 } from '@react-pdf/renderer';
 const defaultClinicName = 'Reflexo Perú';
-const LOGO_URL = '/src/assets/Img/Dashboard/MiniLogoReflexo.png';
+const LOGO_URL = '/MiniLogoReflexo.png';
 
 // Paleta de colores pastel original
 const pastelGreen = '#95e472';

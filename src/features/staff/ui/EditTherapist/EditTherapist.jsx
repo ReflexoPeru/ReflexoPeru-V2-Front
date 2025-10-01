@@ -30,6 +30,12 @@ const fields = [
           },
         ],
       },
+      {
+        name: 'therapist_card',
+        label: 'Codigo de Terapeuta',
+        type: 'text',
+        span: 8,
+      },
     ],
   },
   {
@@ -172,6 +178,7 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
           ? String(data.document_type)
           : undefined,
       document_number: data.document_number,
+      therapist_card: data.code || data.therapist_card || '', // Agregar código de terapeuta
       personal_reference: data.personal_reference,
       birth_date: data.birth_date ? dayjs(data.birth_date) : null,
       sex: data.sex,

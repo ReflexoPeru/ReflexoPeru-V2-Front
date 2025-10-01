@@ -134,7 +134,11 @@ export const useStaff = () => {
           formData.province_id || formData.ubicacion?.province_id || null,
         district_id:
           formData.district_id || formData.ubicacion?.district_id || null,
+        code: formData.therapist_card || null, // Agregar el código de terapeuta
       };
+
+      console.log('📝 Payload para actualizar terapeuta:', payload);
+      console.log('🔑 Código de terapeuta enviado:', payload.code);
 
       await updateTherapist(therapistId, payload);
       showToast('actualizarTerapeuta');
@@ -181,7 +185,11 @@ export const useStaff = () => {
         formData.province_id || formData.ubicacion?.province_id || null,
       district_id:
         formData.district_id || formData.ubicacion?.district_id || null,
+      code: formData.therapist_card || null, // Agregar el código de terapeuta
     };
+
+    console.log('📝 Payload para crear terapeuta:', payload);
+    console.log('🔑 Código de terapeuta enviado:', payload.code);
 
     try {
       const result = await createTherapist(payload);
