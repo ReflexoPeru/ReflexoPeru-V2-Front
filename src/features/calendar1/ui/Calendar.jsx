@@ -5,7 +5,7 @@ import { es } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
-import { Modal, Spin, Flex } from 'antd';
+import { Modal, Spin, Flex, Tooltip } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { CaretLeft, CaretRight, Plus, List } from '@phosphor-icons/react';
 import dayjs from '../../../utils/dayjsConfig';
@@ -15,6 +15,14 @@ import CalendarList from './CalendarList';
 import NewAppointment from '../../appointments/ui/RegisterAppointment/NewAppointment';
 import EmptyState from '../../../components/Empty/EmptyState';
 
+// Utilidad compartida para obtener el teléfono principal del paciente
+const getPrimaryPhone = (evt) =>
+  evt?.patient?.primary_phone ||
+  evt?.details?.patient?.primary_phone ||
+  evt?.details?.primary_phone ||
+  evt?.details?.patient_primary_phone ||
+  null;
+
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -23,9 +31,7 @@ const localizer = dateFnsLocalizer({
   locales: { es }
 });
 
-// AgendaView component moved from separate file
 const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebarVisible, setSidebarVisible, onSelectEvent, setNewAppointmentModalVisible }) => {
-  // Filtrar eventos para el rango de fechas visible
   const startOfWeek = dayjs(date).startOf('week');
   const endOfWeek = dayjs(date).endOf('week');
   
@@ -34,8 +40,6 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
     return eventDate.isAfter(startOfWeek.subtract(1, 'day')) && 
            eventDate.isBefore(endOfWeek.add(1, 'day'));
   });
-
-  // Agrupar eventos por fecha
   const eventsByDate = filteredEvents.reduce((acc, event) => {
     const dateKey = dayjs(event.start).format('YYYY-MM-DD');
     if (!acc[dateKey]) {
@@ -62,7 +66,6 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
     return labels[type] || 'Pendiente';
   };
 
-  // CustomToolbar component para AgendaView
   const CustomToolbar = () => {
     const viewLabels = {
       month: 'Mes',
@@ -75,12 +78,9 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
       onView(newView);
     };
 
-    // Generar el label de fecha para la agenda
     const startOfWeek = dayjs(date).startOf('week');
     const endOfWeek = dayjs(date).endOf('week');
     const label = `${startOfWeek.format('DD')} - ${endOfWeek.format('DD')} de ${startOfWeek.format('MMMM YYYY')}`;
-
-    // Estilos para los botones de navegación
     const navigationButtonStyle = {
       background: 'var(--color-background-quaternary)',
       border: 'none',
@@ -103,15 +103,16 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
       minWidth: '60px'
     };
 
-    // Función para manejar el hover
     const handleMouseEnter = (e) => {
       e.target.style.background = 'var(--color-primary)';
+      e.target.style.color = '#ffffff';
       e.target.style.transform = 'scale(1.05)';
       e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
     };
 
     const handleMouseLeave = (e) => {
       e.target.style.background = 'var(--color-background-quaternary)';
+      e.target.style.color = 'var(--color-text-primary)';
       e.target.style.transform = 'scale(1)';
       e.target.style.boxShadow = 'none';
     };
@@ -127,7 +128,6 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
         borderRadius: '12px',
         border: '1px solid var(--color-border-primary)'
       }}>
-        {/* Navegación izquierda */}
         <div style={{ 
           display: 'flex', 
           alignItems: 'center',
@@ -194,7 +194,6 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
           </div>
         </div>
 
-        {/* Título del calendario centrado */}
         <div style={{
           fontSize: '22px',
           fontWeight: '600',
@@ -205,9 +204,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
           {label}
         </div>
 
-        {/* Controles derechos */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Botones de vista */}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center',
@@ -223,7 +220,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                 onClick={() => onView(viewKey)}
                 style={{
                   background: view === viewKey ? 'var(--color-primary)' : 'transparent',
-                  color: 'var(--color-text-primary)',
+                  color: view === viewKey ? '#ffffff' : 'var(--color-text-primary)',
                   border: 'none',
                   padding: '0 16px',
                   borderRadius: '4px',
@@ -240,6 +237,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                 onMouseEnter={(e) => {
                   if (view !== viewKey) {
                     e.target.style.background = 'var(--color-primary)';
+                    e.target.style.color = '#ffffff';
                     e.target.style.transform = 'scale(1.05)';
                     e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
                   }
@@ -247,6 +245,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                 onMouseLeave={(e) => {
                   if (view !== viewKey) {
                     e.target.style.background = 'transparent';
+                    e.target.style.color = 'var(--color-text-primary)';
                     e.target.style.transform = 'scale(1)';
                     e.target.style.boxShadow = 'none';
                   }
@@ -264,7 +263,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
             }}
             style={{
               background: 'var(--color-primary)',
-              color: 'var(--color-text-primary)',
+              color: '#ffffff',
               border: 'none',
               padding: '0 16px',
               borderRadius: '8px',
@@ -280,20 +279,21 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
             }}
             onMouseEnter={(e) => {
               e.target.style.background = '#45a049';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1.05)';
               e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
             }}
             onMouseLeave={(e) => {
               e.target.style.background = 'var(--color-primary)';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = 'none';
             }}
           >
             <Plus size={16} style={{ marginRight: '6px' }} />
-            New
+            Nuevo
           </button>
 
-          {/* Botón de hamburguesa para ocultar/mostrar sidebar */}
           <button
             onClick={() => setSidebarVisible(!sidebarVisible)}
             style={{
@@ -313,16 +313,19 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
             }}
             onMouseEnter={(e) => {
               e.target.style.background = 'var(--color-primary)';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1.05)';
               e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
             }}
             onMouseLeave={(e) => {
               e.target.style.background = 'var(--color-background-quaternary)';
+              e.target.style.color = 'var(--color-text-primary)';
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = 'none';
             }}
+            aria-label={sidebarVisible ? 'Ocultar panel' : 'Mostrar panel'}
           >
-            <List size={16} />
+            {sidebarVisible ? <CaretRight size={16} /> : <CaretLeft size={16} />}
           </button>
         </div>
       </div>
@@ -358,6 +361,10 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                   .map((event, index) => {
                     const eventType = getEventType(event);
                     return (
+                      <Tooltip
+                        title={`${event.title || event.details?.patient_full_name || 'Evento'} • ${dayjs(event.start).format('DD/MM/YYYY HH:mm')}${getPrimaryPhone(event) ? ' • ' + getPrimaryPhone(event) : ''}`}
+                        placement="top"
+                      >
                       <div 
                         key={`${event.id}-${index}`} 
                         className={`${styles.agendaEventCard} ${styles[eventType]}`}
@@ -367,11 +374,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                         <div className={styles.eventCardHeader}>
                           <div className={styles.eventTime}>
                             <span className={styles.startTime}>
-                              {dayjs(event.start).format('HH:mm')}
-                            </span>
-                            <span className={styles.timeSeparator}>-</span>
-                            <span className={styles.endTime}>
-                              {dayjs(event.end).format('HH:mm')}
+                              {dayjs(event.start).format('DD/MM/YYYY')}
                             </span>
                           </div>
                           <div className={`${styles.eventStatus} ${styles[eventType]}`}>
@@ -433,6 +436,7 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
                           )}
                         </div>
                       </div>
+                      </Tooltip>
                     );
                   })
               )}
@@ -563,19 +567,38 @@ const Calendario = () => {
     };
   };
 
+  const getPrimaryPhone = (evt) =>
+    evt?.patient?.primary_phone ||
+    evt?.details?.patient?.primary_phone ||
+    evt?.details?.primary_phone ||
+    evt?.details?.patient_primary_phone ||
+    null;
+
   const EventContent = ({ event }) => {
+    const eventName = event.title || event.details?.patient_full_name || 'Evento';
+    const eventDate = dayjs(event.start).format('DD/MM/YYYY HH:mm');
+    const phone = getPrimaryPhone(event);
+    const tooltipText = phone
+      ? `${eventName} \u2022 ${eventDate} \u2022 Tel: ${phone}`
+      : `${eventName} \u2022 ${eventDate}`;
     // Usar el título personalizado si está disponible, sino usar el sistema anterior
     if (event.title) {
       return (
-        <span
-          style={{
-            fontWeight: 'bold',
-            fontSize: '0.95em',
-            color: 'var(--color-text-primary)'
-          }}
-        >
-          {event.title}
-        </span>
+        <Tooltip title={tooltipText} placement="top">
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              fontWeight: 'bold',
+              fontSize: '0.95em',
+              color: 'var(--color-text-primary)'
+            }}
+          >
+            {event.title}
+          </div>
+        </Tooltip>
       );
     }
     
@@ -585,19 +608,25 @@ const Calendario = () => {
     if (status === 1) prefix = '[PENDIENTE]';
     if (status === 2) prefix = '[CONFIRMADA]';
     return (
-      <span
-        style={{
-          fontWeight: 'bold',
-          textTransform: 'uppercase',
-          fontSize: '0.95em',
-          color: 'var(--color-text-primary)'
-        }}
-      >
-        {prefix}
-        {event.details.patient_first_name
-          ? ` - ${event.details.patient_first_name}`
-          : ''}
-      </span>
+      <Tooltip title={tooltipText} placement="top">
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+            fontSize: '0.95em',
+            color: 'var(--color-text-primary)'
+          }}
+        >
+          {prefix}
+          {event.details.patient_first_name
+            ? ` - ${event.details.patient_first_name}`
+            : ''}
+        </div>
+      </Tooltip>
     );
   };
 
@@ -667,12 +696,14 @@ const Calendario = () => {
     // Función para manejar el hover
     const handleMouseEnter = (e) => {
       e.target.style.background = 'var(--color-primary)';
+      e.target.style.color = '#ffffff';
       e.target.style.transform = 'scale(1.05)';
       e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
     };
 
     const handleMouseLeave = (e) => {
       e.target.style.background = 'var(--color-background-quaternary)';
+      e.target.style.color = 'var(--color-text-primary)';
       e.target.style.transform = 'scale(1)';
       e.target.style.boxShadow = 'none';
     };
@@ -784,7 +815,7 @@ const Calendario = () => {
                 onClick={() => onView(viewKey)}
                 style={{
                   background: currentView === viewKey ? 'var(--color-primary)' : 'transparent',
-                  color: 'var(--color-text-primary)',
+                  color: currentView === viewKey ? '#ffffff' : 'var(--color-text-primary)',
                   border: 'none',
                   padding: '0 16px',
                   borderRadius: '4px',
@@ -801,6 +832,7 @@ const Calendario = () => {
                 onMouseEnter={(e) => {
                   if (currentView !== viewKey) {
                     e.target.style.background = 'var(--color-primary)';
+                    e.target.style.color = '#ffffff';
                     e.target.style.transform = 'scale(1.05)';
                     e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
                   }
@@ -808,6 +840,7 @@ const Calendario = () => {
                 onMouseLeave={(e) => {
                   if (currentView !== viewKey) {
                     e.target.style.background = 'transparent';
+                    e.target.style.color = 'var(--color-text-primary)';
                     e.target.style.transform = 'scale(1)';
                     e.target.style.boxShadow = 'none';
                   }
@@ -825,7 +858,7 @@ const Calendario = () => {
             }}
             style={{
               background: 'var(--color-primary)',
-              color: 'var(--color-text-primary)',
+              color: '#ffffff',
               border: 'none',
               padding: '0 16px',
               borderRadius: '8px',
@@ -841,20 +874,21 @@ const Calendario = () => {
             }}
             onMouseEnter={(e) => {
               e.target.style.background = '#45a049';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1.05)';
               e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
             }}
             onMouseLeave={(e) => {
               e.target.style.background = 'var(--color-primary)';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = 'none';
             }}
           >
             <Plus size={16} style={{ marginRight: '6px' }} />
-            New
+            Nuevo
           </button>
 
-          {/* Botón de hamburguesa para ocultar/mostrar sidebar */}
           <button
             onClick={() => setSidebarVisible(!sidebarVisible)}
             style={{
@@ -874,16 +908,19 @@ const Calendario = () => {
             }}
             onMouseEnter={(e) => {
               e.target.style.background = 'var(--color-primary)';
+              e.target.style.color = '#ffffff';
               e.target.style.transform = 'scale(1.05)';
               e.target.style.boxShadow = '0 0 15px rgba(76, 175, 80, 0.5)';
             }}
             onMouseLeave={(e) => {
               e.target.style.background = 'var(--color-background-quaternary)';
+              e.target.style.color = 'var(--color-text-primary)';
               e.target.style.transform = 'scale(1)';
               e.target.style.boxShadow = 'none';
             }}
+            aria-label={sidebarVisible ? 'Ocultar panel' : 'Mostrar panel'}
           >
-            <List size={16} />
+            {sidebarVisible ? <CaretRight size={16} /> : <CaretLeft size={16} />}
           </button>
         </div>
       </div>
@@ -928,6 +965,7 @@ const Calendario = () => {
               event: EventContent,
               toolbar: CustomToolbar
             }}
+            culture="es"
             date={date}
             onNavigate={handleNavigate}
             view={view}
@@ -946,6 +984,7 @@ const Calendario = () => {
               time: 'Hora',
               event: 'Evento',
               noEventsInRange: 'No hay citas en este rango de fechas.',
+              showMore: (total) => `+${total} más`,
             }}
             defaultView="month"
             views={['month', 'week', 'day', 'agenda']}
@@ -1020,7 +1059,6 @@ const Calendario = () => {
         )}
       </Modal>
 
-      {/* Modal para crear nueva cita */}
       <Modal
         open={newAppointmentModalVisible}
         onCancel={() => setNewAppointmentModalVisible(false)}

@@ -196,7 +196,9 @@ export default function Patients() {
       style={{
         height: '100%',
         paddingTop: '2.5%',
-        maxWidth: 'calc(100% - 70px)',
+        width: '100%',
+        paddingLeft: '35px',
+        paddingRight: '35px',
       }}
     >
       <div
@@ -205,6 +207,7 @@ export default function Patients() {
           alignItems: 'center',
           gap: '16px',
           margin: '0 auto',
+          width: '100%',
         }}
       >
         <CustomButton text="Crear Paciente" onClick={handleButton} />
@@ -215,7 +218,13 @@ export default function Patients() {
         />
       </div>
 
-      <ModeloTable
+      <div
+        style={{
+          width: '100%',
+          margin: '0 auto',
+        }}
+      >
+        <ModeloTable
         columns={columns}
         data={patients}
         loading={loading}
@@ -227,6 +236,7 @@ export default function Patients() {
           onChange: handlePageChange,
         }}
       />
+      </div>
 
       {/* Modal de edición */}
       {editingPatient && isEditModalOpen && (

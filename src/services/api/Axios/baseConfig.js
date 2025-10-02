@@ -5,7 +5,7 @@ import {
 } from '../../../utils/localStorageUtility';
 
 const BaseURL =
-  'https://reflexoperu-v3.marketingmedico.vip/backend/public/api/';
+  'https://reflexoperu-v2.marketingmedico.vip/backend/public/api/';
 
 const instance = axios.create({
   baseURL: BaseURL,

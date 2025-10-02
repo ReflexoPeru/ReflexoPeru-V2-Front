@@ -290,7 +290,15 @@ const Payments = () => {
   ];
 
   return (
-    <div className={styles.container}>
+    <div 
+      className={styles.container}
+      style={{
+        width: '90%',
+        margin: '0 auto',
+        paddingLeft: '35px',
+        paddingRight: '35px',
+      }}
+    >
         <div>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Método de pago</h2>

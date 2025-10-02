@@ -127,6 +127,15 @@
   flex-direction: column !important;
 }
 
+/* Ocultar completamente el paginado */
+.tableContainer .ant-pagination {
+  display: none !important;
+}
+
+.tableContainer .ant-table-pagination {
+  display: none !important;
+}
+
 /* ================================================== */
 /* BOTONES DE ACCIÓN                                   */
 /* ================================================== */

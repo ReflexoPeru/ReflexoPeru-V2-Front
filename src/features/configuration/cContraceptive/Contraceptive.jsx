@@ -203,7 +203,15 @@ const Contraceptive = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div 
+      className={styles.container}
+      style={{
+        width: '90%',
+        margin: '0 auto',
+        paddingLeft: '35px',
+        paddingRight: '35px',
+      }}
+    >
       <div className={styles.sectionsContainer}>
         <div className={styles.section}>
           <div className={styles.sectionHeader}>

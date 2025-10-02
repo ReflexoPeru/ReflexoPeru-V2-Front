@@ -31,15 +31,13 @@
 .rbc-toolbar-label {
   font-size: var(--font-size-xxl);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  letter-spacing: -0.02em; 
-
-  background: linear-gradient(135deg, var(--color-primary), #00E693);
-  -webkit-background-clip: text;
-  background-clip: text; 
-
-  -webkit-text-fill-color: transparent;
+  color: var(--color-text-primary) !important;
+  letter-spacing: -0.02em;
+  text-shadow: none;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--color-text-primary) !important;
 }
 
 .rbc-btn-group {
@@ -302,6 +300,23 @@ div[data-status="COMPLETADO"] * {
 .rbc-event p,
 .rbc-event-content * {
   color: #fff !important; /* Texto blanco forzado para todos los elementos */
+}
+
+/* Asegurar visibilidad del enlace "+X más" en tema oscuro */
+/* Enlace "+X más" adaptable a ambos temas */
+.rbc-show-more {
+  color: #0b5ed7 !important; /* azul oscuro en tema claro */
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.rbc-show-more:hover {
+  text-decoration: underline;
+  color: #0940b8 !important; /* más oscuro en hover */
+}
+
+[data-theme="dark"] .rbc-show-more {
+  color: #e6f4ff !important; /* azul claro visible en oscuro */
 }
 
 /* REGLAS SÚPER ESPECÍFICAS PARA FORZAR COLORES */

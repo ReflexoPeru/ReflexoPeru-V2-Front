@@ -71,7 +71,7 @@ const ModeloTable = ({
         typeof maxHeight === 'string' && maxHeight.endsWith('vh')
           ? Math.min(
               calculatedHeight,
-              (windowHeight * parseInt(maxHeight)) / 100,
+              (windowHeight * parseInt(maxHeight)) / 103,
             )
           : Math.min(calculatedHeight, maxHeight);
 
@@ -117,14 +117,10 @@ const ModeloTable = ({
        )}
     >
       <div
-        className={estilos.tableContainer}
+        ref={containerRef}
         style={{
-          height: tableHeight,
+          minHeight: maxHeight === 'auto' ? 'auto' : '300px',
           marginTop: '15px',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          minHeight: tableHeight !== 'auto' ? tableHeight : 'auto',
         }}
       >
         <div
@@ -132,6 +128,7 @@ const ModeloTable = ({
             overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
+            width: '100%',
           }}
         >
           <Table

@@ -222,6 +222,48 @@
   letter-spacing: 0.3px;
 }
 
+/* Dark theme adaptations for metric cards */
+[data-theme="dark"] .smallMetricCard {
+  border-color: var(--color-border-primary) !important;
+  background: var(--color-background-elevated) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+[data-theme="dark"] .smallMetricCard .metricTitle,
+[data-theme="dark"] .metricTitle {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme="dark"] .smallMetricCard .metricValue,
+[data-theme="dark"] .metricValue {
+  color: var(--color-text-primary) !important;
+  text-shadow: none !important;
+}
+
+[data-theme="dark"] .earningsCard {
+  border-color: var(--color-border-primary) !important;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.10) 0%, rgba(22, 163, 74, 0.10) 100%) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+[data-theme="dark"] .earningsValue {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="dark"] .earningsSubtitle {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Icon container in dark: soften the green */
+[data-theme="dark"] .earningsIconContainer {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.10) 0%, rgba(22, 163, 74, 0.10) 100%) !important;
+  border: 1px solid rgba(34, 197, 94, 0.25) !important;
+}
+
+[data-theme="dark"] .earningsIconContainer svg {
+  color: #86efac !important; /* softer green */
+}
+
 .mainChartSection {
   display: flex;
   flex: 1;
@@ -709,4 +751,44 @@
 .chartLoadingIndicator {
   margin-top: 16px;
   text-align: center;
+}
+
+/* ==========================================
+   Dark theme overrides for skeletons & cards
+   Use global CSS variables from root theme
+   ========================================== */
+[data-theme="dark"] .paymentChartSkeleton,
+[data-theme="dark"] .chartAreaSkeleton,
+[data-theme="dark"] .chartSkeletonWrapper,
+[data-theme="dark"] .therapistsTableSkeleton {
+  background: var(--color-background-elevated) !important;
+  border-color: var(--color-border-primary) !important;
+  box-shadow: var(--shadow-soft) !important;
+}
+
+[data-theme="dark"] .tableHeaderSkeleton {
+  background: var(--color-background-tertiary) !important;
+  border-bottom-color: var(--color-border-primary) !important;
+}
+
+[data-theme="dark"] .tableRowSkeleton {
+  border-bottom-color: var(--color-border-primary) !important;
+}
+
+/* Animated shimmer bar - adapt to dark palette */
+[data-theme="dark"] .skeletonBar {
+  background: linear-gradient(
+    90deg,
+    var(--color-background-secondary) 25%,
+    var(--color-background-tertiary) 50%,
+    var(--color-background-secondary) 75%
+  ) !important;
+}
+
+/* General surfaces in stats */
+[data-theme="dark"] .paymentSection,
+[data-theme="dark"] .therapistsSection,
+[data-theme="dark"] .mainChartSection {
+  background: var(--color-background-elevated) !important;
+  border-color: var(--color-border-primary) !important;
 }

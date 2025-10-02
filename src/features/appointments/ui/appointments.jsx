@@ -368,7 +368,9 @@ export default function Appointments() {
       style={{
         height: '100%',
         paddingTop: '2.5%',
-        maxWidth: 'calc(100% - 70px)',
+        width: '100%',
+        paddingLeft: '35px',
+        paddingRight: '35px',
       }}
     >
       <div
@@ -377,6 +379,7 @@ export default function Appointments() {
           alignItems: 'center',
           gap: '16px',
           margin: '0 auto',
+          width: '100%',
         }}
       >
         <CustomButton text="Registrar Cita" onClick={handleButton} />
@@ -396,7 +399,13 @@ export default function Appointments() {
         />
       </div>
 
-      <ModeloTable
+      <div
+        style={{
+          width: '100%',
+          margin: '0 auto',
+        }}
+      >
+        <ModeloTable
         columns={columns}
         data={visibleAppointments}
         loading={loading}
@@ -411,6 +420,7 @@ export default function Appointments() {
           showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} citas`,
         }}
       />
+      </div>
 
       <Modal
         open={showTicketModal}

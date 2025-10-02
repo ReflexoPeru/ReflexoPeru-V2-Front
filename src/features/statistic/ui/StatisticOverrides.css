@@ -91,3 +91,24 @@
 .ant-picker-input > input::placeholder {
   color: var(--color-text-secondary) !important;
 }
+
+/* Skeleton (Antd) base tokens in dark theme */
+[data-theme="dark"] .ant-skeleton-element .ant-skeleton-avatar,
+[data-theme="dark"] .ant-skeleton-element .ant-skeleton-button,
+[data-theme="dark"] .ant-skeleton-element .ant-skeleton-input,
+[data-theme="dark"] .ant-skeleton-element .ant-skeleton-image,
+[data-theme="dark"] .ant-skeleton .ant-skeleton-content .ant-skeleton-title,
+[data-theme="dark"] .ant-skeleton .ant-skeleton-content .ant-skeleton-paragraph > li {
+  background: var(--color-background-secondary) !important;
+}
+
+[data-theme="dark"] .ant-skeleton.ant-skeleton-active .ant-skeleton-content .ant-skeleton-title,
+[data-theme="dark"] .ant-skeleton.ant-skeleton-active .ant-skeleton-content .ant-skeleton-paragraph > li {
+  background: linear-gradient(
+    90deg,
+    var(--color-background-secondary) 25%,
+    var(--color-background-tertiary) 37%,
+    var(--color-background-secondary) 63%
+  ) !important;
+  background-size: 400% 100% !important;
+}

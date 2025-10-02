@@ -41,7 +41,7 @@
 
 .mini-calendar-nav-btn:hover {
   background: var(--color-primary);
-  color: var(--color-text-primary);
+  color: #ffffff;
   border-color: var(--color-primary);
 }
 
@@ -106,7 +106,7 @@
 
 .mini-calendar-day-selected {
   background: var(--color-primary);
-  color: var(--color-text-primary);
+  color: #ffffff;
   font-weight: var(--font-weight-bold);
 }
 

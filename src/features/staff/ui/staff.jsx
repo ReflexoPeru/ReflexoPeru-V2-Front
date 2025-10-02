@@ -182,7 +182,9 @@ export default function Staff() {
       style={{
         height: '100%',
         paddingTop: '2.5%',
-        maxWidth: 'calc(100% - 70px)',
+        width: '100%',
+        paddingLeft: '35px',
+        paddingRight: '35px',
       }}
     >
       <div
@@ -191,6 +193,7 @@ export default function Staff() {
           alignItems: 'center',
           gap: '16px',
           margin: '0 auto',
+          width: '100%',
         }}
       >
         <CustomButton text="Crear Personal" onClick={handleButton} />
@@ -202,7 +205,13 @@ export default function Staff() {
         />
       </div>
 
-      <ModeloTable
+      <div
+        style={{
+          width: '100%',
+          margin: '0 auto',
+        }}
+      >
+        <ModeloTable
         columns={columns}
         data={staff}
         loading={loading}
@@ -214,6 +223,7 @@ export default function Staff() {
           onChange: handlePageChange,
         }}
       />
+      </div>
 
       {editingTherapist && (
         <EditTherapist

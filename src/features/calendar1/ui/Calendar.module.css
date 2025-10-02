@@ -1,15 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
-/* Variables de colores para los diferentes tipos de eventos */
 :root {
-  --pending-color: #f59e0b; /* Amarillo para pendientes - igual que en el calendario */
+  --pending-color: #f59e0b;
   --confirmed-color: #4CAF50;
-  --completed-color: #1DB44A; /* Verde vibrante para completados - igual que en el calendario */
+  --completed-color: #1DB44A;
   --cancelled-color: #F44336;
   
-  --pending-light: rgba(245, 158, 11, 0.1); /* Amarillo claro */
+  --pending-light: rgba(245, 158, 11, 0.1);
   --confirmed-light: rgba(76, 175, 80, 0.1);
-  --completed-light: rgba(29, 180, 74, 0.1); /* Verde claro */
+  --completed-light: rgba(29, 180, 74, 0.1);
   --cancelled-light: rgba(244, 67, 54, 0.1);
 }
 
@@ -28,14 +27,12 @@
   gap: var(--spacing-sm);
 }
 
-/* Contenedor principal del calendario */
 .mainContent {
   display: flex;
   flex: 1;
   flex-direction: column;
 }
 
-/* Barra lateral derecha */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -47,9 +44,8 @@
   border-radius: var(--radius-md);
 }
 
-/* Calendario en sí */
 .calendarWrapper {
-  overflow-x: auto; /* Por si se desborda horizontalmente */
+  overflow-x: auto;
   flex: 1;
   padding: var(--spacing-sm);
   border-radius: var(--radius-lg);

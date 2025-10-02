@@ -346,29 +346,24 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         </View>
         {/* Campos para mujeres */}
         {paciente.sex === 'F' && (
-          <>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: 6,
-                marginTop: 6,
-              }}
-            >
-              <Text style={styles.label}>GESTANDO SI/NO:</Text>
-              {renderField(historia.gestation ? 'SI' : 'NO', styles.fieldUnderline)}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: 6,
+              marginTop: 6,
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', width: '48%' }}>
+              <Text style={styles.label}>GESTA:</Text>
+              <Text style={[styles.field, { marginLeft: 4 }]}>SI / NO</Text>
             </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: 6,
-              }}
-            >
-              <Text style={styles.label}>MENSTRUANDO SI/NO:</Text>
-              {renderField(historia.menstruation ? 'SI' : 'NO', styles.fieldUnderline)}
+            <View style={{ flexDirection: 'row', alignItems: 'center', width: '46%', justifyContent: 'flex-start', marginLeft: 12 }}>
+              <Text style={styles.label}>MENSTR:</Text>
+              <Text style={[styles.field, { marginLeft: 4 }]}>SI / NO</Text>
             </View>
-          </>
+          </View>
         )}
         {/* Anticoncepción (solo si es mujer) */}
         {paciente.sex === 'F' && (
@@ -432,10 +427,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
           }}
         >
           <Text style={styles.label}>PESO HOY:</Text>
-          {renderField(hasPesoHoy ? `${pesoHoy} KG` : '', styles.fieldUnderline)}
-          <Text style={[styles.label, { marginLeft: 6 }]}>
-            {dayjs().format('DD/MM/YYYY')}
-          </Text>
+          {renderField('', styles.fieldUnderline)}
         </View>
         <View
           style={{

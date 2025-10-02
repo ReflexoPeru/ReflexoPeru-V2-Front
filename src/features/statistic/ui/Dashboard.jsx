@@ -106,12 +106,28 @@ export default function PerformanceDashboard() {
     return '#EF4444';
   };
 
+  const colorPalette = ['#1890ff', '#faad14', '#10b981', '#f97316', '#52c41a'];
+  const barColors = paymentTypes.map((payment, idx) => {
+    const name = String(payment?.name || payment).toUpperCase();
+    if (name === 'YAPE') return '#5c1b6c';
+    if (name === 'EFECTIVO') return '#1CB54A';
+    return colorPalette[idx % colorPalette.length];
+  });
+
+  const axisLabelColor = isDarkMode ? '#e5e7eb' : '#333333';
+  const gridColor = isDarkMode ? '#333333' : '#e0e0e0';
+
   const paymentDistributionOptions = {
     chart: {
       type: 'bar',
       height: 280,
       toolbar: { show: false },
       background: 'transparent',
+    },
+    theme: {
+      mode: isDarkMode ? 'dark' : 'light',
+      monochrome: { enabled: false },
+      foreColor: axisLabelColor,
     },
     plotOptions: {
       bar: {
@@ -127,16 +143,16 @@ export default function PerformanceDashboard() {
       style: {
         fontSize: '11px',
         fontWeight: 'bold',
-        colors: ['#333333'],
+        colors: [axisLabelColor],
       },
       offsetX: 10,
     },
-    colors: ['#1CB54A', '#52c41a', '#1890ff', '#faad14'],
+    colors: barColors,
     xaxis: {
       categories: paymentTypes.map((payment) => payment.name),
       labels: {
         style: {
-          colors: ['#666666'],
+          colors: axisLabelColor,
           fontSize: '11px',
         },
         formatter: (val) => val,
@@ -146,14 +162,14 @@ export default function PerformanceDashboard() {
     yaxis: {
       labels: {
         style: {
-          colors: ['#333333'],
+          colors: axisLabelColor,
           fontSize: '12px',
           fontWeight: 500,
         },
       },
     },
     grid: {
-      borderColor: '#e0e0e0',
+      borderColor: gridColor,
       strokeDashArray: 2,
     },
     tooltip: {
