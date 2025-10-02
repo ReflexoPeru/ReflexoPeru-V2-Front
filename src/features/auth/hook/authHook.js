@@ -52,14 +52,11 @@ export const useAuth = () => {
       const loginData = await LoginService(credentials);
 
       if (loginData.status === 200 && loginData.data) {
-        // Verificar si es el primer inicio de sesión
         if (loginData.data.first_login) {
-          // Es primer inicio - guardar user_id y redirigir a primer inicio
           persistLocalStorage('user_id', loginData.data.user_id);
           showToast('inicioSesionExitoso');
           navigate('/primerInicio');
         } else {
-          // No es primer inicio - flujo normal
           persistLocalStorage('token', loginData.data.token);
           setIsAuthenticated(true);
 
@@ -94,7 +91,6 @@ export const useAuth = () => {
       await LogOutService();
       showToast('cierreSesion');
     } catch (error) {
-      console.error('Logout failed', error);
     } finally {
       removeLocalStorage('token');
       removeLocalStorage('user_id');
@@ -112,14 +108,12 @@ export const useAuth = () => {
   const validateCode = async (code) => {
     try {
       const data = await validateCodeService(code, getLocalStorage('user_id'));
-      // El backend responde con { valid: true/false, message: ... }
       if (data.data?.valid) {
         showToast('codigoVerificado');
         persistLocalStorage('token', data.data.token);
         navigate('/cambiarContraseña');
       } else {
         showToast('intentoFallido', data.data?.message || 'Código incorrecto');
-        // No navega ni permite avanzar
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
@@ -132,7 +126,6 @@ export const useAuth = () => {
       const response = await changePasswordService(data);
       if (response.status == '200') {
         showToast('contraseñaCambiada');
-        // Después de cambiar contraseña, obtener datos del usuario y redirigir
         setIsAuthenticated(true);
         const roleFetched = await fetchUserRole();
         if (roleFetched) {

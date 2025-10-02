@@ -117,10 +117,14 @@ const ModeloTable = ({
        )}
     >
       <div
-        ref={containerRef}
+        className={estilos.tableContainer}
         style={{
-          minHeight: maxHeight === 'auto' ? 'auto' : '300px',
+          height: tableHeight,
           marginTop: '15px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          minHeight: tableHeight !== 'auto' ? tableHeight : 'auto',
         }}
       >
         <div

@@ -18,16 +18,13 @@ export const useTodayAppointments = () => {
         return;
       }
 
-      // Obtener fecha actual en el mismo formato que el API
       const today = dayjs().format('YYYY-MM-DD');
 
-      // Filtrar citas del día actual (considerando el formato con hora)
       const todayAppointments = data.filter(
         (item) =>
           item.appointment_date && item.appointment_date.startsWith(today),
       );
 
-      // Formatear los datos para el componente
       const formattedAppointments = todayAppointments.map((item) => {
         return {
           name: item.full_name || ' ',

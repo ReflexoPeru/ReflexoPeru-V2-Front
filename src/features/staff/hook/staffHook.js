@@ -102,7 +102,6 @@ export const useStaff = () => {
           'Error al eliminar terapeuta',
         ),
       );
-      console.error('Error deleting therapist:', error);
     } finally {
       setLoading(false);
     }
@@ -134,11 +133,8 @@ export const useStaff = () => {
           formData.province_id || formData.ubicacion?.province_id || null,
         district_id:
           formData.district_id || formData.ubicacion?.district_id || null,
-        code: formData.therapist_card || null, // Agregar el código de terapeuta
+        code: formData.therapist_card || null,
       };
-
-      console.log('📝 Payload para actualizar terapeuta:', payload);
-      console.log('🔑 Código de terapeuta enviado:', payload.code);
 
       await updateTherapist(therapistId, payload);
       showToast('actualizarTerapeuta');
@@ -150,7 +146,6 @@ export const useStaff = () => {
         await loadStaff(pagination.currentPage);
       }
     } catch (error) {
-      console.error('Error actualizando terapeuta:', error);
       showToast(
         'error',
         formatToastMessage(
@@ -185,11 +180,8 @@ export const useStaff = () => {
         formData.province_id || formData.ubicacion?.province_id || null,
       district_id:
         formData.district_id || formData.ubicacion?.district_id || null,
-      code: formData.therapist_card || null, // Agregar el código de terapeuta
+      code: formData.therapist_card || null,
     };
-
-    console.log('📝 Payload para crear terapeuta:', payload);
-    console.log('🔑 Código de terapeuta enviado:', payload.code);
 
     try {
       const result = await createTherapist(payload);

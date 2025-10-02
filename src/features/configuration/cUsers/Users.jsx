@@ -16,7 +16,6 @@ import styles from './Users.module.css';
 import UniversalModal from '../../../components/Modal/UniversalModal';
 import SelectTypeOfDocument from '../../../components/Select/SelctTypeOfDocument';
 
-const { Option } = Select;
 
 // Función para capitalizar la primera letra de cada palabra
 const capitalizeFirstLetter = (str) => {
@@ -240,7 +239,6 @@ const Users = () => {
         role_id: undefined,
       };
       
-      console.log('Estableciendo valores por defecto:', defaultValues);
       form.setFieldsValue(defaultValues);
     }, 100);
   };
@@ -269,7 +267,6 @@ const Users = () => {
 
   const handleSubmit = async (values) => {
     try {
-      console.log('Valores del formulario:', values);
       
       const payload = {
         document_number: values.document_number?.trim(),
@@ -289,7 +286,6 @@ const Users = () => {
         role_id: values.role_id,
       };
 
-      console.log('Payload a enviar:', payload);
 
       if (action === 'create') {
         await addUser(payload);

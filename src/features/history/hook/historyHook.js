@@ -12,7 +12,6 @@ import { message } from 'antd';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
 import { useToast } from '../../../services/toastify/ToastContext';
 
-//DATOS DEL PACIENTE -----------------------------
 export const usePatientHistory = (patientId) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -26,7 +25,6 @@ export const usePatientHistory = (patientId) => {
     setLoading(true);
     try {
       const response = await getPatientHistoryById(patientId);
-      // Si el backend responde sin data válida y aún no creamos, auto-crear
       const hasHistory = Boolean(response?.data?.id);
       const saysNotFound = typeof response?.message === 'string' && response.message.toLowerCase().includes('no se encontró historial');
       if (!hasHistory && !autoCreated && saysNotFound) {
@@ -48,14 +46,12 @@ export const usePatientHistory = (patientId) => {
           const afterCreate = await getPatientHistoryById(patientId);
           setData(afterCreate);
         } catch (e) {
-          // Si falla la creación, al menos setear el response inicial
           setData(response);
         }
       } else {
         setData(response);
       }
     } catch (err) {
-      // Si el back respondió 404 o mensaje de no encontrado, intentar crear una vez
       const backendMsg = err?.response?.data?.message || '';
       const notFound = typeof backendMsg === 'string' && backendMsg.toLowerCase().includes('no se encontró historial');
       if (!autoCreated && notFound) {
@@ -94,7 +90,6 @@ export const usePatientHistory = (patientId) => {
   return { data, loading, error, refetch: fetchData };
 };
 
-//ACTUALIZAR DATOS DE HISTORIA DEL PACIENTE
 export const useUpdatePatientHistory = (patientId, onSuccess) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -103,11 +98,9 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
   const updateHistory = async (historyId, data) => {
     setLoading(true);
     try {
-      // Si no hay historyId, crear primero para habilitar el flujo
       if (!historyId) {
         const creationPayload = {
           patient_id: patientId,
-          // Crear con valores nulos; luego se actualizará con PATCH
           weight: null,
           last_weight: null,
           current_weight: null,
@@ -132,7 +125,6 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
         const created = await createPatientHistory(creationPayload);
         historyId = created?.data?.id || created?.id;
       }
-      // Asegurar booleans y números correctos antes de enviar
       const normalized = {
         ...data,
         use_contraceptive_method:
@@ -157,7 +149,6 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
       );
       setError(null);
       
-      // Llamar callback de éxito si existe
       if (onSuccess) {
         onSuccess();
       }
@@ -185,7 +176,6 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
   };
 };
 
-//DATOS DEL PERSONAL PARA EL MODAL------------------------------
 export const useStaff = () => {
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -210,7 +200,6 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error loading staff:', error);
       showToast('error');
     } finally {
       setLoading(false);
@@ -229,7 +218,6 @@ export const useStaff = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error searching staff:', error);
       showToast('error');
     } finally {
       setLoading(false);
@@ -267,7 +255,6 @@ export const useStaff = () => {
   };
 };
 
-// DATOS DE LAS CITAS DEL PACIENTE -----------------------------
 export const usePatientAppointments = (patientId) => {
   const [appointments, setAppointments] = useState([]);
   const [lastAppointment, setLastAppointment] = useState(null);
@@ -281,17 +268,14 @@ export const usePatientAppointments = (patientId) => {
     setLoading(true);
     try {
       const response = await getAppointmentsByPatientId(patientId);
-      // Ordenar citas por fecha descendente
       const sortedAppointments = [...response].sort(
         (a, b) => new Date(b.appointment_date) - new Date(a.appointment_date),
       );
       setAppointments(sortedAppointments);
-      // Establecer la última cita (primera del array ordenado)
       setLastAppointment(sortedAppointments[0] || null);
       setError(null);
       showToast('busquedaPaciente');
     } catch (error) {
-      console.error('Error al cargar las citas del paciente:', error);
       setAppointments([]);
       setLastAppointment(null);
       setError(error);
@@ -314,7 +298,6 @@ export const usePatientAppointments = (patientId) => {
   };
 };
 
-// ACTUALIZAR DATOS DE LAS CITAS DEL PACIENTE -----------------------------
 export const useUpdateAppointment = () => {
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();

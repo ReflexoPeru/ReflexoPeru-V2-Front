@@ -1,0 +1,262 @@
+/* === Variables de colores para calendarios === */
+:root {
+  --calendar-yellow: #fbbf24;
+  --calendar-yellow-light: #fcd34d;
+  --calendar-yellow-dark: #f59e0b;
+  
+  --calendar-green: #10b981;
+  --calendar-green-light: #34d399;
+  --calendar-green-dark: #059669;
+  
+  --calendar-blue: #3b82f6;
+  --calendar-blue-light: #60a5fa;
+  --calendar-blue-dark: #2563eb;
+  
+  --calendar-red: #ef4444;
+  --calendar-red-light: #f87171;
+  --calendar-red-dark: #dc2626;
+}
+
+/* === Contenedor principal === */
+.calendar-list {
+  margin-top: 0;
+  padding: var(--spacing-sm);
+  background: var(--color-background-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-primary);
+  width: 100%;
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-family);
+}
+
+.calendar-list__title {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+/* === Lista de items === */
+.calendar-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* === Item individual === */
+.calendar-list__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px var(--spacing-sm);
+  border-radius: var(--radius-md);
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-secondary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  user-select: none;
+}
+
+.calendar-list__item:hover {
+  background: var(--color-background-tertiary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+}
+
+.calendar-list__item--checked {
+  background: var(--color-background-tertiary);
+  border-color: var(--color-border-primary);
+}
+
+/* === Contenedor del checkbox === */
+.calendar-list__checkbox-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* === Checkbox nativo (oculto) === */
+.calendar-list__checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* === Checkbox personalizado === */
+.calendar-list__custom-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-border-primary);
+  border-radius: 4px;
+  background: var(--color-background-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+  position: relative;
+}
+
+.calendar-list__checkmark {
+  color: white;
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  opacity: 0;
+  transform: scale(0);
+  transition: var(--transition-fast);
+}
+
+/* === Estados checked por color === */
+.calendar-list__item--yellow .calendar-list__custom-checkbox--yellow {
+  border-color: var(--calendar-yellow);
+}
+
+.calendar-list__item--yellow.calendar-list__item--checked .calendar-list__custom-checkbox--yellow {
+  background: var(--calendar-yellow);
+  border-color: var(--calendar-yellow);
+}
+
+.calendar-list__item--green .calendar-list__custom-checkbox--green {
+  border-color: var(--calendar-green);
+}
+
+.calendar-list__item--green.calendar-list__item--checked .calendar-list__custom-checkbox--green {
+  background: var(--calendar-green);
+  border-color: var(--calendar-green);
+}
+
+.calendar-list__item--blue .calendar-list__custom-checkbox--blue {
+  border-color: var(--calendar-blue);
+}
+
+.calendar-list__item--blue.calendar-list__item--checked .calendar-list__custom-checkbox--blue {
+  background: var(--calendar-blue);
+  border-color: var(--calendar-blue);
+}
+
+.calendar-list__item--red .calendar-list__custom-checkbox--red {
+  border-color: var(--calendar-red);
+}
+
+.calendar-list__item--red.calendar-list__item--checked .calendar-list__custom-checkbox--red {
+  background: var(--calendar-red);
+  border-color: var(--calendar-red);
+}
+
+/* === Animación del checkmark === */
+.calendar-list__item--checked .calendar-list__checkmark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* === Efectos hover por color === */
+.calendar-list__item--yellow:hover {
+  border-color: var(--calendar-yellow-light);
+}
+
+.calendar-list__item--yellow:hover .calendar-list__custom-checkbox--yellow {
+  border-color: var(--calendar-yellow-light);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+}
+
+.calendar-list__item--green:hover {
+  border-color: var(--calendar-green-light);
+}
+
+.calendar-list__item--green:hover .calendar-list__custom-checkbox--green {
+  border-color: var(--calendar-green-light);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.calendar-list__item--blue:hover {
+  border-color: var(--calendar-blue-light);
+}
+
+.calendar-list__item--blue:hover .calendar-list__custom-checkbox--blue {
+  border-color: var(--calendar-blue-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.calendar-list__item--red:hover {
+  border-color: var(--calendar-red-light);
+}
+
+.calendar-list__item--red:hover .calendar-list__custom-checkbox--red {
+  border-color: var(--calendar-red-light);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* === Icono === */
+.calendar-list__icon {
+  font-size: 14px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.calendar-list__item:hover .calendar-list__icon {
+  opacity: 1;
+}
+
+/* === Label === */
+.calendar-list__label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.calendar-list__item:hover .calendar-list__label {
+  color: var(--color-text-secondary);
+}
+
+.calendar-list__item--checked .calendar-list__label {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .calendar-list {
+    margin-top: 16px;
+    padding: 16px;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .calendar-list__item {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  
+  .calendar-list__custom-checkbox {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .calendar-list__checkmark {
+    font-size: 10px;
+  }
+  
+  .calendar-list__label {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-list {
+    margin-top: 12px;
+    padding: 12px;
+  }
+  
+  .calendar-list__title {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+  
+  .calendar-list__item {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+}

@@ -44,11 +44,6 @@ export const useStatistic = (startDate, endDate) => {
       const colorPrimary = '#1CB54A';
 
       const data = await fetchStatisticData(startDate, endDate);
-      
-      console.log('📊 Debug - Datos recibidos:', data);
-      console.log('📊 Debug - Fechas:', { startDate: startDate.format('YYYY-MM-DD'), endDate: endDate.format('YYYY-MM-DD') });
-      console.log('📊 Debug - Terapeutas raw:', data.data?.terapeutas);
-      
       setRawData(data.data);
 
       const sessionsTotal = Math.round(Object.values(data.data.sesiones).reduce(
@@ -73,7 +68,6 @@ export const useStatistic = (startDate, endDate) => {
           rating: therapist.raiting,
         }));
 
-      console.log('📊 Debug - Terapeutas procesados:', sortedTherapists);
       setTherapistPerformance(sortedTherapists);
       const totalPayments = Object.values(data.data.tipos_pago).reduce(
         (acc, val) => acc + Number(val),
@@ -234,7 +228,6 @@ export const useStatistic = (startDate, endDate) => {
         },
       ]);
     } catch (error) {
-      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }

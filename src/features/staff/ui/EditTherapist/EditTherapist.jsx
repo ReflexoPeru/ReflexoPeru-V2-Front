@@ -191,7 +191,6 @@ const EditTherapist = ({ therapist, onClose, onSave }) => {
     };
 
     form.setFieldsValue(formData);
-    console.log('Valores seteados en el form:', formData);
   };
 
   // Inicializa el formulario con los datos de la prop therapist

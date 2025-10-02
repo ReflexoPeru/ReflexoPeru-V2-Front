@@ -219,6 +219,7 @@ export default function Patients() {
         columns={columns}
         data={patients}
         loading={loading}
+        maxHeight="70vh"
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

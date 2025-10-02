@@ -161,7 +161,6 @@ const NewTherapist = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData) => {
-    console.log('📝 Formulario enviado:', formData);
 
     try {
       if (
@@ -177,7 +176,6 @@ const NewTherapist = () => {
       }
 
       const result = await submitNewTherapist(formData);
-      console.log('🎉 Terapeuta creado con éxito:', result);
       notification.success({
         message: 'Éxito',
         description: 'Terapeuta registrado correctamente',

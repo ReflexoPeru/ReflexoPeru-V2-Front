@@ -9,7 +9,7 @@ import {
   updatePrice,
   deletePrice,
 } from './paymentsServices';
-import { useToast } from '../../../services/toastify/ToastContext'; // Ajusta la ruta según tu estructura
+import { useToast } from '../../../services/toastify/ToastContext';
 
 export const usePaymentTypes = () => {
   const [paymentTypes, setPaymentTypes] = useState([]);
@@ -28,7 +28,6 @@ export const usePaymentTypes = () => {
       }));
       setPaymentTypes(formatted);
     } catch (error) {
-      console.error('Error al cargar tipos de pago:', error);
       showToast('error', 'Error al cargar los tipos de pago');
     } finally {
       setLoading(false);
@@ -41,7 +40,6 @@ export const usePaymentTypes = () => {
       await fetchPaymentTypes();
       showToast('exito', 'Tipo de pago activado correctamente');
     } catch (error) {
-      console.error('Error al crear tipo de pago:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al activar el tipo de pago',
@@ -56,7 +54,6 @@ export const usePaymentTypes = () => {
       await fetchPaymentTypes();
       showToast('efectivo', 'Tipo de pago actualizado correctamente');
     } catch (error) {
-      console.error('Error al actualizar tipo de pago:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al actualizar el tipo de pago',
@@ -71,7 +68,6 @@ export const usePaymentTypes = () => {
       await fetchPaymentTypes();
       showToast('pagoelminado', 'Tipo de pago desactivado correctamente');
     } catch (error) {
-      console.error('Error al eliminar tipo de pago:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al desactivar el tipo de pago',
@@ -113,7 +109,6 @@ export const usePrices = () => {
       }));
       setPrices(formatted);
     } catch (error) {
-      console.error('Error al cargar precios:', error);
       showToast('error', 'Error al cargar los precios');
     } finally {
       setLoading(false);
@@ -126,7 +121,6 @@ export const usePrices = () => {
       await fetchPrices();
       showToast('exito', 'Precio activado correctamente');
     } catch (error) {
-      console.error('Error al crear precio:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al activar el precio',
@@ -141,7 +135,6 @@ export const usePrices = () => {
       await fetchPrices();
       showToast('efectivo', 'Precio actualizado correctamente');
     } catch (error) {
-      console.error('Error al actualizar precio:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al actualizar el precio',
@@ -156,7 +149,6 @@ export const usePrices = () => {
       await fetchPrices();
       showToast('pagoelminado', 'Precio desactivado correctamente');
     } catch (error) {
-      console.error('Error al eliminar precio:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al desactivar el precio',

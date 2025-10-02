@@ -1,6 +1,7 @@
 import React from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { es } from 'date-fns/locale';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './CalendarOverrides.css';
 import styles from './Calendar.module.css';
@@ -10,16 +11,13 @@ import { LoadingOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useCalendar } from '../hook/calendarHook';
 
-moment.locale('es', {
-  months:
-    'Enero_Febrero_Marzo_Abril_Mayo_Junio_Julio_Agosto_Septiembre_Octubre_Noviembre_Diciembre'.split(
-      '_',
-    ),
-  weekdays: 'Domingo_Lunes_Martes_Miércoles_Jueves_Viernes_Sábado'.split('_'),
-  weekdaysShort: 'Dom_Lun_Mar_Mié_Jue_Vie_Sáb'.split('_'),
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales: { es }
 });
-
-const localizer = momentLocalizer(moment);
 
 const Calendario = () => {
   const { events, loading, error } = useCalendar();

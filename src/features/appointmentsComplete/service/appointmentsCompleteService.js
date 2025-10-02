@@ -5,7 +5,6 @@ export const searchAppointmentsComplete = async (term) => {
     const res = await get(
       `appointments/completed/search?search=${term}&per_page=100`,
     );
-    console.log('🔍 Resultado de búsqueda:', res.data);
 
     const data = Array.isArray(res.data)
       ? res.data
@@ -14,7 +13,6 @@ export const searchAppointmentsComplete = async (term) => {
 
     return { data, total };
   } catch (error) {
-    console.error('❌ Error en searchAppointments:', error);
     throw error;
   }
 };
@@ -25,7 +23,6 @@ export const getPaginatedAppointmentsCompleteByDate = async (date, perPage = 10,
       `appointments/completed?per_page=${perPage}&date=${date}&page=${page}`,
     );
     
-    // El backend devuelve la estructura con current_page, data, total, etc.
     const data = res.data?.data || [];
     const total = res.data?.total || 0;
     const currentPage = res.data?.current_page || 1;
@@ -39,7 +36,6 @@ export const getPaginatedAppointmentsCompleteByDate = async (date, perPage = 10,
       perPage: res.data?.per_page || perPage
     };
   } catch (error) {
-    console.error('❌ Error al obtener citas completadas:', error);
     throw error;
   }
 };

@@ -25,22 +25,18 @@ export const getPatients = async (page = 1, perPage = 50) => {
       total: response.data?.total || data.length || 0,
     };
   } catch (error) {
-    console.error('Error obteniendo pacientes:', error);
     throw error;
   }
 };
 
-//==============================================================================
 export const updatePatient = async (patientId, patientData) => {
   try {
     const response = await patch(`patients/${patientId}`, patientData);
     return response.data;
   } catch (error) {
-    console.error('Error actualizando paciente:', error);
     throw error;
   }
 };
-//==============================================================================
 
 export const searchPatients = async (term) => {
   try {
@@ -52,7 +48,6 @@ export const searchPatients = async (term) => {
       total: res.data?.total || 0,
     };
   } catch (error) {
-    console.error('Error buscando pacientes:', error);
     throw error;
   }
 };
@@ -62,7 +57,6 @@ export const createPatient = async (data) => {
     const response = await post('patients', data);
     return response.data;
   } catch (error) {
-    console.error('Error creando paciente:', error);
     throw error;
   }
 };
@@ -72,7 +66,6 @@ export const deletePatient = async (patientId) => {
     const response = await del(`patients/${patientId}`);
     return response.data;
   } catch (error) {
-    console.error('Error eliminando paciente:', error);
     throw error;
   }
 };
@@ -82,7 +75,6 @@ export const getPatientById = async (patientId) => {
     const response = await get(`patients/${patientId}`);
     return response.data;
   } catch (error) {
-    console.error('Error obteniendo paciente por ID:', error);
     throw error;
   }
 };

@@ -6,10 +6,12 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/es';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import weekday from 'dayjs/plugin/weekday';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 
 // Configurar plugins
 dayjs.extend(weekOfYear);
 dayjs.extend(weekday);
+dayjs.extend(isSameOrBefore);
 
 // Configurar locale global en español
 dayjs.locale('es');

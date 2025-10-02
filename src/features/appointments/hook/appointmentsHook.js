@@ -13,7 +13,6 @@ import { useToast } from '../../../services/toastify/ToastContext';
 import { formatToastMessage } from '../../../utils/messageFormatter';
 
 export const useAppointments = () => {
-  // Estados principales
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,26 +21,21 @@ export const useAppointments = () => {
     dayjs().format('YYYY-MM-DD'),
   );
 
-  // Paginación
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalItems: 0,
     pageSize: 10,
   });
 
-  // Referencia para evitar llamadas duplicadas
   const abortControllerRef = useRef(null);
 
   const { showToast } = useToast();
 
-  // Función principal para cargar citas
   const loadAppointments = useCallback(async () => {
-    // Cancelar petición anterior si existe
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Crear nuevo AbortController
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
@@ -54,7 +48,6 @@ export const useAppointments = () => {
       if (searchTerm.trim()) {
         response = await searchAppointments(searchTerm, { signal });
       } else {
-        console.log('selectedDate:', selectedDate);
         response = await getPaginatedAppointmentsByDate(
           selectedDate,
           pagination.pageSize,
@@ -89,7 +82,6 @@ export const useAppointments = () => {
     }
   }, [searchTerm, selectedDate, pagination.currentPage, pagination.pageSize]);
 
-  // Efecto para cargar citas con debounce
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       loadAppointments();
@@ -103,7 +95,6 @@ export const useAppointments = () => {
     };
   }, [loadAppointments]);
 
-  // Cambiar fecha seleccionada
   const handleDateChange = useCallback(
     (date) => {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -116,18 +107,15 @@ export const useAppointments = () => {
     [selectedDate],
   );
 
-  // Cambiar término de búsqueda
   const handleSearch = useCallback((term) => {
     setSearchTerm(term);
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   }, []);
 
-  // Cambiar página
   const handlePageChange = useCallback((page) => {
     setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
 
-  // Crear nueva cita
   const submitNewAppointment = useCallback(
     async (appointmentData) => {
       try {
@@ -141,7 +129,7 @@ export const useAppointments = () => {
         };
         const result = await createAppointment(payload);
         showToast('crearCita');
-        await loadAppointments(); // Recargar lista después de crear
+        await loadAppointments();
         return result;
       } catch (error) {
         showToast(
@@ -151,7 +139,6 @@ export const useAppointments = () => {
             'Error creando cita',
           ),
         );
-        console.error('Error creating appointment:', error);
         throw error;
       } finally {
         setLoading(false);
@@ -160,7 +147,6 @@ export const useAppointments = () => {
     [loadAppointments],
   );
 
-  // Nueva función para obtener detalles de una cita
   const getAppointmentDetails = useCallback(async (id) => {
     setLoading(true);
     setError(null);
@@ -168,7 +154,6 @@ export const useAppointments = () => {
       const data = await getAppointmentById(id);
       return data;
     } catch (err) {
-      console.error(`Error fetching appointment ${id}:`, err);
       setError(err);
       throw err;
     } finally {
@@ -176,7 +161,6 @@ export const useAppointments = () => {
     }
   }, []);
 
-  // Nueva función para actualizar una cita existente
   const updateExistingAppointment = useCallback(
     async (id, appointmentData) => {
       setLoading(true);
@@ -190,7 +174,7 @@ export const useAppointments = () => {
         };
         const result = await updateAppointment(id, payload);
         showToast('actualizarCita');
-        await loadAppointments(); // Recargar lista después de actualizar
+        await loadAppointments();
         return result;
       } catch (err) {
         showToast(
@@ -200,7 +184,6 @@ export const useAppointments = () => {
             'Error actualizando cita',
           ),
         );
-        console.error(`Error updating appointment ${id}:`, err);
         setError(err);
         throw err;
       } finally {
@@ -261,7 +244,6 @@ export const usePatients = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [initialLoad, setInitialLoad] = useState(false);
 
-  // nuevo
   const fetchPatients = async () => {
     setLoading(true);
     try {
@@ -270,15 +252,13 @@ export const usePatients = () => {
       const data = await response.json();
       setPatients(data);
     } catch (error) {
-      console.error('Error fetching patients:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para cargar pacientes paginados
   const loadPatients = async (page) => {
-    if (loading) return; // Evitar llamadas duplicadas
+    if (loading) return;
     setLoading(true);
     try {
       const { data, total } = await getPatients(page);
@@ -289,13 +269,11 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error loading patients:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Función para buscar pacientes por término
   const searchPatientsByTerm = async (term) => {
     if (loading) return;
     setLoading(true);
@@ -308,13 +286,11 @@ export const usePatients = () => {
       });
     } catch (error) {
       setError(error.message);
-      console.error('Error searching patients:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Carga inicial solo una vez
   useEffect(() => {
     if (!initialLoad) {
       loadPatients(1);
@@ -323,7 +299,6 @@ export const usePatients = () => {
     }
   }, [searchTerm, initialLoad]);
 
-  // Búsqueda con debounce
   useEffect(() => {
     if (!initialLoad) return;
 
@@ -339,12 +314,12 @@ export const usePatients = () => {
   }, [searchTerm, initialLoad]);
 
   return {
-    patients, // Lista de pacientes
-    loading, // Estado de carga
-    error, // Mensaje de error (si existe)
-    pagination, // Información de paginación
-    setSearchTerm, // Función para establecer término de búsqueda
+    patients,
+    loading,
+    error,
+    pagination,
+    setSearchTerm,
     fetchPatients,
-    handlePageChange: loadPatients, // Función para cambiar de página
+    handlePageChange: loadPatients,
   };
 };

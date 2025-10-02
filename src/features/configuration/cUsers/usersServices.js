@@ -11,7 +11,6 @@ export const getUsers = async (page = 1, perPage = 20) => {
     const res = await get(`users?page=${page}&per_page=${perPage}`);
     return res.data;
   } catch (error) {
-    console.error('Error en getUsers:', error);
     throw error;
   }
 };
@@ -23,14 +22,9 @@ export const createUser = async (userData) => {
       country_id: 183, // Perú por defecto
     };
     
-    console.log('Datos recibidos en createUser:', userData);
-    console.log('Payload final a enviar:', payload);
-    
     const res = await post('users', payload);
     return res.data;
   } catch (error) {
-    console.error('Error en createUser:', error);
-    console.error('Error response data:', error.response?.data);
     throw error;
   }
 };
@@ -44,7 +38,6 @@ export const updateUser = async (id, userData) => {
     const res = await put(`users/${id}`, payload);
     return res.data;
   } catch (error) {
-    console.error('Error en actualizar User:', error);
     throw error;
   }
 };
@@ -54,7 +47,6 @@ export const deleteUser = async (id) => {
     const res = await del(`users/${id}`);
     return res.data;
   } catch (error) {
-    console.error('Error en eliminar User:', error);
     throw error;
   }
 };

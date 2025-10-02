@@ -36,7 +36,6 @@ export const createPatient = async (data) => {
     const response = await post('sendVerifyCode', data);
     return response.data;
   } catch (error) {
-    console.error('Error en enviar correo:', error);
     throw error;
   }
 };
@@ -46,7 +45,6 @@ export const verifyCode = async (code) => {
     const response = await post('verification', { code });
     return response.data;
   } catch (error) {
-    console.error('Error en verificación de código:', error);
     throw error;
   }
 };
@@ -58,7 +56,6 @@ export const updateProfileEmail = async (email) => {
     apiCache.delete('profile');
     return response.data;
   } catch (error) {
-    console.error('Error al actualizar el correo:', error);
     throw error;
   }
 };
@@ -67,7 +64,6 @@ export const getProfile = async () => {
   try {
     return await cachedRequest('profile', () => get('profile'));
   } catch (error) {
-    console.error('Error in getProfile:', error);
     throw error;
   }
 };
@@ -79,7 +75,6 @@ export const updateAllProfile = async (data) => {
     apiCache.delete('profile');
     return res.data;
   } catch (error) {
-    console.error('Error in updateAllProfile:', error);
     throw error;
   }
 };
@@ -89,7 +84,6 @@ export const validatePassword = async (data) => {
     const res = await post('validate-password', data);
     return res.data;
   } catch (error) {
-    console.error('Error in validatePassword:', error);
     throw error;
   }
 };
@@ -99,7 +93,6 @@ export const changePassword = async (data) => {
     const res = await put('change-password', data);
     return res.data;
   } catch (error) {
-    console.error('Error in changePassword:', error);
     throw error;
   }
 };
@@ -118,7 +111,6 @@ export const getUserPhoto = async (signal) => {
     // Convertir blob a URL para mostrarla como imagen
     return URL.createObjectURL(response.data);
   } catch (error) {
-    console.error('Error fetching user photo:', error);
     throw error;
   }
 }
@@ -129,8 +121,6 @@ export const uploadProfilePhoto = async (file) => {
     const formData = new FormData();
     formData.append('photo', file);
 
-    console.log("Pipippipipippipippipip:", formData);
-
     const response = await instance.post('users/photo', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -139,7 +129,6 @@ export const uploadProfilePhoto = async (file) => {
 
     return response.data;
   } catch (error) {
-    console.error('Error subiendo avatar:', error.response?.data || error.message);
     throw error;
   }
 }

@@ -11,7 +11,6 @@ import {
 } from '../service/contraceptiveService';
 import { useToast } from '../../../../services/toastify/ToastContext';
 
-// Hook para métodos anticonceptivos
 export const useContraceptiveMethods = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -80,7 +79,6 @@ export const useContraceptiveMethods = () => {
   };
 };
 
-// Hook para tipos DIU
 export const useDiuTypes = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);

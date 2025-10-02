@@ -11,30 +11,23 @@ import { removeLocalStorage } from '../../../utils/localStorageUtility';
 import { useAuth as useAuthentication } from '../../../routes/AuthContext';
 
 function Login() {
-  // Estados de login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
 
-  // Definir el estado para la visibilidad de la contraseña
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  //Toastify
   const { showToast } = useToast();
 
-  //Navegación
   const navigate = useNavigate();
 
   const { isAuthenticated } = useAuthentication();
 
-  //////////Funciones simples///////////////////
 
-  //Redirecciona a la página de olvido de contraseña
   const onForgotPassword = () => {
     navigate('/contraseñaolvidada');
   };
 
-  //Efecto de partículas
   useEffect(() => {
     const cleanup = initializeParticles();
     removeLocalStorage('token');
@@ -49,9 +42,7 @@ function Login() {
     }
   }, [isAuthenticated, navigate]);
 
-  //////////////////////////////////////////////
 
-  //////////////Formulario///////////////////
 
   const onSubmit = () => {
     const credentials = { email, password };
@@ -120,9 +111,6 @@ function Login() {
                 </div>
               </Form.Item>
 
-              {/* <a className={styles.forgot} onClick={onForgotPassword}>
-                Olvide mi Contraseña
-              </a> */}
               <Form.Item className={styles.buttonContainer}>
                 <Button
                   type="primary"

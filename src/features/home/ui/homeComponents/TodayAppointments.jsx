@@ -25,6 +25,7 @@ const TodayAppointments = () => {
           <div className={styles.loadingContainer}>
             <Spin
               size="large"
+              spinning={true}
               style={{ 
                 color: '#1CB54A',
                 fontSize: '16px',

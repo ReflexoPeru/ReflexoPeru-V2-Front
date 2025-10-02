@@ -46,7 +46,6 @@ export const usePatients = () => {
     }
   };
 
-  //================================================================================================
   const handleUpdatePatient = async (patientId, formData) => {
     try {
       const payload = {
@@ -91,7 +90,6 @@ export const usePatients = () => {
           'Error al actualizar paciente',
         ),
       );
-      console.error('Error actualizando paciente:', error);
       throw error;
     }
   };
@@ -116,7 +114,6 @@ export const usePatients = () => {
           'Error al buscar pacientes',
         ),
       );
-      console.error('Error al buscar pacientes:', error);
     } finally {
       setLoading(false);
     }
@@ -147,7 +144,6 @@ export const usePatients = () => {
           'Error eliminando paciente',
         ),
       );
-      console.error('Error eliminando paciente:', error);
       throw error;
     }
   };
@@ -214,7 +210,6 @@ export const usePatients = () => {
           'No se pudo crear el paciente',
         ),
       );
-      console.error('Error creando paciente:', error);
       throw error;
     }
   };
@@ -223,7 +218,7 @@ export const usePatients = () => {
     patients,
     loading,
     submitNewPatient,
-    handleUpdatePatient, // se añadio nueva funcion
+    handleUpdatePatient,
     error,
     pagination,
     handlePageChange: loadPatients,

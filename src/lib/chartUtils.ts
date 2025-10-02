@@ -80,10 +80,6 @@ function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
   const startOfWeek = today.startOf('week'); // Lunes (ya no necesitamos .add(1, 'day'))
   const result: ChartDataPoint[] = [];
   
-  // Debug: Mostrar información de fechas
-  console.log('📅 Debug - Fecha actual:', today.format('YYYY-MM-DD dddd'));
-  console.log('📅 Debug - Inicio de semana (lunes):', startOfWeek.format('YYYY-MM-DD dddd'));
-  console.log('📅 Debug - Datos de sesiones disponibles:', Object.keys(sessionsData));
   
   // Solo mostrar 6 días (Lunes a Sábado), excluyendo domingo
   for (let i = 0; i < 6; i++) {
@@ -91,7 +87,6 @@ function transformWeekData(sessionsData: SessionData): ChartDataPoint[] {
     const dateStr = date.format('YYYY-MM-DD');
     const sessions = sessionsData[dateStr] || 0;
     
-    console.log(`📅 Debug - Día ${i + 1} (${WEEKDAYS_SHORT[i]}): ${dateStr} - ${sessions} sesiones`);
     
     result.push({
       date: dateStr,

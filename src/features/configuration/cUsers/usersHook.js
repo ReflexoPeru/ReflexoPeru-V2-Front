@@ -43,7 +43,6 @@ export const useUsers = () => {
         pageSize: res.per_page || 20,
       });
     } catch (error) {
-      console.error('Error al cargar usuarios:', error);
       setError('Error al cargar usuarios');
       showToast('error', 'Error al cargar los usuarios');
     } finally {
@@ -62,7 +61,6 @@ export const useUsers = () => {
       showToast('exito', 'Usuario creado correctamente');
       return true;
     } catch (error) {
-      console.error('Error al crear usuario:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al crear el usuario',
@@ -78,7 +76,6 @@ export const useUsers = () => {
       showToast('actualizadouser', 'Usuario actualizado correctamente');
       return true;
     } catch (error) {
-      console.error('Error al actualizar usuario:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al actualizar el usuario',
@@ -94,7 +91,6 @@ export const useUsers = () => {
       showToast('pagoelminado', 'Usuario eliminado correctamente');
       return true;
     } catch (error) {
-      console.error('Error al eliminar usuario:', error);
       showToast(
         'error',
         error.response?.data?.message || 'Error al eliminar el usuario',

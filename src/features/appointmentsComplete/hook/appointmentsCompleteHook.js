@@ -6,7 +6,6 @@ import {
 } from '../service/appointmentsCompleteService';
 
 export const useAppointmentsComplete = () => {
-  // Estados principales
   const [appointmentsComplete, setAppointmentsComplete] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -15,24 +14,19 @@ export const useAppointmentsComplete = () => {
     dayjs().format('YYYY-MM-DD'),
   );
 
-  // Paginación
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalItems: 0,
     pageSize: 10,
   });
 
-  // Referencia para evitar llamadas duplicadas
   const abortControllerRef = useRef(null);
 
-  // Función principal para cargar citas
   const loadAppointmentsComplete = useCallback(async () => {
-    // Cancelar petición anterior si existe
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Crear nuevo AbortController
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
@@ -62,7 +56,6 @@ export const useAppointmentsComplete = () => {
       }));
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error loading appointments:', error);
         setError(error);
         setAppointmentsComplete([]);
         setPagination((prev) => ({ ...prev, totalItems: 0 }));
@@ -73,7 +66,6 @@ export const useAppointmentsComplete = () => {
     }
   }, [searchTerm, selectedDate, pagination.currentPage, pagination.pageSize]);
 
-  // Efecto para cargar citas con debounce
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       loadAppointmentsComplete();
@@ -87,7 +79,6 @@ export const useAppointmentsComplete = () => {
     };
   }, [loadAppointmentsComplete]);
 
-  // Cambiar fecha seleccionada
   const handleDateChange = useCallback(
     (date) => {
       const formattedDate = dayjs(date).format('YYYY-MM-DD');
@@ -100,13 +91,11 @@ export const useAppointmentsComplete = () => {
     [selectedDate],
   );
 
-  // Cambiar término de búsqueda
   const handleSearch = useCallback((term) => {
     setSearchTerm(term);
     setPagination((prev) => ({ ...prev, currentPage: 1 }));
   }, []);
 
-  // Cambiar página
   const handlePageChange = useCallback((page) => {
     setPagination((prev) => ({ ...prev, currentPage: page }));
   }, []);
@@ -127,7 +116,6 @@ export const useAppointmentsComplete = () => {
   );
 
   return {
-    // Estados
     appointmentsComplete,
     loading,
     error,
@@ -135,13 +123,11 @@ export const useAppointmentsComplete = () => {
     selectedDate,
     searchTerm,
 
-    // Funciones
     loadAppointmentsComplete,
     handleDateChange,
     handleSearch,
     handlePageChange,
     loadPaginatedAppointmentsCompleteByDate,
-    // Setters
     setSearchTerm,
     setSelectedDate,
     setPagination,

@@ -44,7 +44,6 @@ const Payments = () => {
   const [modalType, setModalType] = useState('');
   const [action, setAction] = useState('');
 
-  // Preparar los valores iniciales para el modal
   const getInitialValues = () => {
     if (action === 'edit' && currentRecord) {
       const formData = {
@@ -52,7 +51,6 @@ const Payments = () => {
         status: currentRecord.status === 'Habilitado',
       };
 
-      // Si es un precio, agregar el campo price
       if (modalType === 'price' && currentRecord.price) {
         formData.price = parseFloat(currentRecord.price);
       }
@@ -60,7 +58,6 @@ const Payments = () => {
       return formData;
     }
 
-    // Valores por defecto para crear
     return {
       name: '',
       status: true,
@@ -73,16 +70,14 @@ const Payments = () => {
     setCurrentRecord(record);
     setModalType(record.price !== undefined ? 'price' : 'payment');
 
-    // Resetear el formulario antes de abrir el modal
     form.resetFields();
 
     setModalVisible(true);
 
-    // Usar setTimeout para asegurar que el modal se haya renderizado
     setTimeout(() => {
       if (action === 'edit') {
         const formData = {
-          name: record.name, // Mantener el formato original para mostrar
+          name: record.name,
           status: record.status === 'Habilitado',
         };
 
@@ -100,12 +95,10 @@ const Payments = () => {
     setModalType(type);
     setCurrentRecord(null);
 
-    // Resetear completamente el formulario
     form.resetFields();
 
     setModalVisible(true);
 
-    // Establecer valores por defecto después de abrir el modal
     setTimeout(() => {
       form.setFieldsValue({
         name: '',
@@ -119,7 +112,6 @@ const Payments = () => {
     try {
       const payload = {
         ...values,
-        // Convertir el nombre según el tipo: mayúsculas para payment, capitalizar primera letra para price
         name: modalType === 'payment' 
           ? values.name?.toUpperCase().trim()
           : values.name?.charAt(0).toUpperCase() + values.name?.slice(1).toLowerCase().trim(),
@@ -161,7 +153,6 @@ const Payments = () => {
       handleModalCancel();
     } catch (error) {
       message.error('Ocurrió un error al procesar la solicitud');
-      console.error(error);
     }
   };
 
@@ -178,7 +169,6 @@ const Payments = () => {
       }
     } catch (error) {
       message.error('Ocurrió un error al desactivar el registro');
-      console.error(error);
     }
   };
 
@@ -199,7 +189,6 @@ const Payments = () => {
       }
     } catch (error) {
       message.error('Ocurrió un error al activar el registro');
-      console.error(error);
     }
   };
 
@@ -208,11 +197,9 @@ const Payments = () => {
     setCurrentRecord(null);
     setAction('');
     setModalType('');
-    // Resetear el formulario al cancelar
     form.resetFields();
   };
 
-  // Efecto para resetear el formulario cuando cambia el modal
   useEffect(() => {
     if (!modalVisible) {
       form.resetFields();
@@ -304,7 +291,6 @@ const Payments = () => {
 
   return (
     <div className={styles.container}>
-        {/* Tipos de Pago */}
         <div>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Método de pago</h2>
@@ -325,7 +311,6 @@ const Payments = () => {
           />
         </div>
 
-        {/* Precios */}
         <div>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Opciones de Pago</h2>
@@ -345,7 +330,6 @@ const Payments = () => {
           />
         </div>
 
-        {/* Modal con BaseModal */}
         <BaseModal
           visible={modalVisible}
           onCancel={handleModalCancel}
@@ -375,7 +359,6 @@ const Payments = () => {
               className={styles.inputField}
               placeholder={`Ingrese el nombre del ${modalType === 'payment' ? 'tipo de pago' : 'precio'}`}
               onChange={(e) => {
-                // Solo convertir a mayúsculas para tipos de pago, para precios mantener el texto original
                 const value = modalType === 'payment' 
                   ? e.target.value.toUpperCase()
                   : e.target.value;

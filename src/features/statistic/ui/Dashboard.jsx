@@ -42,18 +42,7 @@ export default function PerformanceDashboard() {
     rawData
   } = useStatistic(dateRange[0], dateRange[1]);
 
-  // Debug logs
-  console.log('📊 Dashboard Debug:', {
-    loading,
-    hasRawData: !!rawData,
-    rawDataKeys: rawData ? Object.keys(rawData) : [],
-    rawDataStructure: rawData,
-    totalSessions,
-    totalPatients,
-    totalEarnings
-  });
 
-  // Función para mapear filtros de tiempo a rangos de Tremor
   const mapTimeFilterToChartRange = (filter) => {
     switch (filter) {
       case '7días':

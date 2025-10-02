@@ -30,7 +30,6 @@ export default function Staff() {
   const [therapistInfo, setTherapistInfo] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
 
-  // Nuevo handler para editar: hace GET antes de abrir el modal
   const handleEdit = async (record) => {
     setLoadingEditId(record.id);
     setEditingTherapist(record);
@@ -207,6 +206,7 @@ export default function Staff() {
         columns={columns}
         data={staff}
         loading={loading}
+        maxHeight="70vh"
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,

@@ -76,7 +76,6 @@ const Reporte = () => {
     pageSize: 20,
   });
 
-  // Nuevos estados para el modal de edición
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedCajaData, setEditedCajaData] = useState(null);
   const { isDarkMode } = useTheme();
@@ -464,7 +463,7 @@ const Reporte = () => {
         {/* Modal de edición para reporte de caja */}
         {showPreview === 'reporteCaja' && (
           <EditCashReportModal
-            visible={showEditModal}
+            open={showEditModal}
             onCancel={handleCancelEdit}
             onSave={handleSaveEditedData}
             data={cajaData}

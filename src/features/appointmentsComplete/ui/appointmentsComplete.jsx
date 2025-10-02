@@ -20,11 +20,9 @@ export default function AppointmentsComplete() {
     loadPaginatedAppointmentsCompleteByDate,
   } = useAppointmentsComplete();
 
-  // Cambiado: Estado como objeto dayjs en lugar de string
   const [selectDate, setSelectDate] = useState(dayjs());
 
   useEffect(() => {
-    // Convertir a formato YYYY-MM-DD para la API
     loadPaginatedAppointmentsCompleteByDate(selectDate.format('YYYY-MM-DD'));
   }, [selectDate]);
 
@@ -144,11 +142,11 @@ export default function AppointmentsComplete() {
         />
 
         <CustomTimeFilter
-          onDateChange={setSelectDate} // Recibe objeto dayjs
-          value={selectDate} // Pasa el valor actual
+          onDateChange={setSelectDate}
+          value={selectDate}
           width="250px"
           showTime={false}
-          format="DD-MM-YYYY" // Formato visual DD-MM-YYYY
+          format="DD-MM-YYYY"
         />
       </div>
 

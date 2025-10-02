@@ -49,14 +49,8 @@ const NewAppointment = () => {
 
   const navigate = useNavigate();
 
-  // La fecha por defecto se establece ahora con initialValue en el Form.Item
 
-  // Debug: Monitorear cambios en selectedPatient
-  useEffect(() => {
-    console.log('Selected patient changed:', selectedPatient);
-  }, [selectedPatient]);
 
-  // Sincronizar el valor de payment cada vez que cambie el select de precios
   useEffect(() => {
     const unsubscribe = form.subscribe?.(() => {
       const paymentTypeId = form.getFieldValue('payment_type_id');
@@ -71,16 +65,11 @@ const NewAppointment = () => {
     return () => unsubscribe && unsubscribe();
   }, [form]);
 
-  // Callback para actualizar el monto
   const handlePriceChange = (price) => {
     form.setFieldsValue({ payment: price });
     setSelectedPrice(price);
   };
 
-  /**
-   * Maneja el cambio de opciones de pago desde el componente SelectPrices
-   * @param {string|number} serviceId - ID del servicio seleccionado
-   */
   const handleServiceChange = (serviceId) => {
     form.setFieldsValue({
       service_id: serviceId,
@@ -105,7 +94,6 @@ const NewAppointment = () => {
                 payment: '', // Limpiar el monto
                 payment_type_id: '', // Limpiar método de pago
               });
-              console.log('🔍 Debug - Tarifa personalizada detectada, limpiando campos');
             } else {
               setIsCustomRate(false);
             }
@@ -117,11 +105,9 @@ const NewAppointment = () => {
                 payment_type_id: '',
               });
               
-              console.log('🔍 Debug - Cupon sin costo detectado, limpiando payment_type_id');
             }
           }
         } catch (error) {
-          console.error('Error al verificar el servicio seleccionado:', error);
         }
       };
       
@@ -132,9 +118,6 @@ const NewAppointment = () => {
   };
 
   const handleSubmit = async (values) => {
-    console.log('Form values:', values);
-    console.log('Service ID:', values.service_id);
-    console.log('Payment type ID:', values.payment_type_id);
     
     // Si falta payment, usar el estado local
     let paymentValue = values.payment;
@@ -211,9 +194,6 @@ const NewAppointment = () => {
         service_id: Number(values.service_id), // Usar service_id del formulario
       };
       
-      console.log('Payload to send:', payload);
-      console.log('Service ID type:', typeof payload.service_id);
-      console.log('Payment type ID type:', typeof payload.payment_type_id);
 
       const result = await submitNewAppointment(payload);
 
@@ -735,7 +715,6 @@ const NewAppointment = () => {
             onCancel={handleCancelCreateModal}
             isModal={true}
             onSubmit={(result) => {
-              console.log('Patient created result:', result);
               if (result && typeof result === 'object') {
                 // Crear el formato: apellido paterno, apellido materno, nombres
                 const displayName =
@@ -752,12 +731,9 @@ const NewAppointment = () => {
                   stringifiedData: stringified,
                 };
                 
-                console.log('Setting selected patient:', newPatient);
                 setSelectedPatient(newPatient);
                 form.setFieldsValue({ patient_id: result.id });
                 
-                // Cerrar el modal después de crear el paciente
-                console.log('Closing modal...');
                 setIsCreatePatientModalVisible(false);
                 
                 // Mostrar notificación de éxito

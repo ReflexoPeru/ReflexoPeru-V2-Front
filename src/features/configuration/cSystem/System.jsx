@@ -23,14 +23,12 @@ const System = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [showConfirmButton, setShowConfirmButton] = useState(false);
 
-  //Establecer nombre de la empresa desde el contexto
   useEffect(() => {
     if (companyInfo?.company_name) {
       setCompanyName(companyInfo.company_name);
     }
   }, [companyInfo]);
 
-  //Sincronizar vista previa del logo con lo que viene del contexto
   useEffect(() => {
     if (logoUrl) {
       setLogoPreview(logoUrl);
@@ -38,7 +36,6 @@ const System = () => {
   }, [logoUrl]);
   const img = MiniLogo;
 
-  //MOSTRAR MENSAJES DE EXITO/ERROR
   useEffect(() => {
     if (uploadSuccess) {
       message.success('Logo actualizado correctamente');
@@ -48,7 +45,6 @@ const System = () => {
     }
   }, [uploadSuccess, uploadError]);
 
-  //ACTUALIZA DATOS DE LA EMPRESA
   const handleNameChange = async () => {
     if (!companyName.trim()) return;
     try {
@@ -60,7 +56,6 @@ const System = () => {
     }
   };
 
-  //CAMBIAR EL LOGO
   const handleLogoChange = (info) => {
     if (info.file.status === 'done') {
       const file = info.file.originFileObj;
@@ -88,7 +83,6 @@ const System = () => {
       await refetchCompanyLogo();
       message.success('Logo actualizado correctamente');
     } catch (err) {
-      console.error('Error al subir logo:', err);
       message.error('Error al subir el logo');
     }
   };

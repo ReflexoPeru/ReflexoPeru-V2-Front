@@ -1,28 +1,23 @@
 import { get, patch, post } from '../../../services/api/Axios/MethodsGeneral';
 
-//CONSEGUIR EL HISTORIAL DE UN PACIENTE POR ID
 export const getPatientHistoryById = async (patientId) => {
     try {
         const response = await get(`histories/patient/${patientId}`);
         return response.data;
     } catch (error) {
-        console.error('Error en getPatientHistoryById:', error);
         throw error;
     }
 };
 
-//ACTUALIZAR EL HISTORIAL DE UN PACIENTE POR ID
 export const updatePatientHistoryById = async (historyId, data) => {
     try {
         const response = await patch(`histories/${historyId}`, data);
         return response.data;
     } catch (error) {
-        console.error('Error en updatePatientHistoryById:', error);
         throw error;
     }
 }
 
-//ESTO FUE PARA LA INFORMACIÓN DE LA TABLA DEL MODAL Y EL BUSCADOR -------------------------
 export const getStaff = async (page = 1, perPage = 10) => {
     try {
         const response = await get(`therapists?page=${page}&per_page=${perPage}`);
@@ -43,18 +38,15 @@ export const getStaff = async (page = 1, perPage = 10) => {
         total: response.data?.total || data.length || 0,
     };
     } catch (error) {
-        console.error('Error en getStaff:', error);
         throw error;
     }
 };
 
-// CREAR HISTORIAL DE UN PACIENTE CUANDO NO EXISTE
 export const createPatientHistory = async (data) => {
     try {
         const response = await post('histories', data);
         return response.data;
     } catch (error) {
-        console.error('Error en createPatientHistory:', error);
         throw error;
     }
 }
@@ -68,30 +60,25 @@ export const searchStaff = async (term) => {
         total: res.data?.total || 0
         };
     } catch (error) {
-        console.error('Error en searchStaff:', error);
         throw error;
     }
 };
 
-//ESTO ES PARA CONSEGUIR INFORMACIÓN DE CITAS DE UN PACIENTE -------------------------
 
 export const getAppointmentsByPatientId = async (patientId) => {
     try {
         const response = await get(`patients/appoiments/${patientId}`);
         return response.data;
     } catch (error) {
-        console.error('Error en getAppointmentsByPatientId:', error);
         throw error;
     }
 }
 
-//ESTO ES PARA ACTUALIZAR INFORMACIÓN DE CITAS DE UN PACIENTE >:O-------------------------
 export const updateAppointmentById = async (appointmentId, payload) => {
     try {
         const response = await patch(`appointments/${appointmentId}`, payload);
         return response.data;
     } catch (error) {
-        console.error('Error actualizando la cita:', error);
         throw error;
     }
 };

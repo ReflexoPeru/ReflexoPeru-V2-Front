@@ -21,10 +21,6 @@ const InfoPatient = ({ patient, open, onClose }) => {
     patient.full_name ||
     `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
 
-  // Debug temporal
-  console.log('InfoPatient - patient data:', patient);
-  console.log('InfoPatient - fullName:', fullName);
-  console.log('InfoPatient - document:', patient.document_type?.name, patient.document_number);
 
   // Avatar: usar foto si hay, si no, icono. Evitar deformación del icono.
   const avatarUrl = patient.photo_url || null;

@@ -11,11 +11,10 @@ const Contraceptive = () => {
   const [form] = Form.useForm();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [modalType, setModalType] = useState('contraceptive'); // 'contraceptive' o 'diu'
+  const [modalType, setModalType] = useState('contraceptive');
   const { showToast } = useToast();
   const { isDarkMode } = useTheme();
 
-  // Hooks para métodos anticonceptivos
   const {
     data: contraceptiveMethods,
     loading: loadingMethods,
@@ -25,7 +24,6 @@ const Contraceptive = () => {
     deleteMethod,
   } = useContraceptiveMethods();
 
-  // Hooks para tipos DIU
   const {
     data: diuTypes,
     loading: loadingTypes,
@@ -35,7 +33,6 @@ const Contraceptive = () => {
     deleteType,
   } = useDiuTypes();
 
-  // Columnas para métodos anticonceptivos
   const contraceptiveColumns = [
     {
       title: 'ID',
@@ -83,7 +80,6 @@ const Contraceptive = () => {
     },
   ];
 
-  // Columnas para tipos DIU
   const diuColumns = [
     {
       title: 'ID',
@@ -209,7 +205,6 @@ const Contraceptive = () => {
   return (
     <div className={styles.container}>
       <div className={styles.sectionsContainer}>
-        {/* Métodos Anticonceptivos */}
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Métodos Anticonceptivos</h2>
@@ -233,7 +228,6 @@ const Contraceptive = () => {
           </div>
         </div>
 
-        {/* Tipos DIU */}
         <div className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Tipos DIU</h2>
@@ -258,7 +252,6 @@ const Contraceptive = () => {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal
         title={
           <span style={{ 

@@ -33,7 +33,6 @@ import SelectPrices from '../../../../components/Select/SelectPrices';
 import { getPatientById } from '../../../patients/service/patientsService';
 
 const { Title } = Typography;
-const { Option } = Select;
 
 /**
  * @typedef {Object} EditAppointmentProps
@@ -83,7 +82,6 @@ const { Option } = Select;
  * <EditAppointment
  *   appointmentId="123"
  *   onEditSuccess={() => {
- *     console.log('Cita actualizada exitosamente');
  *     // Recargar lista de citas
  *   }}
  * />
@@ -413,7 +411,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                 payment_type_id: '',
               });
               
-              console.log('🔍 Debug - Cupon sin costo detectado, limpiando payment_type_id');
             }
           }
         } catch (error) {
@@ -431,12 +428,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
    * @param {Object} values - Valores del formulario validados
    */
   const handleSubmit = async (values) => {
-    console.log('🔍 Debug - handleSubmit iniciado');
-    console.log('🔍 Debug - values:', values);
-    console.log('🔍 Debug - appointmentData:', appointmentData);
-    console.log('🔍 Debug - selectedPatient:', selectedPatient);
-    console.log('🔍 Debug - form values:', form.getFieldsValue());
-    console.log('🔍 Debug - form errors:', form.getFieldsError());
 
     setIsSubmitting(true);
     try {
@@ -509,8 +500,6 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         delete payload.service_id;
       }
 
-      console.log('🔍 Debug - payload final:', payload);
-      console.log('🔍 Debug - appointmentId:', appointmentId);
 
       // Enviar actualización al backend
       await updateExistingAppointment(appointmentId, payload);
@@ -828,15 +817,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                     htmlType="submit"
                     loading={isSubmitting}
                     onClick={() => {
-                      console.log('🔍 Debug - Botón clickeado');
-                      console.log(
-                        '🔍 Debug - Form values en botón:',
-                        form.getFieldsValue(),
-                      );
-                      console.log(
-                        '🔍 Debug - Form errors en botón:',
-                        form.getFieldsError(),
-                      );
+                      form.submit();
                     }}
                   >
                     Actualizar Cita

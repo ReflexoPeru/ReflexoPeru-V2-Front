@@ -178,7 +178,6 @@ const EditPatient = ({ patient, onClose, onSave }) => {
       ubicacion,
     };
     form.setFieldsValue(formData);
-    console.log('Valores seteados en el form:', formData);
   };
 
   // Inicializa el formulario con los datos de la prop patient

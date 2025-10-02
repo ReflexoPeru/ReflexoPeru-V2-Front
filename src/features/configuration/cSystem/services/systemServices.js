@@ -7,7 +7,6 @@ export const getSystemInfo = async () => {
         const response = await get(`company`);
         return response.data;
     } catch (error) {
-        console.error("Error fetching system info:", error);
         throw error;
     }
 }
@@ -15,11 +14,9 @@ export const getSystemInfo = async () => {
 // Actualizar datos de la empresa
 export const updateSystemaInfo = async (data) => {
     try {
-        console.log("Voy a enviar al backend:", data); // 🔍
-        const response = await post(`company`, data); // <- aquí mandamos los datos
+        const response = await post(`company`, data);
         return response.data;
     } catch (error) {
-        console.error("Error actualizando la info del sistema:", error);
         throw error;
     }
 };
@@ -36,7 +33,6 @@ export const getCompanyLogo = async (signal) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error actualizando la info del sistema:", error.response?.data || error.message);
         throw error;
     }
 };
@@ -54,7 +50,6 @@ export const updateCompanyLogo = async (file) => {
 
         return response.data;
     } catch (error) {
-        console.error("Error subiendo el logo:", error.response?.data || error.message);
         throw error;
     }
 }

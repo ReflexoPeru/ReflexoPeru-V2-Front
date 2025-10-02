@@ -33,7 +33,6 @@ export default function Appointments() {
     loadAppointments,
   } = useAppointments();
 
-  // Cambiado: Estado como objeto dayjs en lugar de string
   const [selectDate, setSelectDate] = useState(dayjs());
   const [showTicketModal, setShowTicketModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -41,7 +40,6 @@ export default function Appointments() {
   const [selectedFicha, setSelectedFicha] = useState(null);
   const [visitasFicha, setVisitasFicha] = useState(0);
 
-  // Estado para manejar el modal de edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [appointmentIdToEdit, setAppointmentIdToEdit] = useState(null);
   const [loadingEditId, setLoadingEditId] = useState(null);
@@ -52,7 +50,6 @@ export default function Appointments() {
   const { showToast } = useToast();
 
   useEffect(() => {
-    // Cambiado: Convertir a formato YYYY-MM-DD para la API
     loadPaginatedAppointmentsByDate(selectDate.format('YYYY-MM-DD'));
   }, [selectDate]);
 
@@ -239,7 +236,6 @@ export default function Appointments() {
     },
   ];
 
-  // Ocultar citas completadas en la tabla
   const isCompleted = (status) => {
     const v = typeof status === 'string' ? status.toUpperCase() : status;
     return v === 2 || v === 'COMPLETADA';
@@ -391,9 +387,9 @@ export default function Appointments() {
           width="100%"
         />
 
-        <CustomTimeFilter
-          onDateChange={setSelectDate} // Ahora recibe objeto dayjs
-          value={selectDate} // Pasa el valor actual
+          <CustomTimeFilter
+          onDateChange={setSelectDate}
+          value={selectDate}
           width="250px"
           showTime={false}
           format="DD-MM-YYYY"
@@ -404,6 +400,7 @@ export default function Appointments() {
         columns={columns}
         data={visibleAppointments}
         loading={loading}
+        maxHeight="68vh"
         pagination={{
           current: pagination.currentPage,
           total: pagination.totalItems,
@@ -415,13 +412,12 @@ export default function Appointments() {
         }}
       />
 
-      {/* Modal para mostrar el ticket */}
       <Modal
         open={showTicketModal}
         onCancel={() => setShowTicketModal(false)}
         footer={null}
         width={420}
-        bodyStyle={{ padding: 0 }}
+        styles={{ body: { padding: 0 } }}
       >
         {selectedAppointment && (
           <PDFViewer width="100%" height={600} showToolbar={true}>
@@ -453,7 +449,6 @@ export default function Appointments() {
         )}
       </Modal>
 
-      {/* Modal para editar cita */}
       <UniversalModal
         title="Editar Cita"
         open={isEditModalOpen}

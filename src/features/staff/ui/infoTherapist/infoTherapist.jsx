@@ -21,10 +21,6 @@ const InfoTherapist = ({ therapist, open, onClose }) => {
     therapist.full_name ||
     `${therapist.paternal_lastname || ''} ${therapist.maternal_lastname || ''} ${therapist.name || ''}`.trim();
 
-  // Debug temporal
-  console.log('InfoTherapist - therapist data:', therapist);
-  console.log('InfoTherapist - fullName:', fullName);
-  console.log('InfoTherapist - document:', therapist.document_type?.name, therapist.document_number);
 
   // Avatar: usar foto si hay, si no, icono. Evitar deformación del icono.
   const avatarUrl = therapist.photo_url || null;
@@ -163,17 +159,19 @@ const InfoTherapist = ({ therapist, open, onClose }) => {
       </div>
       <Descriptions
         column={1}
-        labelStyle={{ 
-          color: 'var(--color-primary)', 
-          fontWeight: 600, 
-          width: 200,
-          fontFamily: 'var(--font-family)',
-          minWidth: 200
-        }}
-        contentStyle={{ 
-          color: 'var(--color-text-primary)', 
-          fontWeight: 400,
-          fontFamily: 'var(--font-family)'
+        styles={{
+          label: { 
+            color: 'var(--color-primary)', 
+            fontWeight: 600, 
+            width: 200,
+            fontFamily: 'var(--font-family)',
+            minWidth: 200
+          },
+          content: { 
+            color: 'var(--color-text-primary)', 
+            fontWeight: 400,
+            fontFamily: 'var(--font-family)'
+          }
         }}
         bordered
         size="middle"

@@ -7,12 +7,9 @@ import {
 
 export const createAppointment = async (data) => {
   try {
-    console.log('Sending appointment data to backend:', data);
     const response = await post('appointments', data);
     return response.data;
   } catch (error) {
-    console.error('Error en createAppointment:', error);
-    console.error('Error response:', error.response?.data);
     throw error;
   }
 };
@@ -45,7 +42,6 @@ export const getAppointments = async (page = 1, perPage = 50) => {
 export const searchAppointments = async (term) => {
   try {
     const res = await get(`appointments/search?search=${term}&per_page=100`);
-    console.log('🔍 Resultado de búsqueda:', res.data);
 
     const data = Array.isArray(res.data)
       ? res.data
@@ -54,7 +50,6 @@ export const searchAppointments = async (term) => {
 
     return { data, total };
   } catch (error) {
-    console.error('❌ Error en searchAppointments:', error);
     throw error;
   }
 };
@@ -79,38 +74,31 @@ export const getPaginatedAppointmentsByDate = async (date, perPage = 10, page = 
       perPage: res.data?.per_page || perPage
     };
   } catch (error) {
-    console.error('❌ Error al obtener citas paginadas:', error);
     throw error;
   }
 };
 
-// Nueva función para obtener una cita por ID
 export const getAppointmentById = async (id) => {
   try {
     const response = await get(`appointments/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Error en getAppointmentById para ID ${id}:`, error);
     throw error;
   }
 };
-// Nueva función para actualizar una cita
 export const updateAppointment = async (id, data) => {
   try {
     const response = await patch(`appointments/${id}`, data);
     return response.data;
   } catch (error) {
-    console.error(`Error en updateAppointment para ID ${id}:`, error);
     throw error;
   }
 };
-//==============================================================================
 
 export const getPatients = async (page = 1, perPage = 10) => {
   try {
     const response = await get(`patients?page=${page}&per_page=${perPage}`);
 
-    // Asegurar que siempre trabajamos con un array
     let data = [];
     if (response.data) {
       if (Array.isArray(response.data)) {
@@ -128,7 +116,6 @@ export const getPatients = async (page = 1, perPage = 10) => {
       status: response.status,
     };
   } catch (error) {
-    console.error('Error en getPatients:', error);
     throw error;
   }
 };
@@ -136,7 +123,6 @@ export const getPatients = async (page = 1, perPage = 10) => {
 export const searchPatients = async (term) => {
   try {
     const res = await get(`patients/search?search=${term}&per_page=50`);
-    console.log('🔍 Resultado de búsqueda:', res.data);
 
     const data = Array.isArray(res.data)
       ? res.data
@@ -145,18 +131,15 @@ export const searchPatients = async (term) => {
 
     return { data, total };
   } catch (error) {
-    console.error('❌ Error en searchPatients:', error);
     throw error;
   }
 };
 
-// Eliminar cita por ID
 export const deleteAppointment = async (id) => {
   try {
     const response = await del(`appointments/${id}`);
     return response.data;
   } catch (error) {
-    console.error(`Error al eliminar la cita con ID ${id}:`, error);
     throw error;
   }
 };
