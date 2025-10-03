@@ -470,12 +470,9 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         return;
       }
 
-      // Determinar estado de la cita basado en la fecha
-      const appointmentDate = dayjs(values.appointment_date);
-      const currentDate = dayjs();
-      const appointment_status_id = appointmentDate.isBefore(currentDate, 'day')
-        ? 2  // Completada si la fecha es anterior a hoy
-        : 1; // Pendiente si la fecha es hoy o futura
+      // Mantener el estado actual de la cita al editar
+      // Solo se cambia a COMPLETADA (2) cuando se asigna un terapeuta en la historia
+      const appointment_status_id = selectedAppointment?.appointment_status_id || 1;
 
       // Limpiar y validar valor de pago
       let paymentValue = values.payment;

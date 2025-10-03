@@ -319,14 +319,9 @@ const PatientHistory = () => {
       therapist_id: selectedTherapistId,
     };
 
-    // Calcular appointment_status_id basado en la fecha de la cita
-    const appointmentDate = dayjs(selectedAppointmentDate);
-    const currentDate = dayjs();
-    // Regla: si hay terapeuta seleccionado -> Completada. Si no, por fecha (<= hoy = Completada)
+    // Calcular appointment_status_id basado ÚNICAMENTE en la asignación del terapeuta
     const hasTherapist = Boolean(selectedTherapistId);
-    const appointment_status_id = hasTherapist || appointmentDate.isBefore(currentDate, 'day') || appointmentDate.isSame(currentDate, 'day')
-      ? 2  // Completada
-      : 1; // Pendiente
+    const appointment_status_id = hasTherapist ? 2 : 1; // Solo completada si tiene terapeuta asignado
 
     const appointmentPayload = {
       appointment_date: selectedAppointmentDate,

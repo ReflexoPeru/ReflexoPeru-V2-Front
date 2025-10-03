@@ -164,16 +164,9 @@ const NewAppointment = () => {
     setIsSubmitting(true);
 
     try {
-      // Lógica para determinar appointment_status_id basada en la fecha
-      const appointmentDate = dayjs(values.appointment_date);
-      const currentDate = dayjs();
-
-      let appointment_status_id;
-      if (appointmentDate.isBefore(currentDate, 'day')) {
-        appointment_status_id = 2;
-      } else {
-        appointment_status_id = 1;
-      }
+      // Las nuevas citas SIEMPRE se crean como PENDIENTES (1)
+      // Solo cambian a COMPLETADAS (2) cuando se asigna un terapeuta en la historia
+      const appointment_status_id = 1; // Siempre pendiente al crear
 
       if (typeof paymentValue === 'string') {
         paymentValue = paymentValue.replace(/[^\d.]/g, '');
