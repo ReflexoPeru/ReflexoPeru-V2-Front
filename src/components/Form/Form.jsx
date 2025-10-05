@@ -25,8 +25,10 @@ const FormComponent = forwardRef(
       onCancel = () => {},
       form: externalForm,
       onPriceChange,
+      onDNIDataFound = () => {},
       loading: externalLoading = false,
       initialValues = {},
+      searchType = 'patient',
     },
     ref,
   ) => {
@@ -137,11 +139,11 @@ const FormComponent = forwardRef(
                       : []),
                     () => ({
                       validator(_, value) {
-                        if (!value || (value && value.length === 9)) {
+                        if (!value || (value && value.length > 0)) {
                           return Promise.resolve();
                         }
                         return Promise.reject(
-                          new Error('El teléfono debe tener 9 dígitos'),
+                          new Error('Por favor ingrese un número de teléfono válido'),
                         );
                       },
                     }),
@@ -157,6 +159,8 @@ const FormComponent = forwardRef(
               isPhoneRequired={isPhoneRequired}
               togglePhoneRequired={togglePhoneRequired}
               onPriceChange={onPriceChange}
+              onDataFound={onDNIDataFound}
+              searchType={searchType}
               form={form}
             />
           </Form.Item>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Input, Modal, message, Space, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Modal, message, Space, Popconfirm, Spin } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, LoadingOutlined } from '@ant-design/icons';
 import ModeloTable from '../../../components/Table/Tabla';
 import styles from './Contraceptive.module.css';
 import { useContraceptiveMethods, useDiuTypes } from './hook/contraceptiveHook';
@@ -12,6 +12,7 @@ const Contraceptive = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [modalType, setModalType] = useState('contraceptive');
+  const [submitting, setSubmitting] = useState(false);
   const { showToast } = useToast();
   const { isDarkMode } = useTheme();
 
@@ -160,23 +161,32 @@ const Contraceptive = () => {
   };
 
   const handleSubmit = async (values) => {
+    console.log('handleSubmit llamado con valores:', values);
+    console.log('modalType:', modalType);
+    console.log('editingItem:', editingItem);
+    
+    setSubmitting(true);
     try {
       if (modalType === 'contraceptive') {
         if (editingItem) {
+          console.log('Actualizando método anticonceptivo...');
           await updateMethod(editingItem.id, values);
           showToast('success', 'Método anticonceptivo actualizado correctamente');
           refetchMethods();
         } else {
+          console.log('Creando método anticonceptivo...');
           await createMethod(values);
           showToast('success', 'Método anticonceptivo creado correctamente');
           refetchMethods();
         }
       } else {
         if (editingItem) {
+          console.log('Actualizando tipo DIU...');
           await updateType(editingItem.id, values);
           showToast('success', 'Tipo DIU actualizado correctamente');
           refetchTypes();
         } else {
+          console.log('Creando tipo DIU...');
           await createType(values);
           showToast('success', 'Tipo DIU creado correctamente');
           refetchTypes();
@@ -185,7 +195,10 @@ const Contraceptive = () => {
       setModalVisible(false);
       form.resetFields();
     } catch (error) {
+      console.error('Error en handleSubmit:', error);
       showToast('error', 'Error al guardar los cambios');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -200,6 +213,7 @@ const Contraceptive = () => {
     setModalVisible(false);
     form.resetFields();
     setEditingItem(null);
+    setSubmitting(false);
   };
 
   return (
@@ -275,10 +289,12 @@ const Contraceptive = () => {
         }
         visible={modalVisible}
         onCancel={handleCancel}
+        confirmLoading={submitting}
         footer={
           <Space size={8}>
             <Button
               onClick={handleCancel}
+              disabled={submitting}
               style={{
                 padding: '6px 16px',
                 height: 32,
@@ -293,7 +309,12 @@ const Contraceptive = () => {
             </Button>
             <Button
               type="primary"
-              onClick={() => form.submit()}
+              loading={submitting}
+              disabled={submitting}
+              onClick={() => {
+                console.log('Botón clickeado - enviando formulario');
+                form.submit();
+              }}
               style={{
                 padding: '6px 16px',
                 height: 32,
@@ -304,7 +325,7 @@ const Contraceptive = () => {
               }}
               className="modal-ok-btn modal-themed"
             >
-              {editingItem ? 'Actualizar' : 'Crear'}
+              {submitting ? 'Procesando...' : (editingItem ? 'Actualizar' : 'Crear')}
             </Button>
           </Space>
         }
@@ -345,6 +366,10 @@ const Contraceptive = () => {
           layout="vertical"
           size="small"
           initialValues={getInitialValues()}
+          onFinish={handleSubmit}
+          onFinishFailed={(errorInfo) => {
+            console.log('Formulario falló validación:', errorInfo);
+          }}
         >
           <Form.Item
             name="name"

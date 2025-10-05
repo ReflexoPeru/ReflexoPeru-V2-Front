@@ -1,6 +1,7 @@
-import React from 'react';
-import { notification } from 'antd';
+import React, { useState } from 'react';
+import { notification, Form } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
+import DNISearchResults from '../../../../components/DNISearchResults/DNISearchResults';
 import { useStaff } from '../../hook/staffHook';
 import { useNavigate } from 'react-router';
 
@@ -27,7 +28,7 @@ const fields = [
       {
         name: 'document_number',
         label: 'Nro Documento',
-        type: 'documentNumber',
+        type: 'dniSearch',
         required: true,
         span: 8,
         rules: [
@@ -159,6 +160,11 @@ const fields = [
 const NewTherapist = () => {
   const { submitNewTherapist } = useStaff();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+  
+  const [showDNIResults, setShowDNIResults] = useState(false);
+  const [dniSearchData, setDniSearchData] = useState(null);
+  const [noResults, setNoResults] = useState(false);
 
   const handleSubmit = async (formData) => {
 
@@ -196,21 +202,68 @@ const NewTherapist = () => {
     navigate('/Inicio/terapeutas');
   };
 
+  const handleDNIDataFound = (data) => {
+    if (data) {
+      setDniSearchData(data);
+      setNoResults(false);
+      setShowDNIResults(true);
+    } else {
+      setDniSearchData(null);
+      setNoResults(true);
+      setShowDNIResults(true);
+    }
+  };
+
+  const handleConfirmDNIData = (data) => {
+    form.setFieldsValue({
+      name: data.name,
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
+    });
+    
+    setShowDNIResults(false);
+    setDniSearchData(null);
+    
+    notification.success({
+      message: 'Datos cargados',
+      description: 'Los datos del DNI se han completado automáticamente',
+    });
+  };
+
+  const handleCloseDNIResults = () => {
+    setShowDNIResults(false);
+    setDniSearchData(null);
+    setNoResults(false);
+  };
+
   return (
-    <FormGenerator
-      fields={fields}
-      mode="create"
-      onSubmit={handleSubmit}
-      onCancel={handleCancel}
-      initialValues={{
-        document_type_id: "1", // DNI por defecto (string)
-        ubicacion: {
-          region_id: 15, // Lima
-          province_id: 1501, // Lima
-          district_id: null, // El usuario seleccionará el distrito
-        },
-      }}
-    />
+    <>
+      <FormGenerator
+        fields={fields}
+        mode="create"
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        onDNIDataFound={handleDNIDataFound}
+        form={form}
+        searchType="staff"
+        initialValues={{
+          document_type_id: "1", // DNI por defecto (string)
+          ubicacion: {
+            region_id: 15, // Lima
+            province_id: 1501, // Lima
+            district_id: null, // El usuario seleccionará el distrito
+          },
+        }}
+      />
+      
+      <DNISearchResults
+        visible={showDNIResults}
+        patientData={dniSearchData}
+        onConfirm={handleConfirmDNIData}
+        onClose={handleCloseDNIResults}
+        noResults={noResults}
+      />
+    </>
   );
 };
 

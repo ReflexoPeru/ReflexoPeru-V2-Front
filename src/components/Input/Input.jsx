@@ -15,6 +15,7 @@ import {
 import esES from 'antd/locale/es_ES';
 import dayjs from '../../utils/dayjsConfig';
 import styles from '../Input/Input.module.css';
+import DNISearchInput from './DNISearchInput';
 
 // Importaciones corregidas
 import SelectTypeOfDocument from '../Select/SelctTypeOfDocument';
@@ -39,6 +40,7 @@ const InputField = ({
   togglePhoneRequired,
   capitalize = true,
   name,
+  searchType = 'patient',
   ...rest
 }) => {
   let inputComponent;
@@ -82,6 +84,20 @@ const InputField = ({
       );
       break;
 
+    case 'dniSearch':
+      inputComponent = (
+        <DNISearchInput
+          {...inputProps}
+          value={fieldValue}
+          onChange={rest.onChange}
+          onDataFound={rest.onDataFound}
+          placeholder={rest.placeholder || "Ingrese el DNI (8 dígitos)"}
+          disabled={rest.disabled}
+          searchType={searchType}
+        />
+      );
+      break;
+
     case 'phoneNumber':
       inputComponent = (
         <Input
@@ -92,7 +108,6 @@ const InputField = ({
             e.target.value = cleanValue;
             if (rest.onChange) rest.onChange(cleanValue);
           }}
-          maxLength={9}
         />
       );
       break;

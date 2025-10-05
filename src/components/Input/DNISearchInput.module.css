@@ -1,0 +1,54 @@
+
+.dniSearch {
+  width: 100%;
+}
+
+.dniSearch .ant-input {
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-normal);
+}
+
+.dniSearch .ant-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+}
+
+.dniSearch .ant-input-search-button {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  transition: all var(--transition-normal);
+}
+
+.dniSearch .ant-input-search-button:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.dniSearch .ant-input-search-button:focus {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.dniSearch .ant-input-search-button:disabled {
+  background-color: var(--color-text-disabled);
+  border-color: var(--color-text-disabled);
+  color: var(--color-text-secondary);
+}
+
+.dniSearch.ant-input-status-success .ant-input {
+  border-color: var(--color-success);
+}
+
+.dniSearch.ant-input-status-success .ant-input:focus {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 2px var(--color-success-light);
+}
+
+.dniSearch.ant-input-status-error .ant-input {
+  border-color: var(--color-error);
+}
+
+.dniSearch.ant-input-status-error .ant-input:focus {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 2px var(--color-error-light);
+}

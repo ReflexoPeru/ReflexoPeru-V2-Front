@@ -48,7 +48,7 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
 
       
 
-      let completedEvents = [];
+      let pendingEvents = [];
       if (Array.isArray(pendingData)) {
         const eventsByDate = {};
         pendingData.forEach(item => {
@@ -99,7 +99,7 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
               title: patientLastNames || item.appointment_type || 'Cita',
               start: start.toDate(),
               end: end.toDate(),
-              resource: 'COMPLETADO',
+              resource: 'PENDIENTE',
               details: {
                 ailments: item.ailments,
                 diagnosis: item.diagnosis,
@@ -110,7 +110,7 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
                 room: item.room,
                 payment: item.payment,
                 ticket_number: item.ticket_number,
-                appointment_status_id: 'COMPLETADO',
+                appointment_status_id: 'PENDIENTE',
                 payment_type_id: item.payment_type_id,
                 patient_id: item.patient_id,
                 therapist_id: item.therapist_id,
@@ -123,15 +123,15 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
                 payment_type_name,
               },
             };
-            completedEvents.push(event);
+            pendingEvents.push(event);
           } catch (error) {
-            console.error('Error mapeando evento completado:', error, item);
+            console.error('Error mapeando evento pendiente:', error, item);
           }
         });
         });
       }
 
-      let pendingEvents = [];
+      let completedEvents = [];
       if (Array.isArray(completedData?.data)) {
         const eventsByDate = {};
         completedData.data.forEach(item => {
@@ -184,7 +184,7 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
               title: patientLastNames || 'Cita',
               start: start.toDate(),
               end: end.toDate(),
-              resource: 'PENDIENTE',
+              resource: 'COMPLETADO',
               details: {
                 ailments: item.ailments,
                 diagnosis: item.diagnosis,
@@ -195,7 +195,7 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
                 room: item.room,
                 payment: item.payment,
                 ticket_number: item.ticket_number,
-                appointment_status_id: 'PENDIENTE',
+                appointment_status_id: 'COMPLETADO',
                 payment_type_id: item.payment_type_id,
                 patient_id: item.patient_id,
                 therapist_id: item.therapist_id,
@@ -208,15 +208,15 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
                 payment_type_name,
               },
             };
-            pendingEvents.push(event);
+            completedEvents.push(event);
           } catch (error) {
-            console.error('Error mapeando evento pendiente:', error, item);
+            console.error('Error mapeando evento completado:', error, item);
           }
           });
         });
       }
 
-      const allEvents = [...completedEvents, ...pendingEvents];
+      const allEvents = [...pendingEvents, ...completedEvents];
       setEvents(allEvents);
     } catch (error) {
       setError(error);

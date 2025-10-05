@@ -84,3 +84,34 @@ export const getTherapistById = async (therapistId) => {
     throw error;
   }
 };
+
+export const searchPatientByDNI = async (dni) => {
+  try {
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imx1Znl5c29tYnJlcm85QGdtYWlsLmNvbSJ9.cgLa5kyCUjAqATyDiaPemz7uc615fFmK2aiWXymrwNc';
+    const response = await fetch(`https://dniruc.apisperu.com/api/v1/dni/${dni}?token=${token}`);
+    const data = await response.json();
+    
+    if (data.success) {
+      return {
+        success: true,
+        data: {
+          dni: dni,
+          name: data.nombres || '',
+          paternal_lastname: data.apellidoPaterno || '',
+          maternal_lastname: data.apellidoMaterno || '',
+        }
+      };
+    } else {
+      return {
+        success: false,
+        message: data.message || 'No se encontraron datos para este DNI'
+      };
+    }
+  } catch (error) {
+    console.error('Error en búsqueda DNI:', error);
+    return {
+      success: false,
+      message: 'Error al consultar el DNI. Intente nuevamente.'
+    };
+  }
+};

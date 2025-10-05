@@ -1,7 +1,9 @@
-import { notification } from 'antd';
+import { notification, Form } from 'antd';
 import FormGenerator from '../../../../components/Form/Form';
+import DNISearchResults from '../../../../components/DNISearchResults/DNISearchResults';
 import { usePatients } from '../../hook/patientsHook';
 import { useNavigate } from 'react-router';
+import { useState } from 'react';
 
 const fields = [
   {
@@ -21,7 +23,7 @@ const fields = [
       {
         name: 'document_number',
         label: 'Nro Documento',
-        type: 'documentNumber',
+        type: 'dniSearch',
         required: true,
         span: 8,
         rules: [
@@ -109,7 +111,7 @@ const fields = [
                   new Error('Por favor ingrese su teléfono'),
                 );
               }
-              return Promise();
+              return Promise.resolve();
             },
           }),
         ],
@@ -140,11 +142,14 @@ const fields = [
 const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const { submitNewPatient } = usePatients();
   const navigate = useNavigate();
+  const [form] = Form.useForm();
+  
+  const [showDNIResults, setShowDNIResults] = useState(false);
+  const [dniSearchData, setDniSearchData] = useState(null);
+  const [noResults, setNoResults] = useState(false);
 
-  // Filtrar el título cuando se usa en modal
   const getFields = () => {
     if (isModal) {
-      // Remover el primer campo que es el título "REGISTRAR PACIENTE"
       return fields.slice(1);
     }
     return fields;
@@ -214,30 +219,75 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
     }
   };
 
+  const handleDNIDataFound = (data) => {
+    if (data) {
+      setDniSearchData(data);
+      setNoResults(false);
+      setShowDNIResults(true);
+    } else {
+      setDniSearchData(null);
+      setNoResults(true);
+      setShowDNIResults(true);
+    }
+  };
+
+  const handleConfirmDNIData = (data) => {
+    form.setFieldsValue({
+      name: data.name,
+      paternal_lastname: data.paternal_lastname,
+      maternal_lastname: data.maternal_lastname,
+    });
+    
+    setShowDNIResults(false);
+    setDniSearchData(null);
+    
+    notification.success({
+      message: 'Datos cargados',
+      description: 'Los datos del DNI se han completado automáticamente',
+    });
+  };
+
+  const handleCloseDNIResults = () => {
+    setShowDNIResults(false);
+    setDniSearchData(null);
+    setNoResults(false);
+  };
+
   const handleCancel = () => {
     if (onCancel) onCancel();
-    // Solo navegar si no es un modal
     if (!isModal) {
       navigate('/Inicio/pacientes');
     }
   };
 
   return (
-    <FormGenerator
-      fields={getFields()}
-      onCancel={handleCancel}
-      mode="create"
-      onSubmit={handleSubmit}
-      initialValues={{
-        document_type_id: "1", // DNI por defecto (string)
-        country_id: 1,
-        ubicacion: {
-          region_id: 15, // Lima
-          province_id: 1501, // Lima
-          district_id: null, // El usuario seleccionará el distrito
-        },
-      }}
-    />
+    <>
+      <FormGenerator
+        fields={getFields()}
+        onCancel={handleCancel}
+        mode="create"
+        onSubmit={handleSubmit}
+        onDNIDataFound={handleDNIDataFound}
+        form={form}
+        initialValues={{
+          document_type_id: "1",
+          country_id: 1,
+          ubicacion: {
+            region_id: 15,
+            province_id: 1501,
+            district_id: null,
+          },
+        }}
+      />
+      
+      <DNISearchResults
+        visible={showDNIResults}
+        patientData={dniSearchData}
+        onConfirm={handleConfirmDNIData}
+        onClose={handleCloseDNIResults}
+        noResults={noResults}
+      />
+    </>
   );
 };
 

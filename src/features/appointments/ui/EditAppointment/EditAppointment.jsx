@@ -472,7 +472,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
 
       // Mantener el estado actual de la cita al editar
       // Solo se cambia a COMPLETADA (2) cuando se asigna un terapeuta en la historia
-      const appointment_status_id = selectedAppointment?.appointment_status_id || 1;
+      const appointment_status_id = appointmentData?.appointment_status_id || 1;
 
       // Limpiar y validar valor de pago
       let paymentValue = values.payment;
