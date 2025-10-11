@@ -59,7 +59,7 @@ const PatientHistory = () => {
   const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm, pagination, handlePageChange } = useStaff();
-  const { data: patientHistory, refetch: refetchHistory } = usePatientHistory(id);
+  const { data: patientHistory, loading: loadingHistory, refetch: refetchHistory } = usePatientHistory(id);
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
   const {
     appointments,
@@ -407,12 +407,12 @@ const PatientHistory = () => {
     },
   ];
 
-  if (loadingAppointments) {
+  if (loadingAppointments || loadingHistory) {
     return (
       <div className={styles.container}>
         <Spin
           size="large"
-          tip="Cargando historial..."
+          tip="Cargando datos del paciente..."
           style={{
             display: 'flex',
             justifyContent: 'center',
