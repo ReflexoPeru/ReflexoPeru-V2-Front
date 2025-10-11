@@ -7,36 +7,73 @@ import {
 } from '../service/calendarService';
 import dayjs from '../../../utils/dayjsConfig';
 
-export const useCalendar = () => {
+export const useCalendar = (currentDate = new Date(), view = 'month') => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (date = currentDate, currentView = view) => {
     setLoading(true);
     setError(null);
     try {
+      const currentDay = dayjs(date);
+      let startDate, endDate;
+      
+      switch (currentView) {
+        case 'month':
+          startDate = currentDay.startOf('month').format('YYYY-MM-DD');
+          endDate = currentDay.endOf('month').format('YYYY-MM-DD');
+          break;
+        case 'week':
+        case 'agenda':
+          startDate = currentDay.startOf('week').add(1, 'day').format('YYYY-MM-DD');
+          endDate = currentDay.startOf('week').add(6, 'day').format('YYYY-MM-DD');
+          break;
+        case 'day':
+          startDate = currentDay.format('YYYY-MM-DD');
+          endDate = currentDay.add(1, 'day').format('YYYY-MM-DD');
+          break;
+        default:
+          startDate = currentDay.startOf('month').format('YYYY-MM-DD');
+          endDate = currentDay.endOf('month').format('YYYY-MM-DD');
+      }
+      
+      
       const pendingPromise = getPendingAppointments();
-      const today = dayjs();
-      const twoMonthsLater = today.add(2, 'month');
-      const completedPromise = getCompletedAppointmentsRange(
-        today.format('YYYY-MM-DD'),
-        twoMonthsLater.format('YYYY-MM-DD'),
-        30,
-        1,
-      );
+      const completedPromise = getCompletedAppointmentsRange(startDate, endDate, 100, 1);
       const [pendingData, completedData] = await Promise.all([
         pendingPromise,
         completedPromise,
       ]);
 
+      
 
       let pendingEvents = [];
       if (Array.isArray(pendingData)) {
-        pendingEvents = pendingData.map((item) => {
+        const eventsByDate = {};
+        pendingData.forEach(item => {
+          const appointmentDate = item.appointment_date ? item.appointment_date.split(' ')[0] : '';
+          if (!eventsByDate[appointmentDate]) {
+            eventsByDate[appointmentDate] = [];
+          }
+          eventsByDate[appointmentDate].push(item);
+        });
+
+        Object.keys(eventsByDate).forEach(dateKey => {
+          const dateEvents = eventsByDate[dateKey];
+          dateEvents.forEach((item, index) => {
           try {
+            let appointmentHour = item.appointment_hour;
+            if (!appointmentHour) {
+              const availableHours = [7, 8, 9, 10, 11, 12];
+              const hourIndex = index % availableHours.length;
+              const selectedHour = availableHours[hourIndex];
+              appointmentHour = `${selectedHour.toString().padStart(2, '0')}:00:00`;
+            }
+            
+            const appointmentDate = item.appointment_date ? item.appointment_date.split(' ')[0] : '';
             const start = dayjs(
-              `${item.appointment_date}T${item.appointment_hour}`,
+              `${appointmentDate}T${appointmentHour || '09:00:00'}`,
             );
             const end = start.add(1, 'hour');
             const patient_first_name = item.patient
@@ -51,11 +88,18 @@ export const useCalendar = () => {
             const payment_type_name = item.payment_type
               ? item.payment_type.name
               : '';
-            return {
+            
+            const patientLastNames = item.patient 
+              ? `${item.patient.paternal_lastname || ''} ${item.patient.maternal_lastname || ''}`.trim()
+              : 'Paciente';
+
+            
+            const event = {
               id: item.id,
-              title: item.appointment_type,
+              title: patientLastNames || item.appointment_type || 'Cita',
               start: start.toDate(),
               end: end.toDate(),
+              resource: 'PENDIENTE',
               details: {
                 ailments: item.ailments,
                 diagnosis: item.diagnosis,
@@ -66,7 +110,7 @@ export const useCalendar = () => {
                 room: item.room,
                 payment: item.payment,
                 ticket_number: item.ticket_number,
-                appointment_status_id: item.appointment_status_id,
+                appointment_status_id: 'PENDIENTE',
                 payment_type_id: item.payment_type_id,
                 patient_id: item.patient_id,
                 therapist_id: item.therapist_id,
@@ -79,18 +123,41 @@ export const useCalendar = () => {
                 payment_type_name,
               },
             };
+            pendingEvents.push(event);
           } catch (error) {
-            return null;
+            console.error('Error mapeando evento pendiente:', error, item);
           }
-        }).filter(Boolean);
+        });
+        });
       }
 
       let completedEvents = [];
       if (Array.isArray(completedData?.data)) {
-        completedEvents = completedData.data.map((item) => {
+        const eventsByDate = {};
+        completedData.data.forEach(item => {
+          const appointmentDate = item.appointment_date ? item.appointment_date.split(' ')[0] : '';
+          if (!eventsByDate[appointmentDate]) {
+            eventsByDate[appointmentDate] = [];
+          }
+          eventsByDate[appointmentDate].push(item);
+        });
+
+        Object.keys(eventsByDate).forEach(dateKey => {
+          const dateEvents = eventsByDate[dateKey];
+          dateEvents.forEach((item, index) => {
           try {
             const appointmentDate = item.appointment_date ? item.appointment_date.split(' ')[0] : '';
-            const appointmentHour = item.appointment_hour || '09:00:00';
+            
+            let appointmentHour;
+            if (item.appointment_hour) {
+              appointmentHour = item.appointment_hour;
+            } else {
+              const availableHours = [7, 8, 9, 10, 11, 12];
+              const hourIndex = index % availableHours.length;
+              const selectedHour = availableHours[hourIndex];
+              appointmentHour = `${selectedHour.toString().padStart(2, '0')}:00:00`;
+            }
+            
             const start = dayjs(`${appointmentDate}T${appointmentHour}`);
             const end = start.add(1, 'hour');
             
@@ -107,11 +174,17 @@ export const useCalendar = () => {
               ? item.payment_type.name
               : '';
             
-            return {
+            const patientLastNames = item.patient 
+              ? `${item.patient.paternal_lastname || ''} ${item.patient.maternal_lastname || ''}`.trim()
+              : 'Paciente';
+            
+            
+            const event = {
               id: item.id,
-              title: item.appointment_type || 'Cita',
+              title: patientLastNames || 'Cita',
               start: start.toDate(),
               end: end.toDate(),
+              resource: 'COMPLETADO',
               details: {
                 ailments: item.ailments,
                 diagnosis: item.diagnosis,
@@ -122,7 +195,7 @@ export const useCalendar = () => {
                 room: item.room,
                 payment: item.payment,
                 ticket_number: item.ticket_number,
-                appointment_status_id: item.appointment_status_id,
+                appointment_status_id: 'COMPLETADO',
                 payment_type_id: item.payment_type_id,
                 patient_id: item.patient_id,
                 therapist_id: item.therapist_id,
@@ -135,10 +208,12 @@ export const useCalendar = () => {
                 payment_type_name,
               },
             };
+            completedEvents.push(event);
           } catch (error) {
-            return null;
+            console.error('Error mapeando evento completado:', error, item);
           }
-        }).filter(Boolean);
+          });
+        });
       }
 
       const allEvents = [...pendingEvents, ...completedEvents];
@@ -151,8 +226,8 @@ export const useCalendar = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    fetchEvents(currentDate, view);
+  }, [currentDate, view]);
 
   return { events, loading, error, fetchEvents };
 };

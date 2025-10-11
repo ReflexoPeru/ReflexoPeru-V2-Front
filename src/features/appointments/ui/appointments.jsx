@@ -236,13 +236,8 @@ export default function Appointments() {
     },
   ];
 
-  const isCompleted = (status) => {
-    const v = typeof status === 'string' ? status.toUpperCase() : status;
-    return v === 2 || v === 'COMPLETADA';
-  };
-  const visibleAppointments = Array.isArray(appointments)
-    ? appointments.filter((a) => !isCompleted(a.appointment_status_id))
-    : appointments;
+  // Mostrar todas las citas que trae el backend, sin filtrar por estado
+  const visibleAppointments = appointments;
 
   const handleAction = async (action, record) => {
     switch (action) {
