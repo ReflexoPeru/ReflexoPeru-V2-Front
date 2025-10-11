@@ -23,20 +23,26 @@ export const getStaff = async (page = 1, perPage = 10) => {
         const response = await get(`therapists?page=${page}&per_page=${perPage}`);
 
         let data = [];
+        let total = 0;
+        
         if (response.data) {
-        if (Array.isArray(response.data)) {
-            data = response.data;
-        } else if (Array.isArray(response.data.data)) {
-            data = response.data.data;
-        } else if (Array.isArray(response.data.items)) {
-            data = response.data.items;
+            // Manejar la estructura de respuesta paginada del API
+            if (response.data.data && Array.isArray(response.data.data)) {
+                data = response.data.data;
+                total = response.data.total || 0;
+            } else if (Array.isArray(response.data)) {
+                data = response.data;
+                total = data.length;
+            } else if (Array.isArray(response.data.items)) {
+                data = response.data.items;
+                total = response.data.total || data.length;
+            }
         }
-    }
 
-    return {
-        data,
-        total: response.data?.total || data.length || 0,
-    };
+        return {
+            data,
+            total,
+        };
     } catch (error) {
         throw error;
     }
@@ -52,12 +58,30 @@ export const createPatientHistory = async (data) => {
 }
 
 
-export const searchStaff = async (term) => {
+export const searchStaff = async (term, page = 1, perPage = 10) => {
     try {
-        const res = await get(`therapists/search?search=${term}&per_page=100`);
+        const res = await get(`therapists/search?search=${term}&page=${page}&per_page=${perPage}`);
+        
+        let data = [];
+        let total = 0;
+        
+        if (res.data) {
+            // Manejar la estructura de respuesta paginada del API
+            if (res.data.data && Array.isArray(res.data.data)) {
+                data = res.data.data;
+                total = res.data.total || 0;
+            } else if (Array.isArray(res.data)) {
+                data = res.data;
+                total = data.length;
+            } else if (Array.isArray(res.data.items)) {
+                data = res.data.items;
+                total = res.data.total || data.length;
+            }
+        }
+        
         return { 
-        data: Array.isArray(res.data) ? res.data : res.data.items || res.data.data || [],
-        total: res.data?.total || 0
+            data,
+            total
         };
     } catch (error) {
         throw error;

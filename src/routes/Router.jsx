@@ -13,7 +13,7 @@ import Dashboard from '../features/statistic/ui/Dashboard';
 import NewPatient from '../features/patients/ui/RegisterPatient/NewPatient';
 import NewAppointment from '../features/appointments/ui/RegisterAppointment/NewAppointment';
 import NewTherapist from '../features/staff/ui/RegisterTherapist/NewTherapist';
-import Calendar from '../features/calendar1/ui/Calendar';
+import Calendar from '../features/calendar/ui/Calendar';
 import System from '../features/configuration/cSystem/System';
 import Payments from '../features/configuration/cPayments/Payments';
 import User from '../features/configuration/cUsers/Users';

@@ -40,6 +40,7 @@ const NewAppointment = () => {
   const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState('');
   const [isCustomRate, setIsCustomRate] = useState(false);
+  const [isFreeCoupon, setIsFreeCoupon] = useState(false);
 
   const { submitNewAppointment } = useAppointments();
   const { patients, loading, setSearchTerm, fetchPatients } = usePatients(true);
@@ -100,11 +101,18 @@ const NewAppointment = () => {
             
             // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
-              // Limpiar el campo de detalles de pago
+              // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
+              setIsFreeCoupon(true);
               form.setFieldsValue({
-                payment_type_id: '',
+                payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
+                payment: '0', // Establecer monto en 0
               });
-              
+            } else {
+              // Si se cambia a otra opción, desbloquear campos y preseleccionar Yape
+              setIsFreeCoupon(false);
+              form.setFieldsValue({
+                payment_type_id: '9',
+              });
             }
           }
         } catch (error) {
@@ -114,6 +122,7 @@ const NewAppointment = () => {
       fetchServiceInfo();
     } else {
       setIsCustomRate(false);
+      setIsFreeCoupon(false);
     }
   };
 
@@ -496,7 +505,8 @@ const NewAppointment = () => {
               >
                 <SelectPaymentStatus
                   value={form.getFieldValue('payment_type_id')}
-                  defaultValue={9} // Preseleccionar id 9
+                  defaultValue={9} // Preseleccionar Yape por defecto
+                  disabled={isFreeCoupon}
                   onChange={(value) =>
                     form.setFieldsValue({ payment_type_id: value })
                   }
@@ -528,11 +538,12 @@ const NewAppointment = () => {
                   type="number"
                   step="0.01"
                   min="0"
-                  readOnly={!isCustomRate}
-                  placeholder={isCustomRate ? "Ingrese el monto" : "Seleccione una opción de pago"}
+                  readOnly={!isCustomRate || isFreeCoupon}
+                  disabled={isFreeCoupon}
+                  placeholder={isFreeCoupon ? "Cupón sin costo (S/ 0)" : isCustomRate ? "Ingrese el monto" : "Seleccione una opción de pago"}
                   style={{
-                    backgroundColor: isCustomRate ? 'var(--color-background-primary)' : 'var(--color-background-secondary)',
-                    cursor: isCustomRate ? 'text' : 'not-allowed'
+                    backgroundColor: isFreeCoupon ? 'var(--color-background-secondary)' : isCustomRate ? 'var(--color-background-primary)' : 'var(--color-background-secondary)',
+                    cursor: isFreeCoupon ? 'not-allowed' : isCustomRate ? 'text' : 'not-allowed'
                   }}
                 />
               </Form.Item>

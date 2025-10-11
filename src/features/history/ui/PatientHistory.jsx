@@ -58,7 +58,7 @@ const PatientHistory = () => {
   const location = useLocation();
   const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
-  const { staff, loading, setSearchTerm } = useStaff();
+  const { staff, loading, setSearchTerm, pagination, handlePageChange } = useStaff();
   const { data: patientHistory, refetch: refetchHistory } = usePatientHistory(id);
   const isFemale = patientHistory?.data?.patient?.sex === 'F';
   const {
@@ -237,6 +237,7 @@ const PatientHistory = () => {
   // Función para cerrar el modal sin selección
   const handleCancel = () => {
     setIsModalVisible(false);
+    setSearchTerm(''); // Limpiar búsqueda al cerrar
   };
 
   // Función para confirmar la selección
@@ -250,6 +251,7 @@ const PatientHistory = () => {
       }
     }
     setIsModalVisible(false);
+    setSearchTerm(''); // Limpiar búsqueda al cerrar
   };
 
   // Función para manejar la selección en la tabla
@@ -802,7 +804,16 @@ const PatientHistory = () => {
             rowKey="id"
             loading={loading}
             scroll={{ x: 'max-content' }}
-            pagination={false}
+            pagination={{
+              current: pagination.currentPage,
+              total: pagination.totalItems,
+              pageSize: 10,
+              showSizeChanger: false,
+              showQuickJumper: true,
+              showTotal: (total, range) => 
+                `${range[0]}-${range[1]} de ${total} terapeutas`,
+              onChange: (page) => handlePageChange(page),
+            }}
             rowClassName={() => styles.tableRow}
           />
         </UniversalModal>

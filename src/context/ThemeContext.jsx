@@ -165,14 +165,14 @@ const getAntdThemeConfig = (isDark) => ({
 });
 
 export const ThemeProvider = ({ children }) => {
-  // Obtener tema del localStorage o usar 'dark' por defecto (tema actual)
+  // Obtener tema del localStorage o usar 'light' por defecto (tema claro)
   const [isDarkMode, setIsDarkMode] = useState(() => {
     try {
       const savedTheme = getLocalStorageString('theme');
-      return savedTheme ? savedTheme === 'dark' : true; // true por defecto (oscuro)
+      return savedTheme ? savedTheme === 'dark' : false; // false por defecto (claro)
     } catch (error) {
-      console.warn('Error al cargar tema del localStorage, usando tema oscuro por defecto:', error);
-      return true; // Tema oscuro por defecto si hay error
+      console.warn('Error al cargar tema del localStorage, usando tema claro por defecto:', error);
+      return false; // Tema claro por defecto si hay error
     }
   });
 

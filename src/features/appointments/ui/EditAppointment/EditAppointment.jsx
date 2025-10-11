@@ -159,6 +159,12 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   
   /** @type {[string, Function]} Monto del pago en formato string */
   const [paymentAmount, setPaymentAmount] = useState('');
+  
+  /** @type {[boolean, Function]} Indica si es cupón sin costo */
+  const [isFreeCoupon, setIsFreeCoupon] = useState(false);
+  
+  /** @type {[boolean, Function]} Indica si es tarifa personalizada */
+  const [isCustomRate, setIsCustomRate] = useState(false);
 
   // ============================================================================
   // ESTADOS DE MODALES Y SELECCIÓN
@@ -276,6 +282,34 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
 
           // Configurar monto (pero NO preseleccionar método de pago)
           setPaymentAmount(data.payment ? String(data.payment) : '');
+
+          // Verificar si la cita actual tiene cupón sin costo
+          if (data.service_id) {
+            const fetchServiceInfo = async () => {
+              try {
+                const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
+                const prices = await getPredeterminedPrices();
+                const selectedService = prices.find(item => item.value === data.service_id);
+                
+                if (selectedService) {
+                  const serviceName = selectedService.label?.toLowerCase() || '';
+                  if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
+                    setIsFreeCoupon(true);
+                    setIsCustomRate(false);
+                  } else if (serviceName.includes('tarifa personalizada')) {
+                    setIsFreeCoupon(false);
+                    setIsCustomRate(true);
+                  } else {
+                    setIsFreeCoupon(false);
+                    setIsCustomRate(false);
+                  }
+                }
+              } catch (error) {
+                console.error('Error al verificar el servicio:', error);
+              }
+            };
+            fetchServiceInfo();
+          }
 
           // Establecer valores iniciales del formulario
           form.setFieldsValue({
@@ -406,11 +440,28 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
             
             // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
-              // Limpiar el campo de detalles de pago
+              // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
+              setIsFreeCoupon(true);
+              setIsCustomRate(false);
               form.setFieldsValue({
-                payment_type_id: '',
+                payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
+                payment: '0', // Establecer monto en 0
               });
-              
+            } else if (serviceName.includes('tarifa personalizada')) {
+              // Para tarifa personalizada: permitir edición del monto
+              setIsFreeCoupon(false);
+              setIsCustomRate(true);
+              form.setFieldsValue({
+                payment_type_id: '9', // Preseleccionar Yape
+                payment: '', // Limpiar monto para que escriban el personalizado
+              });
+            } else {
+              // Si se cambia a otra opción, desbloquear campos y preseleccionar Yape
+              setIsFreeCoupon(false);
+              setIsCustomRate(false);
+              form.setFieldsValue({
+                payment_type_id: '9',
+              });
             }
           }
         } catch (error) {
@@ -737,6 +788,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                 >
                   <SelectPaymentStatus
                     value={form.getFieldValue('payment_type_id')}
+                    disabled={isFreeCoupon}
                     onChange={handlePaymentTypeChange}
                     placeholder="Selecciona método de pago"
                   />
@@ -768,6 +820,19 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                     type="number"
                     step="0.01"
                     min="0"
+                    readOnly={isFreeCoupon}
+                    disabled={isFreeCoupon}
+                    placeholder={
+                      isFreeCoupon 
+                        ? "Cupón sin costo (S/ 0)" 
+                        : isCustomRate 
+                        ? "Ingrese tarifa personalizada" 
+                        : "Ingrese el monto"
+                    }
+                    style={{
+                      backgroundColor: isFreeCoupon ? '#444444' : '#ffffff',
+                      cursor: isFreeCoupon ? 'not-allowed' : 'text'
+                    }}
                   />
                 </Form.Item>
               </Col>

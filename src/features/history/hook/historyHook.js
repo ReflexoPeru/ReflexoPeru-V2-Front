@@ -206,14 +206,14 @@ export const useStaff = () => {
     }
   };
 
-  const searchStaffByTerm = async (term) => {
+  const searchStaffByTerm = async (term, page = 1) => {
     if (loading) return;
     setLoading(true);
     try {
-      const { data, total } = await searchStaff(term);
+      const { data, total } = await searchStaff(term, page);
       setStaff(data);
       setPagination({
-        currentPage: 1,
+        currentPage: page,
         totalItems: total,
       });
     } catch (error) {
@@ -236,7 +236,7 @@ export const useStaff = () => {
 
     const delayDebounce = setTimeout(() => {
       if (searchTerm.trim()) {
-        searchStaffByTerm(searchTerm.trim());
+        searchStaffByTerm(searchTerm.trim(), 1);
       } else {
         loadStaff(1);
       }
@@ -245,13 +245,22 @@ export const useStaff = () => {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, initialLoad]);
 
+  // Función unificada para manejar cambio de página
+  const handlePageChange = (page) => {
+    if (searchTerm.trim()) {
+      searchStaffByTerm(searchTerm.trim(), page);
+    } else {
+      loadStaff(page);
+    }
+  };
+
   return {
     staff,
     loading,
     error,
     pagination,
     setSearchTerm,
-    handlePageChange: loadStaff,
+    handlePageChange,
   };
 };
 
