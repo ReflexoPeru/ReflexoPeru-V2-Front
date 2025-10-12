@@ -2061,6 +2061,7 @@ div[class*="modal"] button[class*="Form_buttonSubmit"]:active {
   border-color: var(--color-primary-hover) !important;
 }
 
+
 .therapist-list-modal .ant-btn-primary:disabled {
   background-color: var(--color-background-secondary) !important;
   border-color: var(--color-border-primary) !important;
@@ -2649,6 +2650,563 @@ button[type="primary"]:has(+ .edit-appointment-cancel-btn),
 /* CRÍTICO: Modal de ticket - mask */
 .ticket-modal + .ant-modal-mask {
   background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ===== PAGINACIÓN EN MODALES ===== */
+/* CRÍTICO: Paginación en todos los modales */
+.modal-themed .ant-pagination,
+.edit-patient-modal .ant-pagination,
+.edit-therapist-modal .ant-pagination,
+.info-patient-modal .ant-pagination,
+.info-therapist-modal .ant-pagination,
+.universal-modal .ant-pagination,
+.select-contributor-modal .ant-pagination,
+.create-patient-modal .ant-pagination,
+.therapist-list-modal .ant-pagination,
+.edit-appointment-select-patient-modal .ant-pagination,
+.edit-appointment-create-patient-modal .ant-pagination,
+.users-modal .ant-pagination,
+.calendar-modal .ant-pagination,
+.ticket-modal .ant-pagination {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+/* CRÍTICO: Contenedor de paginación - evitar crecimiento */
+.modal-themed .ant-pagination,
+.edit-patient-modal .ant-pagination,
+.edit-therapist-modal .ant-pagination,
+.info-patient-modal .ant-pagination,
+.info-therapist-modal .ant-pagination,
+.universal-modal .ant-pagination,
+.select-contributor-modal .ant-pagination,
+.create-patient-modal .ant-pagination,
+.therapist-list-modal .ant-pagination,
+.edit-appointment-select-patient-modal .ant-pagination,
+.edit-appointment-create-patient-modal .ant-pagination,
+.users-modal .ant-pagination,
+.calendar-modal .ant-pagination,
+.ticket-modal .ant-pagination {
+  position: relative !important;
+  overflow: visible !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* CRÍTICO: Items de paginación */
+.modal-themed .ant-pagination-item,
+.edit-patient-modal .ant-pagination-item,
+.edit-therapist-modal .ant-pagination-item,
+.info-patient-modal .ant-pagination-item,
+.info-therapist-modal .ant-pagination-item,
+.universal-modal .ant-pagination-item,
+.select-contributor-modal .ant-pagination-item,
+.create-patient-modal .ant-pagination-item,
+.therapist-list-modal .ant-pagination-item,
+.edit-appointment-select-patient-modal .ant-pagination-item,
+.edit-appointment-create-patient-modal .ant-pagination-item,
+.users-modal .ant-pagination-item,
+.calendar-modal .ant-pagination-item,
+.ticket-modal .ant-pagination-item {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  line-height: 30px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.modal-themed .ant-pagination-item a,
+.edit-patient-modal .ant-pagination-item a,
+.edit-therapist-modal .ant-pagination-item a,
+.info-patient-modal .ant-pagination-item a,
+.info-therapist-modal .ant-pagination-item a,
+.universal-modal .ant-pagination-item a,
+.select-contributor-modal .ant-pagination-item a,
+.create-patient-modal .ant-pagination-item a,
+.therapist-list-modal .ant-pagination-item a,
+.edit-appointment-select-patient-modal .ant-pagination-item a,
+.edit-appointment-create-patient-modal .ant-pagination-item a,
+.users-modal .ant-pagination-item a,
+.calendar-modal .ant-pagination-item a,
+.ticket-modal .ant-pagination-item a {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+}
+
+.modal-themed .ant-pagination-item:hover,
+.edit-patient-modal .ant-pagination-item:hover,
+.edit-therapist-modal .ant-pagination-item:hover,
+.info-patient-modal .ant-pagination-item:hover,
+.info-therapist-modal .ant-pagination-item:hover,
+.universal-modal .ant-pagination-item:hover,
+.select-contributor-modal .ant-pagination-item:hover,
+.create-patient-modal .ant-pagination-item:hover,
+.therapist-list-modal .ant-pagination-item:hover,
+.edit-appointment-select-patient-modal .ant-pagination-item:hover,
+.edit-appointment-create-patient-modal .ant-pagination-item:hover,
+.users-modal .ant-pagination-item:hover,
+.calendar-modal .ant-pagination-item:hover,
+.ticket-modal .ant-pagination-item:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.modal-themed .ant-pagination-item-active,
+.edit-patient-modal .ant-pagination-item-active,
+.edit-therapist-modal .ant-pagination-item-active,
+.info-patient-modal .ant-pagination-item-active,
+.info-therapist-modal .ant-pagination-item-active,
+.universal-modal .ant-pagination-item-active,
+.select-contributor-modal .ant-pagination-item-active,
+.create-patient-modal .ant-pagination-item-active,
+.therapist-list-modal .ant-pagination-item-active,
+.edit-appointment-select-patient-modal .ant-pagination-item-active,
+.edit-appointment-create-patient-modal .ant-pagination-item-active,
+.users-modal .ant-pagination-item-active,
+.calendar-modal .ant-pagination-item-active,
+.ticket-modal .ant-pagination-item-active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.modal-themed .ant-pagination-item-active a,
+.edit-patient-modal .ant-pagination-item-active a,
+.edit-therapist-modal .ant-pagination-item-active a,
+.info-patient-modal .ant-pagination-item-active a,
+.info-therapist-modal .ant-pagination-item-active a,
+.universal-modal .ant-pagination-item-active a,
+.select-contributor-modal .ant-pagination-item-active a,
+.create-patient-modal .ant-pagination-item-active a,
+.therapist-list-modal .ant-pagination-item-active a,
+.edit-appointment-select-patient-modal .ant-pagination-item-active a,
+.edit-appointment-create-patient-modal .ant-pagination-item-active a,
+.users-modal .ant-pagination-item-active a,
+.calendar-modal .ant-pagination-item-active a,
+.ticket-modal .ant-pagination-item-active a {
+  color: #ffffff !important;
+}
+
+/* CRÍTICO: Botones de navegación (prev/next) */
+.modal-themed .ant-pagination-prev,
+.modal-themed .ant-pagination-next,
+.edit-patient-modal .ant-pagination-prev,
+.edit-patient-modal .ant-pagination-next,
+.edit-therapist-modal .ant-pagination-prev,
+.edit-therapist-modal .ant-pagination-next,
+.info-patient-modal .ant-pagination-prev,
+.info-patient-modal .ant-pagination-next,
+.info-therapist-modal .ant-pagination-prev,
+.info-therapist-modal .ant-pagination-next,
+.universal-modal .ant-pagination-prev,
+.universal-modal .ant-pagination-next,
+.select-contributor-modal .ant-pagination-prev,
+.select-contributor-modal .ant-pagination-next,
+.create-patient-modal .ant-pagination-prev,
+.create-patient-modal .ant-pagination-next,
+.therapist-list-modal .ant-pagination-prev,
+.therapist-list-modal .ant-pagination-next,
+.edit-appointment-select-patient-modal .ant-pagination-prev,
+.edit-appointment-select-patient-modal .ant-pagination-next,
+.edit-appointment-create-patient-modal .ant-pagination-prev,
+.edit-appointment-create-patient-modal .ant-pagination-next,
+.users-modal .ant-pagination-prev,
+.users-modal .ant-pagination-next,
+.calendar-modal .ant-pagination-prev,
+.calendar-modal .ant-pagination-next,
+.ticket-modal .ant-pagination-prev,
+.ticket-modal .ant-pagination-next {
+  min-width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+.modal-themed .ant-pagination-prev button,
+.modal-themed .ant-pagination-next button,
+.edit-patient-modal .ant-pagination-prev button,
+.edit-patient-modal .ant-pagination-next button,
+.edit-therapist-modal .ant-pagination-prev button,
+.edit-therapist-modal .ant-pagination-next button,
+.info-patient-modal .ant-pagination-prev button,
+.info-patient-modal .ant-pagination-next button,
+.info-therapist-modal .ant-pagination-prev button,
+.info-therapist-modal .ant-pagination-next button,
+.universal-modal .ant-pagination-prev button,
+.universal-modal .ant-pagination-next button,
+.select-contributor-modal .ant-pagination-prev button,
+.select-contributor-modal .ant-pagination-next button,
+.create-patient-modal .ant-pagination-prev button,
+.create-patient-modal .ant-pagination-next button,
+.therapist-list-modal .ant-pagination-prev button,
+.therapist-list-modal .ant-pagination-next button,
+.edit-appointment-select-patient-modal .ant-pagination-prev button,
+.edit-appointment-select-patient-modal .ant-pagination-next button,
+.edit-appointment-create-patient-modal .ant-pagination-prev button,
+.edit-appointment-create-patient-modal .ant-pagination-next button,
+.users-modal .ant-pagination-prev button,
+.users-modal .ant-pagination-next button,
+.calendar-modal .ant-pagination-prev button,
+.calendar-modal .ant-pagination-next button,
+.ticket-modal .ant-pagination-prev button,
+.ticket-modal .ant-pagination-next button {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  border-radius: var(--radius-sm) !important;
+  height: 32px !important;
+}
+
+.modal-themed .ant-pagination-prev button:hover,
+.modal-themed .ant-pagination-next button:hover,
+.edit-patient-modal .ant-pagination-prev button:hover,
+.edit-patient-modal .ant-pagination-next button:hover,
+.edit-therapist-modal .ant-pagination-prev button:hover,
+.edit-therapist-modal .ant-pagination-next button:hover,
+.info-patient-modal .ant-pagination-prev button:hover,
+.info-patient-modal .ant-pagination-next button:hover,
+.info-therapist-modal .ant-pagination-prev button:hover,
+.info-therapist-modal .ant-pagination-next button:hover,
+.universal-modal .ant-pagination-prev button:hover,
+.universal-modal .ant-pagination-next button:hover,
+.select-contributor-modal .ant-pagination-prev button:hover,
+.select-contributor-modal .ant-pagination-next button:hover,
+.create-patient-modal .ant-pagination-prev button:hover,
+.create-patient-modal .ant-pagination-next button:hover,
+.therapist-list-modal .ant-pagination-prev button:hover,
+.therapist-list-modal .ant-pagination-next button:hover,
+.edit-appointment-select-patient-modal .ant-pagination-prev button:hover,
+.edit-appointment-select-patient-modal .ant-pagination-next button:hover,
+.edit-appointment-create-patient-modal .ant-pagination-prev button:hover,
+.edit-appointment-create-patient-modal .ant-pagination-next button:hover,
+.users-modal .ant-pagination-prev button:hover,
+.users-modal .ant-pagination-next button:hover,
+.calendar-modal .ant-pagination-prev button:hover,
+.calendar-modal .ant-pagination-next button:hover,
+.ticket-modal .ant-pagination-prev button:hover,
+.ticket-modal .ant-pagination-next button:hover {
+  border-color: var(--color-primary) !important;
+  background-color: var(--color-background-primary) !important;
+}
+
+.modal-themed .ant-pagination-prev .anticon,
+.modal-themed .ant-pagination-next .anticon,
+.edit-patient-modal .ant-pagination-prev .anticon,
+.edit-patient-modal .ant-pagination-next .anticon,
+.edit-therapist-modal .ant-pagination-prev .anticon,
+.edit-therapist-modal .ant-pagination-next .anticon,
+.info-patient-modal .ant-pagination-prev .anticon,
+.info-patient-modal .ant-pagination-next .anticon,
+.info-therapist-modal .ant-pagination-prev .anticon,
+.info-therapist-modal .ant-pagination-next .anticon,
+.universal-modal .ant-pagination-prev .anticon,
+.universal-modal .ant-pagination-next .anticon,
+.select-contributor-modal .ant-pagination-prev .anticon,
+.select-contributor-modal .ant-pagination-next .anticon,
+.create-patient-modal .ant-pagination-prev .anticon,
+.create-patient-modal .ant-pagination-next .anticon,
+.therapist-list-modal .ant-pagination-prev .anticon,
+.therapist-list-modal .ant-pagination-next .anticon,
+.edit-appointment-select-patient-modal .ant-pagination-prev .anticon,
+.edit-appointment-select-patient-modal .ant-pagination-next .anticon,
+.edit-appointment-create-patient-modal .ant-pagination-prev .anticon,
+.edit-appointment-create-patient-modal .ant-pagination-next .anticon,
+.users-modal .ant-pagination-prev .anticon,
+.users-modal .ant-pagination-next .anticon,
+.calendar-modal .ant-pagination-prev .anticon,
+.calendar-modal .ant-pagination-next .anticon,
+.ticket-modal .ant-pagination-prev .anticon,
+.ticket-modal .ant-pagination-next .anticon {
+  color: var(--color-text-primary) !important;
+}
+
+/* CRÍTICO: Selector de tamaño de página - EVITAR CRECIMIENTO */
+.modal-themed .ant-pagination-options,
+.edit-patient-modal .ant-pagination-options,
+.edit-therapist-modal .ant-pagination-options,
+.info-patient-modal .ant-pagination-options,
+.info-therapist-modal .ant-pagination-options,
+.universal-modal .ant-pagination-options,
+.select-contributor-modal .ant-pagination-options,
+.create-patient-modal .ant-pagination-options,
+.therapist-list-modal .ant-pagination-options,
+.edit-appointment-select-patient-modal .ant-pagination-options,
+.edit-appointment-create-patient-modal .ant-pagination-options,
+.users-modal .ant-pagination-options,
+.calendar-modal .ant-pagination-options,
+.ticket-modal .ant-pagination-options {
+  flex-shrink: 0 !important;
+  height: 32px !important;
+  overflow: visible !important;
+}
+
+.modal-themed .ant-pagination-options-size-changer,
+.edit-patient-modal .ant-pagination-options-size-changer,
+.edit-therapist-modal .ant-pagination-options-size-changer,
+.info-patient-modal .ant-pagination-options-size-changer,
+.info-therapist-modal .ant-pagination-options-size-changer,
+.universal-modal .ant-pagination-options-size-changer,
+.select-contributor-modal .ant-pagination-options-size-changer,
+.create-patient-modal .ant-pagination-options-size-changer,
+.therapist-list-modal .ant-pagination-options-size-changer,
+.edit-appointment-select-patient-modal .ant-pagination-options-size-changer,
+.edit-appointment-create-patient-modal .ant-pagination-options-size-changer,
+.users-modal .ant-pagination-options-size-changer,
+.calendar-modal .ant-pagination-options-size-changer,
+.ticket-modal .ant-pagination-options-size-changer {
+  height: 32px !important;
+}
+
+.modal-themed .ant-pagination-options-size-changer .ant-select,
+.edit-patient-modal .ant-pagination-options-size-changer .ant-select,
+.edit-therapist-modal .ant-pagination-options-size-changer .ant-select,
+.info-patient-modal .ant-pagination-options-size-changer .ant-select,
+.info-therapist-modal .ant-pagination-options-size-changer .ant-select,
+.universal-modal .ant-pagination-options-size-changer .ant-select,
+.select-contributor-modal .ant-pagination-options-size-changer .ant-select,
+.create-patient-modal .ant-pagination-options-size-changer .ant-select,
+.therapist-list-modal .ant-pagination-options-size-changer .ant-select,
+.edit-appointment-select-patient-modal .ant-pagination-options-size-changer .ant-select,
+.edit-appointment-create-patient-modal .ant-pagination-options-size-changer .ant-select,
+.users-modal .ant-pagination-options-size-changer .ant-select,
+.calendar-modal .ant-pagination-options-size-changer .ant-select,
+.ticket-modal .ant-pagination-options-size-changer .ant-select {
+  height: 32px !important;
+}
+
+.modal-themed .ant-pagination-options-size-changer .ant-select-selector,
+.edit-patient-modal .ant-pagination-options-size-changer .ant-select-selector,
+.edit-therapist-modal .ant-pagination-options-size-changer .ant-select-selector,
+.info-patient-modal .ant-pagination-options-size-changer .ant-select-selector,
+.info-therapist-modal .ant-pagination-options-size-changer .ant-select-selector,
+.universal-modal .ant-pagination-options-size-changer .ant-select-selector,
+.select-contributor-modal .ant-pagination-options-size-changer .ant-select-selector,
+.create-patient-modal .ant-pagination-options-size-changer .ant-select-selector,
+.therapist-list-modal .ant-pagination-options-size-changer .ant-select-selector,
+.edit-appointment-select-patient-modal .ant-pagination-options-size-changer .ant-select-selector,
+.edit-appointment-create-patient-modal .ant-pagination-options-size-changer .ant-select-selector,
+.users-modal .ant-pagination-options-size-changer .ant-select-selector,
+.calendar-modal .ant-pagination-options-size-changer .ant-select-selector,
+.ticket-modal .ant-pagination-options-size-changer .ant-select-selector {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  height: 32px !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0 8px !important;
+}
+
+.modal-themed .ant-pagination-options-size-changer .ant-select-selection-item,
+.edit-patient-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.edit-therapist-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.info-patient-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.info-therapist-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.universal-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.select-contributor-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.create-patient-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.therapist-list-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.edit-appointment-select-patient-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.edit-appointment-create-patient-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.users-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.calendar-modal .ant-pagination-options-size-changer .ant-select-selection-item,
+.ticket-modal .ant-pagination-options-size-changer .ant-select-selection-item {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  line-height: 30px !important;
+}
+
+/* CRÍTICO: Salto rápido de página */
+.modal-themed .ant-pagination-options-quick-jumper,
+.edit-patient-modal .ant-pagination-options-quick-jumper,
+.edit-therapist-modal .ant-pagination-options-quick-jumper,
+.info-patient-modal .ant-pagination-options-quick-jumper,
+.info-therapist-modal .ant-pagination-options-quick-jumper,
+.universal-modal .ant-pagination-options-quick-jumper,
+.select-contributor-modal .ant-pagination-options-quick-jumper,
+.create-patient-modal .ant-pagination-options-quick-jumper,
+.therapist-list-modal .ant-pagination-options-quick-jumper,
+.edit-appointment-select-patient-modal .ant-pagination-options-quick-jumper,
+.edit-appointment-create-patient-modal .ant-pagination-options-quick-jumper,
+.users-modal .ant-pagination-options-quick-jumper,
+.calendar-modal .ant-pagination-options-quick-jumper,
+.ticket-modal .ant-pagination-options-quick-jumper {
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  height: 32px !important;
+  line-height: 32px !important;
+}
+
+.modal-themed .ant-pagination-options-quick-jumper input,
+.edit-patient-modal .ant-pagination-options-quick-jumper input,
+.edit-therapist-modal .ant-pagination-options-quick-jumper input,
+.info-patient-modal .ant-pagination-options-quick-jumper input,
+.info-therapist-modal .ant-pagination-options-quick-jumper input,
+.universal-modal .ant-pagination-options-quick-jumper input,
+.select-contributor-modal .ant-pagination-options-quick-jumper input,
+.create-patient-modal .ant-pagination-options-quick-jumper input,
+.therapist-list-modal .ant-pagination-options-quick-jumper input,
+.edit-appointment-select-patient-modal .ant-pagination-options-quick-jumper input,
+.edit-appointment-create-patient-modal .ant-pagination-options-quick-jumper input,
+.users-modal .ant-pagination-options-quick-jumper input,
+.calendar-modal .ant-pagination-options-quick-jumper input,
+.ticket-modal .ant-pagination-options-quick-jumper input {
+  background-color: var(--color-background-secondary) !important;
+  border: 1px solid var(--color-border-primary) !important;
+  color: var(--color-text-primary) !important;
+  font-family: var(--font-family) !important;
+  height: 32px !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0 8px !important;
+  width: 50px !important;
+}
+
+.modal-themed .ant-pagination-options-quick-jumper input:hover,
+.edit-patient-modal .ant-pagination-options-quick-jumper input:hover,
+.edit-therapist-modal .ant-pagination-options-quick-jumper input:hover,
+.info-patient-modal .ant-pagination-options-quick-jumper input:hover,
+.info-therapist-modal .ant-pagination-options-quick-jumper input:hover,
+.universal-modal .ant-pagination-options-quick-jumper input:hover,
+.select-contributor-modal .ant-pagination-options-quick-jumper input:hover,
+.create-patient-modal .ant-pagination-options-quick-jumper input:hover,
+.therapist-list-modal .ant-pagination-options-quick-jumper input:hover,
+.edit-appointment-select-patient-modal .ant-pagination-options-quick-jumper input:hover,
+.edit-appointment-create-patient-modal .ant-pagination-options-quick-jumper input:hover,
+.users-modal .ant-pagination-options-quick-jumper input:hover,
+.calendar-modal .ant-pagination-options-quick-jumper input:hover,
+.ticket-modal .ant-pagination-options-quick-jumper input:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.modal-themed .ant-pagination-options-quick-jumper input:focus,
+.edit-patient-modal .ant-pagination-options-quick-jumper input:focus,
+.edit-therapist-modal .ant-pagination-options-quick-jumper input:focus,
+.info-patient-modal .ant-pagination-options-quick-jumper input:focus,
+.info-therapist-modal .ant-pagination-options-quick-jumper input:focus,
+.universal-modal .ant-pagination-options-quick-jumper input:focus,
+.select-contributor-modal .ant-pagination-options-quick-jumper input:focus,
+.create-patient-modal .ant-pagination-options-quick-jumper input:focus,
+.therapist-list-modal .ant-pagination-options-quick-jumper input:focus,
+.edit-appointment-select-patient-modal .ant-pagination-options-quick-jumper input:focus,
+.edit-appointment-create-patient-modal .ant-pagination-options-quick-jumper input:focus,
+.users-modal .ant-pagination-options-quick-jumper input:focus,
+.calendar-modal .ant-pagination-options-quick-jumper input:focus,
+.ticket-modal .ant-pagination-options-quick-jumper input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2) !important;
+}
+
+/* CRÍTICO: Total de registros */
+.modal-themed .ant-pagination-total-text,
+.edit-patient-modal .ant-pagination-total-text,
+.edit-therapist-modal .ant-pagination-total-text,
+.info-patient-modal .ant-pagination-total-text,
+.info-therapist-modal .ant-pagination-total-text,
+.universal-modal .ant-pagination-total-text,
+.select-contributor-modal .ant-pagination-total-text,
+.create-patient-modal .ant-pagination-total-text,
+.therapist-list-modal .ant-pagination-total-text,
+.edit-appointment-select-patient-modal .ant-pagination-total-text,
+.edit-appointment-create-patient-modal .ant-pagination-total-text,
+.users-modal .ant-pagination-total-text,
+.calendar-modal .ant-pagination-total-text,
+.ticket-modal .ant-pagination-total-text {
+  color: var(--color-text-secondary) !important;
+  font-family: var(--font-family) !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  flex-shrink: 0 !important;
+}
+
+/* CRÍTICO: Botones deshabilitados */
+.modal-themed .ant-pagination-disabled,
+.modal-themed .ant-pagination-disabled button,
+.edit-patient-modal .ant-pagination-disabled,
+.edit-patient-modal .ant-pagination-disabled button,
+.edit-therapist-modal .ant-pagination-disabled,
+.edit-therapist-modal .ant-pagination-disabled button,
+.info-patient-modal .ant-pagination-disabled,
+.info-patient-modal .ant-pagination-disabled button,
+.info-therapist-modal .ant-pagination-disabled,
+.info-therapist-modal .ant-pagination-disabled button,
+.universal-modal .ant-pagination-disabled,
+.universal-modal .ant-pagination-disabled button,
+.select-contributor-modal .ant-pagination-disabled,
+.select-contributor-modal .ant-pagination-disabled button,
+.create-patient-modal .ant-pagination-disabled,
+.create-patient-modal .ant-pagination-disabled button,
+.therapist-list-modal .ant-pagination-disabled,
+.therapist-list-modal .ant-pagination-disabled button,
+.edit-appointment-select-patient-modal .ant-pagination-disabled,
+.edit-appointment-select-patient-modal .ant-pagination-disabled button,
+.edit-appointment-create-patient-modal .ant-pagination-disabled,
+.edit-appointment-create-patient-modal .ant-pagination-disabled button,
+.users-modal .ant-pagination-disabled,
+.users-modal .ant-pagination-disabled button,
+.calendar-modal .ant-pagination-disabled,
+.calendar-modal .ant-pagination-disabled button,
+.ticket-modal .ant-pagination-disabled,
+.ticket-modal .ant-pagination-disabled button {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* ===== DROPDOWN DEL PAGINADO - RENDERIZADO FUERA DEL CONTENEDOR ===== */
+/* CRÍTICO: Asegurar que el dropdown del select de paginación no afecte el tamaño */
+.ant-select-dropdown {
+  position: fixed !important;
+  z-index: 1050 !important;
+}
+
+/* CRÍTICO: Contenedor de la tabla con paginación - evitar que crezca */
+.modal-themed .ant-table-wrapper,
+.edit-patient-modal .ant-table-wrapper,
+.edit-therapist-modal .ant-table-wrapper,
+.info-patient-modal .ant-table-wrapper,
+.info-therapist-modal .ant-table-wrapper,
+.universal-modal .ant-table-wrapper,
+.select-contributor-modal .ant-table-wrapper,
+.create-patient-modal .ant-table-wrapper,
+.therapist-list-modal .ant-table-wrapper,
+.edit-appointment-select-patient-modal .ant-table-wrapper,
+.edit-appointment-create-patient-modal .ant-table-wrapper,
+.users-modal .ant-table-wrapper,
+.calendar-modal .ant-table-wrapper,
+.ticket-modal .ant-table-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* CRÍTICO: Contenedor de paginación dentro de tabla */
+.modal-themed .ant-table-pagination,
+.edit-patient-modal .ant-table-pagination,
+.edit-therapist-modal .ant-table-pagination,
+.info-patient-modal .ant-table-pagination,
+.info-therapist-modal .ant-table-pagination,
+.universal-modal .ant-table-pagination,
+.select-contributor-modal .ant-table-pagination,
+.create-patient-modal .ant-table-pagination,
+.therapist-list-modal .ant-table-pagination,
+.edit-appointment-select-patient-modal .ant-table-pagination,
+.edit-appointment-create-patient-modal .ant-table-pagination,
+.users-modal .ant-table-pagination,
+.calendar-modal .ant-table-pagination,
+.ticket-modal .ant-table-pagination {
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+  margin: 16px 0 0 0 !important;
+  padding: 0 !important;
 }
 
 /* CRÍTICO: Sobrescribir estilos específicos de Ant Design */

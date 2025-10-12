@@ -813,6 +813,9 @@ const PatientHistory = () => {
               showTotal: (total, range) => 
                 `${range[0]}-${range[1]} de ${total} terapeutas`,
               onChange: (page) => handlePageChange(page),
+              size: 'small',
+              showLessItems: true,
+              simple: false,
             }}
             rowClassName={() => styles.tableRow}
           />
