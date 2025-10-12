@@ -11,7 +11,7 @@ const defaultClinicName = 'Reflexo Perú';
 const LOGO_URL = '/MiniLogoReflexo.png';
 
 // Paleta de colores pastel
-const pastelGreen = '#95e472';
+const pastelGreen = '#2d5a3d';
 const darkGreen = '#2d5a3d';
 const lightBackground = '#f8f9fa';
 

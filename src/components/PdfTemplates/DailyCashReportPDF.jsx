@@ -10,64 +10,53 @@ import {
 const defaultClinicName = 'Reflexo Perú';
 const LOGO_URL = '/MiniLogoReflexo.png';
 
-// Paleta de colores pastel original
-const pastelGreen = '#95e472';
-const darkGreen = '#2d5a3d';
-const lightBackground = '#f8f9fa';
-
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#fff',
-    padding: 50,
+    padding: 30,
     fontFamily: 'Helvetica',
-    fontSize: 9,
+    fontSize: 10,
   },
   // Cabecera
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
   },
   logo: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     borderRadius: 50,
-    borderWidth: 5,
+    borderWidth: 3,
     borderColor: '#4CAF50',
     borderStyle: 'solid',
   },
-
   headerTitles: {
     marginLeft: 15,
   },
   clinicName: {
-    color: darkGreen,
-    fontSize: 22,
+    color: '#2d5a3d',
+    fontSize: 20,
     fontFamily: 'Helvetica-Bold',
   },
   reportTitle: {
     color: '#444',
-    fontSize: 14,
+    fontSize: 12,
   },
   headerInfo: {
     marginLeft: 'auto',
     textAlign: 'right',
   },
   infoText: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#555',
     marginBottom: 2,
-  },
-  divider: {
-    borderBottomWidth: 2,
-    borderBottomColor: pastelGreen,
-    marginVertical: 15,
   },
   // Sección de Resumen
   summaryContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: lightBackground,
+    backgroundColor: '#f8f9fa',
     padding: 15,
     borderRadius: 8,
     border: `1px solid #e0e0e0`,
@@ -84,68 +73,99 @@ const styles = StyleSheet.create({
   },
   summaryValue: {
     fontSize: 16,
-    color: darkGreen,
+    color: '#2d5a3d',
     fontFamily: 'Helvetica-Bold',
   },
-  // Estilos de la tabla
+  divider: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#95e472',
+    marginVertical: 15,
+  },
+  // Estilos de la tabla principal
   table: {
-    border: `1px solid #e0e0e0`,
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: '#2d5a3d',
+    borderStyle: 'solid',
     borderRadius: 8,
     overflow: 'hidden',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: pastelGreen,
-    padding: 10,
+    backgroundColor: '#2d5a3d', // Verde oscuro
+    height: 35,
   },
   headerCell: {
     color: '#fff',
     fontFamily: 'Helvetica-Bold',
-    fontSize: 11,
+    fontSize: 10,
+    padding: 10,
+    borderRightWidth: 1,
+    borderRightColor: '#fff',
+    borderRightStyle: 'solid',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
   },
   tableRow: {
     flexDirection: 'row',
-    padding: 10,
-    borderBottom: `1px solid #e0e0e0`,
-  },
-  rowOdd: {
-    backgroundColor: lightBackground,
+    height: 28,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+    borderBottomStyle: 'solid',
   },
   tableCell: {
-    fontSize: 10,
+    fontSize: 9,
+    padding: 8,
+    borderRightWidth: 1,
+    borderRightColor: '#e0e0e0',
+    borderRightStyle: 'solid',
+    display: 'flex',
+    alignItems: 'center',
   },
-  cellMethod: {
-    flex: 2,
-    fontFamily: 'Helvetica-Bold',
+  // Anchos específicos de columnas
+  colFecha: {
+    width: '25%',
   },
-  cellCount: {
-    flex: 1,
+  colNoPac: {
+    width: '12%',
     textAlign: 'center',
   },
-  cellAmount: {
-    flex: 1,
-    textAlign: 'right',
+  colSubTotal: {
+    width: '12%',
+    textAlign: 'center',
   },
-  // Pie de tabla
-  tableFooter: {
-    flexDirection: 'row',
-    padding: 10,
-    backgroundColor: '#eaffdf',
-    borderTop: `2px solid ${pastelGreen}`,
+  colEgresos: {
+    width: '15%',
+    textAlign: 'center',
   },
-  footerLabel: {
-    flex: 3,
-    textAlign: 'right',
+  colEfectivo: {
+    width: '15%',
+    textAlign: 'center',
+  },
+  colObservaciones: {
+    width: '21%',
+    textAlign: 'center',
+  },
+  // Estilos para filas específicas
+  dataRow: {
     fontFamily: 'Helvetica-Bold',
-    color: darkGreen,
-    fontSize: 12,
   },
-  footerValue: {
-    flex: 1,
-    textAlign: 'right',
+  emptyRow: {
+    backgroundColor: '#f8f9fa',
+  },
+  totalRow: {
+    backgroundColor: '#e8f5e8',
     fontFamily: 'Helvetica-Bold',
-    color: darkGreen,
-    fontSize: 12,
+    borderTopWidth: 2,
+    borderTopColor: '#2d5a3d',
+    borderTopStyle: 'solid',
+  },
+  sectionSeparator: {
+    height: 20,
+    backgroundColor: '#f0f0f0',
   },
   // Pie de página del documento
   footer: {
@@ -159,18 +179,6 @@ const styles = StyleSheet.create({
     borderTop: `1px solid #e0e0e0`,
     paddingTop: 8,
   },
-  noDataContainer: {
-    padding: 40,
-    textAlign: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  noDataText: {
-    fontSize: 12,
-    color: '#666',
-    fontStyle: 'italic',
-  },
 });
 
 const DailyCashReportPDF = ({
@@ -180,72 +188,192 @@ const DailyCashReportPDF = ({
   companyInfo,
   isEdited = false,
 }) => {
-  // Manejar la nueva estructura de datos del backend
+  // Manejar la nueva estructura de datos del backend y agrupar por categorías
   const processData = (rawData) => {
-    if (!rawData) return { rows: [], totalGeneral: 0, totalCitas: 0 };
+    if (!rawData) return { 
+      cuponSinCosto: { countAppointment: 0, total: 0 },
+      efectivoRows: [], 
+      yapeRows: [], 
+      totalEfectivo: 0, 
+      totalYape: 0, 
+      totalGeneral: 0, 
+      totalCitas: 0 
+    };
     
-    // Si viene con la estructura antigua (Object.values)
-    if (rawData && typeof rawData === 'object' && !rawData.report && !rawData.debug) {
-      const rows = Object.values(rawData);
-      const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
-      const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
-      return { rows, totalGeneral, totalCitas };
-    }
+    let paymentData = {};
     
-    // Si viene con la nueva estructura (report: [], debug: {...})
-    if (rawData.report && Array.isArray(rawData.report)) {
-      // Si report está vacío pero hay datos en debug.sample_appointments
-      if (rawData.report.length === 0 && rawData.debug && rawData.debug.sample_appointments) {
-        const appointments = rawData.debug.sample_appointments;
-        const paymentTypes = {};
-        
-        // Agrupar por tipo de pago
-        appointments.forEach(appointment => {
-          const paymentType = appointment.payment_type_id || 'SIN_PAGO';
-          if (!paymentTypes[paymentType]) {
-            paymentTypes[paymentType] = {
-              name: paymentType,
-              countAppointment: 0,
-              payment: 0,
-              total: 0
-            };
-          }
-          paymentTypes[paymentType].countAppointment += 1;
-          paymentTypes[paymentType].payment = parseFloat(appointment.payment || 0);
-          paymentTypes[paymentType].total += parseFloat(appointment.payment || 0);
-        });
-        
-        const rows = Object.values(paymentTypes);
-        const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
-        const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
-        return { rows, totalGeneral, totalCitas };
+    // Si viene con la estructura antigua (Object.values) o nueva estructura
+    if (rawData && typeof rawData === 'object') {
+      if (rawData.report && Array.isArray(rawData.report)) {
+        // Nueva estructura
+        if (rawData.report.length > 0) {
+          paymentData = rawData.report.reduce((acc, item) => {
+            acc[item.name] = item;
+            return acc;
+          }, {});
+        } else if (rawData.debug && rawData.debug.sample_appointments) {
+          // Si report está vacío pero hay datos en debug.sample_appointments
+          const appointments = rawData.debug.sample_appointments;
+          appointments.forEach(appointment => {
+            const paymentType = appointment.payment_type_id || 'SIN_PAGO';
+            if (!paymentData[paymentType]) {
+              paymentData[paymentType] = {
+                name: paymentType,
+                countAppointment: 0,
+                payment: 0,
+                total: 0
+              };
+            }
+            paymentData[paymentType].countAppointment += 1;
+            paymentData[paymentType].payment = parseFloat(appointment.payment || 0);
+            paymentData[paymentType].total += parseFloat(appointment.payment || 0);
+          });
+        }
+      } else {
+        // Estructura antigua (Object.values)
+        paymentData = rawData;
       }
-      
-      // Si report tiene datos
-      const rows = rawData.report;
-      const totalGeneral = rows.reduce((acc, row) => acc + (row.total || 0), 0);
-      const totalCitas = rows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
-      return { rows, totalGeneral, totalCitas };
     }
     
-    return { rows: [], totalGeneral: 0, totalCitas: 0 };
+    // Procesar los datos agrupados por categorías
+    const cuponSinCosto = { countAppointment: 0, total: 0 };
+    const efectivoRows = [];
+    const yapeRows = [];
+    
+    Object.values(paymentData).forEach(item => {
+      const name = item.name || '';
+      
+      if (name.includes('CUPÓN SIN COSTO') || name.includes('SIN COSTO')) {
+        cuponSinCosto.countAppointment += item.countAppointment || 0;
+        cuponSinCosto.total += item.total || 0;
+      } else if (name.includes('EFECTIVO')) {
+        efectivoRows.push(item);
+      } else if (name.includes('YAPE')) {
+        yapeRows.push(item);
+      }
+    });
+    
+    // Calcular totales
+    const totalEfectivo = efectivoRows.reduce((acc, row) => acc + (row.total || 0), 0);
+    const totalYape = yapeRows.reduce((acc, row) => acc + (row.total || 0), 0);
+    const totalGeneral = cuponSinCosto.total + totalEfectivo + totalYape;
+    const totalCitas = cuponSinCosto.countAppointment + 
+                      efectivoRows.reduce((acc, row) => acc + (row.countAppointment || 0), 0) + 
+                      yapeRows.reduce((acc, row) => acc + (row.countAppointment || 0), 0);
+    
+    return { 
+      cuponSinCosto, 
+      efectivoRows, 
+      yapeRows, 
+      totalEfectivo, 
+      totalYape, 
+      totalGeneral, 
+      totalCitas 
+    };
   };
 
-  const { rows, totalGeneral, totalCitas } = processData(data);
-  const now = new Date();
-  const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
-  const promedioPorCita =
-    totalCitas > 0 ? (totalGeneral / totalCitas).toFixed(2) : 0;
-
+  const { 
+    cuponSinCosto, 
+    efectivoRows, 
+    yapeRows, 
+    totalEfectivo, 
+    totalYape, 
+    totalGeneral, 
+    totalCitas 
+  } = processData(data);
   const clinicName = companyInfo?.company_name || defaultClinicName;
   const logo = LOGO_URL;
-  
-  console.log('🖼️ PDF Logo Debug:', {
-    logo: logo,
-    logoType: typeof logo,
-    hasLogo: !!logo,
-    logoString: String(logo)
-  });
+  const now = new Date();
+  const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
+  const promedioPorCita = totalCitas > 0 ? (totalGeneral / totalCitas).toFixed(2) : 0;
+
+  // Función para crear una fila vacía
+  const createEmptyRow = (key) => (
+    <View style={styles.tableRow} key={key}>
+      <Text style={[styles.tableCell, styles.colFecha]}></Text>
+      <Text style={[styles.tableCell, styles.colNoPac]}></Text>
+      <Text style={[styles.tableCell, styles.colSubTotal]}></Text>
+      <Text style={[styles.tableCell, styles.colEgresos]}></Text>
+      <Text style={[styles.tableCell, styles.colEfectivo]}></Text>
+      <Text style={[styles.tableCell, styles.colObservaciones]}></Text>
+    </View>
+  );
+
+  // Función para crear una fila de datos
+  const createDataRow = (label, noPac = "0", subTotal = "0", key) => (
+    <View style={styles.tableRow} key={key}>
+      <Text style={[styles.tableCell, styles.colFecha, styles.dataRow]}>
+        {label}
+      </Text>
+      <Text style={[styles.tableCell, styles.colNoPac, styles.dataRow]}>
+        {noPac}
+      </Text>
+      <Text style={[styles.tableCell, styles.colSubTotal, styles.dataRow]}>
+        {subTotal}
+      </Text>
+      <Text style={[styles.tableCell, styles.colEgresos]}></Text>
+      <Text style={[styles.tableCell, styles.colEfectivo]}></Text>
+      <Text style={[styles.tableCell, styles.colObservaciones]}></Text>
+    </View>
+  );
+
+  // Función para crear una fila de total
+  const createTotalRow = (label, noPac = "0", subTotal = "0", key) => (
+    <View style={styles.tableRow} key={key}>
+      <Text style={[styles.tableCell, styles.colFecha, styles.dataRow, { backgroundColor: '#e8f5e8' }]}>
+        {label}
+      </Text>
+      <Text style={[styles.tableCell, styles.colNoPac, styles.dataRow, { backgroundColor: '#e8f5e8' }]}>
+        {noPac}
+      </Text>
+      <Text style={[styles.tableCell, styles.colSubTotal, styles.dataRow, { backgroundColor: '#e8f5e8' }]}>
+        {subTotal}
+      </Text>
+      <Text style={[styles.tableCell, styles.colEgresos, { backgroundColor: '#e8f5e8' }]}></Text>
+      <Text style={[styles.tableCell, styles.colEfectivo, { backgroundColor: '#e8f5e8' }]}></Text>
+      <Text style={[styles.tableCell, styles.colObservaciones, { backgroundColor: '#e8f5e8' }]}></Text>
+    </View>
+  );
+
+  // Función para crear filas de efectivo
+  const createEfectivoRows = () => {
+    const rows = [];
+    
+    // Agregar cada fila de efectivo
+    efectivoRows.forEach((row, index) => {
+      const amount = row.payment || 0;
+      rows.push(
+        createDataRow(`EFECTIVO ${amount}`, row.countAppointment.toString(), row.total.toString(), `efectivo-${index}`)
+      );
+    });
+    
+    // Si no hay efectivos, agregar una fila vacía
+    if (efectivoRows.length === 0) {
+      rows.push(createEmptyRow("efectivo-empty"));
+    }
+    
+    return rows;
+  };
+
+  // Función para crear filas de yape
+  const createYapeRows = () => {
+    const rows = [];
+    
+    // Agregar cada fila de yape
+    yapeRows.forEach((row, index) => {
+      const amount = row.payment || 0;
+      rows.push(
+        createDataRow(`YAPE ${amount}`, row.countAppointment.toString(), row.total.toString(), `yape-${index}`)
+      );
+    });
+    
+    // Si no hay yape, agregar una fila vacía
+    if (yapeRows.length === 0) {
+      rows.push(createEmptyRow("yape-empty"));
+    }
+    
+    return rows;
+  };
 
   return (
     <Document>
@@ -276,6 +404,7 @@ const DailyCashReportPDF = ({
           </View>
         </View>
 
+        {/* Sección de Resumen */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryItem}>
             <Text style={styles.summaryLabel}>Total de Citas</Text>
@@ -295,51 +424,66 @@ const DailyCashReportPDF = ({
 
         <View style={styles.divider} />
 
-        {rows.length > 0 ? (
-          <View style={styles.table}>
-            <View style={styles.tableHeader}>
-              <Text style={[styles.headerCell, { flex: 2 }]}>Método de Pago</Text>
-              <Text style={[styles.headerCell, { flex: 1, textAlign: 'center' }]}>
-                Citas
-              </Text>
-              <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
-                Monto
-              </Text>
-              <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>
-                Total
-              </Text>
-            </View>
-            {rows.map((row, idx) => (
-              <View
-                style={[styles.tableRow, idx % 2 !== 0 ? styles.rowOdd : {}]}
-                key={row.name}
-              >
-                <Text style={[styles.tableCell, styles.cellMethod]}>
-                  {row.name}
-                </Text>
-                <Text style={[styles.tableCell, styles.cellCount]}>
-                  {row.countAppointment}
-                </Text>
-                <Text style={[styles.tableCell, styles.cellAmount]}>
-                  S/ {row.payment.toFixed(2)}
-                </Text>
-                <Text style={[styles.tableCell, styles.cellAmount]}>
-                  S/ {row.total.toFixed(2)}
-                </Text>
-              </View>
-            ))}
-            <View style={styles.tableFooter}>
-              <Text style={styles.footerLabel}>Total General:</Text>
-              <Text style={styles.footerValue}>S/ {totalGeneral.toFixed(2)}</Text>
-            </View>
-          </View>
-        ) : (
-          <View style={styles.noDataContainer}>
-            <Text style={styles.noDataText}>
-              No se encontraron transacciones para esta fecha
+        {/* Tabla principal con estructura fija */}
+        <View style={styles.table}>
+          {/* Header de la tabla */}
+          <View style={styles.tableHeader}>
+            <Text style={[styles.headerCell, styles.colFecha]}>
+              Fecha: {date.format('DD/MM/YYYY')}
+            </Text>
+            <Text style={[styles.headerCell, styles.colNoPac]}>
+              No PAC.
+            </Text>
+            <Text style={[styles.headerCell, styles.colSubTotal]}>
+              Sub-Total
+            </Text>
+            <Text style={[styles.headerCell, styles.colEgresos]}>
+              Egresos
+            </Text>
+            <Text style={[styles.headerCell, styles.colEfectivo]}>
+              Efect./Dia
+            </Text>
+            <Text style={[styles.headerCell, styles.colObservaciones]}>
+              Observaciones
             </Text>
           </View>
-        )}
+
+          {/* CUPÓN SIN COSTO - siempre aparece */}
+          {createDataRow("CUPÓN SIN COSTO", cuponSinCosto.countAppointment.toString(), cuponSinCosto.total.toString(), "cupon-sin-costo")}
+
+          {/* 2 filas vacías después de CUPÓN SIN COSTO */}
+          {createEmptyRow("empty-1")}
+          {createEmptyRow("empty-2")}
+
+          {/* Filas de EFECTIVO */}
+          {createEfectivoRows()}
+
+          {/* 2 filas vacías después de EFECTIVO */}
+          {createEmptyRow("empty-3")}
+          {createEmptyRow("empty-4")}
+
+          {/* Filas de YAPE */}
+          {createYapeRows()}
+
+          {/* 2 filas vacías después de YAPE */}
+          {createEmptyRow("empty-5")}
+          {createEmptyRow("empty-6")}
+
+          {/* TOTAL YAPE */}
+          {createTotalRow("TOTAL YAPE", 
+            yapeRows.reduce((acc, row) => acc + (row.countAppointment || 0), 0).toString(), 
+            totalYape.toString(), 
+            "total-yape")}
+
+          {/* TOTAL EFECTIVO */}
+          {createTotalRow("TOTAL EFECTIVO", 
+            efectivoRows.reduce((acc, row) => acc + (row.countAppointment || 0), 0).toString(), 
+            totalEfectivo.toString(), 
+            "total-efectivo")}
+
+          {/* TOTAL GENERAL */}
+          {createTotalRow("TOTAL", totalCitas.toString(), totalGeneral.toString(), "total-general")}
+        </View>
 
         <Text style={styles.footer}>
           {clinicName} - Documento generado automáticamente.
