@@ -108,10 +108,10 @@ const NewAppointment = () => {
                 payment: '0', // Establecer monto en 0
               });
             } else {
-              // Si se cambia a otra opción, desbloquear campos y preseleccionar Yape
+              // Si se cambia a otra opción, desbloquear campos y preseleccionar Efectivo
               setIsFreeCoupon(false);
               form.setFieldsValue({
-                payment_type_id: '9',
+                payment_type_id: '10', // Preseleccionar "EFECTIVO" (cambio de 9 a 10)
               });
             }
           }
@@ -505,7 +505,7 @@ const NewAppointment = () => {
               >
                 <SelectPaymentStatus
                   value={form.getFieldValue('payment_type_id')}
-                  defaultValue={9} // Preseleccionar Yape por defecto
+                  defaultValue={10} // Preseleccionar Efectivo por defecto
                   disabled={isFreeCoupon}
                   onChange={(value) =>
                     form.setFieldsValue({ payment_type_id: value })

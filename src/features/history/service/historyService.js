@@ -9,6 +9,15 @@ export const getPatientHistoryById = async (patientId) => {
     }
 };
 
+export const getHistoryById = async (historyId) => {
+    try {
+        const response = await get(`histories/${historyId}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const updatePatientHistoryById = async (historyId, data) => {
     try {
         const response = await patch(`histories/${historyId}`, data);

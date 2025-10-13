@@ -30,6 +30,12 @@ import {
 import styles from './PatientHistory.module.css';
 import SelectContraceptiveMethod from '../../../components/Select/SelectContraceptiveMethod';
 import SelectDiuType from '../../../components/Select/SelectDiuType';
+import { 
+  formatNumberForDisplay, 
+  formatNumberForBackend,
+  formatHeight,
+  formatWeight
+} from '../../../utils/numberFormatter';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -53,14 +59,29 @@ const PatientHistory = () => {
   const [contraceptiveMethodLabel, setContraceptiveMethodLabel] = useState('');
   const [diuTypeId, setDiuTypeId] = useState(null);
   const DIU_METHOD_ID = 4; // Mostrar select de tipo DIU solo si el método es DIU
-
+  
+  // ========================================
+  // FUENTE DE VERDAD PARA DATOS DEL PACIENTE
+  // Ahora viene del endpoint histories/patient/{id} que incluye el objeto patient anidado
+  // Este objeto ya viene completo en patientHistory.data.patient
+  // ========================================
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate(); //Para el boton de cancelar
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm, pagination, handlePageChange } = useStaff();
   const { data: patientHistory, loading: loadingHistory, refetch: refetchHistory } = usePatientHistory(id);
-  const isFemale = patientHistory?.data?.patient?.sex === 'F';
+  
+  // Calcular isFemale desde patientHistory.data.patient (que viene de histories/patient/{id})
+  const isFemale = useMemo(() => {
+    // El objeto patient viene anidado en la respuesta de histories/patient/{id}
+    const patient = patientHistory?.data?.patient;
+    if (patient?.sex === 'F') return true;
+    if (patient?.sex === 'M') return false;
+    
+    // Por defecto: false (no mostrar campos femeninos si no sabemos)
+    return false;
+  }, [patientHistory]);
   const {
     appointments,
     lastAppointment,
@@ -94,23 +115,28 @@ const PatientHistory = () => {
   }, [appointments, selectedAppointmentDate]);
 
   useEffect(() => {
-    if (patientHistory && patientHistory.data && patientHistory.data.patient) {
-      const { patient, ...historyData } = patientHistory.data;
+    // CRÍTICO: Solo ejecutar cuando los datos estén listos
+    if (loadingHistory) return;
+
+    if (patientHistory && patientHistory.data) {
+      const historyData = patientHistory.data;
+      const patient = historyData.patient; // El objeto patient viene anidado
 
       form.setFieldsValue({
-        // Información del paciente con verificación segura
-        patientName:
-          `${patient?.paternal_lastname || ''} ${patient?.maternal_lastname || ''} ${patient?.name || ''}`.trim(),
+        // NOMBRE DEL PACIENTE: Desde el objeto patient anidado en histories/patient/{id}
+        patientName: patient 
+          ? `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim()
+          : '',
 
         // Observaciones
         observationPrivate: historyData?.private_observation || '',
         observation: historyData?.observation || '',
 
-        // Información física
-        talla: historyData?.height || '',
-        pesoInicial: historyData?.weight || '',
-        ultimoPeso: historyData?.last_weight || '',
-        pesoHoy: historyData?.current_weight || '',
+        // Información física - FORMATEADA para mostrar valores amigables
+        talla: formatHeight(historyData?.height), // Ej: 1.47 en lugar de 1.4699999999...
+        pesoInicial: formatWeight(historyData?.weight), // Ej: 70.9 o 70.500
+        ultimoPeso: formatWeight(historyData?.last_weight), // Ej: 71.4
+        pesoHoy: formatWeight(historyData?.current_weight), // Ej: 69.8
 
         // Información médica
         testimonio: historyData?.testimony ? 'Sí' : 'No',
@@ -131,16 +157,11 @@ const PatientHistory = () => {
         contraceptive_method_id: isFemale ? (historyData?.contraceptive_method_id ?? null) : undefined,
         diu_type_id: isFemale ? (historyData?.diu_type_id ?? null) : undefined,
 
-        // Campos adicionales
-        diagnosticosMedicos: historyData?.diagnosticos_medicos || '',
-        operaciones: historyData?.operaciones || '',
-        medicamentos: historyData?.medicamentos || '',
-        dolencias: historyData?.dolencias || '',
-        diagnosticosReflexologia: historyData?.diagnosticos_reflexologia || '',
-        observacionesAdicionales: historyData?.observaciones_adicionales || '',
-        antecedentesFamiliares: historyData?.antecedentes_familiares || '',
-        alergias: historyData?.alergias || '',
-
+        // Campos adicionales médicos: NO llenarlos aquí porque vienen de las citas
+        // El useEffect de selectedAppointment se encargará de llenarlos
+        // Solo llenar estos campos si vienen del historial (cuando se usa histories/patient/{id})
+        // NO llenarlos cuando vienen de histories/{history_id} porque ese endpoint no los tiene
+        
                  // Fechas
          fechaInicio: appointments && appointments.length > 0 
            ? dayjs(appointments[0].appointment_date) 
@@ -177,55 +198,51 @@ const PatientHistory = () => {
           diu_type_id: diuId,
         });
       }
-    } else {
-      // Resetear el formulario si no hay datos válidos
-      form.resetFields();
-      setTherapist(null);
-      setSelectedTherapistId(null);
-      // Precargar nombre del paciente desde la cita cuando no hay historial
-      const apPatient = appointmentFromState?.patient;
-      if (apPatient) {
-        const fullName = `${apPatient?.paternal_lastname || ''} ${apPatient?.maternal_lastname || ''} ${apPatient?.name || ''}`.trim();
-        form.setFieldsValue({ patientName: fullName });
-      }
     }
-  }, [patientHistory, form]);
+    // Si no hay historial, el componente mostrará vacío hasta que se cargue
+  }, [patientHistory, loadingHistory, form, isFemale]);
 
   useEffect(() => {
-    if (!selectedAppointmentDate || !Array.isArray(appointments)) return;
+    // CRÍTICO: Usar el selectedAppointment del useMemo
+    // Este useEffect se ejecuta DESPUÉS de que selectedAppointment cambie
+    // selectedAppointment solo estará disponible cuando appointments y selectedAppointmentDate estén listos
+    if (!selectedAppointment) return;
 
-    const selectedAppointment = appointments.find(
-      (a) => a.appointment_date === selectedAppointmentDate,
-    );
+    const therapistObj = selectedAppointment.therapist;
+    const fullName = therapistObj
+      ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
+      : '';
+    
+    // Actualizar formulario con los datos de la cita seleccionada
+    // Estos campos SIEMPRE vienen de las citas, no del historial
+    form.setFieldsValue({
+      diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
+      dolencias: selectedAppointment.ailments ?? '',
+      medicamentos: selectedAppointment.medications ?? '',
+      operaciones: selectedAppointment.surgeries ?? '',
+      observacionesAdicionales: selectedAppointment.observation ?? '',
+      diagnosticosReflexologia:
+        selectedAppointment.reflexology_diagnostics ?? '',
+      therapist: fullName,
+    });
 
-    if (selectedAppointment) {
-      const therapistObj = selectedAppointment.therapist;
-      const fullName = therapistObj
-        ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
-        : '';
-      form.setFieldsValue({
-        diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
-        dolencias: selectedAppointment.ailments ?? '',
-        medicamentos: selectedAppointment.medications ?? '',
-        operaciones: selectedAppointment.surgeries ?? '',
-        observacionesAdicionales: selectedAppointment.observation ?? '',
-        diagnosticosReflexologia:
-          selectedAppointment.reflexology_diagnostics ?? '',
-        therapist: fullName,
-      });
-
-      setTherapist(fullName || null);
-      setSelectedTherapistId(therapistObj?.id ?? null);
-    }
-  }, [selectedAppointmentDate, appointments]);
+    setTherapist(fullName || null);
+    setSelectedTherapistId(therapistObj?.id ?? null);
+  }, [selectedAppointment, form]);
 
   useEffect(() => {
+    // CRÍTICO: Solo establecer la fecha cuando appointments ya esté cargado
+    // Esto evita que se establezca la fecha ANTES de tener las citas
+    if (!appointments || appointments.length === 0) {
+      return;
+    }
+
     if (appointmentFromState?.appointment_date) {
       setSelectedAppointmentDate(appointmentFromState.appointment_date);
     } else if (lastAppointment?.appointment_date) {
       setSelectedAppointmentDate(lastAppointment.appointment_date);
     }
-  }, [appointmentFromState, lastAppointment]);
+  }, [appointmentFromState, lastAppointment, appointments]);
 
 
 
@@ -287,21 +304,16 @@ const PatientHistory = () => {
       // No enviar payment_type_id si no existe
     }
 
-    const toFixed3 = (val) =>
-      val === undefined || val === null || val === '' || isNaN(Number(val))
-        ? ''
-        : Number(val).toFixed(3);
-
     // Lógica del peso: Si hay peso hoy, mover el peso anterior al peso anterior y el peso hoy al peso anterior
     const pesoAnteriorActual = patientHistory?.data?.current_weight || patientHistory?.data?.last_weight || '';
-    const nuevoPesoAnterior = values.pesoHoy ? pesoAnteriorActual : toFixed3(values.ultimoPeso);
-    const nuevoPesoHoy = values.pesoHoy ? toFixed3(values.pesoHoy) : '';
+    const nuevoPesoAnterior = values.pesoHoy ? formatNumberForBackend(pesoAnteriorActual) : formatNumberForBackend(values.ultimoPeso);
+    const nuevoPesoHoy = values.pesoHoy ? formatNumberForBackend(values.pesoHoy) : null;
 
     const historyPayload = {
-      weight: toFixed3(values.pesoInicial),
+      weight: formatNumberForBackend(values.pesoInicial),
       last_weight: nuevoPesoAnterior,
       current_weight: nuevoPesoHoy,
-      height: toFixed3(values.talla),
+      height: formatNumberForBackend(values.talla, 2), // Talla con 2 decimales
       observation: values.observation,
       private_observation: values.observationPrivate,
       diagnosticos_medicos: values.diagnosticosMedicos,
@@ -338,7 +350,7 @@ const PatientHistory = () => {
       appointment_type: selectedAppointment?.appointment_type || 'CC',
       payment: selectedAppointment?.payment || '50.00',
       appointment_status_id: appointment_status_id,
-      patient_id: patientHistory?.data?.patient?.id || appointmentFromState?.patient?.id,
+      patient_id: patientHistory?.data?.patient?.id || id, // Usar el patient del historial
       therapist_id: selectedTherapistId,
     };
 
@@ -358,7 +370,7 @@ const PatientHistory = () => {
         if (values.pesoHoy) {
           form.setFieldsValue({
             pesoHoy: '',
-            ultimoPeso: values.pesoHoy, // El peso hoy se convierte en peso anterior
+            ultimoPeso: formatWeight(values.pesoHoy), // El peso hoy se convierte en peso anterior (formateado)
           });
         }
         
@@ -633,54 +645,54 @@ const PatientHistory = () => {
               </Form.Item>
 
               {/* Campos condicionales para mujeres que ahora están en la misma fila */}
-              <Form.Item
-                name="menstruacion"
-                label="Menstruación"
-                className={styles.physicalInfoItem}
-                style={{ display: (isFemale || appointmentFromState?.patient?.sex === 'F') ? 'block' : 'none' }}
-              >
-                <Select className={`${styles.select} ${styles.smallInput}`}>
-                  <Option value="Sí">Sí</Option>
-                  <Option value="No">No</Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                name="gestacion"
-                label="Gestación"
-                className={styles.physicalInfoItem}
-                style={{ display: (isFemale || appointmentFromState?.patient?.sex === 'F') ? 'block' : 'none' }}
-              >
-                <Select className={`${styles.select} ${styles.smallInput}`}>
-                  <Option value="Sí">Sí</Option>
-                  <Option value="No">No</Option>
-                </Select>
-              </Form.Item>
-
-              {/* Métodos Anticonceptivos */}
-              {(isFemale || appointmentFromState?.patient?.sex === 'F') && (
-                <Form.Item
-                  name="use_contraceptive_method"
-                  label="¿Usa método anticonceptivo?"
-                  className={styles.physicalInfoItem}
-                >
-                  <Radio.Group
-                    value={useContraceptiveMethodState}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setUseContraceptiveMethodState(val);
-                      if (!val) {
-                        setContraceptiveMethodId(null);
-                        setDiuTypeId(null);
-                        setContraceptiveMethodLabel('');
-                        form.setFieldsValue({ contraceptive_method_id: null, diu_type_id: null });
-                      }
-                    }}
+              {isFemale && (
+                <>
+                  <Form.Item
+                    name="menstruacion"
+                    label="Menstruación"
+                    className={styles.physicalInfoItem}
                   >
-                    <Radio value={true}>Sí</Radio>
-                    <Radio value={false}>No</Radio>
-                  </Radio.Group>
-                </Form.Item>
+                    <Select className={`${styles.select} ${styles.smallInput}`}>
+                      <Option value="Sí">Sí</Option>
+                      <Option value="No">No</Option>
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item
+                    name="gestacion"
+                    label="Gestación"
+                    className={styles.physicalInfoItem}
+                  >
+                    <Select className={`${styles.select} ${styles.smallInput}`}>
+                      <Option value="Sí">Sí</Option>
+                      <Option value="No">No</Option>
+                    </Select>
+                  </Form.Item>
+
+                  {/* Métodos Anticonceptivos */}
+                  <Form.Item
+                    name="use_contraceptive_method"
+                    label="¿Usa método anticonceptivo?"
+                    className={styles.physicalInfoItem}
+                  >
+                    <Radio.Group
+                      value={useContraceptiveMethodState}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setUseContraceptiveMethodState(val);
+                        if (!val) {
+                          setContraceptiveMethodId(null);
+                          setDiuTypeId(null);
+                          setContraceptiveMethodLabel('');
+                          form.setFieldsValue({ contraceptive_method_id: null, diu_type_id: null });
+                        }
+                      }}
+                    >
+                      <Radio value={true}>Sí</Radio>
+                      <Radio value={false}>No</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                </>
               )}
 
               <Form.Item
@@ -848,8 +860,9 @@ const PatientHistory = () => {
                   date: dayjs(selectedAppointment.appointment_date).format(
                     'DD-MM-YYYY',
                   ),
-                  patient:
-                    `${patientHistory?.data?.patient?.paternal_lastname || ''} ${patientHistory?.data?.patient?.maternal_lastname || ''} ${patientHistory?.data?.patient?.name || ''}`.trim(),
+                  patient: patientHistory?.data?.patient
+                    ? `${patientHistory.data.patient.paternal_lastname || ''} ${patientHistory.data.patient.maternal_lastname || ''} ${patientHistory.data.patient.name || ''}`.trim()
+                    : '',
                   service: 'Consulta',
                   unit: 1,
                   amount: `S/ ${Number(selectedAppointment.payment).toFixed(2)}`,
@@ -871,7 +884,7 @@ const PatientHistory = () => {
           centered={true}
           styles={{ body: { padding: '0 !important', backgroundColor: 'var(--color-background-primary) !important' } }}
         >
-          {selectedAppointment && patientHistory?.data && (
+          {selectedAppointment && patientHistory?.data?.patient && patientHistory?.data && (
             <PDFViewer width="95%" height={800} showToolbar={true}>
               <FichaPDF
                 cita={selectedAppointment}

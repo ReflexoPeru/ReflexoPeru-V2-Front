@@ -113,7 +113,7 @@ export default function Patients() {
               height: '36px',
               borderRadius: '4px',
             }}
-            onClick={() => navigate(`historia/${record.id}`)}
+            onClick={() => navigate(`/Inicio/pacientes/historia/${record.id}`)}
           >
             Historia
           </Button>

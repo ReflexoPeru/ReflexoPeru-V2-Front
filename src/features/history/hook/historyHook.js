@@ -3,6 +3,7 @@ import {
   getStaff,
   searchStaff,
   getPatientHistoryById,
+  getHistoryById,
   getAppointmentsByPatientId,
   updatePatientHistoryById,
   updateAppointmentById,
@@ -24,9 +25,62 @@ export const usePatientHistory = (patientId) => {
 
     setLoading(true);
     try {
+      // ========================================
+      // FLUJO MEJORADO Y OPTIMIZADO
+      // ========================================
+      // PASO 1: SIEMPRE intentar obtener el historial por patient_id primero
+      // Este endpoint devuelve el historial Y el objeto patient anidado
+      // Endpoint: histories/patient/{id}
       const response = await getPatientHistoryById(patientId);
       const hasHistory = Boolean(response?.data?.id);
+      const hasValidData = response?.data?.height || response?.data?.weight || response?.data?.last_weight;
       const saysNotFound = typeof response?.message === 'string' && response.message.toLowerCase().includes('no se encontró historial');
+      
+      // CASO A: Si tiene historial con datos válidos, usarlo directamente
+      if (hasHistory && hasValidData) {
+        setData(response);
+        setError(null);
+        setLoading(false);
+        return;
+      }
+      
+      // CASO B: Si tiene historial pero sin datos (talla/pesos null)
+      // O si no tiene historial, buscar en las citas por si hay un history_id
+      if (hasHistory && !hasValidData || !hasHistory || saysNotFound) {
+        try {
+          const appointments = await getAppointmentsByPatientId(patientId);
+          
+          // Si hay citas con history_id, obtener ese historial específico
+          if (appointments && appointments.length > 0 && appointments[0].history_id) {
+            const historyId = appointments[0].history_id;
+            const historyFromAppointment = await getHistoryById(historyId);
+            
+            // Obtener el terapeuta desde las citas
+            const therapist = appointments[0].therapist || null;
+            
+            // Si este historial tiene el objeto patient anidado, usarlo
+            // Si no, usar el patient del response anterior (si existe)
+            const patientData = historyFromAppointment.patient || response?.data?.patient || null;
+            
+            setData({
+              data: {
+                ...historyFromAppointment,
+                patient: patientData,
+                therapist: therapist
+              },
+              message: 'Historial obtenido exitosamente'
+            });
+            setError(null);
+            setLoading(false);
+            return;
+          }
+        } catch (appointmentErr) {
+          console.warn('No se pudieron obtener las citas:', appointmentErr);
+          // Continuar con el flujo normal
+        }
+      }
+      
+      // CASO C: No hay historial en absoluto, crear uno nuevo
       if (!hasHistory && !autoCreated && saysNotFound) {
         const creationPayload = {
           testimony: null,
@@ -46,15 +100,20 @@ export const usePatientHistory = (patientId) => {
           const afterCreate = await getPatientHistoryById(patientId);
           setData(afterCreate);
         } catch (e) {
+          // Si falla la creación, usar la respuesta inicial
           setData(response);
         }
       } else {
+        // Usar la respuesta inicial si existe
         setData(response);
       }
+      
     } catch (err) {
       const backendMsg = err?.response?.data?.message || '';
       const notFound = typeof backendMsg === 'string' && backendMsg.toLowerCase().includes('no se encontró historial');
+      
       if (!autoCreated && notFound) {
+        // Último recurso: crear historial nuevo
         try {
           const creationPayload = {
             testimony: null,
@@ -86,6 +145,36 @@ export const usePatientHistory = (patientId) => {
   useEffect(() => {
     fetchData();
   }, [patientId]);
+
+  return { data, loading, error, refetch: fetchData };
+};
+
+export const useHistoryById = (historyId) => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { showToast } = useToast();
+
+  const fetchData = async () => {
+    if (!historyId) return;
+
+    setLoading(true);
+    try {
+      const response = await getHistoryById(historyId);
+      setData(response);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      const backendMsg = err?.response?.data?.message || 'Error al obtener la historia';
+      showToast('error', backendMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [historyId]);
 
   return { data, loading, error, refetch: fetchData };
 };
