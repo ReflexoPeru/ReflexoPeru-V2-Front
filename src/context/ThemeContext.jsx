@@ -161,6 +161,28 @@ const getAntdThemeConfig = (isDark) => ({
     Spin: {
       colorPrimary: '#1CB54A',
     },
+    Pagination: {
+      colorPrimary: '#1CB54A',
+      colorPrimaryHover: '#148235',
+      colorPrimaryBorder: '#1CB54A',
+      colorBgContainer: isDark ? '#2a2a2a' : '#ffffff',
+      colorText: isDark ? '#ffffff' : '#333333',
+      colorTextDisabled: isDark ? '#666666' : '#bfbfbf',
+      // Color del texto cuando el item está activo (importante para que se vea blanco)
+      itemActiveColorDisabled: '#ffffff',
+      // Fondo del item activo
+      controlItemBgActive: '#1CB54A',
+      controlItemBgActiveHover: '#148235',
+      itemActiveBg: '#1CB54A',
+      itemActiveBgDisabled: isDark ? '#3a3a3a' : '#f5f5f5',
+      // Fondos de items normales
+      itemBg: isDark ? '#2a2a2a' : '#ffffff',
+      itemInputBg: isDark ? '#2a2a2a' : '#ffffff',
+      itemLinkBg: isDark ? '#2a2a2a' : '#ffffff',
+      itemSize: 32,
+      borderRadius: 6,
+      colorBorder: isDark ? '#444444' : '#e0e0e0',
+    },
   },
 });
 
@@ -169,22 +191,17 @@ export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     try {
       const savedTheme = getLocalStorageString('theme');
-      return savedTheme ? savedTheme === 'dark' : false; // false por defecto (claro)
+      return savedTheme ? savedTheme === 'dark' : false; 
     } catch (error) {
       console.warn('Error al cargar tema del localStorage, usando tema claro por defecto:', error);
-      return false; // Tema claro por defecto si hay error
+      return false; 
     }
   });
 
   // Estado para controlar la animación de transición
   const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Aplicar el atributo data-theme al documento con transición suave
   useEffect(() => {
-    // Agregar clase de transición antes del cambio
     document.documentElement.classList.add('theme-transitioning');
-    
-    // Activar overlay de transición
     setIsTransitioning(true);
     
     // Pequeño delay para que la transición se vea

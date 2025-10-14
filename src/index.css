@@ -85,3 +85,29 @@ html,body,#root{
 .theme-transitioning {
   animation: themeFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ================================================== */
+/* ESTILOS PARA PAGINACIÓN                            */
+/* ================================================== */
+
+/* Asegurar que el número se vea blanco en el botón activo */
+.ant-pagination-item-active a {
+  color: #ffffff !important;
+}
+
+/* También para el hover del item activo */
+.ant-pagination-item-active:hover a {
+  color: #ffffff !important;
+}
+
+/* Asegurar que el fondo sea verde cuando está activo */
+.ant-pagination-item-active {
+  background-color: #1CB54A !important;
+  border-color: #1CB54A !important;
+}
+
+/* Hover del item activo */
+.ant-pagination-item-active:hover {
+  background-color: #148235 !important;
+  border-color: #148235 !important;
+}

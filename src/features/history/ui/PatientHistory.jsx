@@ -54,32 +54,23 @@ const PatientHistory = () => {
   const [showFichaModal, setShowFichaModal] = useState(false);
   const [metodoAnticonceptivo, setMetodoAnticonceptivo] = useState('');
   const [usaAnticonceptivo, setUsaAnticonceptivo] = useState('');
-  const [useContraceptiveMethodState, setUseContraceptiveMethodState] = useState(null); // true | false | null
+  const [useContraceptiveMethodState, setUseContraceptiveMethodState] = useState(null);
   const [contraceptiveMethodId, setContraceptiveMethodId] = useState(null);
   const [contraceptiveMethodLabel, setContraceptiveMethodLabel] = useState('');
   const [diuTypeId, setDiuTypeId] = useState(null);
-  const DIU_METHOD_ID = 4; // Mostrar select de tipo DIU solo si el método es DIU
+  const DIU_METHOD_ID = 4;
   
-  // ========================================
-  // FUENTE DE VERDAD PARA DATOS DEL PACIENTE
-  // Ahora viene del endpoint histories/patient/{id} que incluye el objeto patient anidado
-  // Este objeto ya viene completo en patientHistory.data.patient
-  // ========================================
   const { id } = useParams();
   const location = useLocation();
-  const navigate = useNavigate(); //Para el boton de cancelar
+  const navigate = useNavigate();
   const appointmentFromState = location.state?.appointment;
   const { staff, loading, setSearchTerm, pagination, handlePageChange } = useStaff();
   const { data: patientHistory, loading: loadingHistory, refetch: refetchHistory } = usePatientHistory(id);
   
-  // Calcular isFemale desde patientHistory.data.patient (que viene de histories/patient/{id})
   const isFemale = useMemo(() => {
-    // El objeto patient viene anidado en la respuesta de histories/patient/{id}
     const patient = patientHistory?.data?.patient;
     if (patient?.sex === 'F') return true;
     if (patient?.sex === 'M') return false;
-    
-    // Por defecto: false (no mostrar campos femeninos si no sabemos)
     return false;
   }, [patientHistory]);
   const {
@@ -90,7 +81,6 @@ const PatientHistory = () => {
     refetchAppointments,
   } = usePatientAppointments(id);
   
-  // Función para refrescar todos los datos
   const refreshAllData = async () => {
     await Promise.all([
       refetchHistory(),
@@ -101,7 +91,6 @@ const PatientHistory = () => {
   const { updateHistory, loading: updatingHistory } = useUpdatePatientHistory(id, refreshAllData);
   const { updateAppointment } = useUpdateAppointment();
 
-  // MEMORIZAR LAS FECHAS DE CITAS
   const appointmentDates = useMemo(() => {
     return [...new Set(appointments?.map((a) => a.appointment_date) || [])];
   }, [appointments]);
@@ -115,30 +104,25 @@ const PatientHistory = () => {
   }, [appointments, selectedAppointmentDate]);
 
   useEffect(() => {
-    // CRÍTICO: Solo ejecutar cuando los datos estén listos
     if (loadingHistory) return;
 
     if (patientHistory && patientHistory.data) {
       const historyData = patientHistory.data;
-      const patient = historyData.patient; // El objeto patient viene anidado
+      const patient = historyData.patient;
 
       form.setFieldsValue({
-        // NOMBRE DEL PACIENTE: Desde el objeto patient anidado en histories/patient/{id}
         patientName: patient 
           ? `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim()
           : '',
 
-        // Observaciones
         observationPrivate: historyData?.private_observation || '',
         observation: historyData?.observation || '',
 
-        // Información física - FORMATEADA para mostrar valores amigables
-        talla: formatHeight(historyData?.height), // Ej: 1.47 en lugar de 1.4699999999...
-        pesoInicial: formatWeight(historyData?.weight), // Ej: 70.9 o 70.500
-        ultimoPeso: formatWeight(historyData?.last_weight), // Ej: 71.4
-        pesoHoy: formatWeight(historyData?.current_weight), // Ej: 69.8
+        talla: formatHeight(historyData?.height),
+        pesoInicial: formatWeight(historyData?.weight),
+        ultimoPeso: formatWeight(historyData?.last_weight),
+        pesoHoy: formatWeight(historyData?.current_weight),
 
-        // Información médica
         testimonio: historyData?.testimony ? 'Sí' : 'No',
         gestacion: isFemale
           ? historyData?.gestation
@@ -151,21 +135,13 @@ const PatientHistory = () => {
             : 'No'
           : undefined,
         
-        // Métodos anticonceptivos
-        // Nuevo esquema basado en IDs
         use_contraceptive_method: isFemale ? (historyData?.use_contraceptive_method ?? null) : undefined,
         contraceptive_method_id: isFemale ? (historyData?.contraceptive_method_id ?? null) : undefined,
         diu_type_id: isFemale ? (historyData?.diu_type_id ?? null) : undefined,
 
-        // Campos adicionales médicos: NO llenarlos aquí porque vienen de las citas
-        // El useEffect de selectedAppointment se encargará de llenarlos
-        // Solo llenar estos campos si vienen del historial (cuando se usa histories/patient/{id})
-        // NO llenarlos cuando vienen de histories/{history_id} porque ese endpoint no los tiene
-        
-                 // Fechas
-         fechaInicio: appointments && appointments.length > 0 
-           ? dayjs(appointments[0].appointment_date) 
-           : dayjs(),
+        fechaInicio: appointments && appointments.length > 0 
+          ? dayjs(appointments[0].appointment_date) 
+          : dayjs(),
       });
 
       // Manejo del terapeuta con verificación segura
@@ -178,7 +154,6 @@ const PatientHistory = () => {
         setSelectedTherapistId(null);
       }
 
-      // Configurar estados para métodos anticonceptivos (nuevo esquema)
       if (isFemale) {
         const useMethod = historyData?.use_contraceptive_method ?? null;
         setUseContraceptiveMethodState(useMethod);
@@ -188,7 +163,6 @@ const PatientHistory = () => {
         setContraceptiveMethodId(methodId);
         setDiuTypeId(diuId);
 
-        // Para compatibilidad visual con estados existentes
         setUsaAnticonceptivo(useMethod === true ? 'Sí' : useMethod === false ? 'No' : '');
         setMetodoAnticonceptivo(methodId ? String(methodId) : '');
 
@@ -199,13 +173,9 @@ const PatientHistory = () => {
         });
       }
     }
-    // Si no hay historial, el componente mostrará vacío hasta que se cargue
   }, [patientHistory, loadingHistory, form, isFemale]);
 
   useEffect(() => {
-    // CRÍTICO: Usar el selectedAppointment del useMemo
-    // Este useEffect se ejecuta DESPUÉS de que selectedAppointment cambie
-    // selectedAppointment solo estará disponible cuando appointments y selectedAppointmentDate estén listos
     if (!selectedAppointment) return;
 
     const therapistObj = selectedAppointment.therapist;
@@ -213,8 +183,6 @@ const PatientHistory = () => {
       ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
       : '';
     
-    // Actualizar formulario con los datos de la cita seleccionada
-    // Estos campos SIEMPRE vienen de las citas, no del historial
     form.setFieldsValue({
       diagnosticosMedicos: selectedAppointment.diagnosis ?? '',
       dolencias: selectedAppointment.ailments ?? '',
@@ -231,8 +199,6 @@ const PatientHistory = () => {
   }, [selectedAppointment, form]);
 
   useEffect(() => {
-    // CRÍTICO: Solo establecer la fecha cuando appointments ya esté cargado
-    // Esto evita que se establezca la fecha ANTES de tener las citas
     if (!appointments || appointments.length === 0) {
       return;
     }
@@ -244,20 +210,15 @@ const PatientHistory = () => {
     }
   }, [appointmentFromState, lastAppointment, appointments]);
 
-
-
-  // Función para abrir el modal
   const showTherapistModal = () => {
     setIsModalVisible(true);
   };
 
-  // Función para cerrar el modal sin selección
   const handleCancel = () => {
     setIsModalVisible(false);
-    setSearchTerm(''); // Limpiar búsqueda al cerrar
+    setSearchTerm('');
   };
 
-  // Función para confirmar la selección
   const handleOk = () => {
     if (selectedTherapistId) {
       const selected = staff.find((t) => t.id === selectedTherapistId);
@@ -268,15 +229,13 @@ const PatientHistory = () => {
       }
     }
     setIsModalVisible(false);
-    setSearchTerm(''); // Limpiar búsqueda al cerrar
+    setSearchTerm('');
   };
 
-  // Función para manejar la selección en la tabla
   const handleSelectTherapist = (id) => {
     setSelectedTherapistId(id);
   };
 
-  // Función para eliminar la selección actual
   const handleRemoveTherapist = () => {
     setTherapist(null);
     setSelectedTherapistId(null);
@@ -291,20 +250,10 @@ const PatientHistory = () => {
     );
     const appointmentId = selectedAppointment?.id;
 
-
-    // Requiere appointmentId, pero si no hay historyId solo actualizaremos si el back lo permite (ej. Peso Hoy)
     if (!appointmentId) {
       message.error('Falta el ID de la cita.');
       return;
     }
-
-    // Verificar si la cita tiene payment_type_id válido
-    if (!selectedAppointment?.payment_type_id) {
-      
-      // No enviar payment_type_id si no existe
-    }
-
-    // Lógica del peso: Si hay peso hoy, mover el peso anterior al peso anterior y el peso hoy al peso anterior
     const pesoAnteriorActual = patientHistory?.data?.current_weight || patientHistory?.data?.last_weight || '';
     const nuevoPesoAnterior = values.pesoHoy ? formatNumberForBackend(pesoAnteriorActual) : formatNumberForBackend(values.ultimoPeso);
     const nuevoPesoHoy = values.pesoHoy ? formatNumberForBackend(values.pesoHoy) : null;
@@ -313,7 +262,7 @@ const PatientHistory = () => {
       weight: formatNumberForBackend(values.pesoInicial),
       last_weight: nuevoPesoAnterior,
       current_weight: nuevoPesoHoy,
-      height: formatNumberForBackend(values.talla, 2), // Talla con 2 decimales
+      height: formatNumberForBackend(values.talla, 2),
       observation: values.observation,
       private_observation: values.observationPrivate,
       diagnosticos_medicos: values.diagnosticosMedicos,
@@ -333,9 +282,8 @@ const PatientHistory = () => {
       therapist_id: selectedTherapistId,
     };
 
-    // Calcular appointment_status_id basado ÚNICAMENTE en la asignación del terapeuta
     const hasTherapist = Boolean(selectedTherapistId);
-    const appointment_status_id = hasTherapist ? 2 : 1; // Solo completada si tiene terapeuta asignado
+    const appointment_status_id = hasTherapist ? 2 : 1;
 
     const appointmentPayload = {
       appointment_date: selectedAppointmentDate,
@@ -350,45 +298,36 @@ const PatientHistory = () => {
       appointment_type: selectedAppointment?.appointment_type || 'CC',
       payment: selectedAppointment?.payment || '50.00',
       appointment_status_id: appointment_status_id,
-      patient_id: patientHistory?.data?.patient?.id || id, // Usar el patient del historial
+      patient_id: patientHistory?.data?.patient?.id || id,
       therapist_id: selectedTherapistId,
     };
-
-    // No enviar payment_type_id desde esta pantalla (se gestiona en el flujo de pagos)
 
     try {
       const historyResult = await updateHistory(historyId, historyPayload);
       
       const appointmentResult = await updateAppointment(appointmentId, appointmentPayload);
       
-      // Solo navegar si ambas actualizaciones fueron exitosas
       if (historyResult.success && appointmentResult.success) {
-        
         message.success('Cambios guardados exitosamente');
         
-        // Si se guardó un peso hoy, limpiar el campo para la próxima consulta
         if (values.pesoHoy) {
           form.setFieldsValue({
             pesoHoy: '',
-            ultimoPeso: formatWeight(values.pesoHoy), // El peso hoy se convierte en peso anterior (formateado)
+            ultimoPeso: formatWeight(values.pesoHoy),
           });
         }
         
-        // Esperar un momento para que se refresquen los datos
         setTimeout(() => {
           navigate(-1);
         }, 1000);
       } else {
-        
         message.error('Error al guardar los cambios');
       }
     } catch (e) {
-      
       message.error('Error al guardar los cambios: ' + e.message);
     }
   };
 
-  // Columnas para la tabla de terapeutas
   const columns = [
     {
       title: 'Seleccionar',
@@ -446,9 +385,6 @@ const PatientHistory = () => {
           <Form
             form={form}
             onFinish={onFinish}
-            onFinishFailed={(errorInfo) => {
-              
-            }}
             autoComplete="off"
             layout="vertical"
             className={styles.form}
@@ -462,7 +398,6 @@ const PatientHistory = () => {
               <Input disabled className={styles.input} />
             </Form.Item>
 
-            {/* Observaciones */}
             <Form.Item
               name="observation"
               label="Observación"
@@ -475,7 +410,6 @@ const PatientHistory = () => {
                Citas
              </Title>
 
-                         {/* Fecha de la Cita */}
              <Form.Item label="Fecha de la Cita" className={styles.formItem}>
                <Select
                  value={selectedAppointmentDate}
@@ -492,7 +426,6 @@ const PatientHistory = () => {
                </Select>
              </Form.Item>
 
-             {/* Terapeuta */}
              <Form.Item
                name="therapist"
                label="Terapeuta"
@@ -644,7 +577,6 @@ const PatientHistory = () => {
                 <Input className={`${styles.input} ${styles.smallInput}`} />
               </Form.Item>
 
-              {/* Campos condicionales para mujeres que ahora están en la misma fila */}
               {isFemale && (
                 <>
                   <Form.Item
@@ -669,7 +601,6 @@ const PatientHistory = () => {
                     </Select>
                   </Form.Item>
 
-                  {/* Métodos Anticonceptivos */}
                   <Form.Item
                     name="use_contraceptive_method"
                     label="¿Usa método anticonceptivo?"
@@ -821,7 +752,7 @@ const PatientHistory = () => {
               total: pagination.totalItems,
               pageSize: 10,
               showSizeChanger: false,
-              showQuickJumper: true,
+              showQuickJumper: false,
               showTotal: (total, range) => 
                 `${range[0]}-${range[1]} de ${total} terapeutas`,
               onChange: (page) => handlePageChange(page),

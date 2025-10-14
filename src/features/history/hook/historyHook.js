@@ -25,18 +25,11 @@ export const usePatientHistory = (patientId) => {
 
     setLoading(true);
     try {
-      // ========================================
-      // FLUJO MEJORADO Y OPTIMIZADO
-      // ========================================
-      // PASO 1: SIEMPRE intentar obtener el historial por patient_id primero
-      // Este endpoint devuelve el historial Y el objeto patient anidado
-      // Endpoint: histories/patient/{id}
       const response = await getPatientHistoryById(patientId);
       const hasHistory = Boolean(response?.data?.id);
       const hasValidData = response?.data?.height || response?.data?.weight || response?.data?.last_weight;
       const saysNotFound = typeof response?.message === 'string' && response.message.toLowerCase().includes('no se encontró historial');
       
-      // CASO A: Si tiene historial con datos válidos, usarlo directamente
       if (hasHistory && hasValidData) {
         setData(response);
         setError(null);
@@ -44,22 +37,14 @@ export const usePatientHistory = (patientId) => {
         return;
       }
       
-      // CASO B: Si tiene historial pero sin datos (talla/pesos null)
-      // O si no tiene historial, buscar en las citas por si hay un history_id
       if (hasHistory && !hasValidData || !hasHistory || saysNotFound) {
         try {
           const appointments = await getAppointmentsByPatientId(patientId);
           
-          // Si hay citas con history_id, obtener ese historial específico
           if (appointments && appointments.length > 0 && appointments[0].history_id) {
             const historyId = appointments[0].history_id;
             const historyFromAppointment = await getHistoryById(historyId);
-            
-            // Obtener el terapeuta desde las citas
             const therapist = appointments[0].therapist || null;
-            
-            // Si este historial tiene el objeto patient anidado, usarlo
-            // Si no, usar el patient del response anterior (si existe)
             const patientData = historyFromAppointment.patient || response?.data?.patient || null;
             
             setData({
@@ -76,11 +61,9 @@ export const usePatientHistory = (patientId) => {
           }
         } catch (appointmentErr) {
           console.warn('No se pudieron obtener las citas:', appointmentErr);
-          // Continuar con el flujo normal
         }
       }
       
-      // CASO C: No hay historial en absoluto, crear uno nuevo
       if (!hasHistory && !autoCreated && saysNotFound) {
         const creationPayload = {
           testimony: null,
@@ -100,11 +83,9 @@ export const usePatientHistory = (patientId) => {
           const afterCreate = await getPatientHistoryById(patientId);
           setData(afterCreate);
         } catch (e) {
-          // Si falla la creación, usar la respuesta inicial
           setData(response);
         }
       } else {
-        // Usar la respuesta inicial si existe
         setData(response);
       }
       
@@ -113,7 +94,6 @@ export const usePatientHistory = (patientId) => {
       const notFound = typeof backendMsg === 'string' && backendMsg.toLowerCase().includes('no se encontró historial');
       
       if (!autoCreated && notFound) {
-        // Último recurso: crear historial nuevo
         try {
           const creationPayload = {
             testimony: null,
@@ -248,9 +228,7 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
       };
     } catch (err) {
       setError(err);
-      const backendMsg =
-        err?.response?.data?.message ||
-        'No se pudo actualizar la historia clínica. Intenta nuevamente o contacta soporte.';
+      const backendMsg = err?.response?.data?.message || 'No se pudo actualizar la historia clínica.';
       showToast('error', backendMsg);
       return { success: false, message: backendMsg };
     } finally {
@@ -258,11 +236,7 @@ export const useUpdatePatientHistory = (patientId, onSuccess) => {
     }
   };
 
-  return {
-    updateHistory,
-    loading,
-    error,
-  };
+  return { updateHistory, loading, error };
 };
 
 export const useStaff = () => {
@@ -334,7 +308,6 @@ export const useStaff = () => {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, initialLoad]);
 
-  // Función unificada para manejar cambio de página
   const handlePageChange = (page) => {
     if (searchTerm.trim()) {
       searchStaffByTerm(searchTerm.trim(), page);
@@ -407,9 +380,7 @@ export const useUpdateAppointment = () => {
       showToast('actualizarCita', 'Cita modificada correctamente');
       return { success: true, message: 'Cita modificada correctamente' };
     } catch (error) {
-      const backendMsg =
-        error?.response?.data?.message ||
-        'No se pudo actualizar la cita. Por favor, revisa los datos o intenta más tarde.';
+      const backendMsg = error?.response?.data?.message || 'No se pudo actualizar la cita.';
       showToast('error', backendMsg);
       return { success: false, message: backendMsg };
     } finally {

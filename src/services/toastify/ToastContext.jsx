@@ -6,7 +6,17 @@ import styles from './Toastify.module.css';
 
 const ToastContext = createContext();
 
-export const useToast = () => useContext(ToastContext);
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (context === undefined) {
+    // Durante hot-reload o si se usa fuera del provider, retornar un no-op
+    console.warn('useToast se está usando fuera de ToastProvider');
+    return {
+      showToast: () => {} // no-op function
+    };
+  }
+  return context;
+};
 
 export const ToastProvider = ({ children }) => {
   const { isDarkMode } = useTheme();

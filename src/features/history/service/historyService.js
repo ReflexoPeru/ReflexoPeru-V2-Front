@@ -35,7 +35,6 @@ export const getStaff = async (page = 1, perPage = 10) => {
         let total = 0;
         
         if (response.data) {
-            // Manejar la estructura de respuesta paginada del API
             if (response.data.data && Array.isArray(response.data.data)) {
                 data = response.data.data;
                 total = response.data.total || 0;
@@ -48,10 +47,7 @@ export const getStaff = async (page = 1, perPage = 10) => {
             }
         }
 
-        return {
-            data,
-            total,
-        };
+        return { data, total };
     } catch (error) {
         throw error;
     }
@@ -75,7 +71,6 @@ export const searchStaff = async (term, page = 1, perPage = 10) => {
         let total = 0;
         
         if (res.data) {
-            // Manejar la estructura de respuesta paginada del API
             if (res.data.data && Array.isArray(res.data.data)) {
                 data = res.data.data;
                 total = res.data.total || 0;
@@ -88,10 +83,7 @@ export const searchStaff = async (term, page = 1, perPage = 10) => {
             }
         }
         
-        return { 
-            data,
-            total
-        };
+        return { data, total };
     } catch (error) {
         throw error;
     }
