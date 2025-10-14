@@ -149,7 +149,7 @@ export const defaultConfig = {
     icon: 'fa-solid fa-magnifying-glass',
     title: 'Búsqueda de Paciente',
     message: 'Buscando información del paciente',
-    duration: 3000,
+    duration: 6000, // Duración aumentada (6 segundos)
   },
   importarPacientes: {
     type: 'info',
@@ -193,7 +193,7 @@ export const defaultConfig = {
     icon: 'fa-solid fa-calendar-day',
     title: 'Actualización de Cita',
     message: 'Cita modificada correctamente',
-    duration: 5000,
+    duration: 8000, // Duración aumentada para guardado (8 segundos)
   },
   cancelarCita: {
     type: 'warning',
@@ -265,7 +265,7 @@ export const defaultConfig = {
     icon: 'fa-solid fa-file-medical',
     title: 'Actualización de Historia',
     message: 'Historia clínica actualizada correctamente',
-    duration: 5000,
+    duration: 8000, // Duración aumentada para guardado (8 segundos)
   },
   accesoHistoria: {
     type: 'info',

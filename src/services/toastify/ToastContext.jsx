@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import Toast from './Toast';
 import { defaultConfig as toastConfig } from './toastConfig';
 import { useTheme } from '../../context/ThemeContext';
@@ -22,7 +22,8 @@ export const ToastProvider = ({ children }) => {
   const { isDarkMode } = useTheme();
   const [notifications, setNotifications] = useState([]);
 
-  const showToast = (type, backendMessage) => {
+  // Memoriza showToast para evitar recreaciones innecesarias
+  const showToast = useCallback((type, backendMessage) => {
     const config = toastConfig[type];
     if (!config) return;
 
@@ -39,7 +40,7 @@ export const ToastProvider = ({ children }) => {
     setTimeout(() => {
       setNotifications((prev) => prev.filter((t) => t.id !== id));
     }, toastData.duration || 5000);
-  };
+  }, []); // Sin dependencias, la función es estable
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}

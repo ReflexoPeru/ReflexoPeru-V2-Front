@@ -43,7 +43,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, [showToast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Solo se ejecuta UNA VEZ al montar el componente
 
   return (
     <AuthContext.Provider

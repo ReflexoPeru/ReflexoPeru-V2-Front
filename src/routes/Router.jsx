@@ -23,7 +23,7 @@ import Error404 from '../pages/Error/Error404';
 import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
 import AppointmentsComplete from '../features/appointmentsComplete/ui/appointmentsComplete';
-import Historia from '../features/history/ui/PatientHistory';
+import Historia from '../features/history2';
 
 const router = createBrowserRouter([
   {
