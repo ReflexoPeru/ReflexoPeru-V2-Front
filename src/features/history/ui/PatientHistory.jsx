@@ -305,9 +305,11 @@ const PatientHistory = () => {
     try {
       const historyResult = await updateHistory(historyId, historyPayload);
       
-      const appointmentResult = await updateAppointment(appointmentId, appointmentPayload);
+      // Llamar updateAppointment sin toast automático para evitar duplicados
+      const appointmentResult = await updateAppointment(appointmentId, appointmentPayload, false);
       
       if (historyResult.success && appointmentResult.success) {
+        // Mostrar solo UN toast de éxito combinado
         message.success('Cambios guardados exitosamente');
         
         if (values.pesoHoy) {

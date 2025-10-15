@@ -49,6 +49,19 @@ export const sanitizeMedicalField = (value) => {
 };
 
 /**
+ * Formatea el nombre completo de un paciente de forma robusta
+ * @param {Object|null} patient
+ * @returns {string}
+ */
+export const formatPatientName = (patient) => {
+  if (!patient) return '';
+  const paternal = patient.paternal_lastname || '';
+  const maternal = patient.maternal_lastname || '';
+  const given = patient.name || '';
+  return `${paternal} ${maternal} ${given}`.trim();
+};
+
+/**
  * Construye valores iniciales del formulario desde los datos del historial
  * @param {Object} patientHistory - Datos del historial
  * @param {Array} appointments - Lista de citas
@@ -68,9 +81,7 @@ export const buildFormInitialValues = (patientHistory, appointments, isFemale, p
 
   const formValues = {
     // Información del paciente
-    patientName: patientData
-      ? `${patientData.paternal_lastname || ''} ${patientData.maternal_lastname || ''} ${patientData.name || ''}`.trim()
-      : '',
+    patientName: formatPatientName(patientData),
 
     // Observaciones
     observationPrivate: historyData.private_observation || '',

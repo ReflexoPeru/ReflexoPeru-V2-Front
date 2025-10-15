@@ -108,11 +108,9 @@ const NewAppointment = () => {
                 payment: '0', // Establecer monto en 0
               });
             } else {
-              // Si se cambia a otra opción, desbloquear campos y preseleccionar Efectivo
+              // Si se cambia a otra opción, desbloquear campos sin preseleccionar método de pago
               setIsFreeCoupon(false);
-              form.setFieldsValue({
-                payment_type_id: '10', // Preseleccionar "EFECTIVO" (cambio de 9 a 10)
-              });
+              // No preseleccionar método de pago automáticamente
             }
           }
         } catch (error) {
@@ -474,7 +472,6 @@ const NewAppointment = () => {
                 <SelectPrices
                   value={form.getFieldValue('service_id')}
                   initialPrice={form.getFieldValue('payment')}
-                  defaultValue={12} // Preseleccionar id 12
                   onChange={handleServiceChange}
                   onPriceChange={(price) => {
                     form.setFieldsValue({ payment: price });
@@ -505,7 +502,6 @@ const NewAppointment = () => {
               >
                 <SelectPaymentStatus
                   value={form.getFieldValue('payment_type_id')}
-                  defaultValue={10} // Preseleccionar Efectivo por defecto
                   disabled={isFreeCoupon}
                   onChange={(value) =>
                     form.setFieldsValue({ payment_type_id: value })

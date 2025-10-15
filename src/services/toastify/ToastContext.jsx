@@ -22,34 +22,59 @@ export const ToastProvider = ({ children }) => {
   const { isDarkMode } = useTheme();
   const [notifications, setNotifications] = useState([]);
 
+  // Función para eliminar un toast específico
+  const removeToast = useCallback((id) => {
+    setNotifications((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   // Memoriza showToast para evitar recreaciones innecesarias
   const showToast = useCallback((type, backendMessage) => {
     const config = toastConfig[type];
     if (!config) return;
 
-    const id = Date.now();
+    // Verificar si ya existe un toast del mismo tipo con el mismo mensaje
+    const message = backendMessage || config.message;
+    let toastId = null;
 
-    const toastData = {
-      ...config,
-      id,
-      message: backendMessage || config.message,
-    };
+    setNotifications((prev) => {
+      const existingToast = prev.find(
+        (toast) => toast.type === type && toast.message === message
+      );
+      
+      // Si ya existe un toast idéntico, no agregar otro
+      if (existingToast) {
+        console.log(`[Toast] Evitando toast duplicado: ${type} - ${message}`);
+        return prev;
+      }
 
-    setNotifications((prev) => [...prev, toastData]);
+      // Usar crypto.randomUUID() para IDs únicos, o fallback a timestamp + random
+      toastId = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((t) => t.id !== id));
-    }, toastData.duration || 5000);
-  }, []); // Sin dependencias, la función es estable
+      const toastData = {
+        ...config,
+        id: toastId,
+        message,
+      };
+
+      return [...prev, toastData];
+    });
+
+    // Auto-eliminar después de la duración
+    if (toastId) {
+      setTimeout(() => {
+        removeToast(toastId);
+      }, config.duration || 5000);
+    }
+  }, [removeToast]);
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ showToast, removeToast }}>
       {children}
       <div 
         className={styles.notifications}
         data-theme={isDarkMode ? 'dark' : 'light'}
       >
         {notifications.map((toast) => (
-          <Toast key={toast.id} {...toast} onClose={() => {}} />
+          <Toast key={toast.id} {...toast} onClose={removeToast} />
         ))}
       </div>
     </ToastContext.Provider>

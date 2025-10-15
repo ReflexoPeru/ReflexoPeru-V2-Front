@@ -103,7 +103,10 @@ export default function AppointmentsComplete() {
       case 'history':
         if (!record || !record.patient || !record.patient.id) return;
         navigate(`/Inicio/pacientes/historia/${record.patient.id}` , {
-          state: { appointment: record },
+          state: { 
+            appointment: record,
+            from: '/Inicio/citasCompletas'
+          },
         });
         break;
       default:

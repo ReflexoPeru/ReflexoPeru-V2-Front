@@ -13,6 +13,7 @@ import {
 } from '../api/appointmentApi';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants';
+import { getPatientById } from '../../patients/service/patientsService';
 
 /**
  * Hook principal para gestionar el historial del paciente
@@ -177,13 +178,30 @@ export const usePatientAppointments = (patientId) => {
       const response = await getAppointmentsByPatientId(patientId);
       // Nueva estructura: { appointments: [...], patient: {...} }
       const appointmentsList = response?.appointments || [];
-      const patientData = response?.patient || null;
+      // Intentar obtener el paciente de múltiples fuentes confiables
+      const patientFromAppointments = Array.isArray(appointmentsList) && appointmentsList.length > 0
+        ? appointmentsList[0]?.patient || null
+        : null;
+      let patientData = response?.patient || patientFromAppointments || null;
       
       const sorted = sortAppointmentsByDate(appointmentsList);
       const last = getLastAppointment(appointmentsList);
 
       setAppointments(sorted);
       setLastAppointment(last);
+
+      // Fallback robusto: si no vino el paciente en la respuesta ni en la primera cita,
+      // hacer una consulta directa por id para asegurar el nombre e id en el formulario
+      if (!patientData) {
+        try {
+          const fallback = await getPatientById(patientId);
+          patientData = fallback || null;
+        } catch (fallbackErr) {
+          // Mantener patient en null si también falla el fallback
+          console.warn('[usePatientAppointments] Fallback getPatientById failed:', fallbackErr);
+        }
+      }
+
       setPatient(patientData);
       showToast('busquedaPaciente');
     } catch (err) {
@@ -222,7 +240,7 @@ export const useUpdateAppointment = () => {
   const [error, setError] = useState(null);
   const { showToast } = useToast();
 
-  const updateAppointment = async (appointmentId, payload) => {
+  const updateAppointment = async (appointmentId, payload, showToastNotification = true) => {
     if (!appointmentId) {
       const error = new Error('Appointment ID is required');
       setError(error);
@@ -234,7 +252,10 @@ export const useUpdateAppointment = () => {
 
     try {
       await updateAppointmentById(appointmentId, payload);
-      showToast('actualizarCita', SUCCESS_MESSAGES.APPOINTMENT_UPDATED);
+      
+      if (showToastNotification) {
+        showToast('actualizarCita', SUCCESS_MESSAGES.APPOINTMENT_UPDATED);
+      }
 
       return {
         success: true,
@@ -247,7 +268,10 @@ export const useUpdateAppointment = () => {
         ERROR_MESSAGES.APPOINTMENT_UPDATE_FAILED;
 
       setError(err);
-      showToast('error', backendMsg);
+      
+      if (showToastNotification) {
+        showToast('error', backendMsg);
+      }
 
       return {
         success: false,

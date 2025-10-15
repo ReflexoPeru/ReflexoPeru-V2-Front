@@ -12,6 +12,7 @@ import {
   Typography,
 } from 'antd';
 import dayjs from '../../utils/dayjsConfig';
+import EmptyState from '../../components/Empty/EmptyState';
 
 // Hooks
 import {
@@ -358,10 +359,11 @@ const PatientHistory = () => {
       try {
         const [historyResult, appointmentResult] = await Promise.all([
           updateHistory(historyId, historyPayload),
-          updateAppointment(appointmentId, appointmentPayload),
+          updateAppointment(appointmentId, appointmentPayload, false), // Sin toast automático
         ]);
 
         if (historyResult.success && appointmentResult.success) {
+          // Mostrar solo UN toast de éxito combinado
           message.success(SUCCESS_MESSAGES.CHANGES_SAVED, 8); // Duración de 8 segundos
 
           // Actualizar campos de peso en el formulario
@@ -433,12 +435,44 @@ const PatientHistory = () => {
     });
   }
 
+  // Función para manejar el regreso
+  const handleGoBack = () => {
+    // Verificar si hay estado de navegación para determinar de dónde vino
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      // Por defecto, ir a la vista de citas
+      navigate('/Inicio/citas');
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Card className={styles.card}>
-        <Title level={2} className={styles.title}>
-          Historial del Paciente
-        </Title>
+        {/* Header con botón de regreso y título */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+          <Button
+            type="text"
+            icon={<i className="fa-solid fa-arrow-left"></i>}
+            onClick={handleGoBack}
+            style={{
+              padding: '8px 12px',
+              fontSize: '16px',
+              color: '#666',
+              border: '1px solid #d9d9d9',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: '40px',
+              height: '40px'
+            }}
+            title="Volver"
+          />
+          <Title level={2} className={styles.title} style={{ margin: 0 }}>
+            Historial del Paciente
+          </Title>
+        </div>
 
         <Form
           form={form}
@@ -469,22 +503,36 @@ const PatientHistory = () => {
             Información de la Cita
           </Title>
 
-          <div className={styles.appointmentRow}>
-            <Form.Item label="Fecha de la Cita" className={styles.dateFormItem}>
-              <Select
-                value={selectedAppointmentDate}
-                onChange={setSelectedAppointmentDate}
-                className={styles.select}
-                placeholder="Seleccione una fecha"
-                loading={loadingAppointments}
-              >
-                {appointmentDates.map((date) => (
-                  <Option key={date} value={date}>
-                    {dayjs(date).format('DD-MM-YYYY')}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+          {/* Estado vacío cuando no hay citas */}
+          {!loadingAppointments && appointmentDates.length === 0 ? (
+            <EmptyState
+              icon="calendar"
+              title="No hay citas registradas"
+              description="Este paciente no tiene ninguna cita programada por el momento. Las citas aparecerán aquí una vez que sean agendadas."
+              style={{
+                background: 'transparent',
+                border: 'none',
+                margin: '20px 0',
+                minHeight: '200px'
+              }}
+            />
+          ) : (
+            <div className={styles.appointmentRow}>
+              <Form.Item label="Fecha de la Cita" className={styles.dateFormItem}>
+                <Select
+                  value={selectedAppointmentDate}
+                  onChange={setSelectedAppointmentDate}
+                  className={styles.select}
+                  placeholder="Seleccione una fecha"
+                  loading={loadingAppointments}
+                >
+                  {appointmentDates.map((date) => (
+                    <Option key={date} value={date}>
+                      {dayjs(date).format('DD-MM-YYYY')}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
 
             <Form.Item
               name="therapist"
@@ -517,6 +565,7 @@ const PatientHistory = () => {
               </div>
             </Form.Item>
           </div>
+          )}
 
           {/* Campos Médicos */}
           <MedicalFields styles={styles} />

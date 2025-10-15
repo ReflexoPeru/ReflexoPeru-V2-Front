@@ -285,7 +285,10 @@ export default function Appointments() {
         break;
       case 'history':
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
-          state: { appointment: record },
+          state: { 
+            appointment: record,
+            from: '/Inicio/citas'
+          },
         });
         break;
       default:

@@ -28,7 +28,7 @@ const Toast = ({
         clearTimeout(timeoutRef);
       }
     };
-  }, []);
+  }, [id, duration, onClose]);
 
   return (
     <div

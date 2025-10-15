@@ -17,9 +17,13 @@ export default function View() {
     title = 'Registrar Paciente';
   if (matchPath('/Inicio/pacientes/editar/:id', path))
     title = 'Editar Paciente';
+  if (matchPath('/Inicio/pacientes/historia/:id', path))
+    title = 'Historial del Paciente';
 
   if (matchPath('/Inicio/citas', path)) title = 'Citas';
   if (matchPath('/Inicio/citas/registrar', path)) title = 'Registrar Cita';
+
+  if (matchPath('/Inicio/calendar', path)) title = 'Calendario';
 
   if (matchPath('/Inicio/reportes', path)) title = 'Reportes';
   if (matchPath('/Inicio/citasCompletas', path)) title = 'Citas Completadas';

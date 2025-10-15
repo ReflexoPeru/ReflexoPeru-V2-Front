@@ -113,7 +113,9 @@ export default function Patients() {
               height: '36px',
               borderRadius: '4px',
             }}
-            onClick={() => navigate(`/Inicio/pacientes/historia/${record.id}`)}
+            onClick={() => navigate(`/Inicio/pacientes/historia/${record.id}`, {
+              state: { from: '/Inicio/pacientes' }
+            })}
           >
             Historia
           </Button>

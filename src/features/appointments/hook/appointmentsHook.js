@@ -162,7 +162,7 @@ export const useAppointments = () => {
   }, []);
 
   const updateExistingAppointment = useCallback(
-    async (id, appointmentData) => {
+    async (id, appointmentData, showToastNotification = true) => {
       setLoading(true);
       setError(null);
       try {
@@ -173,17 +173,23 @@ export const useAppointments = () => {
           ),
         };
         const result = await updateAppointment(id, payload);
-        showToast('actualizarCita');
+        
+        if (showToastNotification) {
+          showToast('actualizarCita');
+        }
+        
         await loadAppointments();
         return result;
       } catch (err) {
-        showToast(
-          'error',
-          formatToastMessage(
-            err.response?.data?.message,
-            'Error actualizando cita',
-          ),
-        );
+        if (showToastNotification) {
+          showToast(
+            'error',
+            formatToastMessage(
+              err.response?.data?.message,
+              'Error actualizando cita',
+            ),
+          );
+        }
         setError(err);
         throw err;
       } finally {

@@ -373,15 +373,23 @@ export const useUpdateAppointment = () => {
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
-  const updateAppointment = async (appointmentId, payload) => {
+  const updateAppointment = async (appointmentId, payload, showToastNotification = true) => {
     setLoading(true);
     try {
       await updateAppointmentById(appointmentId, payload);
-      showToast('actualizarCita', 'Cita modificada correctamente');
+      
+      if (showToastNotification) {
+        showToast('actualizarCita', 'Cita modificada correctamente');
+      }
+      
       return { success: true, message: 'Cita modificada correctamente' };
     } catch (error) {
       const backendMsg = error?.response?.data?.message || 'No se pudo actualizar la cita.';
-      showToast('error', backendMsg);
+      
+      if (showToastNotification) {
+        showToast('error', backendMsg);
+      }
+      
       return { success: false, message: backendMsg };
     } finally {
       setLoading(false);
