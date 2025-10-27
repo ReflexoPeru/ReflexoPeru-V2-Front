@@ -2,6 +2,56 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 import dayjs from '../../utils/dayjsConfig';
 
+// SOLUCIÓN EFECTIVA: Función inteligente para ajustar contenido automáticamente
+const optimizeContentForSinglePage = (text) => {
+  if (!text) return { 
+    fontSize: 10, 
+    text: '', 
+    blockStyle: { minHeight: 29, marginBottom: 11 },
+    lineHeight: 1.3
+  };
+  
+  const textLength = text.length;
+  
+  // Estrategia 1: Texto normal (hasta 100 caracteres)
+  if (textLength <= 100) {
+    return {
+      fontSize: 10,
+      text: text,
+      blockStyle: { minHeight: 29, marginBottom: 11 },
+      lineHeight: 1.3
+    };
+  }
+  
+  // Estrategia 2: Texto medio (100-200 caracteres) - Reducir fuente y espaciado
+  if (textLength <= 200) {
+    return {
+      fontSize: 9,
+      text: text,
+      blockStyle: { minHeight: 25, marginBottom: 8 },
+      lineHeight: 1.2
+    };
+  }
+  
+  // Estrategia 3: Texto largo (200-300 caracteres) - Fuente pequeña y espaciado mínimo
+  if (textLength <= 300) {
+    return {
+      fontSize: 8,
+      text: text,
+      blockStyle: { minHeight: 20, marginBottom: 6 },
+      lineHeight: 1.1
+    };
+  }
+  
+  // Estrategia 4: Texto muy largo (>300 caracteres) - Truncar y fuente muy pequeña
+  return {
+    fontSize: 7,
+    text: text.substring(0, 280) + '...',
+    blockStyle: { minHeight: 18, marginBottom: 4 },
+    lineHeight: 1.0
+  };
+};
+
 // Función para calcular el elemento base chino
 const calculateChineseElement = (birthDate) => {
   if (!birthDate) return 'No especificado';
@@ -203,13 +253,26 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
       <View style={underlineStyle} />
     );
 
-  // Helper para renderizar secciones siempre con línea si vacío
-  const renderSectionField = (value) =>
-    value ? (
-      <Text style={styles.blockText}>{value}</Text>
-    ) : (
-      <View style={{ height: 10, borderBottomWidth: 0.5, borderBottomColor: '#000', borderBottomStyle: 'solid' }} />
+  // Helper optimizado para renderizar secciones con ajuste automático
+  const renderSectionField = (value) => {
+    if (!value) {
+      return (
+        <View style={{ height: 10, borderBottomWidth: 0.5, borderBottomColor: '#000', borderBottomStyle: 'solid' }} />
+      );
+    }
+    
+    // Usar la función optimizada para ajustar automáticamente
+    const optimized = optimizeContentForSinglePage(value);
+    
+    return (
+      <Text style={[styles.blockText, { 
+        fontSize: optimized.fontSize,
+        lineHeight: optimized.lineHeight 
+      }]}>
+        {optimized.text}
+      </Text>
     );
+  };
 
   // Datos opcionales: peso hoy y anticoncepción
   const pesoHoy = historia?.current_weight ?? historia?.actual_weight ?? '';
@@ -324,24 +387,24 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         {/* Diagnóstico */}
         <Text style={styles.sectionTitle}>DIAGNOSTICO MEDICO</Text>
         <View style={styles.line} />
-        <View style={styles.blockBig}>
+        <View style={[styles.blockBig, optimizeContentForSinglePage(cita.diagnosis).blockStyle]}>
           {renderSectionField(cita.diagnosis)}
         </View>
         {/* Medicamentos */}
         <Text style={styles.sectionTitle}>MEDICAMENTOS</Text>
         <View style={styles.line} />
-        <View style={styles.blockBig}>
+        <View style={[styles.blockBig, optimizeContentForSinglePage(cita.medications).blockStyle]}>
           {renderSectionField(cita.medications)}
         </View>
         {/* Operaciones */}
         <Text style={styles.sectionTitle}>OPERACIONES</Text>
-        <View style={styles.blockBig}>
+        <View style={[styles.blockBig, optimizeContentForSinglePage(cita.surgeries).blockStyle]}>
           {renderSectionField(cita.surgeries)}
         </View>
         {/* Dolencias */}
         <Text style={styles.sectionTitle}>DOLENCIAS</Text>
         <View style={styles.line} />
-        <View style={styles.blockBig}>
+        <View style={[styles.blockBig, optimizeContentForSinglePage(cita.ailments).blockStyle]}>
           {renderSectionField(cita.ailments)}
         </View>
         {/* Campos para mujeres */}
@@ -441,7 +504,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         </View>
         <Text style={styles.sectionTitle}>DIAGNOSTICOS REFLEXOLOGICO</Text>
         <View style={styles.line} />
-        <View style={styles.blockBig}>
+        <View style={[styles.blockBig, optimizeContentForSinglePage(cita.reflexology_diagnostics).blockStyle]}>
           {renderSectionField(cita.reflexology_diagnostics)}
         </View>
         {/* Firma del terapeuta */}

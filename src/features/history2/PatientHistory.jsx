@@ -121,13 +121,13 @@ const PatientHistory = () => {
     initializeLoad: initializeTherapistLoad,
   } = useTherapists();
 
-  // Hook para selección de terapeuta
-  const {
-    selectedTherapist,
-    selectedTherapistId,
-    selectTherapist,
-    clearTherapist,
-  } = useTherapistSelection();
+  // Estado simple para terapeuta (como en history original)
+  const [therapist, setTherapist] = useState(null);
+  const [selectedTherapistId, setSelectedTherapistId] = useState(null);
+  const [userSelectedTherapist, setUserSelectedTherapist] = useState(false); // FIX: Rastrear selección manual
+  
+  // FIX: Estado para controlar si se debe evitar sobrescribir el formulario después de guardar
+  const [justSaved, setJustSaved] = useState(false);
 
   // Hook para actualizaciones (sin callback, recargamos manualmente después del guardado)
   const { updateHistory, updating: updatingHistory } =
@@ -155,17 +155,27 @@ const PatientHistory = () => {
   const isLoading = loadingHistory || loadingAppointments;
   const isSaving = updatingHistory || updatingAppointment;
 
+
   // ==================== EFFECTS ====================
   
   /**
    * Effect: Cargar datos iniciales del historial en el formulario
    * IMPORTANTE: Espera a que terminen de cargar tanto el historial como las citas
    * para asegurar que tengamos los datos del paciente disponibles
+   * FIX: No sobrescribir el formulario si se acaba de guardar exitosamente
    */
   useEffect(() => {
     // Esperar a que terminen de cargar ambos datos
     if (loadingHistory || loadingAppointments) return;
     if (!patientHistory?.data) return;
+
+    // FIX: No sobrescribir el formulario si se acaba de guardar
+    // Esto evita que se pierdan los cambios del usuario después de un guardado exitoso
+    if (justSaved) {
+      console.log('🔄 [DEBUG] Evitando sobrescribir formulario después de guardar');
+      setJustSaved(false); // Resetear la bandera
+      return;
+    }
 
     const initialValues = buildFormInitialValues(
       patientHistory,
@@ -175,14 +185,20 @@ const PatientHistory = () => {
     );
     form.setFieldsValue(initialValues);
 
-    // Configurar terapeuta del historial
+    // FIX: Solo configurar terapeuta del historial si no hay uno ya seleccionado manualmente
+    // Esto evita que se sobrescriba la selección del usuario después del guardado
+    if (userSelectedTherapist) {
+      return; // No sobrescribir si el usuario ya seleccionó manualmente
+    }
+    
+    // Configurar terapeuta del historial (como en history original)
     if (patientHistory.data.therapist) {
       const therapistName = formatTherapistName(patientHistory.data.therapist);
-      const therapist = {
-        id: patientHistory.data.therapist.id,
-        name: therapistName,
-      };
-      selectTherapist(therapist);
+      setTherapist(therapistName);
+      setSelectedTherapistId(patientHistory.data.therapist.id);
+    } else {
+      setTherapist(null);
+      setSelectedTherapistId(null);
     }
 
     // Configurar estado de anticonceptivos para mujeres
@@ -195,36 +211,52 @@ const PatientHistory = () => {
       setDiuTypeId(contraceptiveData.diuId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientHistory, loadingHistory, loadingAppointments, isFemale, patient, appointments]);
+  }, [patientHistory, loadingHistory, loadingAppointments, isFemale, patient, appointments, justSaved]);
 
   /**
-   * Effect: Cargar datos de la cita seleccionada
-   * CRÍTICO: Limpia el terapeuta si la cita no tiene uno asignado
+   * Effect: Cargar datos de la cita seleccionada (como en history original)
+   * FIX: Solo actualizar terapeuta si no hay uno ya seleccionado manualmente
+   * FIX: No sobrescribir el formulario si se acaba de guardar exitosamente
    */
   useEffect(() => {
     if (!selectedAppointment) {
-      clearTherapist(); // Limpia si no hay cita seleccionada
+      setTherapist(null);
+      setSelectedTherapistId(null);
+      return;
+    }
+
+    // FIX: No sobrescribir el formulario si se acaba de guardar
+    if (justSaved) {
+      console.log('🔄 [DEBUG] Evitando sobrescribir formulario de cita después de guardar');
+      setJustSaved(false); // Resetear la bandera
       return;
     }
 
     const appointmentValues = buildAppointmentFormValues(selectedAppointment);
     form.setFieldsValue(appointmentValues);
 
-    // Actualizar o limpiar terapeuta según la cita
+    // FIX: Solo actualizar terapeuta si no hay uno ya seleccionado manualmente
+    // Esto evita que se sobrescriba la selección del usuario
+    if (userSelectedTherapist) {
+      return; // No hacer nada si el usuario ya seleccionó manualmente
+    }
+    
+    // FIX: Si ya hay un terapeuta seleccionado y la cita también tiene terapeuta,
+    // mantener el que está seleccionado (puede ser el mismo o uno diferente)
+    if (selectedTherapistId && selectedAppointment.therapist) {
+      return; // Mantener el terapeuta actual
+    }
+    
     if (selectedAppointment.therapist) {
-      // La cita TIENE terapeuta → asignarlo
       const therapistName = formatTherapistName(selectedAppointment.therapist);
-      const therapist = {
-        id: selectedAppointment.therapist.id,
-        name: therapistName,
-      };
-      selectTherapist(therapist);
+      setTherapist(therapistName);
+      setSelectedTherapistId(selectedAppointment.therapist.id);
     } else {
-      // La cita NO TIENE terapeuta → limpiar (FIX crítico)
-      clearTherapist();
+      setTherapist(null);
+      setSelectedTherapistId(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAppointment]);
+  }, [selectedAppointment, justSaved]);
 
   /**
    * Effect: Selección automática de fecha de cita
@@ -261,15 +293,17 @@ const PatientHistory = () => {
   }, [clearSearch]);
 
   /**
-   * Handler: Confirmar selección de terapeuta
+   * Handler: Confirmar selección de terapeuta (como en history original)
    */
   const handleConfirmTherapist = useCallback(() => {
     if (selectedTherapistId) {
-      const therapist = therapists.find((t) => t.id === selectedTherapistId);
-      if (therapist) {
-        const therapistName = formatTherapistName(therapist);
-        selectTherapist({ id: therapist.id, name: therapistName });
+      const selected = therapists.find((t) => t.id === selectedTherapistId);
+      
+      if (selected) {
+        const therapistName = formatTherapistName(selected);
+        setTherapist(therapistName);
         form.setFieldsValue({ therapist: therapistName });
+        setUserSelectedTherapist(true); // FIX: Marcar como selección manual
       }
     }
     handleCloseTherapistModal();
@@ -277,30 +311,28 @@ const PatientHistory = () => {
     selectedTherapistId,
     therapists,
     form,
-    selectTherapist,
     handleCloseTherapistModal,
   ]);
 
   /**
-   * Handler: Seleccionar terapeuta en el modal
+   * Handler: Seleccionar terapeuta en el modal (como en history original)
    */
   const handleSelectTherapist = useCallback(
     (id) => {
-      const therapist = therapists.find((t) => t.id === id);
-      if (therapist) {
-        selectTherapist({ id, name: formatTherapistName(therapist) });
-      }
+      setSelectedTherapistId(id);
     },
-    [therapists, selectTherapist]
+    []
   );
 
   /**
-   * Handler: Eliminar terapeuta seleccionado
+   * Handler: Eliminar terapeuta seleccionado (como en history original)
    */
   const handleRemoveTherapist = useCallback(() => {
-    clearTherapist();
+    setTherapist(null);
+    setSelectedTherapistId(null);
+    setUserSelectedTherapist(false); // FIX: Resetear bandera de selección manual
     form.setFieldsValue({ therapist: '' });
-  }, [clearTherapist, form]);
+  }, [form]);
 
   /**
    * Handler: Cambio de método anticonceptivo
@@ -333,6 +365,7 @@ const PatientHistory = () => {
       const historyId = patientHistory?.data?.id;
       const appointmentId = selectedAppointment.id;
 
+
       // Construir payloads
       const contraceptiveState = {
         useContraceptiveMethod: useContraceptiveMethodState,
@@ -355,6 +388,7 @@ const PatientHistory = () => {
         patientId
       );
 
+
       // Guardar cambios (secuencialmente)
       try {
         const [historyResult, appointmentResult] = await Promise.all([
@@ -365,6 +399,9 @@ const PatientHistory = () => {
         if (historyResult.success && appointmentResult.success) {
           // Mostrar solo UN toast de éxito combinado
           message.success(SUCCESS_MESSAGES.CHANGES_SAVED, 8); // Duración de 8 segundos
+
+          // FIX: Marcar que se acaba de guardar para evitar sobrescribir el formulario
+          setJustSaved(true);
 
           // Actualizar campos de peso en el formulario
           updateWeightFieldsAfterSave(form, values);
@@ -377,7 +414,6 @@ const PatientHistory = () => {
           ]);
 
           // El usuario permanece en la vista para seguir trabajando
-          console.log('[PatientHistory] Datos actualizados exitosamente');
         } else {
           message.error('Error al guardar algunos cambios');
         }
@@ -542,7 +578,7 @@ const PatientHistory = () => {
               <div className={styles.therapistRow}>
                 <Input
                   disabled
-                  value={selectedTherapist?.name || 'No asignado'}
+                  value={therapist || 'No asignado'}
                   className={styles.therapistInput}
                   placeholder="Seleccione un terapeuta"
                 />
@@ -553,7 +589,7 @@ const PatientHistory = () => {
                 >
                   Seleccionar
                 </Button>
-                {selectedTherapist && (
+                {therapist && (
                   <Button
                     danger
                     onClick={handleRemoveTherapist}

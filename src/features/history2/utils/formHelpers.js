@@ -230,6 +230,8 @@ export const buildHistoryPayload = (
     // Terapeuta
     therapist_id: selectedTherapistId || null,
   };
+  
+  return payload;
 };
 
 /**
@@ -272,6 +274,8 @@ export const buildAppointmentPayload = (
     patient_id: patientId,
     therapist_id: selectedTherapistId || null,
   };
+  
+  return payload;
 };
 
 /**
