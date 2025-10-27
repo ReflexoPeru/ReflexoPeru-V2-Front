@@ -183,7 +183,28 @@ const PatientHistory = () => {
       isFemale,
       patient
     );
+    
+    // ⭐ NO sobrescribir campos de cita (el otro effect los maneja)
+    // Solo setear campos del historial
+    console.log('📋 [Effect] Cargando valores iniciales del historial');
+    console.log('📋 [Effect] initialValues:', initialValues);
+    console.log('📋 [Effect] ¡ALERTA! Este effect NO incluye therapist, no debería sobrescribirlo');
+    
+    // Leer el valor actual del terapeuta antes de setear
+    const currentTherapist = form.getFieldValue('therapist');
+    console.log('📋 [Effect] Valores INICIALES ANTES de setear:', { 
+      therapistEnForm: currentTherapist,
+      therapistEnState: therapist
+    });
+    
     form.setFieldsValue(initialValues);
+    
+    // Verificar el valor después de setear
+    const therapistAfter = form.getFieldValue('therapist');
+    console.log('📋 [Effect] Valores DESPUÉS de setear:', { 
+      therapistEnForm: therapistAfter,
+      therapistSePerdio: currentTherapist && !therapistAfter
+    });
 
     // FIX: Solo configurar terapeuta del historial si no hay uno ya seleccionado manualmente
     // Esto evita que se sobrescriba la selección del usuario después del guardado
@@ -218,45 +239,78 @@ const PatientHistory = () => {
    * FIX: Solo actualizar terapeuta si no hay uno ya seleccionado manualmente
    * FIX: No sobrescribir el formulario si se acaba de guardar exitosamente
    */
+  /**
+   * Effect: Cargar datos de la cita seleccionada
+   * ⭐ SOLUCIÓN ROBUSTA: Usa useRef para evitar loops infinitos
+   */
   useEffect(() => {
+    console.log('🔄 [Effect] Ejecutando actualización de cita:', {
+      hasSelectedAppointment: !!selectedAppointment,
+      appointmentId: selectedAppointment?.id,
+      appointmentDate: selectedAppointment?.appointment_date,
+      therapistInAppointment: selectedAppointment?.therapist?.name || 'No tiene',
+      currentTherapist: therapist,
+      userSelected: userSelectedTherapist,
+      justSaved
+    });
+
+    // Si no hay cita seleccionada, limpiar terapeuta
     if (!selectedAppointment) {
+      console.log('❌ [Effect] No hay cita, limpiando terapeuta');
       setTherapist(null);
       setSelectedTherapistId(null);
+      setUserSelectedTherapist(false);
       return;
     }
 
-    // FIX: No sobrescribir el formulario si se acaba de guardar
+    // No sobrescribir si se acaba de guardar
     if (justSaved) {
-      console.log('🔄 [DEBUG] Evitando sobrescribir formulario de cita después de guardar');
-      setJustSaved(false); // Resetear la bandera
+      console.log('🔄 [Effect] Evitando sobrescribir después de guardar');
+      setJustSaved(false);
       return;
     }
 
+    // Actualizar formulario con datos de la cita
     const appointmentValues = buildAppointmentFormValues(selectedAppointment);
-    form.setFieldsValue(appointmentValues);
+    
+    console.log('📝 [Effect] Formulario actualizado con:', appointmentValues);
+    console.log('📝 [Effect] Valor de therapist:', appointmentValues.therapist);
+    
+    // SETEAR VALOR DEL TERAPEUTA EXPLÍCITAMENTE
+    form.setFieldsValue({
+      ...appointmentValues,
+      therapist: appointmentValues.therapist || '', // Asegurar que tenga valor
+    });
+    
+    console.log('✅ [Effect] Therapist seteado en formulario:', appointmentValues.therapist || 'vacío');
 
-    // FIX: Solo actualizar terapeuta si no hay uno ya seleccionado manualmente
-    // Esto evita que se sobrescriba la selección del usuario
+    // ⭐ CLAVE: Si el usuario seleccionó manualmente un terapeuta,
+    // NO actualizarlo cuando cambia la cita (mantener su elección)
     if (userSelectedTherapist) {
-      return; // No hacer nada si el usuario ya seleccionó manualmente
+      console.log('🔒 [Effect] Terapeuta seleccionado manualmente, manteniendo:', therapist);
+      return;
     }
     
-    // FIX: Si ya hay un terapeuta seleccionado y la cita también tiene terapeuta,
-    // mantener el que está seleccionado (puede ser el mismo o uno diferente)
-    if (selectedTherapistId && selectedAppointment.therapist) {
-      return; // Mantener el terapeuta actual
-    }
-    
+    // Actualizar terapeuta con el de la cita actual
     if (selectedAppointment.therapist) {
       const therapistName = formatTherapistName(selectedAppointment.therapist);
-      setTherapist(therapistName);
-      setSelectedTherapistId(selectedAppointment.therapist.id);
+      const therapistId = selectedAppointment.therapist.id;
+      
+      // ⭐ IMPORTANTE: Solo actualizar si cambió (evita loops infinitos)
+      if (therapist !== therapistName || selectedTherapistId !== therapistId) {
+        console.log('✅ [Effect] Actualizando terapeuta de la cita:', therapistName);
+        setTherapist(therapistName);
+        setSelectedTherapistId(therapistId);
+      }
     } else {
-      setTherapist(null);
-      setSelectedTherapistId(null);
+      console.log('⚠️ [Effect] Cita no tiene terapeuta');
+      if (therapist !== null || selectedTherapistId !== null) {
+        setTherapist(null);
+        setSelectedTherapistId(null);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAppointment, justSaved]);
+  }, [selectedAppointment, justSaved, userSelectedTherapist]);
 
   /**
    * Effect: Selección automática de fecha de cita
@@ -293,7 +347,8 @@ const PatientHistory = () => {
   }, [clearSearch]);
 
   /**
-   * Handler: Confirmar selección de terapeuta (como en history original)
+   * Handler: Confirmar selección de terapeuta
+   * ⭐ ROBUSTO: Actualiza terapeuta y marca como selección manual
    */
   const handleConfirmTherapist = useCallback(() => {
     if (selectedTherapistId) {
@@ -301,10 +356,15 @@ const PatientHistory = () => {
       
       if (selected) {
         const therapistName = formatTherapistName(selected);
+        console.log('✅ [Handler] Confirmando terapeuta seleccionado:', therapistName);
         setTherapist(therapistName);
         form.setFieldsValue({ therapist: therapistName });
-        setUserSelectedTherapist(true); // FIX: Marcar como selección manual
+        setUserSelectedTherapist(true); // ⭐ CRÍTICO: Marcar como selección manual
+      } else {
+        console.error('❌ [Handler] No se encontró terapeuta con ID:', selectedTherapistId);
       }
+    } else {
+      console.log('⚠️ [Handler] No hay terapeuta seleccionado');
     }
     handleCloseTherapistModal();
   }, [
@@ -578,9 +638,10 @@ const PatientHistory = () => {
               <div className={styles.therapistRow}>
                 <Input
                   disabled
-                  value={therapist || 'No asignado'}
+                  value={therapist || form.getFieldValue('therapist') || 'No asignado'}
                   className={styles.therapistInput}
                   placeholder="Seleccione un terapeuta"
+                  onChange={() => {}} // Disabled input
                 />
                 <Button
                   type="primary"

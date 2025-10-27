@@ -12,6 +12,7 @@ import {
   APPOINTMENT_STATUS,
   TREATMENT_DURATION_DAYS,
 } from '../constants';
+import { formatTherapistName } from '../api/therapistApi';
 
 /**
  * Helpers para manejo de formularios
@@ -132,11 +133,11 @@ export const buildAppointmentFormValues = (appointment) => {
   }
 
   const therapistObj = appointment.therapist;
-  const therapistName = therapistObj
-    ? `${therapistObj.paternal_lastname || ''} ${therapistObj.maternal_lastname || ''} ${therapistObj.name || ''}`.trim()
-    : '';
+  
+  // Usar formatTherapistName para formatear correctamente
+  const therapistName = formatTherapistName(therapistObj);
 
-  return {
+  const values = {
     diagnosticosMedicos: appointment.diagnosis ?? '',
     dolencias: appointment.ailments ?? '',
     medicamentos: appointment.medications ?? '',
@@ -145,6 +146,15 @@ export const buildAppointmentFormValues = (appointment) => {
     diagnosticosReflexologia: appointment.reflexology_diagnostics ?? '',
     therapist: therapistName,
   };
+
+  console.log('🔧 [formHelpers] Valores construidos:', {
+    therapistObj,
+    therapistName,
+    hasTherapistField: !!values.therapist,
+    therapistValue: values.therapist
+  });
+
+  return values;
 };
 
 /**
