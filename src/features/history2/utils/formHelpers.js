@@ -137,7 +137,7 @@ export const buildAppointmentFormValues = (appointment) => {
   // Usar formatTherapistName para formatear correctamente
   const therapistName = formatTherapistName(therapistObj);
 
-  const values = {
+  return {
     diagnosticosMedicos: appointment.diagnosis ?? '',
     dolencias: appointment.ailments ?? '',
     medicamentos: appointment.medications ?? '',
@@ -146,15 +146,6 @@ export const buildAppointmentFormValues = (appointment) => {
     diagnosticosReflexologia: appointment.reflexology_diagnostics ?? '',
     therapist: therapistName,
   };
-
-  console.log('🔧 [formHelpers] Valores construidos:', {
-    therapistObj,
-    therapistName,
-    hasTherapistField: !!values.therapist,
-    therapistValue: values.therapist
-  });
-
-  return values;
 };
 
 /**
