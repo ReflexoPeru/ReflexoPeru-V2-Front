@@ -20,6 +20,7 @@ import { deleteAppointment } from '../service/appointmentsService';
 import { useToast } from '../../../services/toastify/ToastContext';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
 import { formatToastMessage } from '../../../utils/messageFormatter';
+import DeleteConfirmModal from '../../../components/Modal/DeleteConfirmModal';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -46,6 +47,8 @@ export default function Appointments() {
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const [loadingPrintFichaId, setLoadingPrintFichaId] = useState(null);
   const [loadingPrintTicketId, setLoadingPrintTicketId] = useState(null);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [appointmentToDelete, setAppointmentToDelete] = useState(null);
 
   const { showToast } = useToast();
 
@@ -247,30 +250,8 @@ export default function Appointments() {
         setIsEditModalOpen(true);
         break;
       case 'delete':
-        setLoadingDeleteId(record.id);
-        try {
-          const response = await deleteAppointment(record.id);
-          const backendMsg = response?.message || response?.msg;
-          showToast(
-            'cancelarCita',
-            backendMsg
-              ? formatToastMessage(
-                  backendMsg,
-                  defaultConfig.cancelarCita.message,
-                )
-              : undefined,
-          );
-          await loadAppointments();
-        } catch (error) {
-          showToast(
-            'error',
-            formatToastMessage(
-              error?.response?.data?.message,
-              defaultConfig.error.message,
-            ),
-          );
-        }
-        setLoadingDeleteId(null);
+        setAppointmentToDelete(record);
+        setDeleteConfirmVisible(true);
         break;
       case 'imprimir':
         setLoadingPrintFichaId(record.id);
@@ -475,6 +456,48 @@ export default function Appointments() {
           />
         )}
       </UniversalModal>
+
+      <DeleteConfirmModal
+        visible={deleteConfirmVisible}
+        onConfirm={async () => {
+          if (appointmentToDelete) {
+            setLoadingDeleteId(appointmentToDelete.id);
+            try {
+              const response = await deleteAppointment(appointmentToDelete.id);
+              const backendMsg = response?.message || response?.msg;
+              showToast(
+                'cancelarCita',
+                backendMsg
+                  ? formatToastMessage(
+                      backendMsg,
+                      defaultConfig.cancelarCita.message,
+                    )
+                  : undefined,
+              );
+              await loadAppointments();
+            } catch (error) {
+              showToast(
+                'error',
+                formatToastMessage(
+                  error?.response?.data?.message,
+                  defaultConfig.error.message,
+                ),
+              );
+            }
+            setLoadingDeleteId(null);
+            setAppointmentToDelete(null);
+            setDeleteConfirmVisible(false);
+          }
+        }}
+        onCancel={() => {
+          setAppointmentToDelete(null);
+          setDeleteConfirmVisible(false);
+        }}
+        entityType="cita"
+        confirmText="Sí, eliminar"
+        cancelText="No eliminar"
+        loading={loadingDeleteId === appointmentToDelete?.id}
+      />
     </div>
   );
 }

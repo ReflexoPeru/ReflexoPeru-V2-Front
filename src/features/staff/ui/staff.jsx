@@ -9,6 +9,9 @@ import EditTherapist from './EditTherapist/EditTherapist';
 import { getTherapistById } from '../service/staffService';
 import { LoadingOutlined } from '@ant-design/icons';
 import InfoTherapist from './infoTherapist/infoTherapist';
+import DeleteConfirmModal from '../../../components/Modal/DeleteConfirmModal';
+import IncompleteDataModal from '../../../components/Modal/IncompleteDataModal';
+import { useDataValidation } from '../../../hooks/useDataValidation';
 
 const whiteSpinIndicator = (
   <LoadingOutlined style={{ fontSize: 20, color: '#fff' }} spin />
@@ -29,12 +32,31 @@ export default function Staff() {
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const [therapistInfo, setTherapistInfo] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [therapistToDelete, setTherapistToDelete] = useState(null);
+  const [incompleteDataModalVisible, setIncompleteDataModalVisible] = useState(false);
+  const [incompleteDataTherapist, setIncompleteDataTherapist] = useState(null);
+  const [validationResult, setValidationResult] = useState(null);
+  
+  const { validateEntityData } = useDataValidation();
 
   const handleEdit = async (record) => {
     setLoadingEditId(record.id);
-    setEditingTherapist(record);
     try {
       const freshTherapist = await getTherapistById(record.id);
+      
+      // Validar datos del terapeuta
+      const validation = validateEntityData(freshTherapist, 'terapeuta');
+      
+      if (!validation.canEdit) {
+        // Mostrar modal de datos incompletos
+        setIncompleteDataTherapist(freshTherapist);
+        setValidationResult(validation);
+        setIncompleteDataModalVisible(true);
+        return;
+      }
+      
+      // Si los datos están completos, proceder con la edición normal
       setEditingTherapist(freshTherapist);
     } catch (e) {
       notification.error({
@@ -47,12 +69,26 @@ export default function Staff() {
   };
 
   const handleDelete = async (id) => {
-    setLoadingDeleteId(id);
-    try {
-      await handleDeleteTherapist(id);
-    } finally {
-      setLoadingDeleteId(null);
+    setTherapistToDelete(id);
+    setDeleteConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (therapistToDelete) {
+      setLoadingDeleteId(therapistToDelete);
+      try {
+        await handleDeleteTherapist(therapistToDelete);
+      } finally {
+        setLoadingDeleteId(null);
+        setTherapistToDelete(null);
+        setDeleteConfirmVisible(false);
+      }
     }
+  };
+
+  const handleCancelDelete = () => {
+    setTherapistToDelete(null);
+    setDeleteConfirmVisible(false);
   };
 
   const handleInfo = (record) => {
@@ -75,14 +111,7 @@ export default function Staff() {
               justifyContent: 'center',
             }}
             onClick={async () => {
-              setLoadingEditId(record.id);
-              setEditingTherapist(record);
-              try {
-                const freshTherapist = await getTherapistById(record.id);
-                setEditingTherapist(freshTherapist);
-              } finally {
-                setLoadingEditId(null);
-              }
+              await handleEdit(record);
             }}
             disabled={loadingEditId === record.id}
           >
@@ -139,6 +168,26 @@ export default function Staff() {
 
   const handleSearch = (value) => {
     setSearchTerm(value);
+  };
+
+  const handleCloseIncompleteDataModal = () => {
+    setIncompleteDataModalVisible(false);
+    setIncompleteDataTherapist(null);
+    setValidationResult(null);
+  };
+
+  const handleGoToUpdateTherapist = () => {
+    if (incompleteDataTherapist) {
+      // Cerrar el modal de datos incompletos
+      setIncompleteDataModalVisible(false);
+      
+      // Abrir el modal de edición directamente
+      setEditingTherapist(incompleteDataTherapist);
+      
+      // Limpiar estados
+      setIncompleteDataTherapist(null);
+      setValidationResult(null);
+    }
   };
 
   const columns = [
@@ -240,6 +289,26 @@ export default function Staff() {
           onClose={() => setShowInfoModal(false)}
         />
       )}
+
+      <DeleteConfirmModal
+        visible={deleteConfirmVisible}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        entityType="terapeuta"
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        loading={loadingDeleteId === therapistToDelete}
+      />
+
+      <IncompleteDataModal
+        visible={incompleteDataModalVisible}
+        onCancel={handleCloseIncompleteDataModal}
+        entityType="terapeuta"
+        entityName={validationResult?.entityName || ''}
+        missingFields={validationResult?.missingFields || []}
+        onGoToUpdate={handleGoToUpdateTherapist}
+        loading={false}
+      />
     </div>
   );
 }

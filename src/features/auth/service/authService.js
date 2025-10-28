@@ -34,3 +34,27 @@ export const getRole = async () => {
   const response = await get('get-role');
   return response;
 };
+
+// Forgot Password Services
+export const sendForgotPasswordCode = async (email) => {
+  const response = await post('forgot-password/send-code', { email });
+  return response;
+};
+
+export const verifyForgotPasswordCode = async (userId, code) => {
+  const response = await post('forgot-password/verify-code', {
+    user_id: userId,
+    code: code
+  });
+  return response;
+};
+
+export const resetForgotPassword = async (userId, code, password, passwordConfirmation) => {
+  const response = await post('forgot-password/reset', {
+    user_id: userId,
+    code: code,
+    password: password,
+    password_confirmation: passwordConfirmation
+  });
+  return response;
+};

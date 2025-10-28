@@ -96,8 +96,19 @@ export const formatTherapistName = (therapist) => {
     return '';
   }
 
-  const { paternal_lastname = '', maternal_lastname = '', name = '' } = therapist;
-  return `${paternal_lastname} ${maternal_lastname} ${name}`.trim();
+  // Manejo robusto: los campos pueden ser null o undefined en la nueva estructura
+  const paternalLastname = therapist.paternal_lastname || '';
+  const maternalLastname = therapist.maternal_lastname || '';
+  const name = therapist.name || '';
+  
+  const fullName = `${paternalLastname} ${maternalLastname} ${name}`.trim();
+  
+  // Si el nombre completo está vacío pero hay un id, retornar mensaje
+  if (!fullName && therapist.id) {
+    return 'Terapeuta asignado';
+  }
+  
+  return fullName || '';
 };
 
 /**

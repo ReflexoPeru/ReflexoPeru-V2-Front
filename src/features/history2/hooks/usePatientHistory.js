@@ -178,11 +178,9 @@ export const usePatientAppointments = (patientId) => {
       const response = await getAppointmentsByPatientId(patientId);
       // Nueva estructura: { appointments: [...], patient: {...} }
       const appointmentsList = response?.appointments || [];
-      // Intentar obtener el paciente de múltiples fuentes confiables
-      const patientFromAppointments = Array.isArray(appointmentsList) && appointmentsList.length > 0
-        ? appointmentsList[0]?.patient || null
-        : null;
-      let patientData = response?.patient || patientFromAppointments || null;
+      
+      // En la nueva estructura del backend, el patient viene en el nivel raíz de la respuesta
+      let patientData = response?.patient || null;
       
       const sorted = sortAppointmentsByDate(appointmentsList);
       const last = getLastAppointment(appointmentsList);
@@ -190,7 +188,7 @@ export const usePatientAppointments = (patientId) => {
       setAppointments(sorted);
       setLastAppointment(last);
 
-      // Fallback robusto: si no vino el paciente en la respuesta ni en la primera cita,
+      // Fallback robusto: si no vino el paciente en la respuesta,
       // hacer una consulta directa por id para asegurar el nombre e id en el formulario
       if (!patientData) {
         try {

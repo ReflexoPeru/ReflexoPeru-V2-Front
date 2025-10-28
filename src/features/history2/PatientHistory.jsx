@@ -147,10 +147,13 @@ const PatientHistory = () => {
     [appointments]
   );
 
-  const selectedAppointment = useMemo(
-    () => findAppointmentByDate(appointments, selectedAppointmentDate),
-    [appointments, selectedAppointmentDate]
-  );
+  // Memoizar la cita seleccionada para evitar recalcular en cada render
+  const selectedAppointment = useMemo(() => {
+    if (!appointments || appointments.length === 0) return null;
+    if (!selectedAppointmentDate) return null;
+    
+    return findAppointmentByDate(appointments, selectedAppointmentDate);
+  }, [appointments, selectedAppointmentDate]);
 
   const isLoading = loadingHistory || loadingAppointments;
   const isSaving = updatingHistory || updatingAppointment;
@@ -159,22 +162,21 @@ const PatientHistory = () => {
   // ==================== EFFECTS ====================
   
   /**
-   * Effect: Cargar datos iniciales del historial en el formulario
-   * IMPORTANTE: Espera a que terminen de cargar tanto el historial como las citas
-   * para asegurar que tengamos los datos del paciente disponibles
-   * FIX: No sobrescribir el formulario si se acaba de guardar exitosamente
+   * Effect: Cargar datos iniciales del historial SOLO cuando se carga por primera vez
+   * IMPORTANTE: No interfiere con el manejo de citas individuales
    */
   useEffect(() => {
     // Esperar a que terminen de cargar ambos datos
     if (loadingHistory || loadingAppointments) return;
     if (!patientHistory?.data) return;
 
-    // FIX: No sobrescribir el formulario si se acaba de guardar
+    // No sobrescribir el formulario si se acaba de guardar
     if (justSaved) {
       setJustSaved(false);
       return;
     }
 
+    // Solo cargar datos iniciales (NO tocar campos de citas)
     const initialValues = buildFormInitialValues(
       patientHistory,
       appointments,
@@ -182,48 +184,24 @@ const PatientHistory = () => {
       patient
     );
     
-    // ⭐ NO sobrescribir campos de cita (el otro effect los maneja)
     form.setFieldsValue(initialValues);
-
-    // FIX: Solo configurar terapeuta del historial si no hay uno ya seleccionado manualmente
-    // Esto evita que se sobrescriba la selección del usuario después del guardado
-    if (userSelectedTherapist) {
-      return; // No sobrescribir si el usuario ya seleccionó manualmente
-    }
-    
-    // Configurar terapeuta del historial (como en history original)
-    if (patientHistory.data.therapist) {
-      const therapistName = formatTherapistName(patientHistory.data.therapist);
-      setTherapist(therapistName);
-      setSelectedTherapistId(patientHistory.data.therapist.id);
-    } else {
-      setTherapist(null);
-      setSelectedTherapistId(null);
-    }
 
     // Configurar estado de anticonceptivos para mujeres
     if (isFemale && patientHistory.data) {
-      const contraceptiveData = normalizeContraceptiveData(
-        patientHistory.data
-      );
+      const contraceptiveData = normalizeContraceptiveData(patientHistory.data);
       setUseContraceptiveMethodState(contraceptiveData.useMethod);
       setContraceptiveMethodId(contraceptiveData.methodId);
       setDiuTypeId(contraceptiveData.diuId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientHistory, loadingHistory, loadingAppointments, isFemale, patient, appointments, justSaved]);
+  }, [patientHistory?.data?.id, loadingHistory, loadingAppointments, isFemale, justSaved]);
 
   /**
-   * Effect: Cargar datos de la cita seleccionada (como en history original)
-   * FIX: Solo actualizar terapeuta si no hay uno ya seleccionado manualmente
-   * FIX: No sobrescribir el formulario si se acaba de guardar exitosamente
-   */
-  /**
    * Effect: Cargar datos de la cita seleccionada
-   * ⭐ SOLUCIÓN ROBUSTA: Usa useRef para evitar loops infinitos
+   * FLUJO OPTIMIZADO: Actualiza inmediatamente cuando cambia la cita
    */
   useEffect(() => {
-    // Si no hay cita seleccionada, limpiar terapeuta
+    // Si no hay cita seleccionada, limpiar todo
     if (!selectedAppointment) {
       setTherapist(null);
       setSelectedTherapistId(null);
@@ -244,30 +222,22 @@ const PatientHistory = () => {
       therapist: appointmentValues.therapist || '',
     });
 
-    // ⭐ CLAVE: Si el usuario seleccionó manualmente un terapeuta,
-    // NO actualizarlo cuando cambia la cita (mantener su elección)
-    if (userSelectedTherapist) {
-      return;
-    }
-    
-    // Actualizar terapeuta con el de la cita actual
+    // Actualizar terapeuta - SIEMPRE actualizar basado en la cita
     if (selectedAppointment.therapist) {
       const therapistName = formatTherapistName(selectedAppointment.therapist);
       const therapistId = selectedAppointment.therapist.id;
-      
-      // ⭐ IMPORTANTE: Solo actualizar si cambió (evita loops infinitos)
-      if (therapist !== therapistName || selectedTherapistId !== therapistId) {
-        setTherapist(therapistName);
-        setSelectedTherapistId(therapistId);
-      }
+      setTherapist(therapistName);
+      setSelectedTherapistId(therapistId);
     } else {
-      if (therapist !== null || selectedTherapistId !== null) {
-        setTherapist(null);
-        setSelectedTherapistId(null);
-      }
+      setTherapist(null);
+      setSelectedTherapistId(null);
     }
+    
+    // Resetear el flag para permitir actualizaciones futuras
+    setUserSelectedTherapist(false);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAppointment, justSaved, userSelectedTherapist]);
+  }, [selectedAppointment, justSaved]);
 
   /**
    * Effect: Selección automática de fecha de cita

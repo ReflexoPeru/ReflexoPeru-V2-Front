@@ -42,6 +42,13 @@ export const defaultConfig = {
     message: 'Ha ocurrido un error',
     duration: 5000,
   },
+  success: {
+    type: 'success',
+    icon: 'fa-solid fa-circle-check',
+    title: 'Éxito',
+    message: 'Operación completada con éxito',
+    duration: 5000,
+  },
   advertencia: {
     type: 'warning',
     icon: 'fa-solid fa-triangle-exclamation',

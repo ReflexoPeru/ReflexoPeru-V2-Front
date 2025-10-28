@@ -121,6 +121,22 @@ function Login() {
                   {loading ? 'Cargando...' : 'Entrar'}
                 </Button>
               </Form.Item>
+
+              <div className={styles.forgotLink}>
+                <span
+                  onClick={onForgotPassword}
+                  className={styles.forgotButton}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      onForgotPassword();
+                    }
+                  }}
+                >
+                  ¿Olvidaste tu contraseña?
+                </span>
+              </div>
             </Form>
           </div>
         </div>

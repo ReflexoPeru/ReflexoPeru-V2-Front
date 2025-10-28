@@ -24,6 +24,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
 import AppointmentsComplete from '../features/appointmentsComplete/ui/appointmentsComplete';
 import Historia from '../features/history2';
+import ForgotPassword from '../features/auth/ui/ForgotPassword';
 
 const router = createBrowserRouter([
   {
@@ -40,7 +41,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/contraseñaolvidada',
-    element: <h1>Contraseña olvidada</h1>,
+    element: <ForgotPassword />,
   },
   {
     path: '/primerInicio',

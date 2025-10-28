@@ -8,6 +8,9 @@ import { usePatients } from '../hook/patientsHook';
 import EditPatient from '../ui/EditPatient/EditPatient';
 import { getPatientById } from '../service/patientsService';
 import InfoPatient from './InfoPatient/infopatient';
+import DeleteConfirmModal from '../../../components/Modal/DeleteConfirmModal';
+import IncompleteDataModal from '../../../components/Modal/IncompleteDataModal';
+import { useDataValidation } from '../../../hooks/useDataValidation';
 
 export default function Patients() {
   const navigate = useNavigate();
@@ -17,6 +20,13 @@ export default function Patients() {
   const [loadingDeleteId, setLoadingDeleteId] = useState(null);
   const [patientInfo, setPatientInfo] = useState(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState(null);
+  const [incompleteDataModalVisible, setIncompleteDataModalVisible] = useState(false);
+  const [incompleteDataPatient, setIncompleteDataPatient] = useState(null);
+  const [validationResult, setValidationResult] = useState(null);
+  
+  const { validateEntityData } = useDataValidation();
   const {
     patients,
     loading,
@@ -31,8 +41,21 @@ export default function Patients() {
     setLoadingEditId(record.id);
     try {
       const freshPatient = await getPatientById(record.id);
+      
+      // Validar datos del paciente
+      const validation = validateEntityData(freshPatient, 'paciente');
+      
+      if (!validation.canEdit) {
+        // Mostrar modal de datos incompletos
+        setIncompleteDataPatient(freshPatient);
+        setValidationResult(validation);
+        setIncompleteDataModalVisible(true);
+        return;
+      }
+      
+      // Si los datos están completos, proceder con la edición normal
       setEditingPatient(freshPatient);
-      setIsEditModalOpen(true); // ← Esta línea es crucial para abrir el modal
+      setIsEditModalOpen(true);
     } catch (e) {
       notification.error({
         message: 'Error',
@@ -49,12 +72,26 @@ export default function Patients() {
   };
 
   const handleDelete = async (id) => {
-    setLoadingDeleteId(id);
-    try {
-      await handleDeletePatient(id);
-    } finally {
-      setLoadingDeleteId(null);
+    setPatientToDelete(id);
+    setDeleteConfirmVisible(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (patientToDelete) {
+      setLoadingDeleteId(patientToDelete);
+      try {
+        await handleDeletePatient(patientToDelete);
+      } finally {
+        setLoadingDeleteId(null);
+        setPatientToDelete(null);
+        setDeleteConfirmVisible(false);
+      }
     }
+  };
+
+  const handleCancelDelete = () => {
+    setPatientToDelete(null);
+    setDeleteConfirmVisible(false);
   };
 
   const handleInfo = (record) => {
@@ -157,6 +194,27 @@ export default function Patients() {
     setSearchTerm(value);
   };
 
+  const handleCloseIncompleteDataModal = () => {
+    setIncompleteDataModalVisible(false);
+    setIncompleteDataPatient(null);
+    setValidationResult(null);
+  };
+
+  const handleGoToUpdatePatient = () => {
+    if (incompleteDataPatient) {
+      // Cerrar el modal de datos incompletos
+      setIncompleteDataModalVisible(false);
+      
+      // Abrir el modal de edición directamente
+      setEditingPatient(incompleteDataPatient);
+      setIsEditModalOpen(true);
+      
+      // Limpiar estados
+      setIncompleteDataPatient(null);
+      setValidationResult(null);
+    }
+  };
+
   const columns = [
     {
       title: 'Nro. Documento',
@@ -256,6 +314,26 @@ export default function Patients() {
           onClose={() => setShowInfoModal(false)}
         />
       )}
+
+      <DeleteConfirmModal
+        visible={deleteConfirmVisible}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        entityType="paciente"
+        confirmText="Sí, eliminar"
+        cancelText="Cancelar"
+        loading={loadingDeleteId === patientToDelete}
+      />
+
+      <IncompleteDataModal
+        visible={incompleteDataModalVisible}
+        onCancel={handleCloseIncompleteDataModal}
+        entityType="paciente"
+        entityName={validationResult?.entityName || ''}
+        missingFields={validationResult?.missingFields || []}
+        onGoToUpdate={handleGoToUpdatePatient}
+        loading={false}
+      />
     </div>
   );
 }

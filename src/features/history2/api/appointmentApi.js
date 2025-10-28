@@ -80,11 +80,33 @@ export const extractUniqueDates = (appointments) => {
  * @returns {Object|null} Cita encontrada o null
  */
 export const findAppointmentByDate = (appointments, date) => {
-  if (!Array.isArray(appointments) || !date) {
+  if (!Array.isArray(appointments) || !date || appointments.length === 0) {
     return null;
   }
 
-  return appointments.find((a) => a.appointment_date === date) || null;
+  // Función robusta para normalizar fechas
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return '';
+    
+    // Eliminar espacios y extraer solo la parte de la fecha
+    const cleaned = dateStr.trim();
+    // Tomar solo la parte antes del espacio si tiene hora
+    const datePart = cleaned.split(' ')[0];
+    
+    return datePart;
+  };
+
+  const normalizedSearchDate = normalizeDate(date);
+  
+  // Buscar la cita que coincida exactamente
+  const found = appointments.find((appointment) => {
+    if (!appointment?.appointment_date) return false;
+    
+    const normalizedAppointmentDate = normalizeDate(appointment.appointment_date);
+    return normalizedAppointmentDate === normalizedSearchDate;
+  });
+
+  return found || null;
 };
 
 /**
