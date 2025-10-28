@@ -29,6 +29,17 @@ function ForgotPassword() {
     return cleanup;
   }, []);
 
+  // Función helper para traducir mensajes del backend al español
+  const translateMessage = (message) => {
+    const translations = {
+      'The selected email is invalid.': 'El correo electrónico seleccionado no es válido.',
+      'The selected email does not exist.': 'No se encontró un usuario con ese correo electrónico.',
+      'The email must be a valid email address.': 'Debe ser una dirección de correo electrónico válida.',
+    };
+
+    return translations[message] || message;
+  };
+
   // Función helper para obtener mensaje de error amigable
   const getErrorMessage = (error) => {
     if (!error.response) {
@@ -43,30 +54,31 @@ function ForgotPassword() {
         if (backendMessage.includes('inválido') || backendMessage.includes('expirado')) {
           return 'El código de verificación es inválido o ha expirado. Por favor solicita uno nuevo.';
         }
-        return backendMessage || 'Solicitud inválida. Por favor verifica los datos ingresados.';
+        return translateMessage(backendMessage) || 'Solicitud inválida. Por favor verifica los datos ingresados.';
       
       case 404:
-        if (backendMessage.includes('correo')) {
+        if (backendMessage.includes('correo') || backendMessage.includes('email')) {
           return 'No se encontró un usuario con ese correo electrónico.';
         }
-        if (backendMessage.includes('usuario')) {
+        if (backendMessage.includes('usuario') || backendMessage.includes('user')) {
           return 'Usuario no encontrado.';
         }
-        return 'Recurso no encontrado.';
+        return translateMessage(backendMessage) || 'Recurso no encontrado.';
       
       case 422:
         const errors = error.response.data?.errors;
         if (errors) {
-          const errorMessages = Object.values(errors).flat();
+          // Extraer todos los mensajes de error y traducirlos
+          const errorMessages = Object.values(errors).flat().map(msg => translateMessage(msg));
           return errorMessages.join(' ');
         }
-        return backendMessage || 'Datos inválidos. Por favor verifica la información ingresada.';
+        return translateMessage(backendMessage) || 'Datos inválidos. Por favor verifica la información ingresada.';
       
       case 500:
         return 'Error del servidor. Por favor intenta más tarde o contacta al administrador.';
       
       default:
-        return backendMessage || 'Ocurrió un error inesperado. Por favor intenta de nuevo.';
+        return translateMessage(backendMessage) || 'Ocurrió un error inesperado. Por favor intenta de nuevo.';
     }
   };
 

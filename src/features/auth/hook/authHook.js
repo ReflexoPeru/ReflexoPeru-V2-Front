@@ -26,6 +26,22 @@ export const useAuth = () => {
   const { refetchPhoto, refetchProfile } = useUser();
   const { refetchCompanyLogo, refetchCompanyInfo } = useCompany();
 
+  // Función helper para traducir mensajes del backend al español
+  const translateMessage = (message) => {
+    if (!message) return null;
+    
+    const translations = {
+      'These credentials do not match our records.': 'Las credenciales no coinciden con nuestros registros.',
+      'The selected email is invalid.': 'El correo electrónico seleccionado no es válido.',
+      'The selected email does not exist.': 'No se encontró un usuario con ese correo electrónico.',
+      'The email must be a valid email address.': 'Debe ser una dirección de correo electrónico válida.',
+      'The password field is required.': 'El campo de contraseña es requerido.',
+      'The email field is required.': 'El campo de correo electrónico es requerido.',
+    };
+
+    return translations[message] || message;
+  };
+
   const fetchUserRole = async () => {
     try {
       const res = await get('get-role');
@@ -80,7 +96,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
-      showToast('intentoFallido', backendMsg);
+      showToast('intentoFallido', translateMessage(backendMsg));
     } finally {
       setLoading(false);
     }
@@ -113,11 +129,11 @@ export const useAuth = () => {
         persistLocalStorage('token', data.data.token);
         navigate('/cambiarContraseña');
       } else {
-        showToast('intentoFallido', data.data?.message || 'Código incorrecto');
+        showToast('intentoFallido', translateMessage(data.data?.message) || 'Código incorrecto');
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
-      showToast('intentoFallido', backendMsg);
+      showToast('intentoFallido', translateMessage(backendMsg));
     }
   };
 
@@ -142,7 +158,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
-      showToast('intentoFallido', backendMsg);
+      showToast('intentoFallido', translateMessage(backendMsg));
     }
   };
 
@@ -156,7 +172,7 @@ export const useAuth = () => {
       }
     } catch (error) {
       const backendMsg = error?.response?.data?.message || null;
-      showToast('intentoFallido', backendMsg);
+      showToast('intentoFallido', translateMessage(backendMsg));
     }
   };
 
