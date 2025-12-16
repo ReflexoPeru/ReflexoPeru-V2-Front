@@ -241,9 +241,71 @@ const styles = StyleSheet.create({
   },
 });
 
-const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
+const FichaPDF = ({ cita, paciente, visitas, appointments = [], historia = {} }) => {
   // Formato de fecha
   const formatDate = (date) => (date ? dayjs(date).format('DD/MM/YYYY') : '');
+  
+  // Formato de hora desde created_at con AM/PM
+  const formatTime = (dateTime) => {
+    if (!dateTime) return '';
+    return dayjs(dateTime).format('hh:mm A');
+  };
+
+  // Calcular fecha primera terapia (la más antigua)
+  const getFirstTherapyDate = () => {
+    if (!appointments || appointments.length === 0) {
+      return cita?.initial_date || null;
+    }
+    
+    // Ordenar por fecha y obtener la más antigua
+    const sortedAppointments = [...appointments].sort((a, b) => {
+      const dateA = dayjs(a.appointment_date);
+      const dateB = dayjs(b.appointment_date);
+      return dateA.isBefore(dateB) ? -1 : dateA.isAfter(dateB) ? 1 : 0;
+    });
+    
+    return sortedAppointments[0]?.appointment_date || null;
+  };
+
+  // Calcular fecha última (anterior a la más reciente)
+  const getLastTherapyDate = () => {
+    if (!appointments || appointments.length <= 1) {
+      return null;
+    }
+    
+    // Ordenar por fecha descendente (más reciente primero)
+    const sortedAppointments = [...appointments].sort((a, b) => {
+      const dateA = dayjs(a.appointment_date);
+      const dateB = dayjs(b.appointment_date);
+      return dateA.isAfter(dateB) ? -1 : dateA.isBefore(dateB) ? 1 : 0;
+    });
+    
+    // Retornar la segunda más reciente (anterior a la más reciente)
+    return sortedAppointments[1]?.appointment_date || null;
+  };
+
+  // Calcular número de terapias (para mostrar número o mensaje)
+  const getTherapiesCount = () => {
+    const count = appointments?.length || visitas || 0;
+    if (count === 0) {
+      return 'Aún no tiene cita';
+    }
+    return String(count);
+  };
+
+  // Texto para la primera terapia (solo cuando es la primera visita)
+  const getFirstTherapyNote = () => {
+    const count = appointments?.length || visitas || 0;
+    if (count === 1) {
+      return ' - Primera vez';
+    }
+    return '';
+  };
+
+  const firstTherapyDate = getFirstTherapyDate();
+  const lastTherapyDate = getLastTherapyDate();
+  const therapiesCount = getTherapiesCount();
+  const firstTherapyNote = getFirstTherapyNote();
 
   // Helper para subrayado si vacío
   const renderField = (value, underlineStyle = styles.underline) =>
@@ -303,6 +365,7 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
             FECHA:{' '}
             <Text style={styles.field}>
               {formatDate(cita.appointment_date)}
+              {cita.created_at ? ` - ${formatTime(cita.created_at)}` : ''}
             </Text>
           </Text>
           <Text style={[styles.field, { marginLeft: 4 }]}>
@@ -311,9 +374,9 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
         </View>
         <View style={{ marginBottom: 4 }}>
           <Text style={styles.label}>
-            N° VISITAS:{' '}
+            N° TERAPIAS:{' '}
             <Text style={styles.field}>
-              {visitas > 0 ? visitas : 'Aún no tiene cita'}
+              {therapiesCount}
             </Text>
           </Text>
         </View>
@@ -352,8 +415,11 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
             marginBottom: 4,
           }}
         >
-          <Text style={styles.label}>VISITA PRIMERA:</Text>
-          {renderField(formatDate(cita.initial_date), styles.fieldUnderline)}
+          <Text style={styles.label}>PRIMERA VISITA:</Text>
+          {renderField(
+            `${formatDate(firstTherapyDate)}${firstTherapyNote}`.trim(),
+            styles.fieldUnderline,
+          )}
         </View>
         <View
           style={{
@@ -362,8 +428,8 @@ const FichaPDF = ({ cita, paciente, visitas, historia = {} }) => {
             marginBottom: 4,
           }}
         >
-          <Text style={styles.label}>ULTIMA:</Text>
-          {renderField('', styles.fieldUnderline)}
+          <Text style={styles.label}>ULTIMA VISITA:</Text>
+          {renderField(formatDate(lastTherapyDate), styles.fieldUnderline)}
         </View>
         <View
           style={{

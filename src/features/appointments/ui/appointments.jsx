@@ -288,14 +288,15 @@ export default function Appointments() {
   const handlePrintFicha = async (record) => {
     try {
       const res = await getAppointmentsByPatientId(record.patient.id);
-      const visitas = Array.isArray(res) ? res.length : 0;
-      await printFichaPDF(record, visitas);
+      const appointmentsArray = Array.isArray(res) ? res : (res?.appointments || []);
+      const visitas = appointmentsArray.length;
+      await printFichaPDF(record, visitas, appointmentsArray);
     } catch (e) {
-      await printFichaPDF(record, 0);
+      await printFichaPDF(record, 0, []);
     }
   };
 
-  const printFichaPDF = async (record, visitas) => {
+  const printFichaPDF = async (record, visitas, appointmentsArray = []) => {
     let historia = {};
     try {
       historia = await getPatientHistoryById(record.patient.id);
@@ -307,6 +308,7 @@ export default function Appointments() {
         cita={record}
         paciente={record.patient}
         visitas={visitas}
+        appointments={appointmentsArray}
         historia={historia.data || {}}
       />
     );

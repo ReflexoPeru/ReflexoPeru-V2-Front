@@ -823,6 +823,7 @@ const PatientHistory = () => {
                 cita={selectedAppointment}
                 paciente={patientHistory.data.patient}
                 visitas={appointments.length}
+                appointments={appointments || []}
                 historia={patientHistory.data}
               />
             </PDFViewer>

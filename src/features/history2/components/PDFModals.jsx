@@ -74,6 +74,7 @@ export const FichaModal = ({
   appointment,
   patientHistory,
   appointmentsCount,
+  appointments = [],
   patient = null,
 }) => {
   if (!appointment) {
@@ -113,6 +114,7 @@ export const FichaModal = ({
           cita={appointment}
           paciente={patientData}
           visitas={appointmentsCount}
+          appointments={appointments}
           historia={patientHistory?.data}
         />
       </PDFViewer>

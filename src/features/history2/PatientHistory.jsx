@@ -682,6 +682,7 @@ const PatientHistory = () => {
         appointment={selectedAppointment}
         patientHistory={patientHistory}
         appointmentsCount={appointments.length}
+        appointments={appointments}
         patient={patient}
       />
     </div>
