@@ -1,5 +1,6 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import { Button, Modal, Space, Spin, notification } from 'antd';
+import { Button, Modal, Space, Spin, notification, Tooltip } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -99,7 +100,27 @@ export default function Appointments() {
       title: 'Metodo Pago',
       key: 'payment_type',
       width: '100px',
-      render: (_, record) => record.payment_type?.name || 'Sin método',
+      render: (_, record) => {
+        const isReserved =
+          record.payment === null &&
+          record.payment_type === null &&
+          record.social_benefit === null;
+
+        return (
+          <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <span>{record.payment_type?.name || 'Sin método'}</span>
+            {isReserved && (
+              <div style={{ position: 'absolute', right: '10px', top: '10%', transform: 'translateY(-50%)' }}>
+                <Tooltip title="Cita Reservada">
+                  <CalendarOutlined
+                    style={{ color: '#00AA55', fontSize: '14px', cursor: 'help' }}
+                  />
+                </Tooltip>
+              </div>
+            )}
+          </div>
+        );
+      },
     },
     {
       title: 'Pago',
@@ -266,7 +287,7 @@ export default function Appointments() {
         break;
       case 'history':
         navigate(`/Inicio/pacientes/historia/${record.patient.id}`, {
-          state: { 
+          state: {
             appointment: record,
             from: '/Inicio/citas'
           },
@@ -371,7 +392,7 @@ export default function Appointments() {
           width="100%"
         />
 
-          <CustomTimeFilter
+        <CustomTimeFilter
           onDateChange={setSelectDate}
           value={selectDate}
           width="250px"
@@ -387,20 +408,20 @@ export default function Appointments() {
         }}
       >
         <ModeloTable
-        columns={columns}
-        data={visibleAppointments}
-        loading={loading}
-        maxHeight="68vh"
-        pagination={{
-          current: pagination.currentPage,
-          total: pagination.totalItems,
-          pageSize: pagination.pageSize,
-          onChange: handlePageChange,
-          showSizeChanger: false,
-          showQuickJumper: true,
-          showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} citas`,
-        }}
-      />
+          columns={columns}
+          data={visibleAppointments}
+          loading={loading}
+          maxHeight="68vh"
+          pagination={{
+            current: pagination.currentPage,
+            total: pagination.totalItems,
+            pageSize: pagination.pageSize,
+            onChange: handlePageChange,
+            showSizeChanger: false,
+            showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} citas`,
+          }}
+        />
       </div>
 
       <Modal
@@ -471,9 +492,9 @@ export default function Appointments() {
                 'cancelarCita',
                 backendMsg
                   ? formatToastMessage(
-                      backendMsg,
-                      defaultConfig.cancelarCita.message,
-                    )
+                    backendMsg,
+                    defaultConfig.cancelarCita.message,
+                  )
                   : undefined,
               );
               await loadAppointments();

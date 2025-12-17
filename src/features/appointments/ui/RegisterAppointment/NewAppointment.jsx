@@ -14,6 +14,7 @@ import {
   Typography,
   Space,
   Divider,
+  Tooltip,
 } from 'antd';
 import UniversalModal from '../../../../components/Modal/UniversalModal';
 import dayjs from '../../../../utils/dayjsConfig';
@@ -29,7 +30,7 @@ import SelectPrices from '../../../../components/Select/SelectPrices';
 
 const NewAppointment = () => {
   const [showHourField, setShowHourField] = useState(false);
-  const [isPaymentRequired, setIsPaymentRequired] = useState(false);
+  const [isPaymentRequired, setIsPaymentRequired] = useState(true);
   const [patientType, setPatientType] = useState('continuador');
   const [formValues, setFormValues] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,10 +85,10 @@ const NewAppointment = () => {
           const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
           const prices = await getPredeterminedPrices();
           const selectedService = prices.find(item => item.value === serviceId);
-          
+
           if (selectedService) {
             const serviceName = selectedService.label?.toLowerCase() || '';
-            
+
             // Verificar si es "tarifa personalizada"
             if (serviceName.includes('tarifa personalizada')) {
               setIsCustomRate(true);
@@ -98,7 +99,7 @@ const NewAppointment = () => {
             } else {
               setIsCustomRate(false);
             }
-            
+
             // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
               // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
@@ -116,7 +117,7 @@ const NewAppointment = () => {
         } catch (error) {
         }
       };
-      
+
       fetchServiceInfo();
     } else {
       setIsCustomRate(false);
@@ -125,11 +126,16 @@ const NewAppointment = () => {
   };
 
   const handleSubmit = async (values) => {
-    
-    // Si falta payment, usar el estado local
-    let paymentValue = values.payment;
-    if (!paymentValue) {
-      paymentValue = selectedPrice;
+    console.log('Formulario enviado con valores:', values);
+    console.log('Estado de isPaymentRequired:', isPaymentRequired);
+    console.log('Paciente seleccionado:', selectedPatient);
+
+    if (!values.appointment_date) {
+      notification.error({
+        message: 'Error',
+        description: 'La fecha de la cita es requerida',
+      });
+      return;
     }
 
     if (!selectedPatient) {
@@ -140,62 +146,49 @@ const NewAppointment = () => {
       return;
     }
 
-    // Validar campos requeridos
-    if (!values.appointment_date) {
-      notification.error({
-        message: 'Error',
-        description: 'La fecha de la cita es requerida',
-      });
-      return;
+    if (isPaymentRequired) {
+      if (!values.service_id) {
+        notification.error({
+          message: 'Error',
+          description: 'Las opciones de pago son requeridas',
+        });
+        return;
+      }
+
+      if (!values.payment_type_id) {
+        notification.error({
+          message: 'Error',
+          description: 'El método de pago es requerido',
+        });
+        return;
+      }
+
+      if (!values.payment) {
+        notification.error({
+          message: 'Error',
+          description: 'El monto es requerido',
+        });
+        return;
+      }
     }
-    if (!values.service_id) {
-      notification.error({
-        message: 'Error',
-        description: 'Las opciones de pago son requeridas',
-      });
-      return;
-    }
-    
-    // Validar que el service_id sea un número válido
-    if (isNaN(Number(values.service_id))) {
-      notification.error({
-        message: 'Error',
-        description: 'Las opciones de pago seleccionadas no son válidas',
-      });
-      return;
-    }
-    
-    // payment_type_id es opcional
-    // payment es opcional también
 
     setIsSubmitting(true);
 
     try {
-      // Las nuevas citas SIEMPRE se crean como PENDIENTES (1)
-      // Solo cambian a COMPLETADAS (2) cuando se asigna un terapeuta en la historia
       const appointment_status_id = 1; // Siempre pendiente al crear
 
-      if (typeof paymentValue === 'string') {
-        paymentValue = paymentValue.replace(/[^\d.]/g, '');
-        paymentValue = parseFloat(paymentValue);
-      }
-
-      // Eliminar patient_id del formulario y usar el del estado
-      const { appointment_hour, patient_id, ...formDataWithoutHour } = values;
       const payload = {
-        ...formDataWithoutHour,
-        ...(showHourField && values.appointment_hour
-          ? { appointment_hour: values.appointment_hour }
-          : {}),
-        appointment_status_id: appointment_status_id,
+        ...values,
+        appointment_status_id,
         patient_id: selectedPatient.id,
-        ...(paymentValue && { payment: paymentValue }), // Solo incluir si existe
-        ...(values.payment_type_id && { payment_type_id: Number(values.payment_type_id) }), // Solo incluir si existe
-        service_id: Number(values.service_id), // Usar service_id del formulario
+        ...(values.payment && { payment: parseFloat(values.payment) }),
+        ...(values.payment_type_id && { payment_type_id: Number(values.payment_type_id) }),
+        service_id: values.service_id ? Number(values.service_id) : undefined,
       };
-      
 
-      const result = await submitNewAppointment(payload);
+      console.log('Payload enviado al servidor:', payload);
+
+      await submitNewAppointment(payload);
 
       notification.success({
         message: 'Cita registrada',
@@ -209,14 +202,10 @@ const NewAppointment = () => {
       setIsPaymentRequired(false);
       navigate('/Inicio/citas');
     } catch (error) {
-      let errorMessage =
-        'No se pudo registrar la cita. Por favor intente nuevamente.';
-      if (error.response) {
-        errorMessage = error.response.data?.message || errorMessage;
-      }
+      console.error('Error al registrar la cita:', error);
       notification.error({
         message: 'Error',
-        description: errorMessage,
+        description: error.response?.data?.message || 'No se pudo registrar la cita. Por favor intente nuevamente.',
       });
     } finally {
       setIsSubmitting(false);
@@ -329,430 +318,459 @@ const NewAppointment = () => {
   ];
 
   return (
-      <div className={styles.container}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleSubmit}
-          style={{ color: 'var(--color-text-primary)' }}
-        >
-          {/* TÍTULO */}
-          <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
-            <h2 style={{ 
-              color: 'var(--color-text-primary)', 
-              fontSize: 'var(--font-size-xxl)', 
-              fontWeight: 'var(--font-weight-bold)',
-              fontFamily: 'var(--font-family)'
-            }}>
-              REGISTRAR CITA
-            </h2>
-          </div>
+    <div className={styles.container}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        style={{ color: 'var(--color-text-primary)' }}
+      >
+        {/* TÍTULO */}
+        <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
+          <h2 style={{
+            color: 'var(--color-text-primary)',
+            fontSize: 'var(--font-size-xxl)',
+            fontWeight: 'var(--font-weight-bold)',
+            fontFamily: 'var(--font-family)'
+          }}>
+            REGISTRAR CITA
+          </h2>
+        </div>
 
-          {/* 
+        {/* 
             SECCIÓN: FECHA DE CITA
             Campo requerido para establecer cuándo se realizará la cita
           */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="appointment_date"
-                label="Fecha de cita"
-                rules={[{ required: true, message: 'La fecha es requerida' }]}
-                initialValue={dayjs()}
-              >
-                <DatePicker
-                  style={{
-                    width: '100%'
-                  }}
-                  format="DD-MM-YYYY"
-                  placeholder="Seleccionar fecha"
-                  allowClear={false}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              name="appointment_date"
+              label="Fecha de cita"
+              rules={[{ required: true, message: 'La fecha es requerida' }]}
+              initialValue={dayjs()}
+            >
+              <DatePicker
+                style={{
+                  width: '100%'
+                }}
+                format="DD-MM-YYYY"
+                placeholder="Seleccionar fecha"
+                allowClear={false}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-          {/* Espacio entre secciones */}
-          <div style={{ height: 'var(--spacing-md)' }} />
+        {/* Espacio entre secciones */}
+        <div style={{ height: 'var(--spacing-md)' }} />
 
-          {/* 
+        {/* 
             SECCIÓN: TIPOS DE PACIENTES
             Lógica específica de Nuevo/Continuador
           */}
-          <Row gutter={16} align="middle">
-            <Col span={5}>
-              <span className={styles.patientTypeLabel}>
-                Tipo de Paciente:
-              </span>
-            </Col>
-            <Col span={10}>
-              <Radio.Group
-                value={patientType}
-                onChange={(e) => {
-                  setPatientType(e.target.value);
-            setSelectedPatient(null);
-          }}
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                  <Radio value="nuevo" style={{ color: 'var(--color-text-primary)' }}>
-                    Nuevo
-                  </Radio>
-                  <Radio value="continuador" style={{ color: 'var(--color-text-primary)' }}>
-                    Continuador
-                  </Radio>
-                </div>
-              </Radio.Group>
-            </Col>
-            <Col span={9}>
-              <Button
-                type="primary"
-                onClick={() => {
-                  if (patientType === 'nuevo') {
-                    setIsCreatePatientModalVisible(true);
-                  } else {
-                    setIsModalVisible(true);
-                  }
-                }}
-                style={{ 
-                  width: '100%',
-                  height: 'var(--button-height-md)',
-                  fontSize: 'var(--font-size-sm)',
-                  padding: 'var(--spacing-xs) var(--spacing-sm)',
-                  fontWeight: 'var(--font-weight-bold)',
-                  fontFamily: 'var(--font-family)'
-                }}
-              >
-                {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
-              </Button>
-            </Col>
-          </Row>
-
-          {/* Espacio entre secciones */}
-          <div style={{ height: 'var(--spacing-md)' }} />
-
-          {/* 
-            SECCIÓN: PACIENTE SELECCIONADO
-            Muestra el paciente seleccionado
-          */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item label="Paciente" required>
-                <Input
-                  value={selectedPatient?.full_name || ''}
-                  readOnly
-                  style={{ 
-                    backgroundColor: 'var(--color-input-bg)',
-                    border: '1px solid var(--color-border-primary)',
-                    borderRadius: 'var(--radius-md)',
-                    color: 'var(--color-input-text)'
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Espacio entre secciones */}
-          <div style={{ height: 'var(--spacing-md)' }} />
-
-          {/* Separador visual entre secciones */}
-          <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px' }} />
-
-          {/* 
-            SECCIÓN: OPCIONES DE PAGO
-            Campo para seleccionar el servicio y opciones de pago
-          */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item 
-                name="service_id" 
-                label="Opciones de Pago"
-                rules={[{ required: true, message: 'Las opciones de pago son requeridas' }]}
-              >
-                <SelectPrices
-                  value={form.getFieldValue('service_id')}
-                  initialPrice={form.getFieldValue('payment')}
-                  onChange={handleServiceChange}
-                  onPriceChange={(price) => {
-                    form.setFieldsValue({ payment: price });
-                    handlePriceChange(price);
-                  }}
-                  placeholder="Selecciona una opción"
-                  hidePriceInput={true}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Espacio entre secciones */}
-          <div style={{ height: 'var(--spacing-sm)' }} />
-
-          {/* 
-            SECCIÓN: MÉTODO DE PAGO
-            Campo para seleccionar el tipo de método de pago
-          */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="payment_type_id"
-                label="Método de Pago"
-                rules={[
-                  
-                ]}
-              >
-                <SelectPaymentStatus
-                  value={form.getFieldValue('payment_type_id')}
-                  disabled={isFreeCoupon}
-                  onChange={(value) =>
-                    form.setFieldsValue({ payment_type_id: value })
-                  }
-                  placeholder="Selecciona método de pago"
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* Espacio entre secciones */}
-          <div style={{ height: 'var(--spacing-sm)' }} />
-
-          {/* 
-            SECCIÓN: CAMPO DE MONTO
-            Input numérico para el monto del pago con validaciones
-          */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="payment"
-                label="Monto"
-                rules={[
-                  
-                  
-                ]}
-              >
-                <Input                   
-                  prefix="S/"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  readOnly={!isCustomRate || isFreeCoupon}
-                  disabled={isFreeCoupon}
-                  placeholder={isFreeCoupon ? "Cupón sin costo (S/ 0)" : isCustomRate ? "Ingrese el monto" : "Seleccione una opción de pago"}
-                  style={{
-                    backgroundColor: isFreeCoupon ? 'var(--color-background-secondary)' : isCustomRate ? 'var(--color-background-primary)' : 'var(--color-background-secondary)',
-                    cursor: isFreeCoupon ? 'not-allowed' : isCustomRate ? 'text' : 'not-allowed'
-                  }}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          {/* SECCIÓN: CHECKBOX PARA INCLUIR HORA */}
-          <Row gutter={16}>
-            <Col span={24}>
-              <Checkbox
-                checked={showHourField}
-                onChange={(e) => setShowHourField(e.target.checked)}
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                Incluir hora
-              </Checkbox>
-            </Col>
-          </Row>
-
-          {/* Espacio entre checkbox y campo de hora */}
-          <div style={{ height: 'var(--spacing-md)' }} />
-
-          {/* SECCIÓN: HORA DE CITA - SOLO SE MUESTRA SI EL CHECKBOX ESTÁ MARCADO */}
-          {showHourField && (
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item 
-                  name="appointment_hour"
-                  getValueFromEvent={(time) => time ? time.format('HH:mm') : null}
-                  getValueProps={(value) => ({
-                    value: value ? dayjs(value, 'HH:mm') : null
-                  })}
-                >
-                  <TimePicker
-                    style={{
-                      width: '100%'
-                    }}
-                    format="HH:mm"
-                    placeholder="Seleccionar hora"
-                    allowClear
-                    use12Hours={false}
-                    minuteStep={15}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          )}
-
-          {/* 
-            SECCIÓN: BOTONES DE ACCIÓN
-            Botones para cancelar la edición o guardar los cambios
-          */}
-          <Row justify="end" style={{ marginTop: 'var(--spacing-lg)' }}>
-            <Col>
-              <Space>
-                <Button
-                  onClick={handleCancel}
-                  style={{
-                    backgroundColor: 'var(--color-background-secondary)',
-                    borderColor: 'var(--color-border-primary)',
-                    color: 'var(--color-text-primary)',
-                    fontFamily: 'var(--font-family)'
-                  }}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={isSubmitting}
-                  style={{
-                    fontFamily: 'var(--font-family)'
-                  }}
-                >
-                  Registrar Cita
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Form>
-
-        {/* MODAL SELECCIONAR CONTRIBUIDOR */}
-        <UniversalModal
-          title="Seleccionar Contribuidor"
-          open={isModalVisible}
-          centered
-          width={700}
-          onCancel={handleCancelSelectModal}
-          className="select-contributor-modal modal-themed"
-          destroyOnClose={true}
-          footer={[
-            <Button 
-              key="cancel" 
-              onClick={handleCancelSelectModal}
+        <Row gutter={16} align="middle">
+          <Col span={5}>
+            <span className={styles.patientTypeLabel}>
+              Tipo de Paciente:
+            </span>
+          </Col>
+          <Col span={10}>
+            <Radio.Group
+              value={patientType}
+              onChange={(e) => {
+                setPatientType(e.target.value);
+                setSelectedPatient(null);
+              }}
+              style={{ color: 'var(--color-text-primary)' }}
             >
-              Cancelar
-            </Button>,
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                <Radio value="nuevo" style={{ color: 'var(--color-text-primary)' }}>
+                  Nuevo
+                </Radio>
+                <Radio value="continuador" style={{ color: 'var(--color-text-primary)' }}>
+                  Continuador
+                </Radio>
+              </div>
+            </Radio.Group>
+          </Col>
+          <Col span={9}>
             <Button
-              key="submit"
               type="primary"
-              onClick={async () => {
-                if (!selectedRowKey) {
-                  notification.warning({
-                    message: 'Advertencia',
-                    description: 'Por favor seleccione un paciente primero',
-                  });
-                  return;
+              onClick={() => {
+                if (patientType === 'nuevo') {
+                  setIsCreatePatientModalVisible(true);
+                } else {
+                  setIsModalVisible(true);
                 }
-
-                const selectedPatient = processedPatients.find(
-                  (p) => p.key === selectedRowKey,
-                );
-                setSelectedPatient(selectedPatient);
-                form.setFieldsValue({ patient_id: selectedPatient.id });
-
-                setIsModalVisible(false);
-                setSelectedRowKey(null);
-
-                notification.success({
-                  message: 'Paciente seleccionado',
-                  description: `Se ha seleccionado a ${selectedPatient.display_name}`,
-                });
               }}
               style={{
+                width: '100%',
+                height: 'var(--button-height-md)',
+                fontSize: 'var(--font-size-sm)',
+                padding: 'var(--spacing-xs) var(--spacing-sm)',
+                fontWeight: 'var(--font-weight-bold)',
                 fontFamily: 'var(--font-family)'
               }}
             >
-              Seleccionar
-            </Button>,
-          ]}
-        >
-          <CustomSearch
-            placeholder="Buscar por Apellido/Nombre o DNI..."
-            onSearch={(value) => setSearchTerm(value)}
-            width="100%"
-            style={{ marginBottom: 'var(--spacing-lg)' }}
-          />
-          <Table
-            dataSource={processedPatients}
-            columns={columns}
-            pagination={false}
-            rowKey="key"
-            loading={loading}
-            size="middle"
-            onRow={(record) => ({
-              onClick: () => {
-                setSelectedRowKey(record.key);
-              },
-              style: {
-                cursor: 'pointer',
-                backgroundColor: selectedRowKey === record.key ? 'var(--color-primary-light)' : 'transparent'
+              {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
+            </Button>
+          </Col>
+        </Row>
+
+        {/* Espacio entre secciones */}
+        <div style={{ height: 'var(--spacing-md)' }} />
+
+        {/* 
+            SECCIÓN: PACIENTE SELECCIONADO
+            Muestra el paciente seleccionado
+          */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item label="Paciente" required>
+              <Input
+                value={selectedPatient?.full_name || ''}
+                readOnly
+                style={{
+                  backgroundColor: 'var(--color-input-bg)',
+                  border: '1px solid var(--color-border-primary)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--color-input-text)'
+                }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* Espacio entre secciones */}
+        <div style={{ height: 'var(--spacing-md)' }} />
+
+        {/* Separador visual entre secciones */}
+        <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px' }} />
+
+        {/* 
+            SECCIÓN: OPCIONES DE PAGO
+            Campo para seleccionar el servicio y opciones de pago
+          */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              name="service_id"
+              label="Opciones de Pago"
+              rules={isPaymentRequired ? [{ required: true, message: 'Las opciones de pago son requeridas' }] : []} // Validar solo si es requerido
+            >
+              <SelectPrices
+                value={form.getFieldValue('service_id')}
+                initialPrice={form.getFieldValue('payment')}
+                onChange={handleServiceChange}
+                onPriceChange={(price) => {
+                  form.setFieldsValue({ payment: price });
+                  handlePriceChange(price);
+                }}
+                placeholder="Selecciona una opción"
+                hidePriceInput={true}
+                disabled={!isPaymentRequired} // Desactivar si no es requerido
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* Espacio entre secciones */}
+        <div style={{ height: 'var(--spacing-sm)' }} />
+
+        {/* 
+            SECCIÓN: MÉTODO DE PAGO
+            Campo para seleccionar el tipo de método de pago
+          */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              name="payment_type_id"
+              label="Método de Pago"
+              rules={isPaymentRequired ? [{ required: true, message: 'El método de pago es requerido' }] : []} // Validar solo si es requerido
+            >
+              <SelectPaymentStatus
+                value={form.getFieldValue('payment_type_id')}
+                disabled={isFreeCoupon}
+                onChange={(value) =>
+                  form.setFieldsValue({ payment_type_id: value })
+                }
+                placeholder="Selecciona método de pago"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* Espacio entre secciones */}
+        <div style={{ height: 'var(--spacing-sm)' }} />
+
+        {/* 
+            SECCIÓN: CAMPO DE MONTO
+            Input numérico para el monto del pago con validaciones
+          */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Form.Item
+              name="payment"
+              label="Monto"
+              rules={isPaymentRequired ? [{ required: true, message: 'El monto es requerido' }] : []} // Validar solo si es requerido
+            >
+              <Input
+                prefix="S/"
+                type="number"
+                step="0.01"
+                min="0"
+                readOnly={!isCustomRate || isFreeCoupon}
+                disabled={isFreeCoupon}
+                placeholder={isFreeCoupon ? "Cupón sin costo (S/ 0)" : isCustomRate ? "Ingrese el monto" : "Seleccione una opción de pago"}
+                style={{
+                  backgroundColor: isFreeCoupon ? 'var(--color-background-secondary)' : isCustomRate ? 'var(--color-background-primary)' : 'var(--color-background-secondary)',
+                  cursor: isFreeCoupon ? 'not-allowed' : isCustomRate ? 'text' : 'not-allowed'
+                }}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        {/* 
+            SECCIÓN: DESACTIVAR OPCIONES DE PAGO
+            Select para habilitar/deshabilitar la requerimiento de opciones de pago
+          */}
+        <Row gutter={16} style={{ marginBottom: '16px' }}>
+          <Col span={24}>
+            <Checkbox
+              checked={!isPaymentRequired}
+              onChange={(e) => {
+                const checked = !e.target.checked;
+                setIsPaymentRequired(checked);
+                if (checked) {
+                  form.setFieldsValue({ service_id: undefined }); // Limpiar el campo si se desactiva
+                }
+              }}
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              Reservar cita
+              <Typography.Text type="secondary" style={{ marginLeft: '8px' }}>
+                <Tooltip title="Si seleccionas esta opción, no será necesario llenar las opciones de pago para registrar la cita.">
+                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)' }}>?</span>
+                </Tooltip>
+              </Typography.Text>
+            </Checkbox>
+          </Col>
+        </Row>
+
+        {/* SECCIÓN: CHECKBOX PARA INCLUIR HORA */}
+        <Row gutter={16}>
+          <Col span={24}>
+            <Checkbox
+              checked={showHourField}
+              onChange={(e) => setShowHourField(e.target.checked)}
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              Incluir hora
+              <Typography.Text type="secondary" style={{ marginLeft: '8px' }}>
+                <Tooltip title="Selecciona esta opción si deseas incluir una hora específica para la cita.">
+                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)' }}>?</span>
+                </Tooltip>
+              </Typography.Text>
+            </Checkbox>
+          </Col>
+        </Row>
+
+        {/* Espacio entre checkbox y campo de hora */}
+        <div style={{ height: 'var(--spacing-md)' }} />
+
+        {/* SECCIÓN: HORA DE CITA - SOLO SE MUESTRA SI EL CHECKBOX ESTÁ MARCADO */}
+        {showHourField && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="appointment_hour"
+                getValueFromEvent={(time) => time ? time.format('HH:mm') : null}
+                getValueProps={(value) => ({
+                  value: value ? dayjs(value, 'HH:mm') : null
+                })}
+              >
+                <TimePicker
+                  style={{
+                    width: '100%'
+                  }}
+                  format="HH:mm"
+                  placeholder="Seleccionar hora"
+                  allowClear
+                  use12Hours={false}
+                  minuteStep={15}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
+
+        {/* 
+            SECCIÓN: BOTONES DE ACCIÓN
+            Botones para cancelar la edición o guardar los cambios
+          */}
+        <Row justify="end" style={{ marginTop: 'var(--spacing-lg)' }}>
+          <Col>
+            <Space>
+              <Button
+                onClick={handleCancel}
+                style={{
+                  backgroundColor: 'var(--color-background-secondary)',
+                  borderColor: 'var(--color-border-primary)',
+                  color: 'var(--color-text-primary)',
+                  fontFamily: 'var(--font-family)'
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmitting}
+                style={{
+                  fontFamily: 'var(--font-family)'
+                }}
+              >
+                Registrar Cita
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Form>
+
+      {/* MODAL SELECCIONAR CONTRIBUIDOR */}
+      <UniversalModal
+        title="Seleccionar Contribuidor"
+        open={isModalVisible}
+        centered
+        width={700}
+        onCancel={handleCancelSelectModal}
+        className="select-contributor-modal modal-themed"
+        destroyOnClose={true}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={handleCancelSelectModal}
+          >
+            Cancelar
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={async () => {
+              if (!selectedRowKey) {
+                notification.warning({
+                  message: 'Advertencia',
+                  description: 'Por favor seleccione un paciente primero',
+                });
+                return;
               }
-            })}
+
+              const selectedPatient = processedPatients.find(
+                (p) => p.key === selectedRowKey,
+              );
+              setSelectedPatient(selectedPatient);
+              form.setFieldsValue({ patient_id: selectedPatient.id });
+
+              setIsModalVisible(false);
+              setSelectedRowKey(null);
+
+              notification.success({
+                message: 'Paciente seleccionado',
+                description: `Se ha seleccionado a ${selectedPatient.display_name}`,
+              });
+            }}
             style={{
-              backgroundColor: 'var(--color-background-primary)',
-              color: 'var(--color-text-primary)'
+              fontFamily: 'var(--font-family)'
             }}
-          />
-        </UniversalModal>
+          >
+            Seleccionar
+          </Button>,
+        ]}
+      >
+        <CustomSearch
+          placeholder="Buscar por Apellido/Nombre o DNI..."
+          onSearch={(value) => setSearchTerm(value)}
+          width="100%"
+          style={{ marginBottom: 'var(--spacing-lg)' }}
+        />
+        <Table
+          dataSource={processedPatients}
+          columns={columns}
+          pagination={false}
+          rowKey="key"
+          loading={loading}
+          size="middle"
+          onRow={(record) => ({
+            onClick: () => {
+              setSelectedRowKey(record.key);
+            },
+            style: {
+              cursor: 'pointer',
+              backgroundColor: selectedRowKey === record.key ? 'var(--color-primary-light)' : 'transparent'
+            }
+          })}
+          style={{
+            backgroundColor: 'var(--color-background-primary)',
+            color: 'var(--color-text-primary)'
+          }}
+        />
+      </UniversalModal>
 
-        {/* MODAL NUEVO PACIENTE */}
-        <UniversalModal
-          title="Crear Nuevo Paciente"
-          open={isCreatePatientModalVisible}
+      {/* MODAL NUEVO PACIENTE */}
+      <UniversalModal
+        title="Crear Nuevo Paciente"
+        open={isCreatePatientModalVisible}
+        onCancel={handleCancelCreateModal}
+        footer={null}
+        width={800}
+        destroyOnClose={true}
+        centered={true}
+        className="create-patient-modal modal-themed"
+      >
+        <NewPatient
           onCancel={handleCancelCreateModal}
-          footer={null}
-          width={800}
-          destroyOnClose={true}
-          centered={true}
-          className="create-patient-modal modal-themed"
-        >
-          <NewPatient
-            onCancel={handleCancelCreateModal}
-            isModal={true}
-            onSubmit={(result) => {
-              if (result && typeof result === 'object') {
-                // Crear el formato: apellido paterno, apellido materno, nombres
-                const displayName =
-                  `${result.paternal_lastname || ''} ${result.maternal_lastname || ''} ${result.name || ''}`.trim();
+          isModal={true}
+          onSubmit={(result) => {
+            if (result && typeof result === 'object') {
+              // Crear el formato: apellido paterno, apellido materno, nombres
+              const displayName =
+                `${result.paternal_lastname || ''} ${result.maternal_lastname || ''} ${result.name || ''}`.trim();
 
-                // Convertir todo el objeto a string
-                const stringified = JSON.stringify(result);
+              // Convertir todo el objeto a string
+              const stringified = JSON.stringify(result);
 
-                // Guardar en estado
-                const newPatient = {
-                  ...result,
-                  full_name: displayName, // Mantener para compatibilidad
-                  display_name: displayName, // Nuevo formato
-                  stringifiedData: stringified,
-                };
-                
-                setSelectedPatient(newPatient);
-                form.setFieldsValue({ patient_id: result.id });
-                
-                setIsCreatePatientModalVisible(false);
-                
-                // Mostrar notificación de éxito
-                notification.success({
-                  message: 'Paciente creado',
-                  description: `Se ha creado el paciente ${displayName}`,
-                });
-              } else {
-                console.error('El resultado no es un objeto válido:', result);
-                notification.error({
-                  message: 'Error',
-                  description: 'No se pudo crear el paciente correctamente',
-                });
-              }
-            }}
-          />
-        </UniversalModal>
-      </div>
+              // Guardar en estado
+              const newPatient = {
+                ...result,
+                full_name: displayName, // Mantener para compatibilidad
+                display_name: displayName, // Nuevo formato
+                stringifiedData: stringified,
+              };
+
+              setSelectedPatient(newPatient);
+              form.setFieldsValue({ patient_id: result.id });
+
+              setIsCreatePatientModalVisible(false);
+
+              // Mostrar notificación de éxito
+              notification.success({
+                message: 'Paciente creado',
+                description: `Se ha creado el paciente ${displayName}`,
+              });
+            } else {
+              console.error('El resultado no es un objeto válido:', result);
+              notification.error({
+                message: 'Error',
+                description: 'No se pudo crear el paciente correctamente',
+              });
+            }
+          }}
+        />
+      </UniversalModal>
+    </div>
   );
 };
 
+// Ensure the default export is properly defined
 export default NewAppointment;
