@@ -1,6 +1,6 @@
 import { Button, Space, notification, Spin } from 'antd';
 import { useNavigate } from 'react-router';
-import CustomButton from '../../../components/Button/CustomButtom';
+import CustomButton from '../../../components/Button/CustomButton';
 import CustomSearch from '../../../components/Search/CustomSearch';
 import ModeloTable from '../../../components/Table/Tabla';
 import { useStaff } from '../hook/staffHook';

@@ -18,6 +18,7 @@ import {
   AddressBook, // Alternativa para Terapeutas
   Wrench,
   Heart, // Métodos Anticonceptivos
+  Question, // Ayuda
 } from '@phosphor-icons/react';
 import { Menu } from 'antd';
 import { useEffect, useState } from 'react';
@@ -46,14 +47,14 @@ export default function MenuDashboard() {
   // Función simple para obtener las claves seleccionadas (solo resaltado)
   const getSelectedKeys = () => {
     const currentPath = location.pathname;
-    
+
     // Verificar elementos del submenú de configuraciones
     if (currentPath === '/configPagos') return ['33'];
     if (currentPath === '/configPerfil') return ['16'];
     if (currentPath === '/configSistema') return ['17'];
     if (currentPath === '/configUser') return ['14'];
     if (currentPath === '/configContraceptive') return ['34'];
-    
+
     // Elementos principales del menú
     if (currentPath === '/Inicio' || currentPath === '/' || currentPath === '') return ['1'];
     if (currentPath === '/pacientes') return ['3'];
@@ -63,7 +64,9 @@ export default function MenuDashboard() {
     if (currentPath === '/reportes') return ['9'];
     if (currentPath === '/calendar') return ['10'];
     if (currentPath === '/estadisticas') return ['11'];
-    
+
+    if (currentPath === '/help') return ['35'];
+
     return [];
   };
 
@@ -133,16 +136,16 @@ export default function MenuDashboard() {
     },
     ...(userRole === 1
       ? [
-          {
-            key: '11',
-            label: <Link to="estadisticas">Estadísticas</Link>,
-            icon: (
-              <div className={Style.icon}>
-                <ChartLine weight="regular" /> {/* o <ChartBar /> */}
-              </div>
-            ),
-          },
-        ]
+        {
+          key: '11',
+          label: <Link to="estadisticas">Estadísticas</Link>,
+          icon: (
+            <div className={Style.icon}>
+              <ChartLine weight="regular" /> {/* o <ChartBar /> */}
+            </div>
+          ),
+        },
+      ]
       : []),
     {
       key: '12',
@@ -155,17 +158,17 @@ export default function MenuDashboard() {
       children: [
         ...(userRole === 1
           ? [
-              {
-                key: '33',
-                label: <Link to="configPagos">Pagos</Link>,
-                icon: <CurrencyDollar weight="regular" />,
-              },
-              {
-                key: '34',
-                label: <Link to="configContraceptive">Métodos Anticonceptivos</Link>,
-                icon: <Heart weight="regular" />,
-              },
-            ]
+            {
+              key: '33',
+              label: <Link to="configPagos">Pagos</Link>,
+              icon: <CurrencyDollar weight="regular" />,
+            },
+            {
+              key: '34',
+              label: <Link to="configContraceptive">Métodos Anticonceptivos</Link>,
+              icon: <Heart weight="regular" />,
+            },
+          ]
           : []),
         {
           key: '16',
@@ -174,18 +177,23 @@ export default function MenuDashboard() {
         },
         ...(userRole === 1
           ? [
-              {
-                key: '17',
-                label: <Link to="configSistema">Sistema</Link>,
-                icon: <Cpu weight="regular" />,
-              },
-              {
-                key: '14',
-                label: <Link to="configUser">Usuarios</Link>,
-                icon: <UserList weight="regular" />,
-              },
-            ]
+            {
+              key: '17',
+              label: <Link to="configSistema">Sistema</Link>,
+              icon: <Cpu weight="regular" />,
+            },
+            {
+              key: '14',
+              label: <Link to="configUser">Usuarios</Link>,
+              icon: <UserList weight="regular" />,
+            },
+          ]
           : []),
+        {
+          key: '35',
+          label: <Link to="help">Ayuda</Link>,
+          icon: <Question weight="regular" />,
+        },
       ],
     },
   ];

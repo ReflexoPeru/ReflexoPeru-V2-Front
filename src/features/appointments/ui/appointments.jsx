@@ -4,7 +4,7 @@ import { CalendarOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CustomButton from '../../../components/Button/CustomButtom';
+import CustomButton from '../../../components/Button/CustomButton';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';

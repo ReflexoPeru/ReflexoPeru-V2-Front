@@ -19,6 +19,7 @@ import Payments from '../features/configuration/cPayments/Payments';
 import User from '../features/configuration/cUsers/Users';
 import Profile from '../features/configuration/cProfile/Profile';
 import Contraceptive from '../features/configuration/cContraceptive/Contraceptive';
+import HelpReports from '../features/configuration/cHelp/ui/HelpReports';
 import Error404 from '../pages/Error/Error404';
 import ProtectedRoute from './ProtectedRoute';
 import Error500 from '../pages/Error/Error';
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
             path: 'configContraceptive',
             element: <ProtectedRoute allowedRoles={[1]} />,
             children: [{ index: true, element: <Contraceptive /> }],
+          },
+          {
+            path: 'help',
+            element: <HelpReports />,
           },
         ],
       },
