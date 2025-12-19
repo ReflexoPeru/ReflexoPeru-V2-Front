@@ -445,7 +445,85 @@ const NewAppointment = () => {
         <div style={{ height: 'var(--spacing-md)' }} />
 
         {/* Separador visual entre secciones */}
-        <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px' }} />
+        <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px', marginBottom: '8px' }} />
+
+        {/* SECCIÓN: CHECKBOXES Y HORA */}
+        <Row gutter={16} align="middle">
+          <Col span={24}>
+            <div style={{
+              display: 'flex',
+              gap: '24px',
+              alignItems: 'center',
+              marginTop: '0px',
+              marginBottom: '24px'
+            }}>
+              <Checkbox
+                checked={!isPaymentRequired}
+                onChange={(e) => {
+                  const checked = !e.target.checked;
+                  setIsPaymentRequired(checked);
+                }}
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                Reservar cita
+                <Tooltip title="Si seleccionas esta opción, no será necesario llenar las opciones de pago para registrar la cita.">
+                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)', marginLeft: '8px' }}>?</span>
+                </Tooltip>
+              </Checkbox>
+
+              <Checkbox
+                checked={showHourField}
+                onChange={(e) => setShowHourField(e.target.checked)}
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                Incluir hora
+                <Tooltip title="Selecciona esta opción si deseas incluir una hora específica para la cita.">
+                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)', marginLeft: '8px' }}>?</span>
+                </Tooltip>
+              </Checkbox>
+            </div>
+          </Col>
+        </Row>
+
+        {/* SECCIÓN: HORA DE CITA - SOLO SE MUESTRA SI EL CHECKBOX ESTÁ MARCADO */}
+        {showHourField && (
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="appointment_hour"
+                label="Hora de cita"
+                getValueFromEvent={(time) => time ? time.format('HH:mm') : null}
+                getValueProps={(value) => ({
+                  value: value ? dayjs(value, 'HH:mm') : null
+                })}
+              >
+                <TimePicker
+                  style={{
+                    width: '100%'
+                  }}
+                  format="h:mm A"
+                  placeholder="Seleccionar hora"
+                  allowClear
+                  use12Hours={false}
+                  minuteStep={10}
+                  showNow={false}
+                  hideDisabledOptions
+                  popupClassName={styles.customTimePickerDropdown}
+                  dropdownClassName={styles.customTimePickerDropdown}
+                  disabledHours={() => {
+                    const hours = [];
+                    for (let i = 0; i < 24; i++) {
+                      if (i < 7 || i > 13) {
+                        hours.push(i);
+                      }
+                    }
+                    return hours;
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        )}
 
         {/* 
             SECCIÓN: OPCIONES DE PAGO
@@ -468,7 +546,6 @@ const NewAppointment = () => {
                 }}
                 placeholder="Selecciona una opción"
                 hidePriceInput={true}
-                disabled={!isPaymentRequired} // Desactivar si no es requerido
               />
             </Form.Item>
           </Col>
@@ -531,79 +608,7 @@ const NewAppointment = () => {
           </Col>
         </Row>
 
-        {/* 
-            SECCIÓN: DESACTIVAR OPCIONES DE PAGO
-            Select para habilitar/deshabilitar la requerimiento de opciones de pago
-          */}
-        <Row gutter={16} style={{ marginBottom: '16px' }}>
-          <Col span={24}>
-            <Checkbox
-              checked={!isPaymentRequired}
-              onChange={(e) => {
-                const checked = !e.target.checked;
-                setIsPaymentRequired(checked);
-                if (checked) {
-                  form.setFieldsValue({ service_id: undefined }); // Limpiar el campo si se desactiva
-                }
-              }}
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              Reservar cita
-              <Typography.Text type="secondary" style={{ marginLeft: '8px' }}>
-                <Tooltip title="Si seleccionas esta opción, no será necesario llenar las opciones de pago para registrar la cita.">
-                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)' }}>?</span>
-                </Tooltip>
-              </Typography.Text>
-            </Checkbox>
-          </Col>
-        </Row>
 
-        {/* SECCIÓN: CHECKBOX PARA INCLUIR HORA */}
-        <Row gutter={16}>
-          <Col span={24}>
-            <Checkbox
-              checked={showHourField}
-              onChange={(e) => setShowHourField(e.target.checked)}
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              Incluir hora
-              <Typography.Text type="secondary" style={{ marginLeft: '8px' }}>
-                <Tooltip title="Selecciona esta opción si deseas incluir una hora específica para la cita.">
-                  <span style={{ cursor: 'pointer', color: 'var(--color-text-secondary)' }}>?</span>
-                </Tooltip>
-              </Typography.Text>
-            </Checkbox>
-          </Col>
-        </Row>
-
-        {/* Espacio entre checkbox y campo de hora */}
-        <div style={{ height: 'var(--spacing-md)' }} />
-
-        {/* SECCIÓN: HORA DE CITA - SOLO SE MUESTRA SI EL CHECKBOX ESTÁ MARCADO */}
-        {showHourField && (
-          <Row gutter={16}>
-            <Col span={24}>
-              <Form.Item
-                name="appointment_hour"
-                getValueFromEvent={(time) => time ? time.format('HH:mm') : null}
-                getValueProps={(value) => ({
-                  value: value ? dayjs(value, 'HH:mm') : null
-                })}
-              >
-                <TimePicker
-                  style={{
-                    width: '100%'
-                  }}
-                  format="HH:mm"
-                  placeholder="Seleccionar hora"
-                  allowClear
-                  use12Hours={false}
-                  minuteStep={15}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-        )}
 
         {/* 
             SECCIÓN: BOTONES DE ACCIÓN

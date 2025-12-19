@@ -21,9 +21,12 @@ import {
   Typography,
   Space,
   Divider,
+  Tooltip,
+  TimePicker,
 } from 'antd';
 import UniversalModal from '../../../../components/Modal/UniversalModal';
 import dayjs from '../../../../utils/dayjsConfig';
+import styleNew from '../RegisterAppointment/NewAppointment.module.css';
 import { useEffect, useState } from 'react';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -128,64 +131,64 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   // ESTADOS PRINCIPALES DEL COMPONENTE
   // ============================================================================
-  
+
   /** @type {[any, Function]} Formulario de Ant Design para manejo de campos */
   const [form] = Form.useForm();
-  
+
   /** @type {[boolean, Function]} Estado de carga general del componente */
   const [loading, setLoading] = useState(false);
-  
+
   /** @type {[boolean, Function]} Estado de envío del formulario */
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   /** @type {[boolean, Function]} Indica si los datos iniciales han sido cargados */
   const [initialDataLoaded, setInitialDataLoaded] = useState(false);
 
   // ============================================================================
   // ESTADOS DE CAMPOS DEL FORMULARIO
   // ============================================================================
-  
+
   /** @type {[boolean, Function]} Controla si mostrar el campo de hora */
   const [showHourField, setShowHourField] = useState(false);
-  
+
   /** @type {[boolean, Function]} Indica si el pago es requerido */
   const [isPaymentRequired, setIsPaymentRequired] = useState(false);
-  
+
   /** @type {[string, Function]} Tipo de paciente: 'continuador' o 'nuevo' */
   const [patientType, setPatientType] = useState('continuador');
-  
+
   /** @type {[PatientData|null, Function]} Paciente seleccionado actualmente */
   const [selectedPatient, setSelectedPatient] = useState(null);
-  
+
   /** @type {[string, Function]} Monto del pago en formato string */
   const [paymentAmount, setPaymentAmount] = useState('');
-  
+
   /** @type {[boolean, Function]} Indica si es cupón sin costo */
   const [isFreeCoupon, setIsFreeCoupon] = useState(false);
-  
+
   /** @type {[boolean, Function]} Indica si es tarifa personalizada */
   const [isCustomRate, setIsCustomRate] = useState(false);
 
   // ============================================================================
   // ESTADOS DE MODALES Y SELECCIÓN
   // ============================================================================
-  
+
   /** @type {[boolean, Function]} Controla visibilidad del modal de selección de paciente */
   const [isSelectPatientModalOpen, setIsSelectPatientModalOpen] = useState(false);
-  
+
   /** @type {[boolean, Function]} Controla visibilidad del modal de creación de paciente */
   const [isCreatePatientModalOpen, setIsCreatePatientModalOpen] = useState(false);
-  
+
   /** @type {[string|number|null, Function]} ID de la fila seleccionada en la tabla de pacientes */
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   // ============================================================================
   // HOOKS PERSONALIZADOS
   // ============================================================================
-  
+
   /** Hook para gestión de citas - proporciona funciones CRUD */
   const { getAppointmentDetails, updateExistingAppointment } = useAppointments();
-  
+
   /** Hook para gestión de pacientes - proporciona lista y búsqueda */
   const {
     patients,
@@ -196,20 +199,20 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   // ESTADOS ADICIONALES PARA SINCRONIZACIÓN
   // ============================================================================
-  
+
   /** @type {[boolean, Function]} Indica si las opciones de pago están cargadas */
   const [paymentOptionsLoaded, setPaymentOptionsLoaded] = useState(false);
-  
+
   /** @type {[boolean, Function]} Indica si las opciones de servicio están cargadas */
   const [serviceOptionsLoaded, setServiceOptionsLoaded] = useState(false);
-  
+
   /** @type {[AppointmentData|null, Function]} Datos completos de la cita a editar */
   const [appointmentData, setAppointmentData] = useState(null);
 
   // ============================================================================
   // EFECTOS PARA INICIALIZACIÓN Y SINCRONIZACIÓN
   // ============================================================================
-  
+
   /**
    * Efecto para detectar cuando las opciones de métodos de pago están listas
    * @description Simula la detección de carga de componentes SelectPaymentStatus y SelectPrices
@@ -234,7 +237,25 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           // Obtener datos completos de la cita
           const data = await getAppointmentDetails(appointmentId);
           setAppointmentData(data);
-          
+
+          // Obtener lista de precios para preselección inteligente
+          let pricesList = [];
+          try {
+            const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
+            pricesList = await getPredeterminedPrices();
+          } catch (error) {
+            console.error('Error fetching prices for preselection:', error);
+          }
+
+          // Función para encontrar el servicio correcto (maneja tipos mixed string/number)
+          const getPreselectedService = (backendId, list) => {
+            if (!backendId || !list) return undefined;
+            const match = list.find(item => String(item.value) === String(backendId));
+            return match ? match.value : undefined;
+          };
+
+          const preselectedServiceId = getPreselectedService(data.predetermined_price_id || data.service_id, pricesList);
+
           // Buscar paciente en la lista local si no viene el nombre completo
           let patientObj = null;
           if (patients && patients.length > 0) {
@@ -250,7 +271,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               };
             }
           }
-          
+
           // Si no se encuentra en la lista local, hacer fetch individual
           if (!patientObj && data.patient_id) {
             try {
@@ -269,7 +290,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               };
             }
           }
-          
+
           // Configurar paciente seleccionado
           if (patientObj) {
             setSelectedPatient(patientObj);
@@ -283,32 +304,23 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           // Configurar monto (pero NO preseleccionar método de pago)
           setPaymentAmount(data.payment ? String(data.payment) : '');
 
-          // Verificar si la cita actual tiene cupón sin costo
-          if (data.service_id) {
-            const fetchServiceInfo = async () => {
-              try {
-                const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
-                const prices = await getPredeterminedPrices();
-                const selectedService = prices.find(item => item.value === data.service_id);
-                
-                if (selectedService) {
-                  const serviceName = selectedService.label?.toLowerCase() || '';
-                  if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
-                    setIsFreeCoupon(true);
-                    setIsCustomRate(false);
-                  } else if (serviceName.includes('tarifa personalizada')) {
-                    setIsFreeCoupon(false);
-                    setIsCustomRate(true);
-                  } else {
-                    setIsFreeCoupon(false);
-                    setIsCustomRate(false);
-                  }
-                }
-              } catch (error) {
-                console.error('Error al verificar el servicio:', error);
+          // Verificar si la cita actual tiene cupón sin costo usando la lista ya obtenida
+          if (preselectedServiceId) {
+            const selectedService = pricesList.find(item => item.value === preselectedServiceId);
+
+            if (selectedService) {
+              const serviceName = selectedService.label?.toLowerCase() || '';
+              if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
+                setIsFreeCoupon(true);
+                setIsCustomRate(false);
+              } else if (serviceName.includes('tarifa personalizada')) {
+                setIsFreeCoupon(false);
+                setIsCustomRate(true);
+              } else {
+                setIsFreeCoupon(false);
+                setIsCustomRate(false);
               }
-            };
-            fetchServiceInfo();
+            }
           }
 
           // Establecer valores iniciales del formulario
@@ -325,7 +337,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
             payment_type_id: data.payment_type_id
               ? String(data.payment_type_id)
               : '',
-            service_id: data.service_id ? String(data.service_id) : '',
+            service_id: preselectedServiceId ? String(preselectedServiceId) : (data.service_id ? String(data.service_id) : ''),
             patient_id: data.patient_id || '',
             ailments: data.ailments || '',
             surgeries: data.surgeries || '',
@@ -368,11 +380,9 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         diagnosis: appointmentData.diagnosis || '',
         observation: appointmentData.observation || '',
         payment: appointmentData.payment ? String(appointmentData.payment) : '',
+        service_id: appointmentData.service_id,
         payment_type_id: appointmentData.payment_type_id
           ? String(appointmentData.payment_type_id)
-          : '',
-        service_id: appointmentData.service_id
-          ? String(appointmentData.service_id)
           : '',
         patient_id: appointmentData.patient_id || '',
         ailments: appointmentData.ailments || '',
@@ -395,7 +405,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   // MANEJADORES DE EVENTOS Y FUNCIONES AUXILIARES
   // ============================================================================
-  
+
   /**
    * Maneja el cambio de tipo de pago desde el componente SelectPaymentStatus
    * @param {string|number} value - ID del tipo de pago seleccionado
@@ -434,10 +444,10 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
           const prices = await getPredeterminedPrices();
           const selectedService = prices.find(item => item.value === serviceId);
-          
+
           if (selectedService) {
             const serviceName = selectedService.label?.toLowerCase() || '';
-            
+
             // Verificar si el nombre contiene "cupon sin costo" (case insensitive)
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
               // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
@@ -468,7 +478,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
           console.error('Error al verificar el servicio seleccionado:', error);
         }
       };
-      
+
       fetchServiceInfo();
     }
   };
@@ -490,7 +500,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         });
         return;
       }
-      
+
       if (
         values.payment === undefined ||
         values.payment === null ||
@@ -504,7 +514,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         });
         return;
       }
-      
+
       if (!values.appointment_date) {
         notification.error({
           message: 'Error',
@@ -512,7 +522,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         });
         return;
       }
-      
+
       if (!values.payment_type_id) {
         notification.error({
           message: 'Error',
@@ -564,7 +574,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
       }
     } catch (error) {
       console.error('Error updating appointment:', error);
-      
+
       // Construir mensaje de error personalizado
       let errorMessage =
         'No se pudo actualizar la cita. Por favor intente nuevamente.';
@@ -632,7 +642,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   // PREPARACIÓN DE DATOS PARA TABLAS Y COMPONENTES
   // ============================================================================
-  
+
   /**
    * Procesa la lista de pacientes para la tabla de selección
    * @description Agrega keys únicos y formatea los datos para Ant Design Table
@@ -675,287 +685,374 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
   // ============================================================================
   // RENDERIZADO DEL COMPONENTE
   // ============================================================================
-  
+
   return (
-      <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-        {/* 
+    <div
+      className={styleNew.container}
+      style={{ margin: 0, padding: 0, border: 'none', boxShadow: 'none' }}
+    >
+      {/*
           FORMULARIO PRINCIPAL
           Solo se muestra cuando los datos iniciales han sido cargados
         */}
-        {initialDataLoaded && (
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmit}
-            style={{ color: '#ffffff' }}
-          >
-            {/* 
-              SECCIÓN: SELECCIÓN DE PACIENTE
-              Permite seleccionar un paciente existente o crear uno nuevo
-            */}
-            <Row gutter={38}>
-              <Col span={17}>
-                <Form.Item label="Paciente" required>
+      {initialDataLoaded && (
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          {/* SECCIÓN: FECHA DE CITA */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="appointment_date"
+                label="Fecha de cita"
+                rules={[{ required: true, message: 'La fecha es requerida' }]}
+              >
+                <DatePicker
+                  style={{ width: '100%' }}
+                  format="DD-MM-YYYY"
+                  placeholder="Seleccionar fecha"
+                  allowClear={false}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Espacio entre secciones */}
+          <div style={{ height: 'var(--spacing-md)' }} />
+
+          {/* SECCIÓN: PACIENTE */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="Paciente" required>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   <Input
                     value={selectedPatient?.full_name || ''}
-                    placeholder="Seleccione un paciente"
                     readOnly
-                    style={{ backgroundColor: '#444444' }}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Button
-                  type="primary"
-                  onClick={() => setIsSelectPatientModalOpen(true)}
-                  style={{ marginTop: '30px' }}
-                  
-                  
-                >
-                  Agregar Paciente
-                </Button>
-              </Col>
-            </Row>
-
-
-            {/* Separador visual entre secciones */}
-            <Divider style={{ borderColor: '#555555', marginTop: '1px' }} />
-            
-
-            {/* 
-              SECCIÓN: FECHA DE CITA
-              Campo requerido para establecer cuándo se realizará la cita
-            */}
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="appointment_date"
-                  label="Fecha de cita"
-                  rules={[{ required: true, message: 'La fecha es requerida' }]}
-                >
-                  <DatePicker
-                    style={{ width: '100%' }}
-                    format="DD-MM-YYYY"
-                    placeholder="Seleccionar fecha"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            {/* Espacio entre secciones */}
-            <div style={{ height: '20px' }} />
-
-            {/* 
-              SECCIÓN: OPCIONES DE PAGO
-              Campo para seleccionar el servicio y opciones de pago
-            */}
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item 
-                  name="service_id" label=" Opciones de Pago">
-                  <SelectPrices
-                    value={form.getFieldValue('service_id')}
-                    initialPrice={form.getFieldValue('payment')}
-                    onChange={handleServiceChange}
-                    onPriceChange={(price) =>
-                      form.setFieldsValue({ payment: price })
-                    }
-                    placeholder="Selecciona una opción"
-                    hidePriceInput={true}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            {/* Espacio entre secciones */}
-            <div style={{ height: '20px' }} />
-
-            {/* 
-              SECCIÓN: MÉTODO DE PAGO
-              Campo para seleccionar el tipo de método de pago
-            */}
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="payment_type_id"
-                  label="Detalles de Pago"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'El método de pago es requerido',
-                    },
-                  ]}
-                >
-                  <SelectPaymentStatus
-                    value={form.getFieldValue('payment_type_id')}
-                    disabled={isFreeCoupon}
-                    onChange={handlePaymentTypeChange}
-                    placeholder="Selecciona método de pago"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            
-
-            {/* 
-              SECCIÓN: CAMPO DE MONTO
-              Input numérico para el monto del pago con validaciones
-            */}
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="payment"
-                  label="Monto"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'El monto es requerido',
-                    },
-                    
-                  ]}
-                >
-                  <Input                   
-                    prefix="S/"
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    readOnly={isFreeCoupon}
-                    disabled={isFreeCoupon}
-                    placeholder={
-                      isFreeCoupon 
-                        ? "Cupón sin costo (S/ 0)" 
-                        : isCustomRate 
-                        ? "Ingrese tarifa personalizada" 
-                        : "Ingrese el monto"
-                    }
+                    placeholder="Paciente seleccionado"
                     style={{
-                      backgroundColor: isFreeCoupon ? '#444444' : '#ffffff',
-                      cursor: isFreeCoupon ? 'not-allowed' : 'text'
+                      backgroundColor: 'var(--color-input-bg)',
+                      border: '1px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'var(--color-input-text)',
+                      flex: 1,
                     }}
                   />
-                </Form.Item>
-              </Col>
-            </Row>
+                  <Button
+                    onClick={() => setIsSelectPatientModalOpen(true)}
+                    type="primary"
+                    style={{
+                      fontFamily: 'var(--font-family)',
+                    }}
+                  >
+                    Cambiar
+                  </Button>
+                </div>
+              </Form.Item>
+            </Col>
+          </Row>
 
-           
+          {/* Separador visual entre secciones */}
+          <Divider
+            style={{
+              borderColor: 'var(--color-border-primary)',
+              marginTop: '1px',
+              marginBottom: '8px',
+            }}
+          />
 
-            {/* 
-              SECCIÓN: HORA DE CITA
-              Campo opcional para especificar la hora exacta de la cita
-            */}
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item name="appointment_hour" label="Hora de cita">
-                  <Input placeholder="HH:MM" disabled={!showHourField} />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
+          {/* SECCIÓN: CHECKBOXES Y HORA */}
+          <Row gutter={16} align="middle">
+            <Col span={24}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '24px',
+                  alignItems: 'center',
+                  marginTop: '0px',
+                  marginBottom: '24px',
+                }}
+              >
+                <Checkbox
+                  checked={!isPaymentRequired}
+                  onChange={(e) => {
+                    const checked = !e.target.checked;
+                    setIsPaymentRequired(checked);
+                  }}
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  Reservar cita
+                  <Tooltip title="Si seleccionas esta opción, no será necesario llenar las opciones de pago.">
+                    <span
+                      style={{
+                        cursor: 'pointer',
+                        color: 'var(--color-text-secondary)',
+                        marginLeft: '8px',
+                      }}
+                    >
+                      ?
+                    </span>
+                  </Tooltip>
+                </Checkbox>
+
                 <Checkbox
                   checked={showHourField}
                   onChange={(e) => setShowHourField(e.target.checked)}
-                  style={{ marginTop: '32px' }}
+                  style={{ color: 'var(--color-text-primary)' }}
                 >
                   Incluir hora
+                  <Tooltip title="Selecciona esta opción si deseas incluir una hora específica.">
+                    <span
+                      style={{
+                        cursor: 'pointer',
+                        color: 'var(--color-text-secondary)',
+                        marginLeft: '8px',
+                      }}
+                    >
+                      ?
+                    </span>
+                  </Tooltip>
                 </Checkbox>
-              </Col>
-            </Row>
+              </div>
+            </Col>
+          </Row>
 
-            {/* 
-              SECCIÓN: BOTONES DE ACCIÓN
-              Botones para cancelar la edición o guardar los cambios
-            */}
-            <Row justify="end" style={{ marginTop: '30px' }}>
-              <Col>
-                <Space>
-                  <Button
-                    onClick={() => onEditSuccess && onEditSuccess()}
-                    className="edit-appointment-cancel-btn"
-                  >
-                    Cancelar
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    loading={isSubmitting}
-                    onClick={() => {
-                      form.submit();
+          {/* SECCIÓN: HORA DE CITA */}
+          {showHourField && (
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item
+                  name="appointment_hour"
+                  label="Hora de cita"
+                  getValueFromEvent={(time) =>
+                    time ? time.format('HH:mm') : null
+                  }
+                  getValueProps={(value) => ({
+                    value: value ? dayjs(value, 'HH:mm') : null,
+                  })}
+                >
+                  <TimePicker
+                    style={{
+                      width: '100%',
                     }}
-                  >
-                    Actualizar Cita
-                  </Button>
-                </Space>
+                    format="h:mm A"
+                    placeholder="Seleccionar hora"
+                    allowClear
+                    use12Hours={false}
+                    minuteStep={10}
+                    showNow={false}
+                    hideDisabledOptions
+                    popupClassName={styleNew.customTimePickerDropdown}
+                    dropdownClassName={styleNew.customTimePickerDropdown}
+                    disabledHours={() => {
+                      const hours = [];
+                      for (let i = 0; i < 24; i++) {
+                        if (i < 7 || i > 13) {
+                          hours.push(i);
+                        }
+                      }
+                      return hours;
+                    }}
+                  />
+                </Form.Item>
               </Col>
             </Row>
-          </Form>
-        )}
+          )}
 
-        {/* 
+          {/* SECCIÓN: OPCIONES DE PAGO */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="service_id"
+                label="Opciones de Pago"
+                rules={
+                  isPaymentRequired
+                    ? [{ required: true, message: 'Las opciones de pago son requeridas' }]
+                    : []
+                }
+              >
+                <SelectPrices
+                  value={form.getFieldValue('service_id')}
+                  initialPrice={form.getFieldValue('payment')}
+                  onChange={handleServiceChange}
+                  onPriceChange={handlePriceChange}
+                  placeholder="Selecciona una opción"
+                  hidePriceInput={true}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Espacio entre secciones */}
+          <div style={{ height: 'var(--spacing-sm)' }} />
+
+          {/* SECCIÓN: MÉTODO DE PAGO */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="payment_type_id"
+                label="Método de Pago"
+                rules={
+                  isPaymentRequired
+                    ? [{ required: true, message: 'El método de pago es requerido' }]
+                    : []
+                }
+              >
+                <SelectPaymentStatus
+                  value={form.getFieldValue('payment_type_id')}
+                  disabled={isFreeCoupon}
+                  onChange={handlePaymentTypeChange}
+                  placeholder="Selecciona método de pago"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          {/* Espacio entre secciones */}
+          <div style={{ height: 'var(--spacing-sm)' }} />
+
+          {/* SECCIÓN: CAMPO DE MONTO */}
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item
+                name="payment"
+                label="Monto"
+                rules={
+                  isPaymentRequired
+                    ? [{ required: true, message: 'El monto es requerido' }]
+                    : []
+                }
+              >
+                <Input
+                  prefix="S/"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  readOnly={!isCustomRate || isFreeCoupon}
+                  disabled={isFreeCoupon}
+                  placeholder={
+                    isFreeCoupon
+                      ? 'Cupón sin costo (S/ 0)'
+                      : isCustomRate
+                        ? 'Ingrese el monto'
+                        : 'Seleccione una opción de pago'
+                  }
+                  style={{
+                    backgroundColor: isFreeCoupon
+                      ? 'var(--color-background-secondary)'
+                      : isCustomRate
+                        ? 'var(--color-background-primary)'
+                        : 'var(--color-background-secondary)',
+                    cursor: isFreeCoupon
+                      ? 'not-allowed'
+                      : isCustomRate
+                        ? 'text'
+                        : 'not-allowed',
+                  }}
+                  value={paymentAmount}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setPaymentAmount(val);
+                    form.setFieldsValue({ payment: val });
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row justify="end" style={{ marginTop: 'var(--spacing-lg)' }}>
+            <Col>
+              <Space>
+                <Button
+                  onClick={() => onEditSuccess && onEditSuccess()}
+                  className="edit-appointment-cancel-btn"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isSubmitting}
+                  style={{
+                    fontFamily: 'var(--font-family)',
+                  }}
+                >
+                  Guardar Cambios
+                </Button>
+              </Space>
+            </Col>
+          </Row>
+        </Form>
+      )}
+
+      {/* 
           MODAL: SELECCIÓN DE PACIENTE
           Permite buscar y seleccionar un paciente existente
         */}
-        <UniversalModal
-          title="Seleccionar Paciente"
-          open={isSelectPatientModalOpen}
-          onCancel={() => setIsSelectPatientModalOpen(false)}
-          className="edit-appointment-select-patient-modal modal-themed"
-          destroyOnClose={true}
-          centered={true}
-          width={800}
-          footer={[
-            <Button
-              key="cancel"
-              onClick={() => setIsSelectPatientModalOpen(false)}
-            >
-              Cancelar
-            </Button>,
-            <Button
-              key="select"
-              type="primary"
-              onClick={handlePatientSelection}
-            >
-              Seleccionar
-            </Button>,
-          ]}
-        >
-          <CustomSearch
-            placeholder="Buscar por Apellido/Nombre o DNI..."
-            onSearch={(value) => setSearchTerm(value)}
-            width="100%"
-            style={{ marginBottom: 16 }}
-          />
-          <Table
-            dataSource={processedPatients}
-            columns={patientColumns}
-            pagination={false}
-            rowKey="key"
-            loading={patientsLoading}
-            onRow={(record) => ({
-              onClick: () => setSelectedRowKey(record.key),
-            })}
-          />
-        </UniversalModal>
+      <UniversalModal
+        title="Seleccionar Paciente"
+        open={isSelectPatientModalOpen}
+        onCancel={() => setIsSelectPatientModalOpen(false)}
+        className="edit-appointment-select-patient-modal modal-themed"
+        destroyOnClose={true}
+        centered={true}
+        width={800}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => setIsSelectPatientModalOpen(false)}
+          >
+            Cancelar
+          </Button>,
+          <Button
+            key="select"
+            type="primary"
+            onClick={handlePatientSelection}
+          >
+            Seleccionar
+          </Button>,
+        ]}
+      >
+        <CustomSearch
+          placeholder="Buscar por Apellido/Nombre o DNI..."
+          onSearch={(value) => setSearchTerm(value)}
+          width="100%"
+          style={{ marginBottom: 16 }}
+        />
+        <Table
+          dataSource={processedPatients}
+          columns={patientColumns}
+          pagination={false}
+          rowKey="key"
+          loading={patientsLoading}
+          onRow={(record) => ({
+            onClick: () => setSelectedRowKey(record.key),
+          })}
+        />
+      </UniversalModal>
 
-        {/* 
+      {/* 
           MODAL: CREACIÓN DE PACIENTE
           Permite crear un nuevo paciente desde el formulario de edición
         */}
-        <UniversalModal
-          title="Crear Nuevo Paciente"
-          open={isCreatePatientModalOpen}
+      <UniversalModal
+        title="Crear Nuevo Paciente"
+        open={isCreatePatientModalOpen}
+        onCancel={() => setIsCreatePatientModalOpen(false)}
+        footer={null}
+        width={500}
+        className="edit-appointment-create-patient-modal modal-themed"
+        destroyOnClose={true}
+        centered={true}
+      >
+        <NewPatient
           onCancel={() => setIsCreatePatientModalOpen(false)}
-          footer={null}
-          width={500}
-          className="edit-appointment-create-patient-modal modal-themed"
-          destroyOnClose={true}
-          centered={true}
-        >
-          <NewPatient
-            onCancel={() => setIsCreatePatientModalOpen(false)}
-            onSubmit={handlePatientCreated}
-          />
-        </UniversalModal>
-      </div>
+          onSubmit={handlePatientCreated}
+        />
+      </UniversalModal>
+    </div>
   );
 };
 

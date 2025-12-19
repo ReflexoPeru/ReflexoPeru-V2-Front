@@ -15,17 +15,17 @@ const FormComponent = forwardRef(
       patientType = '',
       paymentOption = '',
       customAmount = '',
-      onSubmit = () => {},
-      onPaymentOptionChange = () => {},
-      onPatientTypeChange = () => {},
-      onShowHourFieldChange = () => {},
-      onPaymentRequiredChange = () => {},
-      onOpenCreateModal = () => {},
-      onOpenSelectModal = () => {},
-      onCancel = () => {},
+      onSubmit = () => { },
+      onPaymentOptionChange = () => { },
+      onPatientTypeChange = () => { },
+      onShowHourFieldChange = () => { },
+      onPaymentRequiredChange = () => { },
+      onOpenCreateModal = () => { },
+      onOpenSelectModal = () => { },
+      onCancel = () => { },
       form: externalForm,
       onPriceChange,
-      onDNIDataFound = () => {},
+      onDNIDataFound = () => { },
       loading: externalLoading = false,
       initialValues = {},
       searchType = 'patient',
@@ -126,28 +126,30 @@ const FormComponent = forwardRef(
             name={field.name}
             label={<span className={styles.label}>{field.label}</span>}
             className={`${styles.formItem} ${field.className || ''}`}
+            required={isPhoneField ? isPhoneRequired : field.required}
             rules={
               isPhoneField
                 ? [
-                    ...(isPhoneRequired
-                      ? [
-                          {
-                            required: true,
-                            message: 'Por favor ingrese su teléfono',
-                          },
-                        ]
-                      : []),
-                    () => ({
-                      validator(_, value) {
-                        if (!value || (value && value.length > 0)) {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error('Por favor ingrese un número de teléfono válido'),
-                        );
+                  ...(isPhoneRequired
+                    ? [
+                      {
+                        required: true,
+                        message: 'Por favor ingrese su teléfono',
                       },
-                    }),
-                  ]
+                    ]
+                    : []),
+                  () => ({
+                    validator(_, value) {
+                      if (!isPhoneRequired) return Promise.resolve();
+                      if (value && value.length > 0) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(''),
+                      );
+                    },
+                  }),
+                ]
                 : field.rules
             }
           >
@@ -177,29 +179,29 @@ const FormComponent = forwardRef(
         ref={ref}
         initialValues={initialValues}
       >
-          <Row gutter={[20, 8]}>
-            {fields.map((field, index) => renderField(field, index))}
-          </Row>
+        <Row gutter={[20, 8]}>
+          {fields.map((field, index) => renderField(field, index))}
+        </Row>
 
-          <Form.Item className={styles.buttonGroup}>
-            <div className={styles.buttonWrapper}>
-              <Button
-                htmlType="button"
-                className={styles.buttonCancel}
-                onClick={onCancel}
-              >
-                Cancelar
-              </Button>
-              <Button
-                type="primary"
-                className={styles.buttonSubmit}
-                loading={loading}
-                onClick={() => form.submit()}
-              >
-                {mode === 'edit' ? 'Actualizar' : 'Registrar'}
-              </Button>
-            </div>
-          </Form.Item>
+        <Form.Item className={styles.buttonGroup}>
+          <div className={styles.buttonWrapper}>
+            <Button
+              htmlType="button"
+              className={styles.buttonCancel}
+              onClick={onCancel}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="primary"
+              className={styles.buttonSubmit}
+              loading={loading}
+              onClick={() => form.submit()}
+            >
+              {mode === 'edit' ? 'Actualizar' : 'Registrar'}
+            </Button>
+          </div>
+        </Form.Item>
       </Form>
     );
   },

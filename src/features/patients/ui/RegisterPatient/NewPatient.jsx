@@ -19,6 +19,7 @@ const fields = [
         type: 'typeOfDocument',
         span: 8,
         required: true,
+        rules: [{ required: true, message: 'El tipo de documento es requerido' }],
       },
       {
         name: 'document_number',
@@ -44,6 +45,7 @@ const fields = [
         type: 'text',
         required: true,
         span: 8,
+        rules: [{ required: true, message: 'El apellido paterno es requerido' }],
       },
       {
         name: 'maternal_lastname',
@@ -57,6 +59,7 @@ const fields = [
         type: 'text',
         required: true,
         span: 8,
+        rules: [{ required: true, message: 'el nombre es requerido' }],
       },
     ],
   },
@@ -68,6 +71,8 @@ const fields = [
         label: 'Fecha de Nacimiento',
         type: 'date',
         span: 8,
+        required: true,
+        rules: [{ required: true, message: 'La fecha de nacimiento es requerida' }],
       },
       {
         name: 'sex',
@@ -79,6 +84,7 @@ const fields = [
         ],
         span: 8,
         required: true,
+        rules: [{ required: true, message: 'El sexo es requerido' }],
       },
       {
         name: 'occupation',
@@ -99,22 +105,6 @@ const fields = [
         type: 'phoneNumber',
         required: true,
         span: 8,
-        rules: [
-          {
-            required: true,
-            message: 'Por favor ingrese su número telefónico',
-          },
-          () => ({
-            validator(_, value) {
-              if (!value) {
-                return Promise.reject(
-                  new Error('Por favor ingrese su teléfono'),
-                );
-              }
-              return Promise.resolve();
-            },
-          }),
-        ],
       },
       {
         name: 'email',
@@ -135,7 +125,7 @@ const fields = [
     label: 'Dirección de Domicilio',
     type: 'text',
     span: 12,
-    required: true,
+    required: false,
   },
 ];
 
@@ -143,7 +133,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const { submitNewPatient } = usePatients();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  
+
   const [showDNIResults, setShowDNIResults] = useState(false);
   const [dniSearchData, setDniSearchData] = useState(null);
   const [noResults, setNoResults] = useState(false);
@@ -158,13 +148,16 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const handleSubmit = async (formData) => {
     try {
       if (
+        !formData.document_type_id ||
         !formData.document_number ||
+        !formData.paternal_lastname ||
         !formData.name ||
-        !formData.primary_phone
+        !formData.birth_date ||
+        !formData.sex
       ) {
         notification.error({
           message: 'Error',
-          description: 'Documento, nombre y teléfono son campos obligatorios',
+          description: 'Tipo de documento, número de documento, apellido paterno, nombre, fecha de nacimiento y sexo son campos obligatorios',
         });
         return;
       }
@@ -188,7 +181,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       });
 
       if (onSubmit) onSubmit(result);
-      
+
       // Solo navegar si no es un modal
       if (!isModal) {
         navigate('/Inicio/pacientes');
@@ -237,10 +230,10 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
     });
-    
+
     setShowDNIResults(false);
     setDniSearchData(null);
-    
+
     notification.success({
       message: 'Datos cargados',
       description: 'Los datos del DNI se han completado automáticamente',
@@ -279,7 +272,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
           },
         }}
       />
-      
+
       <DNISearchResults
         visible={showDNIResults}
         patientData={dniSearchData}

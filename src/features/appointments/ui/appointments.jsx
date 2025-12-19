@@ -71,7 +71,9 @@ export default function Appointments() {
       render: (_, record) => {
         const patient = record?.patient;
         if (!patient) return 'Paciente no disponible';
-        return `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
+        const text = `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
       },
     },
     {
@@ -79,15 +81,21 @@ export default function Appointments() {
       dataIndex: 'room',
       key: 'room',
       width: '65px',
+      render: (text, record) => {
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
+      },
     },
     {
       title: 'Fecha cita',
       dataIndex: 'appointment_date',
       width: '70px',
       key: 'appointment_date',
-      render: (date) => {
+      render: (date, record) => {
         if (!date) return '-';
-        return dayjs(date).format('DD/MM/YYYY');
+        const text = dayjs(date).format('DD/MM/YYYY');
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
       },
     },
     {
@@ -95,6 +103,10 @@ export default function Appointments() {
       dataIndex: 'appointment_hour',
       key: 'appointment_hour',
       width: '70px',
+      render: (text, record) => {
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
+      },
     },
     {
       title: 'Metodo Pago',
@@ -108,7 +120,9 @@ export default function Appointments() {
 
         return (
           <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <span>{record.payment_type?.name || 'Sin método'}</span>
+            <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>
+              {record.payment_type?.name || 'Sin método'}
+            </span>
             {isReserved && (
               <div style={{ position: 'absolute', right: '10px', top: '10%', transform: 'translateY(-50%)' }}>
                 <Tooltip title="Cita Reservada">
@@ -127,15 +141,21 @@ export default function Appointments() {
       dataIndex: 'payment',
       key: 'payment',
       width: '70px',
+      render: (text, record) => {
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
+      },
     },
     {
       title: 'Creación de cita',
       dataIndex: 'created_at',
       key: 'created_at',
       width: '130px',
-      render: (date) => {
+      render: (date, record) => {
         if (!date) return '-';
-        return dayjs(date).format('DD-MM-YYYY HH:mm:ss');
+        const text = dayjs(date).format('DD-MM-YYYY HH:mm:ss');
+        const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
+        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
       },
     },
     {

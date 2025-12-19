@@ -15,7 +15,7 @@
 }
 
 /* Estilos para todos los labels del formulario */
-.container .ant-form-item-label > label {
+.container .ant-form-item-label>label {
   color: var(--color-text-primary) !important;
   font-family: var(--font-family) !important;
   font-weight: var(--font-weight-bold) !important;
@@ -24,7 +24,7 @@
 }
 
 /* Estilos específicos para labels requeridos */
-.container .ant-form-item-label > label.ant-form-item-required::before {
+.container .ant-form-item-label>label.ant-form-item-required::before {
   color: var(--color-error) !important;
   font-weight: var(--font-weight-bold) !important;
 }
@@ -34,7 +34,7 @@
   margin-bottom: var(--spacing-xs) !important;
 }
 
-.container .ant-form-item-label > label {
+.container .ant-form-item-label>label {
   display: block !important;
   line-height: 1.4 !important;
   letter-spacing: 0.025em !important;
@@ -49,7 +49,7 @@
 }
 
 /* Espacio extra entre Opciones de Pago y Método de Pago */
-.container .ant-form-item-label > label[for='payment_type_id'] {
+.container .ant-form-item-label>label[for='payment_type_id'] {
   display: block;
   margin-bottom: var(--spacing-xs);
   color: var(--color-text-primary);
@@ -57,7 +57,7 @@
 }
 
 /* Espacio extra entre Opciones de Pago (con input) y Método de Pago */
-.container .ant-form-item-label > label[for='payment_method_id'] {
+.container .ant-form-item-label>label[for='payment_method_id'] {
   margin-top: var(--spacing-xs) !important;
   color: var(--color-text-primary);
   font-family: var(--font-family);

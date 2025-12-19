@@ -20,9 +20,13 @@ const SelectPrices = ({
   // Cargar precios solo una vez al montar el componente
   useEffect(() => {
     const fetchPrices = async () => {
-      const priceOptions = await getPredeterminedPrices();
-      console.log('Loaded predetermined prices:', priceOptions);
-      setPrices(priceOptions);
+      const data = await getPredeterminedPrices();
+      console.log('Loaded predetermined prices:', data);
+      const formattedOptions = data.map((item) => ({
+        ...item,
+        value: String(item.value), // Ensure value is a string
+      }));
+      setPrices(formattedOptions);
     };
     fetchPrices();
   }, []); // Solo se ejecuta una vez al montar
