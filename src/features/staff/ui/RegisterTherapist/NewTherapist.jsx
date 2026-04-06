@@ -161,13 +161,15 @@ const NewTherapist = () => {
   const { submitNewTherapist } = useStaff();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  
+
   const [showDNIResults, setShowDNIResults] = useState(false);
   const [dniSearchData, setDniSearchData] = useState(null);
   const [noResults, setNoResults] = useState(false);
 
-  const handleSubmit = async (formData) => {
+  const [loading, setLoading] = useState(false);
 
+  const handleSubmit = async (formData) => {
+    setLoading(true);
     try {
       if (
         !formData.document_number ||
@@ -178,6 +180,7 @@ const NewTherapist = () => {
           message: 'Error',
           description: 'Documento, nombre y teléfono son campos obligatorios',
         });
+        setLoading(false);
         return;
       }
 
@@ -195,6 +198,8 @@ const NewTherapist = () => {
         description: 'Ocurrió un error al registrar el terapeuta',
       });
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -220,10 +225,10 @@ const NewTherapist = () => {
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
     });
-    
+
     setShowDNIResults(false);
     setDniSearchData(null);
-    
+
     notification.success({
       message: 'Datos cargados',
       description: 'Los datos del DNI se han completado automáticamente',
@@ -242,6 +247,7 @@ const NewTherapist = () => {
         fields={fields}
         mode="create"
         onSubmit={handleSubmit}
+        loading={loading}
         onCancel={handleCancel}
         onDNIDataFound={handleDNIDataFound}
         form={form}
@@ -255,7 +261,7 @@ const NewTherapist = () => {
           },
         }}
       />
-      
+
       <DNISearchResults
         visible={showDNIResults}
         patientData={dniSearchData}

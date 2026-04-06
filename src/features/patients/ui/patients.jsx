@@ -25,7 +25,9 @@ export default function Patients() {
   const [incompleteDataModalVisible, setIncompleteDataModalVisible] = useState(false);
   const [incompleteDataPatient, setIncompleteDataPatient] = useState(null);
   const [validationResult, setValidationResult] = useState(null);
-  
+  const [navigatingCreate, setNavigatingCreate] = useState(false);
+  const [loadingHistoryId, setLoadingHistoryId] = useState(null);
+
   const { validateEntityData } = useDataValidation();
   const {
     patients,
@@ -41,10 +43,10 @@ export default function Patients() {
     setLoadingEditId(record.id);
     try {
       const freshPatient = await getPatientById(record.id);
-      
+
       // Validar datos del paciente
       const validation = validateEntityData(freshPatient, 'paciente');
-      
+
       if (!validation.canEdit) {
         // Mostrar modal de datos incompletos
         setIncompleteDataPatient(freshPatient);
@@ -52,7 +54,7 @@ export default function Patients() {
         setIncompleteDataModalVisible(true);
         return;
       }
-      
+
       // Si los datos están completos, proceder con la edición normal
       setEditingPatient(freshPatient);
       setIsEditModalOpen(true);
@@ -116,13 +118,9 @@ export default function Patients() {
               borderRadius: '4px',
             }}
             onClick={() => handleEdit(record)}
-            disabled={loadingEditId === record.id}
+            loading={loadingEditId === record.id}
           >
-            {loadingEditId === record.id ? (
-              <Spin size="small" style={{ color: '#fff' }} />
-            ) : (
-              'Editar'
-            )}
+            Editar
           </Button>
         );
       case 'info':
@@ -149,10 +147,15 @@ export default function Patients() {
               border: 'none',
               height: '36px',
               borderRadius: '4px',
+              minWidth: 80,
             }}
-            onClick={() => navigate(`/Inicio/pacientes/historia/${record.id}`, {
-              state: { from: '/Inicio/pacientes' }
-            })}
+            onClick={() => {
+              setLoadingHistoryId(record.id);
+              navigate(`/Inicio/pacientes/historia/${record.id}`, {
+                state: { from: '/Inicio/pacientes' }
+              });
+            }}
+            loading={loadingHistoryId === record.id}
           >
             Historia
           </Button>
@@ -172,13 +175,9 @@ export default function Patients() {
               borderRadius: '4px',
             }}
             onClick={() => handleDelete(record.id)}
-            disabled={loadingDeleteId === record.id}
+            loading={loadingDeleteId === record.id}
           >
-            {loadingDeleteId === record.id ? (
-              <Spin />
-            ) : (
-              'Eliminar'
-            )}
+            Eliminar
           </Button>
         );
       default:
@@ -187,6 +186,7 @@ export default function Patients() {
   };
 
   const handleButton = () => {
+    setNavigatingCreate(true);
     navigate('registrar');
   };
 
@@ -204,11 +204,11 @@ export default function Patients() {
     if (incompleteDataPatient) {
       // Cerrar el modal de datos incompletos
       setIncompleteDataModalVisible(false);
-      
+
       // Abrir el modal de edición directamente
       setEditingPatient(incompleteDataPatient);
       setIsEditModalOpen(true);
-      
+
       // Limpiar estados
       setIncompleteDataPatient(null);
       setValidationResult(null);
@@ -270,7 +270,11 @@ export default function Patients() {
           width: '100%',
         }}
       >
-        <CustomButton text="Crear Paciente" onClick={handleButton} />
+        <CustomButton
+          text="Crear Paciente"
+          onClick={handleButton}
+          loading={navigatingCreate}
+        />
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
           onSearch={handleSearch}
@@ -285,17 +289,17 @@ export default function Patients() {
         }}
       >
         <ModeloTable
-        columns={columns}
-        data={patients}
-        loading={loading}
-        maxHeight="70vh"
-        pagination={{
-          current: pagination.currentPage,
-          total: pagination.totalItems,
-          pageSize: 50,
-          onChange: handlePageChange,
-        }}
-      />
+          columns={columns}
+          data={patients}
+          loading={loading}
+          maxHeight="70vh"
+          pagination={{
+            current: pagination.currentPage,
+            total: pagination.totalItems,
+            pageSize: 50,
+            onChange: handlePageChange,
+          }}
+        />
       </div>
 
       {/* Modal de edición */}

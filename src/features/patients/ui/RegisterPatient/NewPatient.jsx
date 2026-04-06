@@ -145,7 +145,10 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
     return fields;
   };
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (formData) => {
+    setLoading(true);
     try {
       if (
         !formData.document_type_id ||
@@ -159,6 +162,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
           message: 'Error',
           description: 'Tipo de documento, número de documento, apellido paterno, nombre, fecha de nacimiento y sexo son campos obligatorios',
         });
+        setLoading(false);
         return;
       }
 
@@ -209,6 +213,8 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       }
 
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -260,6 +266,7 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
         onCancel={handleCancel}
         mode="create"
         onSubmit={handleSubmit}
+        loading={loading}
         onDNIDataFound={handleDNIDataFound}
         form={form}
         initialValues={{

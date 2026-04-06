@@ -84,7 +84,7 @@ const NewAppointment = () => {
         try {
           const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
           const prices = await getPredeterminedPrices();
-          const selectedService = prices.find(item => item.value === serviceId);
+          const selectedService = prices.find(item => String(item.value) === String(serviceId));
 
           if (selectedService) {
             const serviceName = selectedService.label?.toLowerCase() || '';
@@ -104,14 +104,30 @@ const NewAppointment = () => {
             if (serviceName.includes('cupon sin costo') || serviceName.includes('cupón sin costo')) {
               // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
               setIsFreeCoupon(true);
+              setIsCustomRate(false);
+              setTimeout(() => {
+                form.setFieldsValue({
+                  payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
+                  payment: '0', // Establecer monto en 0
+                });
+              }, 0);
+            } else if (serviceName.includes('tarifa personalizada')) {
+              setIsFreeCoupon(false);
+              setIsCustomRate(true);
               form.setFieldsValue({
-                payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
-                payment: '0', // Establecer monto en 0
+                payment_type_id: '9', // Por defecto Yape
+                payment: '', // Limpiar para que ingresen monto
               });
             } else {
-              // Si se cambia a otra opción, desbloquear campos sin preseleccionar método de pago
+              // Si se cambia a otra opción, desbloquear campos y resetear método de pago si era cupón
               setIsFreeCoupon(false);
-              // No preseleccionar método de pago automáticamente
+              setIsCustomRate(false);
+              // Si el método actual era cupón, lo cambiamos a Yape o vacío para que desaparezca la opción inválida
+              if (form.getFieldValue('payment_type_id') === '11') {
+                form.setFieldsValue({
+                  payment_type_id: '9', // Por defecto Yape para tarifas normales
+                });
+              }
             }
           }
         } catch (error) {
@@ -567,6 +583,7 @@ const NewAppointment = () => {
             >
               <SelectPaymentStatus
                 value={form.getFieldValue('payment_type_id')}
+                showFreeCoupon={isFreeCoupon}
                 disabled={isFreeCoupon}
                 onChange={(value) =>
                   form.setFieldsValue({ payment_type_id: value })

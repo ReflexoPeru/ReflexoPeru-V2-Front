@@ -125,7 +125,7 @@ const PatientHistory = () => {
   const [therapist, setTherapist] = useState(null);
   const [selectedTherapistId, setSelectedTherapistId] = useState(null);
   const [userSelectedTherapist, setUserSelectedTherapist] = useState(false); // FIX: Rastrear selección manual
-  
+
   // FIX: Estado para controlar si se debe evitar sobrescribir el formulario después de guardar
   const [justSaved, setJustSaved] = useState(false);
 
@@ -151,7 +151,7 @@ const PatientHistory = () => {
   const selectedAppointment = useMemo(() => {
     if (!appointments || appointments.length === 0) return null;
     if (!selectedAppointmentDate) return null;
-    
+
     return findAppointmentByDate(appointments, selectedAppointmentDate);
   }, [appointments, selectedAppointmentDate]);
 
@@ -160,7 +160,7 @@ const PatientHistory = () => {
 
 
   // ==================== EFFECTS ====================
-  
+
   /**
    * Effect: Cargar datos iniciales del historial SOLO cuando se carga por primera vez
    * IMPORTANTE: No interfiere con el manejo de citas individuales
@@ -183,7 +183,7 @@ const PatientHistory = () => {
       isFemale,
       patient
     );
-    
+
     form.setFieldsValue(initialValues);
 
     // Configurar estado de anticonceptivos para mujeres
@@ -232,27 +232,56 @@ const PatientHistory = () => {
       setTherapist(null);
       setSelectedTherapistId(null);
     }
-    
+
     // Resetear el flag para permitir actualizaciones futuras
     setUserSelectedTherapist(false);
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAppointment, justSaved]);
 
   /**
    * Effect: Selección automática de fecha de cita
+   * LÓGICA: Priorizar cita de HOY, luego futura más cercana, luego última disponible
    */
   useEffect(() => {
     if (!appointments || appointments.length === 0) return;
 
-    // Prioridad 1: Cita pasada desde navegación
+    // Prioridad 1: Cita pasada desde navegación (Ej: desde la vista de Citas)
     if (appointmentFromState?.appointment_date) {
       setSelectedAppointmentDate(appointmentFromState.appointment_date);
     }
-    // Prioridad 2: Última cita (más reciente)
-    else if (lastAppointment?.appointment_date) {
-      setSelectedAppointmentDate(lastAppointment.appointment_date);
+    // Prioridad 2: Selección inteligente (Ej: cuando viene desde la vista de Pacientes)
+    else {
+      const today = dayjs().startOf('day');
+
+      // Convertir todas las fechas para comparación
+      const apptDates = appointments.map(a => ({
+        original: a.appointment_date,
+        jsDate: dayjs(a.appointment_date).startOf('day')
+      }));
+
+      // 1. Buscar cita de HOY
+      const todayAppt = apptDates.find(d => d.jsDate.isSame(today));
+
+      if (todayAppt) {
+        setSelectedAppointmentDate(todayAppt.original);
+      } else {
+        // 2. Buscar la cita FUTURA más cercana
+        const futureAppts = apptDates
+          .filter(d => d.jsDate.isAfter(today))
+          .sort((a, b) => a.jsDate.diff(b.jsDate)); // Menor diferencia primero
+
+        if (futureAppts.length > 0) {
+          setSelectedAppointmentDate(futureAppts[0].original);
+        } else {
+          // 3. Selección por defecto: La cita más reciente (ya sea hoy o pasado)
+          if (lastAppointment?.appointment_date) {
+            setSelectedAppointmentDate(lastAppointment.appointment_date);
+          }
+        }
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appointmentFromState, lastAppointment, appointments]);
 
   // ==================== HANDLERS ====================
@@ -280,7 +309,7 @@ const PatientHistory = () => {
   const handleConfirmTherapist = useCallback(() => {
     if (selectedTherapistId) {
       const selected = therapists.find((t) => t.id === selectedTherapistId);
-      
+
       if (selected) {
         const therapistName = formatTherapistName(selected);
         setTherapist(therapistName);
@@ -441,9 +470,9 @@ const PatientHistory = () => {
   }
 
   // Validación: Asegurar que tengamos datos del paciente antes de renderizar
-  const hasPatientData = patient || 
-                         patientHistory?.data?.patient || 
-                         (appointments && appointments.length > 0 && appointments[0]?.patient);
+  const hasPatientData = patient ||
+    patientHistory?.data?.patient ||
+    (appointments && appointments.length > 0 && appointments[0]?.patient);
 
   if (!hasPatientData && !isLoading) {
     console.warn('[PatientHistory] No se encontraron datos del paciente', {
@@ -552,38 +581,38 @@ const PatientHistory = () => {
                 </Select>
               </Form.Item>
 
-            <Form.Item
-              name="therapist"
-              label="Terapeuta Asignado"
-              className={styles.therapistFormItem}
-            >
-              <div className={styles.therapistRow}>
-                <Input
-                  disabled
-                  value={therapist || form.getFieldValue('therapist') || 'No asignado'}
-                  className={styles.therapistInput}
-                  placeholder="Seleccione un terapeuta"
-                  onChange={() => {}} // Disabled input
-                />
-                <Button
-                  type="primary"
-                  onClick={handleOpenTherapistModal}
-                  className={styles.selectButton}
-                >
-                  Seleccionar
-                </Button>
-                {therapist && (
+              <Form.Item
+                name="therapist"
+                label="Terapeuta Asignado"
+                className={styles.therapistFormItem}
+              >
+                <div className={styles.therapistRow}>
+                  <Input
+                    disabled
+                    value={therapist || form.getFieldValue('therapist') || 'No asignado'}
+                    className={styles.therapistInput}
+                    placeholder="Seleccione un terapeuta"
+                    onChange={() => { }} // Disabled input
+                  />
                   <Button
-                    danger
-                    onClick={handleRemoveTherapist}
-                    className={styles.removeButton}
+                    type="primary"
+                    onClick={handleOpenTherapistModal}
+                    className={styles.selectButton}
                   >
-                    Eliminar
+                    Seleccionar
                   </Button>
-                )}
-              </div>
-            </Form.Item>
-          </div>
+                  {therapist && (
+                    <Button
+                      danger
+                      onClick={handleRemoveTherapist}
+                      className={styles.removeButton}
+                    >
+                      Eliminar
+                    </Button>
+                  )}
+                </div>
+              </Form.Item>
+            </div>
           )}
 
           {/* Campos Médicos */}

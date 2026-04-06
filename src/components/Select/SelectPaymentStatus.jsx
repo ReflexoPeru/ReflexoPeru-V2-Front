@@ -2,7 +2,7 @@ import { Select } from 'antd';
 import { useEffect, useState } from 'react';
 import { getPaymentStatuses } from './SelectsApi';
 
-export function SelectPaymentStatus({ value, onChange, defaultValue = null, ...rest }) {
+export function SelectPaymentStatus({ value, onChange, defaultValue = null, showFreeCoupon = false, ...rest }) {
   const [options, setOptions] = useState([]);
   const [specialOptions, setSpecialOptions] = useState([]);
 
@@ -18,8 +18,8 @@ export function SelectPaymentStatus({ value, onChange, defaultValue = null, ...r
             value: String(item.value), // Forzar a string
             label: item.label,
           }));
-        
-        // Crear opción especial para ID 11 solo para mostrar cuando está preseleccionado
+
+        // Crear opción especial para ID 11 solo para mostrar cuando está preseleccionado o forzado
         const specialOption = data.find((item) => item.value === 11);
         if (specialOption) {
           setSpecialOptions([{
@@ -27,7 +27,7 @@ export function SelectPaymentStatus({ value, onChange, defaultValue = null, ...r
             label: specialOption.label || 'CUPÓN SIN COSTO',
           }]);
         }
-        
+
         setOptions(formattedOptions);
       } catch (error) {
         console.error('Error al obtener los estados de pago:', error);
@@ -48,10 +48,11 @@ export function SelectPaymentStatus({ value, onChange, defaultValue = null, ...r
     }
   }, [options, defaultValue, value]); // Solo cuando cambian las opciones o los valores relevantes
 
-  // Combinar opciones: incluir opción especial solo si el valor actual es 11
-  const displayOptions = value === '11' || value === 11 
-    ? [...specialOptions, ...options] 
-    : options;
+  // Combinar opciones: incluir opción especial el ID 11 SOLO si showFreeCoupon es true
+  // Esto asegura que la opción desaparezca inmediatamente cuando se cambia a una tarifa con costo
+  const displayOptions = showFreeCoupon
+    ? (options.some(opt => opt.value === '11') ? options : [...specialOptions, ...options])
+    : options.filter(opt => opt.value !== '11');
 
   return (
     <Select

@@ -1,19 +1,20 @@
-import React from'react';
+import React from 'react';
 import { Button } from 'antd';
 import { useTheme } from '../../context/ThemeContext';
 
 const CustomButton = ({
-  text, 
-  onClick, 
-  size = 'md', 
-  type = 'primary', 
+  text,
+  onClick,
+  size = 'md',
+  type = 'primary',
   disabled = false,
+  loading = false,
   icon = null,
   style = {},
   ...props
 }) => {
   const { isDarkMode } = useTheme();
-  
+
   // Dimensiones estándar según el tamaño
   const sizeStyles = {
     sm: {
@@ -40,11 +41,12 @@ const CustomButton = ({
 
   const currentSizeStyle = sizeStyles[size] || sizeStyles.md;
 
-  return(
-    <Button 
+  return (
+    <Button
       type={type}
       onClick={onClick}
       disabled={disabled}
+      loading={loading}
       icon={icon}
       style={{
         ...currentSizeStyle,
@@ -52,8 +54,8 @@ const CustomButton = ({
         fontWeight: 'var(--font-weight-medium)',
         borderRadius: '6px',
         border: 'none',
-        boxShadow: disabled 
-          ? 'none' 
+        boxShadow: disabled
+          ? 'none'
           : '0 2px 8px rgba(28, 181, 74, 0.2)',
         transition: 'all var(--transition-fast)',
         display: 'flex',

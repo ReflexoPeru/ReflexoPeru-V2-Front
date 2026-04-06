@@ -443,7 +443,7 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
         try {
           const { getPredeterminedPrices } = await import('../../../../components/Select/SelectsApi');
           const prices = await getPredeterminedPrices();
-          const selectedService = prices.find(item => item.value === serviceId);
+          const selectedService = prices.find(item => String(item.value) === String(serviceId));
 
           if (selectedService) {
             const serviceName = selectedService.label?.toLowerCase() || '';
@@ -453,10 +453,12 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               // Para cupón sin costo: preseleccionar ID 11 y establecer monto en 0
               setIsFreeCoupon(true);
               setIsCustomRate(false);
-              form.setFieldsValue({
-                payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
-                payment: '0', // Establecer monto en 0
-              });
+              setTimeout(() => {
+                form.setFieldsValue({
+                  payment_type_id: '11', // Preseleccionar "CUPÓN SIN COSTO"
+                  payment: '0', // Establecer monto en 0
+                });
+              }, 0);
             } else if (serviceName.includes('tarifa personalizada')) {
               // Para tarifa personalizada: permitir edición del monto
               setIsFreeCoupon(false);
@@ -469,9 +471,13 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
               // Si se cambia a otra opción, desbloquear campos y preseleccionar Yape
               setIsFreeCoupon(false);
               setIsCustomRate(false);
-              form.setFieldsValue({
-                payment_type_id: '9',
-              });
+
+              // Si el método actual era cupón, lo cambiamos a Yape para que desaparezca la opción inválida
+              if (form.getFieldValue('payment_type_id') === '11') {
+                form.setFieldsValue({
+                  payment_type_id: '9', // Por defecto Yape para tarifas normales
+                });
+              }
             }
           }
         } catch (error) {
@@ -901,9 +907,8 @@ const EditAppointment = ({ appointmentId, onEditSuccess }) => {
                 }
               >
                 <SelectPaymentStatus
-                  value={form.getFieldValue('payment_type_id')}
+                  showFreeCoupon={isFreeCoupon}
                   disabled={isFreeCoupon}
-                  onChange={handlePaymentTypeChange}
                   placeholder="Selecciona método de pago"
                 />
               </Form.Item>

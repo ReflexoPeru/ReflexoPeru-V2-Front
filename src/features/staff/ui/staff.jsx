@@ -37,17 +37,18 @@ export default function Staff() {
   const [incompleteDataModalVisible, setIncompleteDataModalVisible] = useState(false);
   const [incompleteDataTherapist, setIncompleteDataTherapist] = useState(null);
   const [validationResult, setValidationResult] = useState(null);
-  
+  const [navigatingCreate, setNavigatingCreate] = useState(false);
+
   const { validateEntityData } = useDataValidation();
 
   const handleEdit = async (record) => {
     setLoadingEditId(record.id);
     try {
       const freshTherapist = await getTherapistById(record.id);
-      
+
       // Validar datos del terapeuta
       const validation = validateEntityData(freshTherapist, 'terapeuta');
-      
+
       if (!validation.canEdit) {
         // Mostrar modal de datos incompletos
         setIncompleteDataTherapist(freshTherapist);
@@ -55,7 +56,7 @@ export default function Staff() {
         setIncompleteDataModalVisible(true);
         return;
       }
-      
+
       // Si los datos están completos, proceder con la edición normal
       setEditingTherapist(freshTherapist);
     } catch (e) {
@@ -113,13 +114,9 @@ export default function Staff() {
             onClick={async () => {
               await handleEdit(record);
             }}
-            disabled={loadingEditId === record.id}
+            loading={loadingEditId === record.id}
           >
-            {loadingEditId === record.id ? (
-              <Spin size="small" style={{ color: '#fff' }} />
-            ) : (
-              'Editar'
-            )}
+            Editar
           </Button>
         );
       case 'info':
@@ -148,13 +145,9 @@ export default function Staff() {
               justifyContent: 'center',
             }}
             onClick={() => handleDelete(record.id)}
-            disabled={loadingDeleteId === record.id}
+            loading={loadingDeleteId === record.id}
           >
-            {loadingDeleteId === record.id ? (
-              <Spin />
-            ) : (
-              'Eliminar'
-            )}
+            Eliminar
           </Button>
         );
       default:
@@ -163,6 +156,7 @@ export default function Staff() {
   };
 
   const handleButton = () => {
+    setNavigatingCreate(true);
     navigate('registrar');
   };
 
@@ -180,10 +174,10 @@ export default function Staff() {
     if (incompleteDataTherapist) {
       // Cerrar el modal de datos incompletos
       setIncompleteDataModalVisible(false);
-      
+
       // Abrir el modal de edición directamente
       setEditingTherapist(incompleteDataTherapist);
-      
+
       // Limpiar estados
       setIncompleteDataTherapist(null);
       setValidationResult(null);
@@ -245,7 +239,11 @@ export default function Staff() {
           width: '100%',
         }}
       >
-        <CustomButton text="Crear Personal" onClick={handleButton} />
+        <CustomButton
+          text="Crear Personal"
+          onClick={handleButton}
+          loading={navigatingCreate}
+        />
 
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -261,17 +259,17 @@ export default function Staff() {
         }}
       >
         <ModeloTable
-        columns={columns}
-        data={staff}
-        loading={loading}
-        maxHeight="70vh"
-        pagination={{
-          current: pagination.currentPage,
-          total: pagination.totalItems,
-          pageSize: 50,
-          onChange: handlePageChange,
-        }}
-      />
+          columns={columns}
+          data={staff}
+          loading={loading}
+          maxHeight="70vh"
+          pagination={{
+            current: pagination.currentPage,
+            total: pagination.totalItems,
+            pageSize: 50,
+            onChange: handlePageChange,
+          }}
+        />
       </div>
 
       {editingTherapist && (
