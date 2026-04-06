@@ -25,6 +25,25 @@ export const getPatientHistoryById = async (patientId) => {
 };
 
 /**
+ * Obtiene el historial de signos vitales (peso/talla) del paciente
+ * @param {number} patientId
+ * @returns {Promise<Array>} Lista de signos vitales
+ */
+export const getPatientVitals = async (patientId) => {
+  if (!patientId) {
+    throw new Error('Patient ID is required');
+  }
+
+  try {
+    const response = await get(`patients/${patientId}/vitals`);
+    return response.data;
+  } catch (error) {
+    console.error('[historyApi] Error fetching patient vitals:', error);
+    throw error;
+  }
+};
+
+/**
  * Obtiene un historial por su ID directo
  * @param {number} historyId - ID del historial
  * @returns {Promise<Object>} Historial

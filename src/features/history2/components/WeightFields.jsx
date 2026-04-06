@@ -8,9 +8,11 @@ const { Option } = Select;
  * Componente para campos de peso, talla y datos reproductivos
  * Agrupa la lógica de medidas físicas
  */
-const WeightFields = ({ styles = {}, isFemale = false }) => {
+const WeightFields = ({ styles = {}, isFemale = false, weightData = {} }) => {
+  const { pesoInicial, pesoAnterior, isFirstAppointment, isSecondAppointment } = weightData || {};
+
   return (
-    <div className={styles.physicalInfoRow || ''}>
+    <div className={styles.physicalInfoRow || ''} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
       <Form.Item
         name="talla"
         label="Talla (m)"
@@ -24,42 +26,50 @@ const WeightFields = ({ styles = {}, isFemale = false }) => {
         />
       </Form.Item>
 
-      <Form.Item
-        name="pesoInicial"
-        label="Peso Inicial (kg)"
-        className={styles.physicalInfoItem || ''}
-        rules={physicalMetricsValidation.peso}
-        tooltip="Peso al iniciar tratamiento"
-      >
-        <Input
-          className={`${styles.input || ''} ${styles.smallInput || ''}`}
-          placeholder="Ingrese peso"
-        />
-      </Form.Item>
+      {/* Peso Inicial: Visible de la SEGUNDA cita en adelante */}
+      {!isFirstAppointment && (
+        <Form.Item
+          label="Peso Inicial (kg)"
+          className={styles.physicalInfoItem || ''}
+          tooltip="Peso registrado en la primera sesión del tratamiento (Lectura)"
+        >
+          <Input
+            disabled
+            value={pesoInicial || 'N/A'}
+            className={`${styles.input || ''} ${styles.smallInput || ''}`}
+            style={{ backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 'bold' }}
+          />
+        </Form.Item>
+      )}
 
-      <Form.Item
-        name="ultimoPeso"
-        label="Peso Anterior (kg)"
-        className={styles.physicalInfoItem || ''}
-        rules={physicalMetricsValidation.peso}
-        tooltip="Peso de la sesión anterior"
-      >
-        <Input
-          className={`${styles.input || ''} ${styles.smallInput || ''}`}
-          placeholder="Ingrese peso"
-        />
-      </Form.Item>
+      {/* Peso Anterior: Visible de la TERCERA cita en adelante */}
+      {!isFirstAppointment && !isSecondAppointment && (
+        <Form.Item
+          label="Peso Anterior (kg)"
+          className={styles.physicalInfoItem || ''}
+          tooltip="Peso de la sesión cronológicamente anterior a la seleccionada"
+        >
+          <Input
+            disabled
+            value={pesoAnterior || 'N/A'}
+            className={`${styles.input || ''} ${styles.smallInput || ''}`}
+            style={{ backgroundColor: '#f8fafc', color: '#64748b' }}
+          />
+        </Form.Item>
+      )}
 
+      {/* Peso Hoy: Campo de entrada principal para CUALQUIER cita seleccionada */}
       <Form.Item
         name="pesoHoy"
-        label="Peso Hoy (kg)"
+        label="Peso Actual (kg)"
         className={styles.physicalInfoItem || ''}
         rules={physicalMetricsValidation.peso}
-        tooltip="Peso actual en esta sesión"
+        tooltip="Ingrese el peso medido en esta sesión"
       >
         <Input
           className={`${styles.input || ''} ${styles.smallInput || ''}`}
-          placeholder="Ingrese peso"
+          placeholder="0.0"
+          style={{ borderColor: '#1CB54A', borderWidth: '1.5px' }}
         />
       </Form.Item>
 

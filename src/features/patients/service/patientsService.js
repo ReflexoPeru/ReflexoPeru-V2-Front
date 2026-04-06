@@ -79,6 +79,70 @@ export const getPatientById = async (patientId) => {
   }
 };
 
+export const getTrashedPatients = async (page = 1, perPage = 50) => {
+  try {
+    const response = await get(`patients/trashed?page=${page}&per_page=${perPage}`);
+    let data = [];
+    if (response.data) {
+      if (Array.isArray(response.data)) {
+        data = response.data;
+      } else if (Array.isArray(response.data.data)) {
+        data = response.data.data;
+      } else if (Array.isArray(response.data.items)) {
+        data = response.data.items;
+      }
+    }
+    return {
+      data,
+      total: response.data?.total || data.length || 0,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const searchTrashedPatients = async (term) => {
+  try {
+    const response = await get(`patients/trashed/search?search=${term}`);
+    let data = [];
+    if (response.data) {
+      if (Array.isArray(response.data)) {
+        data = response.data;
+      } else if (Array.isArray(response.data.data)) {
+        data = response.data.data;
+      } else if (Array.isArray(response.data.items)) {
+        data = response.data.items;
+      }
+    }
+    return {
+      data,
+      total: response.data?.total || data.length || 0,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const checkTrashedByDNI = async (dni) => {
+  try {
+    const response = await get(`patients/check-trashed/${dni}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const restorePatient = async (patientId, restoreAppointments = false) => {
+  try {
+    const response = await post(`patients/${patientId}/restore`, {
+      restore_appointments: restoreAppointments,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const searchPatientByDNI = async (dni) => {
   try {
     const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imx1Znl5c29tYnJlcm85QGdtYWlsLmNvbSJ9.cgLa5kyCUjAqATyDiaPemz7uc615fFmK2aiWXymrwNc';

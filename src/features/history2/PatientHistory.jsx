@@ -20,12 +20,14 @@ import {
   usePatientAppointments,
   useUpdatePatientHistory,
   useUpdateAppointment,
+  usePatientVitals,
 } from './hooks/usePatientHistory';
 import { useTherapists, useTherapistSelection } from './hooks/useTherapists';
 
 // Components
 import TherapistModal from './components/TherapistModal';
 import WeightFields from './components/WeightFields';
+import VitalsChart from './components/VitalsChart';
 import ContraceptiveFields from './components/ContraceptiveFields';
 import MedicalFields from './components/MedicalFields';
 import { TicketModal, FichaModal } from './components/PDFModals';
@@ -39,6 +41,7 @@ import {
   isFemalePatient,
   updateWeightFieldsAfterSave,
   normalizeContraceptiveData,
+  getWeightData,
 } from './utils/formHelpers';
 import { validateAppointmentId } from './utils/validators';
 
@@ -110,6 +113,12 @@ const PatientHistory = () => {
     refetch: refetchAppointments,
   } = usePatientAppointments(patientId);
 
+  const {
+    vitals,
+    loading: loadingVitals,
+    refetch: refetchVitals,
+  } = usePatientVitals(patientId);
+
   // Hook para terapeutas (NO carga automáticamente)
   const {
     therapists,
@@ -154,6 +163,12 @@ const PatientHistory = () => {
 
     return findAppointmentByDate(appointments, selectedAppointmentDate);
   }, [appointments, selectedAppointmentDate]);
+
+  // Calcular datos de peso dinámicos para la UI
+  const weightDataForUI = useMemo(
+    () => getWeightData(appointments, selectedAppointmentDate),
+    [appointments, selectedAppointmentDate]
+  );
 
   const isLoading = loadingHistory || loadingAppointments;
   const isSaving = updatingHistory || updatingAppointment;
@@ -245,6 +260,9 @@ const PatientHistory = () => {
    */
   useEffect(() => {
     if (!appointments || appointments.length === 0) return;
+    
+    // Si ya tenemos una fecha seleccionada, NO queremos que se resetee (Ej: al guardar cambios)
+    if (selectedAppointmentDate) return;
 
     // Prioridad 1: Cita pasada desde navegación (Ej: desde la vista de Citas)
     if (appointmentFromState?.appointment_date) {
@@ -418,10 +436,10 @@ const PatientHistory = () => {
           updateWeightFieldsAfterSave(form, values);
 
           // Refrescar datos desde el backend para mantener sincronización
-          // Esto asegura que cualquier cálculo del servidor se refleje
           await Promise.all([
             refetchHistory(),
             refetchAppointments(),
+            refetchVitals(),
           ]);
 
           // El usuario permanece en la vista para seguir trabajando
@@ -447,6 +465,7 @@ const PatientHistory = () => {
       form,
       refetchHistory,
       refetchAppointments,
+      refetchVitals,
     ]
   );
 
@@ -622,7 +641,15 @@ const PatientHistory = () => {
           <Title level={3} className={styles.sectionTitle}>
             Métricas Físicas
           </Title>
-          <WeightFields styles={styles} isFemale={isFemale} />
+          
+          {/* Gráfico de Evolución de Peso */}
+          <VitalsChart 
+            vitals={vitals} 
+            loading={loadingVitals} 
+            selectedDate={selectedAppointmentDate} 
+          />
+
+          <WeightFields styles={styles} isFemale={isFemale} weightData={weightDataForUI} />
 
           {/* Campos de Anticonceptivos (solo mujeres) */}
           <ContraceptiveFields

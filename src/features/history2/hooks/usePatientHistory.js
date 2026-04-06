@@ -4,6 +4,7 @@ import {
   getHistoryById,
   updatePatientHistoryById,
   isValidHistory,
+  getPatientVitals,
 } from '../api/historyApi';
 import {
   getAppointmentsByPatientId,
@@ -284,5 +285,46 @@ export const useUpdateAppointment = () => {
     updateAppointment,
     updating,
     error,
+  };
+};
+
+/**
+ * Hook para obtener el historial de signos vitales (peso/talla) del paciente
+ */
+export const usePatientVitals = (patientId) => {
+  const [vitals, setVitals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchVitals = async () => {
+    if (!patientId) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await getPatientVitals(patientId);
+      setVitals(data || []);
+    } catch (err) {
+      console.error('[usePatientVitals] Error:', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVitals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId]);
+
+  return {
+    vitals,
+    loading,
+    error,
+    refetch: fetchVitals,
   };
 };

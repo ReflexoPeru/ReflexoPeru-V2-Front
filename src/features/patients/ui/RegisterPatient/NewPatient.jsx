@@ -1,9 +1,11 @@
-import { notification, Form } from 'antd';
+import { notification, Form, Modal, Button as AntdButton, Alert } from 'antd';
+import { UndoOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import FormGenerator from '../../../../components/Form/Form';
 import DNISearchResults from '../../../../components/DNISearchResults/DNISearchResults';
 import { usePatients } from '../../hook/patientsHook';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { checkTrashedByDNI, restorePatient } from '../../service/patientsService';
 
 const fields = [
   {
@@ -137,6 +139,9 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   const [showDNIResults, setShowDNIResults] = useState(false);
   const [dniSearchData, setDniSearchData] = useState(null);
   const [noResults, setNoResults] = useState(false);
+  const [showRestorePrompt, setShowRestorePrompt] = useState(false);
+  const [trashedPatientInfo, setTrashedPatientInfo] = useState(null);
+  const [restoring, setRestoring] = useState(false);
 
   const getFields = () => {
     if (isModal) {
@@ -146,6 +151,26 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
   };
 
   const [loading, setLoading] = useState(false);
+
+  const handleRestore = async () => {
+    setRestoring(true);
+    try {
+      // Por defecto restauración completa en este flujo para no perder datos
+      await restorePatient(trashedPatientInfo.id, true);
+      notification.success({
+        message: 'Paciente Restaurado',
+        description: 'El paciente ha sido recuperado con éxito.'
+      });
+      if (onSubmit) onSubmit();
+      if (!isModal) navigate('/Inicio/pacientes');
+    } catch (e) {
+      console.error(e);
+      notification.error({ message: 'Error', description: 'No se pudo restaurar el paciente.' });
+    } finally {
+      setRestoring(false);
+      setShowRestorePrompt(false);
+    }
+  };
 
   const handleSubmit = async (formData) => {
     setLoading(true);
@@ -186,7 +211,6 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
 
       if (onSubmit) onSubmit(result);
 
-      // Solo navegar si no es un modal
       if (!isModal) {
         navigate('/Inicio/pacientes');
       }
@@ -194,31 +218,35 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       return result;
     } catch (error) {
       console.error('Error completo:', error);
-
       if (error.response?.data?.errors) {
         const errorMessages = Object.entries(error.response.data.errors)
           .map(([field, errors]) => `${field}: ${errors.join(', ')}`)
           .join('\n');
-
-        notification.error({
-          message: 'Error de validación',
-          description: errorMessages,
-          duration: 0,
-        });
+        notification.error({ message: 'Error de validación', description: errorMessages, duration: 0 });
       } else {
-        notification.error({
-          message: 'Error',
-          description: error.message || 'Error al crear el paciente',
-        });
+        notification.error({ message: 'Error', description: error.message || 'Error al crear el paciente' });
       }
-
       throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDNIDataFound = (data) => {
+  const handleDNIDataFound = async (data) => {
+    const dniInput = form.getFieldValue('document_number');
+    if (dniInput) {
+      try {
+        const trashCheck = await checkTrashedByDNI(dniInput);
+        if (trashCheck.is_trashed) {
+          setTrashedPatientInfo(trashCheck.patient);
+          setShowRestorePrompt(true);
+          return;
+        }
+      } catch (e) {
+        console.error("Error al verificar papelera", e);
+      }
+    }
+
     if (data) {
       setDniSearchData(data);
       setNoResults(false);
@@ -236,14 +264,9 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
       paternal_lastname: data.paternal_lastname,
       maternal_lastname: data.maternal_lastname,
     });
-
     setShowDNIResults(false);
     setDniSearchData(null);
-
-    notification.success({
-      message: 'Datos cargados',
-      description: 'Los datos del DNI se han completado automáticamente',
-    });
+    notification.success({ message: 'Datos cargados', description: 'Los datos del DNI se han completado automáticamente' });
   };
 
   const handleCloseDNIResults = () => {
@@ -254,31 +277,65 @@ const NewPatient = ({ onSubmit, onCancel, isModal = false }) => {
 
   const handleCancel = () => {
     if (onCancel) onCancel();
-    if (!isModal) {
-      navigate('/Inicio/pacientes');
-    }
+    if (!isModal) navigate('/Inicio/pacientes');
   };
 
   return (
     <>
-      <FormGenerator
-        fields={getFields()}
-        onCancel={handleCancel}
-        mode="create"
-        onSubmit={handleSubmit}
-        loading={loading}
-        onDNIDataFound={handleDNIDataFound}
-        form={form}
-        initialValues={{
-          document_type_id: "1",
-          country_id: 1,
-          ubicacion: {
-            region_id: 15,
-            province_id: 1501,
-            district_id: null,
-          },
-        }}
-      />
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {showRestorePrompt && (
+          <div style={{ marginBottom: '20px' }}>
+            <Alert
+              message="Paciente encontrado en papelera"
+              description={
+                <div>
+                  <p>El paciente <strong>{trashedPatientInfo?.full_name}</strong> ya existe pero fue eliminado anteriormente.</p>
+                  <div style={{ marginTop: '10px', display: 'flex', gap: '10px' }}>
+                    <AntdButton 
+                      type="primary" 
+                      icon={<UndoOutlined />} 
+                      onClick={handleRestore}
+                      loading={restoring}
+                      style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+                    >
+                      Restaurar ahora
+                    </AntdButton>
+                    <AntdButton 
+                      onClick={() => setShowRestorePrompt(false)}
+                      style={{ borderRadius: '8px' }}
+                    >
+                      Continuar registro nuevo
+                    </AntdButton>
+                  </div>
+                </div>
+              }
+              type="info"
+              showIcon
+              icon={<InfoCircleOutlined />}
+              closable
+              onClose={() => setShowRestorePrompt(false)}
+            />
+          </div>
+        )}
+        <FormGenerator
+          fields={getFields()}
+          onCancel={handleCancel}
+          mode="create"
+          onSubmit={handleSubmit}
+          loading={loading}
+          onDNIDataFound={handleDNIDataFound}
+          form={form}
+          initialValues={{
+            document_type_id: "1",
+            country_id: 1,
+            ubicacion: {
+              region_id: 15,
+              province_id: 1501,
+              district_id: null,
+            },
+          }}
+        />
+      </div>
 
       <DNISearchResults
         visible={showDNIResults}

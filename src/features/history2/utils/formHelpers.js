@@ -145,6 +145,7 @@ export const buildAppointmentFormValues = (appointment) => {
     observacionesAdicionales: appointment.observation ?? '',
     diagnosticosReflexologia: appointment.reflexology_diagnostics ?? '',
     therapist: therapistName,
+    pesoHoy: appointment.vital?.weight ?? '',
   };
 };
 
@@ -244,6 +245,50 @@ export const buildHistoryPayload = (
  * @param {number} patientId - ID del paciente
  * @returns {Object} Payload para la API
  */
+/**
+ * Calcula los pesos dinámicos según el orden de la cita seleccionada
+ * @param {Array} appointments - Todas las citas del paciente (ordenadas por fecha DESC)
+ * @param {string} selectedDate - Fecha de la cita actualmente seleccionada
+ * @returns {Object} { pesoInicial, pesoAnterior, isFirstAppointment }
+ */
+export const getWeightData = (appointments, selectedDate) => {
+  if (!appointments || appointments.length === 0 || !selectedDate) {
+    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true };
+  }
+
+  // Ordenar citas por fecha ASC para encontrar la secuencia correcta
+  const sortedAsc = [...appointments].sort(
+    (a, b) => dayjs(a.appointment_date).valueOf() - dayjs(b.appointment_date).valueOf()
+  );
+
+  // Encontrar el índice de la cita seleccionada
+  const currentIndex = sortedAsc.findIndex(
+    (a) => a.appointment_date === selectedDate
+  );
+
+  if (currentIndex === -1) {
+    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true };
+  }
+
+  // Peso Inicial siempre es el de la primera cita (índice 0)
+  const firstAppt = sortedAsc[0];
+  const pesoInicial = firstAppt?.vital?.weight || null;
+
+  // Peso Anterior es el de la cita inmediatamente anterior (currentIndex - 1)
+  let pesoAnterior = null;
+  if (currentIndex > 0) {
+    const prevAppt = sortedAsc[currentIndex - 1];
+    pesoAnterior = prevAppt?.vital?.weight || null;
+  }
+
+  return {
+    pesoInicial: pesoInicial ? formatWeight(pesoInicial) : null,
+    pesoAnterior: pesoAnterior ? formatWeight(pesoAnterior) : null,
+    isFirstAppointment: currentIndex === 0,
+    isSecondAppointment: currentIndex === 1,
+  };
+};
+
 export const buildAppointmentPayload = (
   values,
   selectedAppointment,
@@ -274,9 +319,11 @@ export const buildAppointmentPayload = (
     appointment_status_id: appointmentStatusId,
     patient_id: patientId,
     therapist_id: selectedTherapistId || null,
+    
+    // Signos Vitales de la sesión (para sincronización)
+    weight: formatNumberForBackend(values.pesoHoy),
+    height: formatNumberForBackend(values.talla, 2),
   };
-  
-  return payload;
 };
 
 /**
