@@ -137,7 +137,7 @@ const PatientsByTherapistReportPDF = ({ data, date, logoUrl, companyInfo }) => {
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
   const clinicName = companyInfo?.company_name || defaultClinicName;
-  const logo = LOGO_URL;
+  const logo = logoUrl || LOGO_URL;
 
   return (
     <Document>

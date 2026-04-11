@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, CheckSquare, XCircle } from '@phosphor-icons/react';
+import { Clock, CheckCircle, CheckSquare, XCircle, Globe } from '@phosphor-icons/react';
 import styles from './CalendarList.module.css';
 
 const CalendarList = ({ onCalendarToggle, selectedFilter }) => {
@@ -37,6 +37,12 @@ const CalendarList = ({ onCalendarToggle, selectedFilter }) => {
       label: 'Completados', 
       color: 'green',
       icon: CheckCircle
+    },
+    { 
+      key: 'GHL', 
+      label: 'Solicitudes Web', 
+      color: 'blue',
+      icon: Globe
     }
   ];
 

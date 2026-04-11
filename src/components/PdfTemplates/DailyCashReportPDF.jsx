@@ -282,7 +282,7 @@ const DailyCashReportPDF = ({
     totalCitas 
   } = processData(data);
   const clinicName = companyInfo?.company_name || defaultClinicName;
-  const logo = LOGO_URL;
+  const logo = logoUrl || LOGO_URL;
   const now = new Date();
   const fechaHora = `${date.format('DD/MM/YYYY')} - ${now.toLocaleTimeString()}`;
   const promedioPorCita = totalCitas > 0 ? (totalGeneral / totalCitas).toFixed(2) : 0;

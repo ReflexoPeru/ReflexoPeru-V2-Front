@@ -56,3 +56,12 @@ export const getCompletedAppointmentsRange = async (
     throw error;
   }
 };
+
+export const getGhlLeads = async () => {
+  try {
+    const response = await get('ghl-bookings');
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

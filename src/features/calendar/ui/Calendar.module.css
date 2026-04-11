@@ -10,6 +10,8 @@
   --confirmed-light: rgba(76, 175, 80, 0.1);
   --completed-light: rgba(29, 180, 74, 0.1);
   --cancelled-light: rgba(244, 67, 54, 0.1);
+  --ghl-color: #3b82f6;
+  --ghl-light: rgba(59, 130, 246, 0.1);
 }
 
 .calendarContainer {
@@ -131,6 +133,10 @@
   background: var(--cancelled-color);
 }
 
+.agendaEventCard.ghl::before {
+  background: var(--ghl-color);
+}
+
 .agendaEventCard:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-medium);
@@ -205,6 +211,12 @@
   background: var(--cancelled-light);
   color: var(--cancelled-color);
   border: 1px solid var(--cancelled-color);
+}
+
+.eventStatus.ghl {
+  background: var(--ghl-light);
+  color: var(--ghl-color);
+  border: 1px solid var(--ghl-color);
 }
 
 .eventCardBody {

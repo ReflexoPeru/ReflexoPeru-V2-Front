@@ -4,6 +4,7 @@ import {
   getPaginatedAppointments,
   getPaginatedAppointmentsRange,
   getCompletedAppointmentsRange,
+  getGhlLeads,
 } from '../service/calendarService';
 import dayjs from '../../../utils/dayjsConfig';
 
@@ -41,9 +42,12 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
       
       const pendingPromise = getPendingAppointments();
       const completedPromise = getCompletedAppointmentsRange(startDate, endDate, 100, 1);
-      const [pendingData, completedData] = await Promise.all([
+      const ghlPromise = getGhlLeads();
+      
+      const [pendingData, completedData, ghlData] = await Promise.all([
         pendingPromise,
         completedPromise,
+        ghlPromise,
       ]);
 
       
@@ -216,8 +220,53 @@ export const useCalendar = (currentDate = new Date(), view = 'month') => {
         });
       }
 
-      const allEvents = [...pendingEvents, ...completedEvents];
+      let ghlEvents = [];
+      if (Array.isArray(ghlData)) {
+        ghlData.forEach((item) => {
+          try {
+            // ID único garantizado
+            const eventId = item.ghl_booking_id || `ghl_db_${item.id}`;
+
+            // Prioridad: raw_payload.fecha_inicio (hora local Perú, sin Z UTC)
+            // Fallback: start_time (UTC, ajustado por dayjs) → created_at
+            const rawPayload = item.raw_payload || {};
+            const startStr = rawPayload.fecha_inicio || item.start_time || item.created_at;
+            const endStr   = rawPayload.fecha_fin   || item.end_time   || null;
+
+            // Si viene de raw_payload sin 'Z', lo parseamos como hora local
+            const st = dayjs(startStr);
+            const et = endStr ? dayjs(endStr) : st.add(1, 'hour');
+
+            const event = {
+              id: eventId,
+              title: `[WEB] ${item.name || 'Invitado GHL'}`,
+              start: st.toDate(),
+              end: et.toDate(),
+              resource: 'GHL',
+              details: {
+                ...item,
+                appointment_status_id: 'GHL',
+                patient_name: item.name,
+                patient_full_name: item.name,
+                service_requested: item.service,
+                is_ghl: true,
+                patient_primary_phone: item.phone,
+                patient_email: item.email,
+                observation: item.notes,
+                existing_patient: item.patient || null
+              }
+            };
+            ghlEvents.push(event);
+          } catch (e) {
+            console.error('Error mapeando lead de GHL:', e);
+          }
+        });
+      }
+
+      // Mezclamos todo el universo de eventos
+      const allEvents = [...pendingEvents, ...completedEvents, ...ghlEvents];
       setEvents(allEvents);
+      console.log(`Calendario cargado con ${ghlEvents.length} leads de GoHighLevel y ${pendingEvents.length + completedEvents.length} citas.`);
     } catch (error) {
       setError(error);
     } finally {

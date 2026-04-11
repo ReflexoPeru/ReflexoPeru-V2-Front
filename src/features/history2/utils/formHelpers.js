@@ -232,8 +232,37 @@ export const buildHistoryPayload = (
     // Terapeuta
     therapist_id: selectedTherapistId || null,
   };
-  
-  return payload;
+};
+
+/**
+ * Busca la cita más reciente que tenga datos médicos completados
+ * Útil para autocompletar citas que fueron creadas vacías (ej: reservas anticipadas)
+ * 
+ * @param {Array} appointments - Lista de citas del paciente
+ * @param {string} currentAppointmentDate - Fecha de la cita actual para no incluirla
+ * @returns {Object|null} La cita más completa encontrada o null
+ */
+export const findLatestPopulatedAppointment = (appointments, currentAppointmentDate) => {
+  if (!appointments || appointments.length === 0) return null;
+
+  // Filtrar citas que no sean la actual y que tengan algún dato relevante
+  const populatedAppointments = appointments
+    .filter(app => app.appointment_date !== currentAppointmentDate)
+    .filter(app => (
+      app.diagnosis || 
+      app.ailments || 
+      app.surgeries || 
+      app.medications || 
+      app.observation || 
+      app.reflexology_diagnostics
+    ));
+
+  if (populatedAppointments.length === 0) return null;
+
+  // Ordenar por fecha DESC para tener la más reciente primero
+  return [...populatedAppointments].sort(
+    (a, b) => dayjs(b.appointment_date).valueOf() - dayjs(a.appointment_date).valueOf()
+  )[0];
 };
 
 /**
@@ -249,11 +278,11 @@ export const buildHistoryPayload = (
  * Calcula los pesos dinámicos según el orden de la cita seleccionada
  * @param {Array} appointments - Todas las citas del paciente (ordenadas por fecha DESC)
  * @param {string} selectedDate - Fecha de la cita actualmente seleccionada
- * @returns {Object} { pesoInicial, pesoAnterior, isFirstAppointment }
+ * @returns {Object} { pesoInicial, pesoAnterior, isFirstAppointment, isSecondAppointment }
  */
 export const getWeightData = (appointments, selectedDate) => {
   if (!appointments || appointments.length === 0 || !selectedDate) {
-    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true };
+    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true, isSecondAppointment: false };
   }
 
   // Ordenar citas por fecha ASC para encontrar la secuencia correcta
@@ -262,12 +291,14 @@ export const getWeightData = (appointments, selectedDate) => {
   );
 
   // Encontrar el índice de la cita seleccionada
+  // Usamos startsWith para manejar diferencias de formato (datetime vs date)
+  const selectedDateShort = selectedDate?.split(' ')[0] || selectedDate;
   const currentIndex = sortedAsc.findIndex(
-    (a) => a.appointment_date === selectedDate
+    (a) => (a.appointment_date || '').startsWith(selectedDateShort)
   );
 
   if (currentIndex === -1) {
-    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true };
+    return { pesoInicial: null, pesoAnterior: null, isFirstAppointment: true, isSecondAppointment: false };
   }
 
   // Peso Inicial siempre es el de la primera cita (índice 0)
@@ -276,9 +307,11 @@ export const getWeightData = (appointments, selectedDate) => {
 
   // Peso Anterior es el de la cita inmediatamente anterior (currentIndex - 1)
   let pesoAnterior = null;
+  let prevCitaNum = null;
   if (currentIndex > 0) {
     const prevAppt = sortedAsc[currentIndex - 1];
     pesoAnterior = prevAppt?.vital?.weight || null;
+    prevCitaNum = currentIndex; // cita anterior = currentIndex (1-based)
   }
 
   return {
@@ -286,6 +319,11 @@ export const getWeightData = (appointments, selectedDate) => {
     pesoAnterior: pesoAnterior ? formatWeight(pesoAnterior) : null,
     isFirstAppointment: currentIndex === 0,
     isSecondAppointment: currentIndex === 1,
+    // Números de cita para los labels
+    pesoInicialCitaNum: 1,
+    pesoAnteriorCitaNum: prevCitaNum,
+    currentCitaNum: currentIndex + 1,
+    totalCitas: sortedAsc.length,
   };
 };
 

@@ -70,7 +70,14 @@ export const extractUniqueDates = (appointments) => {
     return [];
   }
 
-  return [...new Set(appointments.map((a) => a.appointment_date))];
+  return [
+    ...new Set(
+      appointments.map((a) => {
+        if (!a?.appointment_date) return '';
+        return a.appointment_date.split(' ')[0]; // Solo yyyy-mm-dd
+      })
+    ),
+  ].filter(Boolean);
 };
 
 /**

@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 
-const VitalsChart = ({ vitals = [], loading = false, selectedDate = '' }) => {
+const VitalsChart = ({ vitals = [], appointments = [], loading = false, selectedDate = '' }) => {
   if (loading) {
     return (
       <div style={{ height: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -34,22 +34,37 @@ const VitalsChart = ({ vitals = [], loading = false, selectedDate = '' }) => {
     );
   }
 
-  // Preparamos los datos para el gráfico
+  // Ordenamos todas las citas por fecha ASC para tener los índices reales
+  const sortedAppointments = [...appointments].sort(
+    (a, b) => dayjs(a.appointment_date).unix() - dayjs(b.appointment_date).unix()
+  );
+
+  // Preparamos los datos para el gráfico relacionándolos con las citas
   const data = vitals
-    .map((vital) => ({
-      fechaOriginal: dayjs(vital.measured_at),
-      dbDate: dayjs(vital.measured_at).format('YYYY-MM-DD'), // Para comparación exacta
-      peso: parseFloat(vital.weight),
-      talla: parseFloat(vital.height),
-      fullDate: dayjs(vital.measured_at).format('DD MMMM, YYYY'),
-    }))
-    .sort((a, b) => a.fechaOriginal.diff(b.fechaOriginal))
-    .map((item, index) => ({
-      ...item,
-      sessionLabel: `Cita ${index + 1}`,
-      // ¿Es la fecha seleccionada por el usuario en el historial?
-      isCurrent: item.dbDate === selectedDate,
-    }));
+    .map((vital) => {
+      const fechaOriginal = dayjs(vital.measured_at);
+      const dbDate = fechaOriginal.format('YYYY-MM-DD');
+      
+      // Buscamos el índice real de esta cita en el historial completo del paciente
+      // Comparamos solo la fecha (YYYY-MM-DD) para mayor robustez
+      const appointmentIndex = sortedAppointments.findIndex(appt => 
+        dayjs(appt.appointment_date).format('YYYY-MM-DD') === dbDate
+      );
+      
+      const sessionNumber = appointmentIndex !== -1 ? appointmentIndex + 1 : null;
+
+      return {
+        fechaOriginal,
+        dbDate,
+        peso: parseFloat(vital.weight),
+        talla: parseFloat(vital.height),
+        fullDate: fechaOriginal.format('DD MMMM, YYYY'),
+        sessionNumber,
+        sessionLabel: sessionNumber ? `Cita ${sessionNumber}` : `Cita (${dbDate})`,
+        isCurrent: dbDate === selectedDate,
+      };
+    })
+    .sort((a, b) => a.fechaOriginal.diff(b.fechaOriginal));
 
   // Calcular márgenes dinámicos
   const pesos = data.map(d => d.peso);
@@ -83,7 +98,9 @@ const VitalsChart = ({ vitals = [], loading = false, selectedDate = '' }) => {
       <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <Title level={5} style={{ margin: 0, color: '#1a3353', fontWeight: 600 }}>Evolución y Progreso del Peso</Title>
-          <Text style={{ fontSize: '12px', color: '#8c8c8c' }}>Tendencia clínica basada en {data.length} sesiones</Text>
+          <Text style={{ fontSize: '12px', color: '#8c8c8c' }}>
+            {data.length} pesos registrados de {appointments.length} citas
+          </Text>
         </div>
         <div style={{ textAlign: 'right' }}>
            <Text strong style={{ color: '#3498db', fontSize: '16px' }}>

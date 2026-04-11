@@ -29,11 +29,16 @@ const FormComponent = forwardRef(
       loading: externalLoading = false,
       initialValues = {},
       searchType = 'patient',
+      submitText = '',
+      cancelText = '',
+      showSubmitButton = true,
+      onFinish: externalOnFinish, // Soporte para ambos nombres de propiedad
     },
     ref,
   ) => {
     const [internalForm] = useForm();
     const form = externalForm || internalForm;
+    const finalOnSubmit = onSubmit || externalOnFinish || (() => {});
     const [internalLoadingState, setInternalLoadingState] = useState(false);
     const loading = externalLoading || internalLoadingState;
     const [isPhoneRequired, setIsPhoneRequired] = useState(true);
@@ -174,7 +179,7 @@ const FormComponent = forwardRef(
       <Form
         form={form}
         layout="vertical"
-        onFinish={onSubmit}
+        onFinish={finalOnSubmit}
         className={styles.formContainer}
         ref={ref}
         initialValues={initialValues}
@@ -183,25 +188,27 @@ const FormComponent = forwardRef(
           {fields.map((field, index) => renderField(field, index))}
         </Row>
 
-        <Form.Item className={styles.buttonGroup}>
-          <div className={styles.buttonWrapper}>
-            <Button
-              htmlType="button"
-              className={styles.buttonCancel}
-              onClick={onCancel}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="primary"
-              className={styles.buttonSubmit}
-              loading={loading}
-              onClick={() => form.submit()}
-            >
-              {mode === 'edit' ? 'Actualizar' : 'Registrar'}
-            </Button>
-          </div>
-        </Form.Item>
+        {showSubmitButton && (
+          <Form.Item className={styles.buttonGroup}>
+            <div className={styles.buttonWrapper}>
+              <Button
+                htmlType="button"
+                className={styles.buttonCancel}
+                onClick={onCancel}
+              >
+                {cancelText || 'Cancelar'}
+              </Button>
+              <Button
+                type="primary"
+                className={styles.buttonSubmit}
+                loading={loading}
+                onClick={() => form.submit()}
+              >
+                {submitText || (mode === 'edit' ? 'Actualizar' : 'Registrar')}
+              </Button>
+            </div>
+          </Form.Item>
+        )}
       </Form>
     );
   },

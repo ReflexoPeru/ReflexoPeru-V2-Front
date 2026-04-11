@@ -1,10 +1,12 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
-import { Button, Modal, Space, Spin, notification, Tooltip } from 'antd';
-import { CalendarOutlined } from '@ant-design/icons';
+import { Button, Modal, Space, Spin, notification, Tooltip, Drawer, Badge, Form, DatePicker, TimePicker, Select } from 'antd';
+import { CalendarOutlined, GlobalOutlined, InfoCircleOutlined, UserOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from '../../../services/api/Axios/baseConfig';
 import CustomButton from '../../../components/Button/CustomButton';
+import GhlLeadsList from '../../ghl/GhlLeadsList';
 import CustomTimeFilter from '../../../components/DateSearch/CustomTimeFilter';
 import FichaPDF from '../../../components/PdfTemplates/FichaPDF';
 import TicketPDF from '../../../components/PdfTemplates/TicketPDF';
@@ -22,6 +24,8 @@ import { useToast } from '../../../services/toastify/ToastContext';
 import { defaultConfig } from '../../../services/toastify/toastConfig';
 import { formatToastMessage } from '../../../utils/messageFormatter';
 import DeleteConfirmModal from '../../../components/Modal/DeleteConfirmModal';
+import NewPatient from '../../patients/ui/RegisterPatient/NewPatient';
+import NewAppointment from './RegisterAppointment/NewAppointment';
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -51,6 +55,34 @@ export default function Appointments() {
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
 
+  // ── FLUJO GHL: estados para el proceso de agendar desde Citas Web ──
+  const [ghlActiveLead, setGhlActiveLead]     = useState(null); // lead activo del flujo
+  const [ghlPatientReady, setGhlPatientReady] = useState(null); // paciente creado/seleccionado
+  const [isGhlPatientModalOpen, setIsGhlPatientModalOpen]         = useState(false);
+  const [isGhlAppointmentModalOpen, setIsGhlAppointmentModalOpen] = useState(false);
+  // form para la cita GHL
+  const [ghlAppForm] = Form.useForm?.() ?? [{ setFieldsValue: () => {}, resetFields: () => {}, getFieldValue: () => {} }];
+  // IDs de citas creadas desde GHL (para mostrar badge en tabla)
+  const [ghlAppointmentIds, setGhlAppointmentIds] = useState([]);
+  const [isGhlDrawerOpen, setIsGhlDrawerOpen] = useState(false);
+  const [ghlRefreshKey, setGhlRefreshKey] = useState(0);
+  const [ghlLeadsCount, setGhlLeadsCount] = useState(0);
+
+  const fetchGhlLeadsCount = async () => {
+    try {
+      const res = await axios.get('/ghl-bookings');
+      setGhlLeadsCount(res.data.length);
+    } catch (e) {
+      console.warn('No se pudo obtener el conteo de GHL');
+    }
+  };
+
+  useEffect(() => {
+    fetchGhlLeadsCount();
+    const interval = setInterval(fetchGhlLeadsCount, 300000);
+    return () => clearInterval(interval);
+  }, [ghlRefreshKey]);
+
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -73,7 +105,30 @@ export default function Appointments() {
         if (!patient) return 'Paciente no disponible';
         const text = `${patient.paternal_lastname || ''} ${patient.maternal_lastname || ''} ${patient.name || ''}`.trim();
         const isReserved = record.payment === null && record.payment_type === null && record.social_benefit === null;
-        return <span style={{ color: isReserved ? '#FF0000' : 'inherit' }}>{text}</span>;
+        const isFromGhl  = record.origin === 'ghl' || record.ghl_appointment_id || ghlAppointmentIds.includes(record.id);
+        return (
+          <span style={{ color: isReserved ? '#FF0000' : 'inherit', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontWeight: 500 }}>{text}</span>
+            {isFromGhl && (
+              <Tooltip title="Cita originada desde GoHighLevel (Web)">
+                <Badge 
+                  count="WEB" 
+                  style={{ 
+                    backgroundColor: '#3B82F6', 
+                    fontSize: '10px', 
+                    fontWeight: 800,
+                    borderRadius: '4px',
+                    height: '18px',
+                    lineHeight: '18px',
+                    padding: '0 6px',
+                    border: 'none',
+                    boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
+                  }} 
+                />
+              </Tooltip>
+            )}
+          </span>
+        );
       },
     },
     {
@@ -385,6 +440,8 @@ export default function Appointments() {
     };
   };
 
+  // Se han movido las declaraciones de GHL al inicio del componente para evitar duplicados.
+
   return (
     <div
       style={{
@@ -402,9 +459,30 @@ export default function Appointments() {
           gap: '16px',
           margin: '0 auto',
           width: '100%',
+          marginBottom: '20px'
         }}
       >
         <CustomButton text="Registrar Cita" onClick={handleButton} />
+
+        <Badge count={ghlLeadsCount} offset={[-5, 5]}>
+           <Button 
+              icon={<GlobalOutlined />} 
+              style={{ 
+                height: '42px', 
+                borderRadius: '8px', 
+                background: '#1a3353', 
+                color: '#fff',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                fontWeight: 600,
+                padding: '0 15px'
+              }}
+              onClick={() => setIsGhlDrawerOpen(true)}
+           >
+              Citas Web
+           </Button>
+        </Badge>
 
         <CustomSearch
           placeholder="Buscar por Apellido/Nombre o DNI..."
@@ -421,12 +499,118 @@ export default function Appointments() {
         />
       </div>
 
+      {/* El Drawer duplicado de aquí ha sido eliminado para corregir el error visual. */}
+
+      {/* ── MODAL 1: CREAR PACIENTE DESDE GHL (Reutilizando el oficial) ── */}
+      <UniversalModal
+        title="Crear Nuevo Paciente"
+        open={isGhlPatientModalOpen}
+        onCancel={() => { setIsGhlPatientModalOpen(false); setGhlActiveLead(null); }}
+        footer={null}
+        width={800}
+        destroyOnClose={true}
+        centered={true}
+        className="create-patient-modal modal-themed"
+      >
+        {ghlActiveLead && (
+          <NewPatient
+            isModal={true}
+            ghlInitialValues={{
+              firstName: ghlActiveLead.name?.split(' ')[0] || '',
+              lastName: ghlActiveLead.name?.split(' ').slice(1).join(' ') || '',
+              phone: ghlActiveLead.phone,
+              email: ghlActiveLead.email
+            }}
+            onCancel={() => { setIsGhlPatientModalOpen(false); setGhlActiveLead(null); }}
+            onSubmit={(newPatient) => {
+              const displayName = `${newPatient.paternal_lastname || ''} ${newPatient.maternal_lastname || ''} ${newPatient.name || ''}`.trim();
+              setGhlPatientReady({ ...newPatient, full_name: displayName });
+              setIsGhlPatientModalOpen(false);
+              setIsGhlAppointmentModalOpen(true);
+            }}
+          />
+        )}
+      </UniversalModal>
+
+      {/* ── MODAL 2: CREAR CITA DESDE GHL (con paciente y fecha pre-llenados) ── */}
+      <UniversalModal
+        title="Nueva Cita — Confirmar Horario Web"
+        open={isGhlAppointmentModalOpen}
+        onCancel={() => { setIsGhlAppointmentModalOpen(false); setGhlActiveLead(null); setGhlPatientReady(null); }}
+        footer={null}
+        width={560}
+        destroyOnClose
+        centered
+      >
+        {ghlPatientReady && ghlActiveLead && (
+          <>
+            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#F8FAFC', borderRadius: '8px' }}>
+              <UserOutlined style={{ color: '#64748B' }} />
+              <span style={{ fontSize: '12px', color: '#475569' }}>Agendando para: <strong>{ghlPatientReady.full_name}</strong></span>
+            </div>
+            <NewAppointment
+              isModal={true}
+              ghlInitialValues={{
+                ...ghlActiveLead,
+                // Aseguramos que el booking_id sea localizable para el back
+                ghl_booking_id: ghlActiveLead.ghl_booking_id || ghlActiveLead.id
+              }}
+              prefillPatient={ghlPatientReady}
+              prefillDate={ghlActiveLead.start_time || null}
+              onCancel={() => { 
+                setIsGhlAppointmentModalOpen(false); 
+                setGhlActiveLead(null); 
+                setGhlPatientReady(null); 
+              }}
+              onSubmit={async () => {
+                setIsGhlAppointmentModalOpen(false);
+                setGhlActiveLead(null);
+                setGhlPatientReady(null);
+                setGhlRefreshKey(prev => prev + 1); // Desaparece de la lista automática
+                await loadAppointments(); // Refrescar tabla principal
+                notification.success({
+                  message: '¡Cita registrada!',
+                  description: 'La solicitud web se convirtió en una cita oficial [WEB] en el sistema.',
+                });
+              }}
+            />
+          </>
+        )}
+      </UniversalModal>
+
+      {/* ── DRAWER: SOLICITUDES WEB PENDIENTES (Limpio, sin doble título) ── */}
+      <Drawer
+        placement="right"
+        onClose={() => setIsGhlDrawerOpen(false)}
+        open={isGhlDrawerOpen}
+        width="45%"
+        styles={{ header: { display: 'none' }, body: { padding: 0 } }}
+        closable={true}
+      >
+        <GhlLeadsList 
+          key={ghlRefreshKey} 
+          onSchedule={(lead) => {
+            setIsGhlDrawerOpen(false); // <-- Esto hará que se cierre sola
+            setGhlActiveLead(lead);
+            if (lead.patient_id && lead.patient) {
+              setGhlPatientReady(lead.patient);
+              setIsGhlAppointmentModalOpen(true);
+            } else {
+              setIsGhlPatientModalOpen(true);
+            }
+          }}
+        />
+      </Drawer>
+
       <div
         style={{
           width: '100%',
           margin: '0 auto',
         }}
       >
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+          {/* El botón duplicado ha sido eliminado de aquí. Se mantiene solo en la cabecera. */}
+        </div>
         <ModeloTable
           columns={columns}
           data={visibleAppointments}

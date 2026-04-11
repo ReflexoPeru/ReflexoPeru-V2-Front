@@ -51,8 +51,9 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
 
   const getEventType = (event) => {
     const status = event.resource || event.details?.appointment_status_id;
-    if (status === 'PENDIENTE') return 'pending';
-    if (status === 'COMPLETADO') return 'completed';
+    if (status === 'PENDIENTE' || status === 'pending') return 'pending';
+    if (status === 'COMPLETADO' || status === 'completed') return 'completed';
+    if (status === 'GHL') return 'ghl';
     
     return 'pending';
   };
@@ -62,7 +63,8 @@ const AgendaView = ({ events, date, localizer, onNavigate, onView, view, sidebar
       pending: 'Pendiente',
       confirmed: 'Confirmada',
       completed: 'Completado',
-      cancelled: 'Cancelada'
+      cancelled: 'Cancelada',
+      GHL: 'Web Lead'
     };
     return labels[type] || 'Pendiente';
   };
@@ -467,6 +469,8 @@ const Calendario = () => {
     
     return events.filter(event => {
       const status = event.resource || event.details?.appointment_status_id;
+      // Normalizamos PENDIENTE para que coincida con el filtro si es necesario
+      if (selectedCalendarFilter === 'PENDIENTE' && status === 'pending') return true;
       return status === selectedCalendarFilter;
     });
   }, [events, selectedCalendarFilter]);
@@ -554,6 +558,11 @@ const Calendario = () => {
         style.backgroundColor = '#1DB44A';
         style.borderLeftColor = '#17a041';
         style.color = '#fff';
+      } else if (status === 'GHL') {
+        style.backgroundColor = '#1e3a8a';
+        style.borderLeftColor = '#3b82f6';
+        style.color = '#fff';
+        style.fontWeight = 'bold';
       } else {
         style.backgroundColor = '#6b7280';
         style.borderLeftColor = 'rgba(0, 0, 0, 0.4)';
@@ -606,8 +615,10 @@ const Calendario = () => {
     // Fallback al sistema anterior
     const status = event.details.appointment_status_id;
     let prefix = '';
-    if (status === 1) prefix = '[PENDIENTE]';
-    if (status === 2) prefix = '[CONFIRMADA]';
+    if (status === 1 || status === 'PENDIENTE') prefix = '[PENDIENTE]';
+    if (status === 2 || status === 'CONFIRMADA') prefix = '[CONFIRMADA]';
+    if (status === 'GHL') prefix = '[WEB]';
+    
     return (
       <Tooltip title={tooltipText} placement="top">
         <div
@@ -618,14 +629,18 @@ const Calendario = () => {
             alignItems: 'center',
             fontWeight: 'bold',
             textTransform: 'uppercase',
-            fontSize: '0.95em',
-            color: 'var(--color-text-primary)'
+            fontSize: '0.90em',
+            color: 'var(--color-text-primary)',
+            gap: '4px'
           }}
         >
-          {prefix}
-          {event.details.patient_first_name
-            ? ` - ${event.details.patient_first_name}`
-            : ''}
+          <span style={{ 
+            color: status === 'GHL' ? '#60a5fa' : 'inherit',
+            fontSize: '0.8em'
+          }}>
+            {prefix}
+          </span>
+          {event.title}
         </div>
       </Tooltip>
     );
@@ -1008,7 +1023,7 @@ const Calendario = () => {
       )}
 
       <Modal
-        title="Detalles de la Cita"
+        title={selectedEvent?.resource === 'GHL' ? 'Solicitud Web de GoHighLevel' : 'Detalles de la Cita'}
         open={modalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -1018,15 +1033,29 @@ const Calendario = () => {
         {selectedEvent && (
           <div style={{ color: 'black' }}>
             <p>
-              <strong>Paciente:</strong>{' '}
+              <strong>{selectedEvent.resource === 'GHL' ? 'Interesado' : 'Paciente'}:</strong>{' '}
               {selectedEvent.details.patient_full_name}
             </p>
+            {selectedEvent.resource === 'GHL' ? (
+              <>
+                <p>
+                  <strong>Teléfono:</strong> {selectedEvent.details.patient_primary_phone || 'No especificado'}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedEvent.details.patient_email || 'No especificado'}
+                </p>
+                <p>
+                  <strong>Servicio de interés:</strong> {selectedEvent.details.service_requested || 'General'}
+                </p>
+              </>
+            ) : (
+              <p>
+                <strong>Terapeuta:</strong>{' '}
+                {selectedEvent.details.therapist_full_name}
+              </p>
+            )}
             <p>
-              <strong>Terapeuta:</strong>{' '}
-              {selectedEvent.details.therapist_full_name}
-            </p>
-            <p>
-              <strong>Tipo de cita:</strong> {selectedEvent.title}
+              <strong>{selectedEvent.resource === 'GHL' ? 'Asunto' : 'Tipo de cita'}:</strong> {selectedEvent.title}
             </p>
             <p>
               <strong>Fecha:</strong>{' '}
@@ -1037,25 +1066,33 @@ const Calendario = () => {
               {dayjs(selectedEvent.start).format('HH:mm')} -{' '}
               {dayjs(selectedEvent.end).format('HH:mm')}
             </p>
+            {selectedEvent.resource !== 'GHL' && (
+              <>
+                <p>
+                  <strong>Diagnóstico:</strong>{' '}
+                  {selectedEvent.details.diagnosis || 'No especificado'}
+                </p>
+                <p>
+                  <strong>Malestar:</strong>{' '}
+                  {selectedEvent.details.ailments || 'No especificado'}
+                </p>
+              </>
+            )}
             <p>
-              <strong>Diagnóstico:</strong>{' '}
-              {selectedEvent.details.diagnosis || 'No especificado'}
-            </p>
-            <p>
-              <strong>Malestar:</strong>{' '}
-              {selectedEvent.details.ailments || 'No especificado'}
-            </p>
-            <p>
-              <strong>Observaciones:</strong>{' '}
+              <strong>Observaciones / Notas:</strong>{' '}
               {selectedEvent.details.observation || 'Ninguna'}
             </p>
-            <p>
-              <strong>Tipo de pago:</strong>{' '}
-              {selectedEvent.details.payment_type_name}
-            </p>
-            <p>
-              <strong>Ticket:</strong> {selectedEvent.details.ticket_number}
-            </p>
+            {selectedEvent.resource !== 'GHL' && (
+              <>
+                <p>
+                  <strong>Tipo de pago:</strong>{' '}
+                  {selectedEvent.details.payment_type_name}
+                </p>
+                <p>
+                  <strong>Ticket:</strong> {selectedEvent.details.ticket_number}
+                </p>
+              </>
+            )}
           </div>
         )}
       </Modal>
@@ -1090,7 +1127,21 @@ const Calendario = () => {
           width: '100%',
           height: '100%'
         }}>
-          <NewAppointment />
+          <NewAppointment 
+            isModal={true}
+            ghlInitialValues={selectedEvent?.resource === 'GHL' ? selectedEvent.details : null}
+            prefillDate={selectedEvent?.resource === 'GHL' ? selectedEvent.start : null}
+            onCancel={() => {
+              setNewAppointmentModalVisible(false);
+              if (selectedEvent?.resource === 'GHL') setSelectedEvent(null);
+            }}
+            onSubmit={async () => {
+              setNewAppointmentModalVisible(false);
+              setSelectedEvent(null);
+              // Refrescar eventos para que desaparezca el lead azul y aparezca la cita oficial
+              await fetchEvents(date, view);
+            }}
+          />
         </div>
         
         <style dangerouslySetInnerHTML={{

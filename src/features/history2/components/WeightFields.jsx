@@ -6,10 +6,16 @@ const { Option } = Select;
 
 /**
  * Componente para campos de peso, talla y datos reproductivos
- * Agrupa la lógica de medidas físicas
+ * Lógica de campos por número de cita:
+ * - Cita 1: solo Peso Actual
+ * - Cita 2: Peso Inicial (Cita 1) + Peso Actual
+ * - Cita 3+: Peso Inicial (Cita 1) + Peso Anterior (Cita N-1) + Peso Actual
  */
 const WeightFields = ({ styles = {}, isFemale = false, weightData = {} }) => {
-  const { pesoInicial, pesoAnterior, isFirstAppointment, isSecondAppointment } = weightData || {};
+  const {
+    isFirstAppointment,
+    isSecondAppointment,
+  } = weightData || {};
 
   return (
     <div className={styles.physicalInfoRow || ''} style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
@@ -29,36 +35,34 @@ const WeightFields = ({ styles = {}, isFemale = false, weightData = {} }) => {
       {/* Peso Inicial: Visible de la SEGUNDA cita en adelante */}
       {!isFirstAppointment && (
         <Form.Item
+          name="pesoInicial"
           label="Peso Inicial (kg)"
           className={styles.physicalInfoItem || ''}
-          tooltip="Peso registrado en la primera sesión del tratamiento (Lectura)"
+          tooltip="Peso registrado en la primera sesión del tratamiento"
         >
           <Input
-            disabled
-            value={pesoInicial || 'N/A'}
             className={`${styles.input || ''} ${styles.smallInput || ''}`}
-            style={{ backgroundColor: '#f1f5f9', color: '#475569', fontWeight: 'bold' }}
+            placeholder="0.0"
           />
         </Form.Item>
       )}
 
-      {/* Peso Anterior: Visible de la TERCERA cita en adelante */}
+      {/* Peso Anterior: Visible de la TERCERA cita en adelante (NO en la 2da) */}
       {!isFirstAppointment && !isSecondAppointment && (
         <Form.Item
+          name="ultimoPeso"
           label="Peso Anterior (kg)"
           className={styles.physicalInfoItem || ''}
           tooltip="Peso de la sesión cronológicamente anterior a la seleccionada"
         >
           <Input
-            disabled
-            value={pesoAnterior || 'N/A'}
             className={`${styles.input || ''} ${styles.smallInput || ''}`}
-            style={{ backgroundColor: '#f8fafc', color: '#64748b' }}
+            placeholder="0.0"
           />
         </Form.Item>
       )}
 
-      {/* Peso Hoy: Campo de entrada principal para CUALQUIER cita seleccionada */}
+      {/* Peso Actual: Campo de entrada principal para CUALQUIER cita */}
       <Form.Item
         name="pesoHoy"
         label="Peso Actual (kg)"
@@ -104,4 +108,3 @@ const WeightFields = ({ styles = {}, isFemale = false, weightData = {} }) => {
 };
 
 export default WeightFields;
-

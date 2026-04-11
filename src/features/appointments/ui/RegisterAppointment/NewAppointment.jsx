@@ -16,10 +16,11 @@ import {
   Divider,
   Tooltip,
 } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import UniversalModal from '../../../../components/Modal/UniversalModal';
 import dayjs from '../../../../utils/dayjsConfig';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import FormComponent from '../../../../components/Form/Form';
 import CustomSearch from '../../../../components/Search/CustomSearch';
 import NewPatient from '../../../patients/ui/RegisterPatient/NewPatient';
@@ -28,7 +29,7 @@ import styles from '../RegisterAppointment/NewAppointment.module.css';
 import SelectPaymentStatus from '../../../../components/Select/SelectPaymentStatus';
 import SelectPrices from '../../../../components/Select/SelectPrices';
 
-const NewAppointment = () => {
+const NewAppointment = ({ onSubmit, onCancel, isModal = false, ghlInitialValues = null, prefillPatient = null, prefillDate = null }) => {
   const [showHourField, setShowHourField] = useState(false);
   const [isPaymentRequired, setIsPaymentRequired] = useState(true);
   const [patientType, setPatientType] = useState('continuador');
@@ -50,8 +51,49 @@ const NewAppointment = () => {
   const [form] = Form.useForm();
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Datos del prospecto que llega desde el panel de Citas Web (GoHighLevel)
+  const ghlLead = location.state?.fromGhl ? location.state.ghlLead : null;
+  const isFromGhl = !!ghlInitialValues || !!ghlLead;
 
 
+
+  // Si viene desde el panel de Citas Web, pre-llenar la fecha y el tipo de paciente
+  useEffect(() => {
+    if (ghlLead) {
+      // Pre-llenar fecha si viene del prospecto
+      if (ghlLead.start_time) {
+        const fecha = dayjs(ghlLead.start_time);
+        if (fecha.isValid()) {
+          form.setFieldsValue({ appointment_date: fecha });
+          setShowHourField(true);
+          form.setFieldsValue({ appointment_hour: fecha.format('HH:mm') });
+        }
+      }
+      setPatientType('nuevo');
+    }
+  }, [ghlLead]);
+
+  // Si viene con paciente y fecha pre-cargados desde fuera (flujo GHL modal)
+  useEffect(() => {
+    if (prefillPatient) {
+      const displayName = prefillPatient.full_name ||
+        `${prefillPatient.paternal_lastname || ''} ${prefillPatient.maternal_lastname || ''} ${prefillPatient.name || ''}`.trim();
+      setSelectedPatient({ ...prefillPatient, full_name: displayName });
+      form.setFieldsValue({ patient_id: prefillPatient.id });
+    }
+    if (prefillDate) {
+      const fecha = dayjs(prefillDate);
+      if (fecha.isValid()) {
+        form.setFieldsValue({ appointment_date: fecha });
+        if (fecha.hour() !== 0 || fecha.minute() !== 0) {
+          setShowHourField(true);
+          form.setFieldsValue({ appointment_hour: fecha.format('HH:mm') });
+        }
+      }
+    }
+  }, [prefillPatient, prefillDate]);
 
   useEffect(() => {
     const unsubscribe = form.subscribe?.(() => {
@@ -200,6 +242,8 @@ const NewAppointment = () => {
         ...(values.payment && { payment: parseFloat(values.payment) }),
         ...(values.payment_type_id && { payment_type_id: Number(values.payment_type_id) }),
         service_id: values.service_id ? Number(values.service_id) : undefined,
+        // Si viene de GHL, pasamos el ID original para marcarlo como convertido
+        ghl_booking_id: ghlInitialValues?.ghl_booking_id || (prefillDate ? ghlInitialValues?.ghl_booking_id : null) || location.state?.ghlLead?.ghl_booking_id
       };
 
       console.log('Payload enviado al servidor:', payload);
@@ -216,7 +260,13 @@ const NewAppointment = () => {
       setPatientType('continuador');
       setShowHourField(false);
       setIsPaymentRequired(false);
-      navigate('/Inicio/citas');
+
+      if (isModal && onSubmit) {
+        // En modo modal: el padre controla qué pasa después (cerrar modal, recargar tabla, etc.)
+        onSubmit();
+      } else {
+        navigate('/Inicio/citas');
+      }
     } catch (error) {
       console.error('Error al registrar la cita:', error);
       notification.error({
@@ -231,7 +281,11 @@ const NewAppointment = () => {
   const handleCancel = () => {
     setIsCreatePatientModalVisible(false);
     setIsModalVisible(false);
-    navigate('/Inicio/citas');
+    if (isModal && onCancel) {
+      onCancel();
+    } else {
+      navigate('/Inicio/citas');
+    }
   };
 
   const handleCancelSelectModal = () => {
@@ -341,17 +395,68 @@ const NewAppointment = () => {
         onFinish={handleSubmit}
         style={{ color: 'var(--color-text-primary)' }}
       >
-        {/* TÍTULO */}
-        <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
-          <h2 style={{
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--font-size-xxl)',
-            fontWeight: 'var(--font-weight-bold)',
-            fontFamily: 'var(--font-family)'
+        {/* TÍTULO (Oculto en modal por redundancia) */}
+        {!isModal && (
+          <div style={{ textAlign: 'center', marginBottom: 'var(--spacing-lg)' }}>
+            <h2 style={{
+              color: 'var(--color-text-primary)',
+              fontSize: 'var(--font-size-xxl)',
+              fontWeight: 'var(--font-weight-bold)',
+              fontFamily: 'var(--font-family)'
+            }}>
+              REGISTRAR CITA
+            </h2>
+          </div>
+        )}
+
+        {/* BANNER: Datos del prospecto (GHL) - Súper Minimalista */}
+        {isFromGhl && (
+          <div style={{
+            marginBottom: '24px',
+            padding: '16px',
+            borderRadius: '12px',
+            background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%)',
+            border: '1px solid #BBF7D0',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
           }}>
-            REGISTRAR CITA
-          </h2>
-        </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <UserOutlined style={{ color: '#166534', fontSize: '16px' }} />
+              <span style={{ fontWeight: 700, fontSize: '13px', color: '#166534', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Agendando para:
+              </span>
+            </div>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: '#14532D', marginLeft: '26px' }}>
+              {selectedPatient?.full_name || ghlLead?.name || 'Cargando...'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#166534', marginLeft: '26px', marginTop: '4px', opacity: 0.8 }}>
+              Servicio solicitado: <strong style={{ textTransform: 'uppercase' }}>{ghlLead?.service || ghlInitialValues?.service || 'Consulta GHL'}</strong>
+            </div>
+          </div>
+        )}
+
+        {/* BANNER ORIGINAL COMPACTO (Solo si no es flujo modal GHL) */}
+        {!isFromGhl && ghlLead && (
+          <div style={{
+            marginBottom: '20px',
+            padding: '12px 16px',
+            borderRadius: '10px',
+            background: '#F0F9FF',
+            border: '1px solid #BAE6FD',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0EA5E9' }} />
+              <span style={{ fontWeight: 600, fontSize: '12px', color: '#0369A1', textTransform: 'uppercase' }}>
+                Datos de la Solicitud Web
+              </span>
+            </div>
+            <div style={{ fontSize: '12px', color: '#475569' }}>
+               Nombre: <strong>{ghlLead.name}</strong> &nbsp;·&nbsp; Tel: <strong>{ghlLead.phone}</strong> &nbsp;·&nbsp; Servicio: <strong>{ghlLead.service}</strong>
+            </div>
+          </div>
+        )}
 
         {/* 
             SECCIÓN: FECHA DE CITA
@@ -380,85 +485,85 @@ const NewAppointment = () => {
         {/* Espacio entre secciones */}
         <div style={{ height: 'var(--spacing-md)' }} />
 
+        {/* SECCIÓN: TIPOS DE PACIENTES (OCULTA SI ES GHL PARA MÁXIMA LIMPIEZA) */}
+        {!isFromGhl && (
+          <>
+            <Row gutter={16} align="middle">
+              <Col span={5}>
+                <span className={styles.patientTypeLabel}>
+                  Tipo de Paciente:
+                </span>
+              </Col>
+              <Col span={10}>
+                <Radio.Group
+                  value={patientType}
+                  onChange={(e) => {
+                    setPatientType(e.target.value);
+                    setSelectedPatient(null);
+                  }}
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
+                    <Radio value="nuevo" style={{ color: 'var(--color-text-primary)' }}>
+                      Nuevo
+                    </Radio>
+                    <Radio value="continuador" style={{ color: 'var(--color-text-primary)' }}>
+                      Continuador
+                    </Radio>
+                  </div>
+                </Radio.Group>
+              </Col>
+              <Col span={9}>
+                <Button
+                  type="primary"
+                  onClick={() => {
+                    if (patientType === 'nuevo') {
+                      setIsCreatePatientModalVisible(true);
+                    } else {
+                      setIsModalVisible(true);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    height: 'var(--button-height-md)',
+                    fontSize: 'var(--font-size-sm)',
+                    padding: 'var(--spacing-xs) var(--spacing-sm)',
+                    fontWeight: 'var(--font-weight-bold)',
+                    fontFamily: 'var(--font-family)'
+                  }}
+                >
+                  {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
+                </Button>
+              </Col>
+            </Row>
+            <div style={{ height: 'var(--spacing-md)' }} />
+          </>
+        )}
+
         {/* 
-            SECCIÓN: TIPOS DE PACIENTES
-            Lógica específica de Nuevo/Continuador
+            SECCIÓN: PACIENTE SELECCIONADO (OCULTA SI ES GHL PORQUE YA HAY BANNER)
           */}
-        <Row gutter={16} align="middle">
-          <Col span={5}>
-            <span className={styles.patientTypeLabel}>
-              Tipo de Paciente:
-            </span>
-          </Col>
-          <Col span={10}>
-            <Radio.Group
-              value={patientType}
-              onChange={(e) => {
-                setPatientType(e.target.value);
-                setSelectedPatient(null);
-              }}
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
-                <Radio value="nuevo" style={{ color: 'var(--color-text-primary)' }}>
-                  Nuevo
-                </Radio>
-                <Radio value="continuador" style={{ color: 'var(--color-text-primary)' }}>
-                  Continuador
-                </Radio>
-              </div>
-            </Radio.Group>
-          </Col>
-          <Col span={9}>
-            <Button
-              type="primary"
-              onClick={() => {
-                if (patientType === 'nuevo') {
-                  setIsCreatePatientModalVisible(true);
-                } else {
-                  setIsModalVisible(true);
-                }
-              }}
-              style={{
-                width: '100%',
-                height: 'var(--button-height-md)',
-                fontSize: 'var(--font-size-sm)',
-                padding: 'var(--spacing-xs) var(--spacing-sm)',
-                fontWeight: 'var(--font-weight-bold)',
-                fontFamily: 'var(--font-family)'
-              }}
-            >
-              {patientType === 'nuevo' ? 'Crear Paciente' : 'Seleccionar Paciente'}
-            </Button>
-          </Col>
-        </Row>
-
-        {/* Espacio entre secciones */}
-        <div style={{ height: 'var(--spacing-md)' }} />
-
-        {/* 
-            SECCIÓN: PACIENTE SELECCIONADO
-            Muestra el paciente seleccionado
-          */}
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item label="Paciente" required>
-              <Input
-                value={selectedPatient?.full_name || ''}
-                readOnly
-                style={{
-                  backgroundColor: 'var(--color-input-bg)',
-                  border: '1px solid var(--color-border-primary)',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--color-input-text)'
-                }}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-
-        {/* Espacio entre secciones */}
-        <div style={{ height: 'var(--spacing-md)' }} />
+        {!isFromGhl && (
+          <>
+            <Row gutter={16}>
+              <Col span={24}>
+                <Form.Item label="Paciente" required>
+                  <Input
+                    value={selectedPatient?.full_name || ''}
+                    readOnly
+                    style={{
+                      backgroundColor: 'var(--color-input-bg)',
+                      border: '1px solid var(--color-border-primary)',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'var(--color-input-text)'
+                    }}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+            <div style={{ height: 'var(--spacing-md)' }} />
+          </>
+        )}
 
         {/* Separador visual entre secciones */}
         <Divider style={{ borderColor: 'var(--color-border-primary)', marginTop: '1px', marginBottom: '8px' }} />

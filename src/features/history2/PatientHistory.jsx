@@ -7,6 +7,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Select,
   Spin,
   Typography,
@@ -42,6 +43,7 @@ import {
   updateWeightFieldsAfterSave,
   normalizeContraceptiveData,
   getWeightData,
+  findLatestPopulatedAppointment,
 } from './utils/formHelpers';
 import { validateAppointmentId } from './utils/validators';
 
@@ -145,6 +147,20 @@ const PatientHistory = () => {
   const { updateAppointment, updating: updatingAppointment } =
     useUpdateAppointment();
 
+  // Función ultra-simple para cambiar de fecha y asegurar que el Select responda
+  const handleDateChange = (newDate) => {
+    if (!newDate) return;
+    
+    // Si es la misma fecha (comparando solo día), no hacer nada
+    const currentShort = selectedAppointmentDate?.split(' ')[0] || '';
+    const nextShort = newDate.split(' ')[0] || '';
+    
+    if (currentShort === nextShort && currentShort !== '') return;
+
+    // Actualizar estado inmediatamente para que el Select no se bloquee
+    setSelectedAppointmentDate(newDate);
+  };
+
   // ==================== COMPUTED VALUES ====================
   const isFemale = useMemo(
     () => isFemalePatient(patientHistory, patient),
@@ -177,130 +193,143 @@ const PatientHistory = () => {
   // ==================== EFFECTS ====================
 
   /**
-   * Effect: Cargar datos iniciales del historial SOLO cuando se carga por primera vez
-   * IMPORTANTE: No interfiere con el manejo de citas individuales
+   * Effect Principal: Sincronización de Datos y Navegación
+   * Coordina la carga inicial, el cambio de cita y el guardado.
    */
   useEffect(() => {
-    // Esperar a que terminen de cargar ambos datos
+    // 1. Fase de Carga: No hacer nada si los datos están bajando
     if (loadingHistory || loadingAppointments) return;
     if (!patientHistory?.data) return;
 
-    // No sobrescribir el formulario si se acaba de guardar
-    if (justSaved) {
-      setJustSaved(false);
-      return;
-    }
+    // 2. Fase de Inicialización: Si no hay fecha elegida, buscar la mejor opción (hoy, futura o última)
+    if (!selectedAppointmentDate) {
+      let initialDate = '';
 
-    // Solo cargar datos iniciales (NO tocar campos de citas)
-    const initialValues = buildFormInitialValues(
-      patientHistory,
-      appointments,
-      isFemale,
-      patient
-    );
-
-    form.setFieldsValue(initialValues);
-
-    // Configurar estado de anticonceptivos para mujeres
-    if (isFemale && patientHistory.data) {
-      const contraceptiveData = normalizeContraceptiveData(patientHistory.data);
-      setUseContraceptiveMethodState(contraceptiveData.useMethod);
-      setContraceptiveMethodId(contraceptiveData.methodId);
-      setDiuTypeId(contraceptiveData.diuId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientHistory?.data?.id, loadingHistory, loadingAppointments, isFemale, justSaved]);
-
-  /**
-   * Effect: Cargar datos de la cita seleccionada
-   * FLUJO OPTIMIZADO: Actualiza inmediatamente cuando cambia la cita
-   */
-  useEffect(() => {
-    // Si no hay cita seleccionada, limpiar todo
-    if (!selectedAppointment) {
-      setTherapist(null);
-      setSelectedTherapistId(null);
-      setUserSelectedTherapist(false);
-      return;
-    }
-
-    // No sobrescribir si se acaba de guardar
-    if (justSaved) {
-      setJustSaved(false);
-      return;
-    }
-
-    // Actualizar formulario con datos de la cita
-    const appointmentValues = buildAppointmentFormValues(selectedAppointment);
-    form.setFieldsValue({
-      ...appointmentValues,
-      therapist: appointmentValues.therapist || '',
-    });
-
-    // Actualizar terapeuta - SIEMPRE actualizar basado en la cita
-    if (selectedAppointment.therapist) {
-      const therapistName = formatTherapistName(selectedAppointment.therapist);
-      const therapistId = selectedAppointment.therapist.id;
-      setTherapist(therapistName);
-      setSelectedTherapistId(therapistId);
-    } else {
-      setTherapist(null);
-      setSelectedTherapistId(null);
-    }
-
-    // Resetear el flag para permitir actualizaciones futuras
-    setUserSelectedTherapist(false);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAppointment, justSaved]);
-
-  /**
-   * Effect: Selección automática de fecha de cita
-   * LÓGICA: Priorizar cita de HOY, luego futura más cercana, luego última disponible
-   */
-  useEffect(() => {
-    if (!appointments || appointments.length === 0) return;
-    
-    // Si ya tenemos una fecha seleccionada, NO queremos que se resetee (Ej: al guardar cambios)
-    if (selectedAppointmentDate) return;
-
-    // Prioridad 1: Cita pasada desde navegación (Ej: desde la vista de Citas)
-    if (appointmentFromState?.appointment_date) {
-      setSelectedAppointmentDate(appointmentFromState.appointment_date);
-    }
-    // Prioridad 2: Selección inteligente (Ej: cuando viene desde la vista de Pacientes)
-    else {
-      const today = dayjs().startOf('day');
-
-      // Convertir todas las fechas para comparación
-      const apptDates = appointments.map(a => ({
-        original: a.appointment_date,
-        jsDate: dayjs(a.appointment_date).startOf('day')
-      }));
-
-      // 1. Buscar cita de HOY
-      const todayAppt = apptDates.find(d => d.jsDate.isSame(today));
-
-      if (todayAppt) {
-        setSelectedAppointmentDate(todayAppt.original);
-      } else {
-        // 2. Buscar la cita FUTURA más cercana
-        const futureAppts = apptDates
-          .filter(d => d.jsDate.isAfter(today))
-          .sort((a, b) => a.jsDate.diff(b.jsDate)); // Menor diferencia primero
-
-        if (futureAppts.length > 0) {
-          setSelectedAppointmentDate(futureAppts[0].original);
+      // Prioridad A: Navegación desde state
+      if (appointmentFromState?.appointment_date) {
+        initialDate = appointmentFromState.appointment_date.split(' ')[0];
+      }
+      // Prioridad B: Selección inteligente
+      else if (appointments.length > 0) {
+        const todayStr = dayjs().format('YYYY-MM-DD');
+        const todayAppt = appointments.find(a => a.appointment_date?.startsWith(todayStr));
+        
+        if (todayAppt) {
+          initialDate = todayAppt.appointment_date.split(' ')[0];
         } else {
-          // 3. Selección por defecto: La cita más reciente (ya sea hoy o pasado)
-          if (lastAppointment?.appointment_date) {
-            setSelectedAppointmentDate(lastAppointment.appointment_date);
+          // Futura más cercana
+          const future = appointments
+            .filter(a => dayjs(a.appointment_date).isAfter(dayjs()))
+            .sort((a, b) => dayjs(a.appointment_date).unix() - dayjs(b.appointment_date).unix())[0];
+          
+          if (future) {
+            initialDate = future.appointment_date.split(' ')[0];
+          } else {
+            // Última registrada
+            initialDate = appointments[0].appointment_date?.split(' ')[0] || '';
           }
         }
       }
+
+      if (initialDate) {
+        setSelectedAppointmentDate(initialDate);
+        return; // Detener aquí para que el siguiente ciclo use la fecha correcta
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appointmentFromState, lastAppointment, appointments]);
+
+    // 3. Fase de Renderizado de Formulario:
+    // Si acabamos de guardar, solo reseteamos el flag y mantenemos los datos actuales
+    if (justSaved) {
+      setJustSaved(false);
+      return;
+    }
+
+    // Cargar datos base del paciente (Historia)
+    const historyValues = buildFormInitialValues(patientHistory, appointments, isFemale, patient);
+    
+    // Cargar datos de la cita seleccionada
+    let appointmentValues = {};
+    if (selectedAppointment) {
+      try {
+        appointmentValues = buildAppointmentFormValues(selectedAppointment);
+        
+        // AUTO-FILL BLINDADO: Solo para citas vacías
+        const isEmpty = !appointmentValues.diagnosticosMedicos && 
+                        !appointmentValues.dolencias && 
+                        !appointmentValues.observacionesAdicionales;
+
+        if (isEmpty && appointments && appointments.length > 1) {
+          const latestPopulated = findLatestPopulatedAppointment(appointments, selectedAppointmentDate);
+          if (latestPopulated) {
+            const suggested = buildAppointmentFormValues(latestPopulated);
+            
+            // WHITELIST ESTRICTA: Solo estos campos se pueden auto-rellenar
+            const medicalFields = {
+              diagnosticosMedicos: suggested.diagnosticosMedicos || '',
+              dolencias: suggested.dolencias || '',
+              medicamentos: suggested.medicamentos || '',
+              operaciones: suggested.operaciones || '',
+              observacionesAdicionales: suggested.observacionesAdicionales || '',
+              diagnosticosReflexologia: suggested.diagnosticosReflexologia || '',
+            };
+
+            // Fusionar preservando los datos de la cita actual (como el peso de hoy si ya se puso)
+            appointmentValues = { 
+              ...appointmentValues, 
+              ...medicalFields 
+            };
+          }
+        }
+      } catch (autoFillErr) {
+        console.error('[PatientHistory] Error en auto-rellenado (protegido):', autoFillErr);
+        // Si falla, seguimos con los valores originales de la cita sin el auto-rellenado
+      }
+    }
+
+    // Calcular pesos dinámicos para la cita seleccionada
+    const weightUI = getWeightData(appointments, selectedAppointmentDate);
+
+    // Aplicar TODO al formulario con limpieza garantizada
+    form.setFieldsValue({
+      ...historyValues,
+      ...appointmentValues,
+      // Pesos calculados por cita (inicial = 1ra cita, ultimoPeso = cita anterior)
+      pesoInicial: weightUI.pesoInicial || historyValues.pesoInicial || '',
+      ultimoPeso: weightUI.pesoAnterior || '',
+      // EL PESO DE HOY NUNCA SE AUTO-RELLENA (siempre viene de la cita actual o vacío)
+      pesoHoy: appointmentValues.pesoHoy || '',
+      therapist: appointmentValues.therapist || '',
+    });
+
+    // Sincronizar estados auxiliares (Anticonceptivos, Terapeuta)
+    if (isFemale && patientHistory.data) {
+      const contraData = normalizeContraceptiveData(patientHistory.data);
+      setUseContraceptiveMethodState(contraData.useMethod);
+      setContraceptiveMethodId(contraData.methodId);
+      setDiuTypeId(contraData.diuId);
+    }
+
+    // Actualizar estados visuales (Solo basado en la cita seleccionada)
+    if (selectedAppointment?.therapist) {
+      const tName = formatTherapistName(selectedAppointment.therapist);
+      setTherapist(tName);
+      setSelectedTherapistId(selectedAppointment.therapist.id);
+    } else {
+      setTherapist('');
+      setSelectedTherapistId(null);
+    }
+
+  }, [
+    patientId, 
+    loadingHistory, 
+    loadingAppointments, 
+    selectedAppointmentDate, 
+    justSaved, 
+    appointments, 
+    selectedAppointment,
+    isFemale,
+    form
+  ]);
 
   // ==================== HANDLERS ====================
 
@@ -427,8 +456,12 @@ const PatientHistory = () => {
 
         if (historyResult.success && appointmentResult.success) {
           // Mostrar solo UN toast de éxito combinado
-          message.success(SUCCESS_MESSAGES.CHANGES_SAVED, 8); // Duración de 8 segundos
+          message.success(SUCCESS_MESSAGES.CHANGES_SAVED, 4); 
 
+          // IMPORTANTE: Limpiar el estado "tocado" para evitar alerta de cambios sin guardar
+          form.resetFields();
+          form.setFieldsValue(values);
+          
           // FIX: Marcar que se acaba de guardar para evitar sobrescribir el formulario
           setJustSaved(true);
 
@@ -587,7 +620,7 @@ const PatientHistory = () => {
               <Form.Item label="Fecha de la Cita" className={styles.dateFormItem}>
                 <Select
                   value={selectedAppointmentDate}
-                  onChange={setSelectedAppointmentDate}
+                  onChange={handleDateChange}
                   className={styles.select}
                   placeholder="Seleccione una fecha"
                   loading={loadingAppointments}
@@ -645,6 +678,7 @@ const PatientHistory = () => {
           {/* Gráfico de Evolución de Peso */}
           <VitalsChart 
             vitals={vitals} 
+            appointments={appointments}
             loading={loadingVitals} 
             selectedDate={selectedAppointmentDate} 
           />
