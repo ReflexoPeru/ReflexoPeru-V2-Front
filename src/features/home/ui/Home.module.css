@@ -4,6 +4,15 @@
   color: var(--color-text-primary);
   background-color: transparent;
   transition: color var(--transition-normal);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  
+  /* Centrado vertical */
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .sections {

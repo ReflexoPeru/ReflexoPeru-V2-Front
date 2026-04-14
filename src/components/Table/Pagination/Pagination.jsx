@@ -14,21 +14,47 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
         <div
             style={{
                 display: 'flex',
-                flexDirection: 'column', 
-                alignItems: 'flex-end',
-                marginTop: '16px',
+                flexDirection: 'row', 
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: '12px',
+                padding: '0 4px',
+                width: '100%'
             }}
         >
+            <div 
+                style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    color: isDarkMode ? '#9CA3AF' : '#64748b', 
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: '13px',
+                }}
+            >
+                <div style={{
+                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f1f5f9',
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    border: `1px solid ${isDarkMode ? '#444' : '#e2e8f0'}`,
+                    fontWeight: '500'
+                }}>
+                    <span style={{ color: isDarkMode ? '#fff' : '#1e293b' }}>{pageSize}</span> por página
+                </div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>
+                    Total: <span style={{ fontWeight: '600' }}>{total}</span> registros
+                </div>
+            </div>
+
             <div
                 style={{
-                    background: isDarkMode ? '#2a2a2a' : '#ffffff',
-                    padding: '4px 8px',
-                    borderRadius: '8px',
-                    display: 'inline-block',
-                    border: `1px solid ${isDarkMode ? '#444444' : '#e0e0e0'}`,
+                    background: isDarkMode ? '#1e1e1e' : '#ffffff',
+                    padding: '4px 6px',
+                    borderRadius: '12px',
+                    border: isDarkMode ? '1px solid #333' : 'none',
                     boxShadow: isDarkMode 
-                        ? '0 2px 8px rgba(0, 0, 0, 0.2)' 
-                        : '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        ? '0 10px 15px -3px rgba(0, 0, 0, 0.4)' 
+                        : '0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
                     transition: 'all 0.3s ease'
                 }}
             >
@@ -38,21 +64,11 @@ const ModeloPagination = ({ total, current, pageSize, onChange }) => {
                     total={total}
                     pageSize={pageSize}
                     onChange={handleChange}
+                    size="small"
                     style={{
                         margin: 0
                     }}
                 />
-            </div>
-            <div 
-                style={{ 
-                    color: isDarkMode ? '#9CA3AF' : '#666666', 
-                    marginTop: '8px',
-                    fontFamily: 'Poppins, sans-serif',
-                    fontSize: '12px',
-                    fontWeight: '400'
-                }}
-            >
-                {pageSize} / página
             </div>
         </div>
     );

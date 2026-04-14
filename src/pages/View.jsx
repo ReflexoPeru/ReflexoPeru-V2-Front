@@ -50,7 +50,8 @@ export default function View() {
       <div 
         className={Style.SideBar}
         style={{
-          backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff'
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+          borderRight: isDarkMode ? '1px solid #333' : '1px solid #f0f0f0'
         }}
       >
         <Dashboard />
@@ -59,7 +60,8 @@ export default function View() {
         <div 
           className={Style.Header}
           style={{
-            backgroundColor: isDarkMode ? '#1e1e1e' : '#ffffff'
+            backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
+            borderBottom: isDarkMode ? '1px solid #333' : '1px solid #f0f0f0'
           }}
         >
           <CustomLayout
@@ -70,7 +72,7 @@ export default function View() {
         <div 
           className={Style.Outlet}
           style={{
-            backgroundColor: isDarkMode ? '#121212' : 'rgb(183, 184, 185)'
+            backgroundColor: isDarkMode ? '#0f0f0f' : '#f3f4f6'
           }}
         >
           <Outlet />

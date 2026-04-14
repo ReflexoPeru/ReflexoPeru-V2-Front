@@ -87,8 +87,37 @@ html,body,#root{
 }
 
 /* ================================================== */
-/* ESTILOS PARA PAGINACIÓN                            */
+/* SCROLLBAR MODERNA Y MINIMALISTA                    */
 /* ================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Scrollbar en modo oscuro */
+.dark-theme ::-webkit-scrollbar-thumb,
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme ::-webkit-scrollbar-thumb:hover,
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
 
 /* Asegurar que el número se vea blanco en el botón activo */
 .ant-pagination-item-active a {

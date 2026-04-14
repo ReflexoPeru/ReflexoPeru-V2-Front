@@ -246,8 +246,8 @@ export default function Patients() {
   };
 
   return (
-    <div style={{ height: '100%', paddingTop: '2.5%', width: '100%', paddingLeft: '35px', paddingRight: '35px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto', width: '100%' }}>
+    <div style={{ height: '100%', paddingTop: '24px', width: '100%', paddingLeft: '35px', paddingRight: '35px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '0 auto 20px auto', width: '100%' }}>
         <CustomButton text="Crear Paciente" onClick={() => navigate('registrar')} loading={navigatingCreate} />
         <CustomSearch placeholder="Buscar por Apellido/Nombre o DNI..." onSearch={setSearchTerm} width="100%" />
         <Tooltip title="Ver Papelera de Reciclaje">

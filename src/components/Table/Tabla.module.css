@@ -11,12 +11,9 @@
   width: 100% !important;
 }
 
+/* Estilos de cabecera manejados directamente en Tabla.jsx para mayor precisión */
 .tableCustom .ant-table-thead > tr > th {
-  background-color: var(--color-background-secondary) !important;
-  color: var(--color-text-primary) !important;
-  border-bottom: 1px solid var(--color-border-primary) !important;
-  font-weight: var(--font-weight-bold) !important;
-  font-family: var(--font-family) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
 }
 
 .tableCustom .ant-table-tbody > tr > td {

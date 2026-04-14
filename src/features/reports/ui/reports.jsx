@@ -443,7 +443,13 @@ const Reporte = () => {
 
   if (showPreview) {
     return (
-      <>
+      <div 
+        className={styles.mainContainer}
+        style={{
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#f8f9fa',
+          color: isDarkMode ? '#ffffff' : '#333333'
+        }}
+      >
         <ReportPreview
           showPreview={showPreview}
           loading={loading}
@@ -470,7 +476,7 @@ const Reporte = () => {
             date={safeDate}
           />
         )}
-      </>
+      </div>
     );
   }
 

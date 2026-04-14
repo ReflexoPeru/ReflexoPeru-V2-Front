@@ -5,7 +5,7 @@ import {
 } from '../../../utils/localStorageUtility';
 
 const BaseURL =
-  'https://sistema2.reflexoperu.com.pe/backend/public/api/';
+  'http://127.0.0.1:8000/api/';
 
 const instance = axios.create({
   baseURL: BaseURL,

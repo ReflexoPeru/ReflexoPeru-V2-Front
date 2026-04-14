@@ -446,7 +446,7 @@ export default function Appointments() {
     <div
       style={{
         height: '100%',
-        paddingTop: '2.5%',
+        paddingTop: '24px',
         width: '100%',
         paddingLeft: '35px',
         paddingRight: '35px',
@@ -456,7 +456,7 @@ export default function Appointments() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '12px',
           margin: '0 auto',
           width: '100%',
           marginBottom: '20px'
