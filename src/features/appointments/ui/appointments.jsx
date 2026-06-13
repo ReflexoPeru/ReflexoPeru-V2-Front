@@ -1,6 +1,6 @@
 import { PDFViewer, pdf } from '@react-pdf/renderer';
 import { Button, Modal, Space, Spin, notification, Tooltip, Drawer, Badge, Form, DatePicker, TimePicker, Select } from 'antd';
-import { CalendarOutlined, GlobalOutlined, InfoCircleOutlined, UserOutlined } from '@ant-design/icons';
+import { CalendarOutlined, GlobalOutlined, InfoCircleOutlined, UserOutlined, HistoryOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import dayjs from '../../../utils/dayjsConfig';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -34,10 +34,17 @@ export default function Appointments() {
     loading,
     pagination,
     handlePageChange,
+    searchTerm,
     setSearchTerm,
     loadPaginatedAppointmentsByDate,
     loadAppointments,
   } = useAppointments();
+
+  const [showAllSearched, setShowAllSearched] = useState(false);
+
+  useEffect(() => {
+    setShowAllSearched(false);
+  }, [searchTerm]);
 
   const [selectDate, setSelectDate] = useState(dayjs());
   const [showTicketModal, setShowTicketModal] = useState(false);
@@ -335,8 +342,20 @@ export default function Appointments() {
     },
   ];
 
-  // Mostrar todas las citas que trae el backend, sin filtrar por estado
-  const visibleAppointments = appointments;
+  const todayStr = dayjs().format('YYYY-MM-DD');
+  const isSearchMode = (searchTerm || '').trim().length > 0;
+  let visibleAppointments = appointments;
+  let hasTodayAppointment = false;
+  let todayAppointments = [];
+  if (isSearchMode && appointments.length > 0) {
+    todayAppointments = appointments.filter(
+      (app) => app.appointment_date && app.appointment_date.substring(0, 10) === todayStr
+    );
+    hasTodayAppointment = todayAppointments.length > 0;
+    if (!showAllSearched && hasTodayAppointment) {
+      visibleAppointments = todayAppointments;
+    }
+  }
 
   const handleAction = async (action, record) => {
     switch (action) {
@@ -606,11 +625,127 @@ export default function Appointments() {
         style={{
           width: '100%',
           margin: '0 auto',
+          marginTop: '20px',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
           {/* El botón duplicado ha sido eliminado de aquí. Se mantiene solo en la cabecera. */}
         </div>
+
+        {isSearchMode && appointments.length > 0 && (
+          <div style={{ marginBottom: '14px' }}>
+            {hasTodayAppointment ? (
+              !showAllSearched ? (
+                /* ── BANNER 1: Cita de hoy encontrada ── */
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  backgroundColor: '#e0f3ff', padding: '12px 20px', borderRadius: '10px',
+                  border: '1px solid #a8d8f0', borderLeft: '4px solid #3aabde',
+                  boxShadow: '0 2px 8px rgba(58, 171, 222, 0.12)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <InfoCircleOutlined style={{ color: '#3aabde', fontSize: '18px', flexShrink: 0 }} />
+                    <div>
+                      <span style={{ color: '#111111', fontWeight: 700, fontSize: '15px', fontFamily: 'var(--font-family)', display: 'block' }}>
+                        Cita de hoy encontrada
+                      </span>
+                      <span style={{ color: '#333333', fontWeight: 400, fontSize: '13px', fontFamily: 'var(--font-family)' }}>
+                        Mostrando la cita programada para el día de hoy
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowAllSearched(true)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      backgroundColor: '#3aabde', border: 'none', borderRadius: '8px',
+                      color: '#fff', fontSize: '12px', fontFamily: 'var(--font-family)',
+                      fontWeight: 600, padding: '7px 16px', cursor: 'pointer',
+                      whiteSpace: 'nowrap', boxShadow: '0 2px 6px rgba(58, 171, 222, 0.4)',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#2490c4'; }}
+                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#3aabde'; }}
+                  >
+                    <HistoryOutlined />
+                    Ver historial ({appointments.length - visibleAppointments.length} más)
+                  </button>
+                </div>
+              ) : (
+                /* ── BANNER 2: Historial completo ── */
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  backgroundColor: '#e0f3ff', padding: '12px 20px', borderRadius: '10px',
+                  border: '1px solid #a8d8f0', borderLeft: '4px solid #3aabde',
+                  boxShadow: '0 2px 8px rgba(58, 171, 222, 0.12)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <HistoryOutlined style={{ color: '#3aabde', fontSize: '18px', flexShrink: 0 }} />
+                    <div>
+                      <span style={{ color: '#111111', fontWeight: 700, fontSize: '15px', fontFamily: 'var(--font-family)', display: 'block' }}>
+                        Historial completo
+                      </span>
+                      <span style={{ color: '#333333', fontWeight: 400, fontSize: '13px', fontFamily: 'var(--font-family)' }}>
+                        Mostrando todas las citas del paciente ({appointments.length} en total)
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowAllSearched(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      backgroundColor: 'transparent', border: '1.5px solid #3aabde',
+                      borderRadius: '8px', color: '#3aabde', fontSize: '12px',
+                      fontFamily: 'var(--font-family)', fontWeight: 600, padding: '6px 16px',
+                      cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#3aabde'; e.currentTarget.style.color = '#fff'; }}
+                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#3aabde'; }}
+                  >
+                    <InfoCircleOutlined />
+                    Ver solo cita de hoy
+                  </button>
+                </div>
+              )
+            ) : (
+              /* ── BANNER 3: Sin cita hoy (con botón Agendar — SOLO en appointments.jsx) ── */
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                backgroundColor: '#fff8e0', padding: '12px 20px', borderRadius: '10px',
+                border: '1px solid #f0d98a', borderLeft: '4px solid #e6b800',
+                boxShadow: '0 2px 8px rgba(230, 184, 0, 0.12)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <ClockCircleOutlined style={{ color: '#e6b800', fontSize: '18px', flexShrink: 0 }} />
+                  <div>
+                    <span style={{ color: '#111111', fontWeight: 700, fontSize: '15px', fontFamily: 'var(--font-family)', display: 'block' }}>
+                      Sin cita programada para hoy
+                    </span>
+                    <span style={{ color: '#333333', fontWeight: 400, fontSize: '13px', fontFamily: 'var(--font-family)' }}>
+                      Mostrando el historial completo del paciente
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleButton}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    backgroundColor: '#1CB54A', border: 'none', borderRadius: '8px',
+                    color: '#fff', fontSize: '12px', fontFamily: 'var(--font-family)',
+                    fontWeight: 600, padding: '7px 16px', cursor: 'pointer',
+                    whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(28, 181, 74, 0.35)',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#148235'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#1CB54A'; }}
+                >
+                  + Agendar Cita
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         <ModeloTable
           columns={columns}
           data={visibleAppointments}
